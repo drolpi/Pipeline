@@ -22,11 +22,8 @@ subprojects {
         implementation(files("D:\\NotionPowered\\projects\\notion-common\\build\\libs\\notion-common.jar"))
 
         implementation("org.jetbrains:annotations:23.0.0")
-        implementation("com.fasterxml.jackson.core:jackson-databind:2.6.3")
         implementation("com.google.guava:guava:23.0")
-        implementation("com.google.inject:guice:4.1.0")
         implementation("org.reflections:reflections:0.10.2")
-        implementation("com.zaxxer:HikariCP:5.0.1")
     }
 
 /*
