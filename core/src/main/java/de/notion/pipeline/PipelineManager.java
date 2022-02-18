@@ -153,7 +153,7 @@ public class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> List<T> loadAllData(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuids, "Uuids can't be null");
         if (!registry.dataClasses().contains(type))
@@ -169,19 +169,19 @@ public class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
-        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuids, loadingStrategy))));
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(loadAllData(type, uuids, loadingStrategy))));
         return completableFuture;
     }
 
     @NotNull
     @Override
-    public <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public <T extends PipelineData> List<T> loadAllData(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
@@ -194,18 +194,18 @@ public class PipelineManager implements Pipeline {
         if (globalStorage() != null)
             uuids.addAll(globalStorage.savedUUIDs(type));
 
-        return load(type, uuids, loadingStrategy);
+        return loadAllData(type, uuids, loadingStrategy);
     }
 
     @NotNull
     @Override
-    public <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public <T extends PipelineData> CompletableFuture<List<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
-        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, loadingStrategy))));
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(loadAllData(type, loadingStrategy))));
         return completableFuture;
     }
 
