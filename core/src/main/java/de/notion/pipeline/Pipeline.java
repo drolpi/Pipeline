@@ -30,10 +30,12 @@ public interface Pipeline extends SystemLoadable {
         return new PipelineManager(registry, config);
     }
 
+    //Load by provided uuid
     @Nullable <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
 
     @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
 
+    //Load by provided uuid without callback
     @Nullable
     default <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
         return load(type, uuid, loadingStrategy, null, creationStrategies);
@@ -44,6 +46,7 @@ public interface Pipeline extends SystemLoadable {
         return loadAsync(type, uuid, loadingStrategy, null, creationStrategies);
     }
 
+    //Load all data by provided filter
     @NotNull
     default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy) {
         List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
@@ -73,6 +76,12 @@ public interface Pipeline extends SystemLoadable {
         return completableFuture;
     }
 
+    //Load all data by provided uuids
+    @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
+
+    @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
+
+    //Load all data by saved uuids
     @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
 
     @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);

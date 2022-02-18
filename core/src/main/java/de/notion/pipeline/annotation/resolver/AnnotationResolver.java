@@ -2,9 +2,9 @@ package de.notion.pipeline.annotation.resolver;
 
 import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.Properties;
-import de.notion.pipeline.annotation.auto.AutoCleanUp;
-import de.notion.pipeline.annotation.auto.AutoLoad;
-import de.notion.pipeline.annotation.auto.AutoSave;
+import de.notion.pipeline.annotation.automatic.AutoCleanUp;
+import de.notion.pipeline.annotation.automatic.AutoLoad;
+import de.notion.pipeline.annotation.automatic.AutoSave;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

@@ -4,6 +4,7 @@ import de.notion.common.runnable.CatchingRunnable;
 import de.notion.common.scheduler.Scheduler;
 import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
+import de.notion.pipeline.automatic.cleanup.AutoCleanUpTask;
 import de.notion.pipeline.config.PipelineConfig;
 import de.notion.pipeline.datatype.ConnectionPipelineData;
 import de.notion.pipeline.datatype.PipelineData;
@@ -86,31 +87,7 @@ public class PipelineManager implements Pipeline {
         this.scheduler = new Scheduler();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();
         this.pipelineDataSynchronizer = new PipelineDataSynchronizerImpl(this);
-        scheduler.interval(() -> {
-            registry.dataClasses()
-                    .stream()
-                    .forEach(aClass -> {
-                        var optional = AnnotationResolver.autoCleanUp(aClass);
-                        if (!optional.isPresent())
-                            return;
-
-                        var autoCleanUp = optional.get();
-                        var cachedUUIDs = localCache.savedUUIDs(aClass);
-                        if (cachedUUIDs.isEmpty())
-                            return;
-                        cachedUUIDs.forEach(uuid -> {
-                            var data = localCache.data(aClass, uuid);
-                            if (data == null)
-                                return;
-                            if ((System.currentTimeMillis() - data.lastUse()) < autoCleanUp.timeUnit().toMillis(autoCleanUp.time()))
-                                return;
-                            System.out.println("Cleaning up " + aClass.getSimpleName() + " with uuid " + uuid.toString());
-                            data.onCleanUp();
-                            data.save(autoCleanUp.saveToGlobalStorage());
-                            localCache.remove(aClass, uuid);
-                        });
-                    });
-        }, 20L * 10, 20L * 300);
+        scheduler.interval(new AutoCleanUpTask(this), 20L * 10, 20L * 300);
         loaded = true;
     }
 
@@ -173,6 +150,16 @@ public class PipelineManager implements Pipeline {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuid, loadingStrategy, callback, creationStrategies))));
         return completableFuture;
+    }
+
+    @Override
+    public @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+        return null;
+    }
+
+    @Override
+    public @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+        return null;
     }
 
     @NotNull
