@@ -35,11 +35,11 @@ public class ConnectionManager implements SystemLoadable {
                 .wait(400, TimeUnit.MILLISECONDS)
                 .doAsync(() ->
                         pipeline.registry()
-                                .getDataClasses()
+                                .dataClasses()
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    AutoLoad autoLoad = AnnotationResolver.getAutoLoad(aClass);
+                                    AutoLoad autoLoad = AnnotationResolver.autoLoad(aClass);
                                     if (autoLoad == null)
                                         return;
 
@@ -59,21 +59,21 @@ public class ConnectionManager implements SystemLoadable {
         createTaskBatch()
                 .doAsync(() ->
                         pipeline.registry()
-                                .getDataClasses()
+                                .dataClasses()
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    AutoSave autoSave = AnnotationResolver.getAutoSave(aClass);
+                                    AutoSave autoSave = AnnotationResolver.autoSave(aClass);
                                     if (autoSave == null)
                                         return;
 
-                                    ConnectionPipelineData data = (ConnectionPipelineData) pipeline.getLocalCache().getData(aClass, connection);
+                                    ConnectionPipelineData data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
                                     if (data == null)
                                         return;
 
                                     data.onDisconnect();
-                                    pipeline.saveData(aClass, data.getObjectUUID(), () -> {
-                                        pipeline.delete(aClass, data.getObjectUUID(), Pipeline.QueryStrategy.GLOBAL_CACHE);
+                                    pipeline.saveData(aClass, data.objectUUID(), () -> {
+                                        pipeline.delete(aClass, data.objectUUID(), Pipeline.QueryStrategy.GLOBAL_CACHE);
                                         callback.run();
                                     });
                                 })

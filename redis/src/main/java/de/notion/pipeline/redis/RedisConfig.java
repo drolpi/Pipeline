@@ -60,22 +60,6 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
         config.setThreads(4);
         this.redissonClient = Redisson.create(config);
         connected = true;
-
-        /*
-        RBucket<String> bucket = redissonClient.getBucket("Test12351239571235");
-        bucket.set("hallo");
-        bucket.expire(5, TimeUnit.SECONDS);
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            bucket.expire(30, TimeUnit.SECONDS);
-        }).start();;
-
-         */
     }
 
     @Override

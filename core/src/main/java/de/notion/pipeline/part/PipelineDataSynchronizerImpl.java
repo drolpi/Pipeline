@@ -31,7 +31,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        pipelineManager.getExecutorService().submit(new CatchingRunnable(() -> {
+        pipelineManager.executorService().submit(new CatchingRunnable(() -> {
             future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback));
         }));
         return future;
@@ -44,9 +44,9 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         if (source.equals(destination))
             return false;
-        if (pipelineManager.getGlobalCache() == null && (source.equals(DataSourceType.GLOBAL_CACHE) || destination.equals(DataSourceType.GLOBAL_CACHE)))
+        if (pipelineManager.globalCache() == null && (source.equals(DataSourceType.GLOBAL_CACHE) || destination.equals(DataSourceType.GLOBAL_CACHE)))
             return false;
-        if (pipelineManager.getGlobalStorage() == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
+        if (pipelineManager.globalStorage() == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
             return false;
 
         long startTime = System.currentTimeMillis();
@@ -54,9 +54,9 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
         if (source.equals(DataSourceType.LOCAL)) {
-            if (!pipelineManager.getLocalCache().dataExist(dataClass, objectUUID))
+            if (!pipelineManager.localCache().dataExist(dataClass, objectUUID))
                 return false;
-            PipelineData data = pipelineManager.getLocalCache().getData(dataClass, objectUUID);
+            PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
             if (data == null)
                 return false;
             data.updateLastUse();
@@ -64,14 +64,14 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
             String dataToSave = data.serialize();
             // Local to Global Cache
             if (destination.equals(DataSourceType.GLOBAL_CACHE))
-                pipelineManager.getGlobalCache().saveData(dataClass, objectUUID, dataToSave);
+                pipelineManager.globalCache().saveData(dataClass, objectUUID, dataToSave);
                 // Local to Global Storage
             else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
-                pipelineManager.getGlobalStorage().saveData(dataClass, objectUUID, dataToSave);
+                pipelineManager.globalStorage().saveData(dataClass, objectUUID, dataToSave);
         } else if (source.equals(DataSourceType.GLOBAL_CACHE)) {
-            if (!pipelineManager.getGlobalCache().dataExist(dataClass, objectUUID))
+            if (!pipelineManager.globalCache().dataExist(dataClass, objectUUID))
                 return false;
-            String globalCachedData = pipelineManager.getGlobalCache().loadData(dataClass, objectUUID);
+            String globalCachedData = pipelineManager.globalCache().loadData(dataClass, objectUUID);
             // Error while loading from redis
             if (globalCachedData == null) {
                 System.out.println("Trying to load from storage...");
@@ -80,41 +80,41 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
             }
 
             if (destination.equals(DataSourceType.LOCAL)) {
-                if (!pipelineManager.getLocalCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.getLocalCache().save(dataClass, pipelineManager.getLocalCache().instantiateData(pipelineManager, dataClass, objectUUID));
+                if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
+                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
                 }
 
-                PipelineData data = pipelineManager.getLocalCache().getData(dataClass, objectUUID);
+                PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
                 if (data == null)
                     return false;
                 data.deserialize(globalCachedData);
                 data.updateLastUse();
                 data.loadDependentData();
                 data.onLoad();
-                pipelineManager.getLocalCache().save(dataClass, data);
+                pipelineManager.localCache().save(dataClass, data);
             } else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
-                pipelineManager.getGlobalStorage().saveData(dataClass, objectUUID, globalCachedData);
+                pipelineManager.globalStorage().saveData(dataClass, objectUUID, globalCachedData);
 
         } else if (source.equals(DataSourceType.GLOBAL_STORAGE)) {
-            if (!pipelineManager.getGlobalStorage().dataExist(dataClass, objectUUID))
+            if (!pipelineManager.globalStorage().dataExist(dataClass, objectUUID))
                 return false;
-            String globalSavedData = pipelineManager.getGlobalStorage().loadData(dataClass, objectUUID);
+            String globalSavedData = pipelineManager.globalStorage().loadData(dataClass, objectUUID);
 
             if (destination.equals(DataSourceType.LOCAL)) {
-                if (!pipelineManager.getLocalCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.getLocalCache().save(dataClass, pipelineManager.getLocalCache().instantiateData(pipelineManager, dataClass, objectUUID));
+                if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
+                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
                 }
 
-                PipelineData data = pipelineManager.getLocalCache().getData(dataClass, objectUUID);
+                PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
                 if (data == null)
                     return false;
                 data.deserialize(globalSavedData);
                 data.updateLastUse();
                 data.loadDependentData();
                 data.onLoad();
-                pipelineManager.getLocalCache().save(dataClass, data);
+                pipelineManager.localCache().save(dataClass, data);
             } else if (destination.equals(DataSourceType.GLOBAL_CACHE))
-                pipelineManager.getGlobalCache().saveData(dataClass, objectUUID, globalSavedData);
+                pipelineManager.globalCache().saveData(dataClass, objectUUID, globalSavedData);
         }
         System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         if (callback != null)
@@ -131,8 +131,8 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
     public void shutdown() {
         try {
             System.out.println("Shutting down Data Synchronizer");
-            pipelineManager.getExecutorService().shutdown();
-            pipelineManager.getExecutorService().awaitTermination(5, TimeUnit.SECONDS);
+            pipelineManager.executorService().shutdown();
+            pipelineManager.executorService().awaitTermination(5, TimeUnit.SECONDS);
             System.out.println("Data Synchronizer shut down successfully");
         } catch (InterruptedException e) {
             e.printStackTrace();

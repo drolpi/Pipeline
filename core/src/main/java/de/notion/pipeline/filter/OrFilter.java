@@ -2,15 +2,8 @@ package de.notion.pipeline.filter;
 
 import java.util.Map;
 
-public class OrFilter implements Filter {
-
-    private final Filter first;
-    private final Filter second;
-
-    protected OrFilter(Filter first, Filter second) {
-        this.first = first;
-        this.second = second;
-    }
+public record OrFilter(Filter first,
+                       Filter second) implements Filter {
 
     @Override
     public boolean check(Map<String, Object> data) {

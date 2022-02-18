@@ -36,14 +36,14 @@ public class JsonStorage implements GlobalStorage {
     public String loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        return JsonFileUtil.loadFromJson(getSaveFile(dataClass, objectUUID));
+        return JsonFileUtil.loadFromJson(saveFile(dataClass, objectUUID));
     }
 
     @Override
     public boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        return Files.exists(getSaveFile(dataClass, objectUUID));
+        return Files.exists(saveFile(dataClass, objectUUID));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class JsonStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
-        JsonFileUtil.saveToJson(dataToSave, getSaveFile(dataClass, objectUUID));
+        JsonFileUtil.saveToJson(dataToSave, saveFile(dataClass, objectUUID));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class JsonStorage implements GlobalStorage {
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         if (dataExist(dataClass, objectUUID)) {
             try {
-                return Files.deleteIfExists(getSaveFile(dataClass, objectUUID));
+                return Files.deleteIfExists(saveFile(dataClass, objectUUID));
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -70,10 +70,10 @@ public class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public Set<UUID> getSavedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Set<UUID> foundUUIDs = new HashSet<>();
-        File parentFolder = getParent(dataClass).toFile();
+        File parentFolder = parent(dataClass).toFile();
 
         if (!parentFolder.exists())
             return foundUUIDs;
@@ -97,7 +97,7 @@ public class JsonStorage implements GlobalStorage {
     @Override
     public List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
         List<UUID> uuids = new ArrayList<>();
-        File parentFolder = getParent(type).toFile();
+        File parentFolder = parent(type).toFile();
 
         System.out.println(parentFolder);
 
@@ -117,15 +117,15 @@ public class JsonStorage implements GlobalStorage {
         return uuids;
     }
 
-    private Path getSaveFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    private Path saveFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        return Paths.get(getParent(dataClass).toString(), objectUUID + ".json");
+        return Paths.get(parent(dataClass).toString(), objectUUID + ".json");
     }
 
-    private Path getParent(@NotNull Class<? extends PipelineData> dataClass) {
+    private Path parent(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        String storageIdentifier = AnnotationResolver.getStorageIdentifier(dataClass);
+        String storageIdentifier = AnnotationResolver.storageIdentifier(dataClass);
 
         return Paths.get(directory.toString(), storageIdentifier);
     }

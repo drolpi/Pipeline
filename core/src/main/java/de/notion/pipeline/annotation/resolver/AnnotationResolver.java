@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class AnnotationResolver {
 
     @NotNull
-    public static String getStorageIdentifier(Class<?> classType) {
+    public static String storageIdentifier(Class<?> classType) {
         Properties properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
@@ -18,7 +18,7 @@ public class AnnotationResolver {
     }
 
     @NotNull
-    public static Context getContext(Class<?> classType) {
+    public static Context context(Class<?> classType) {
         Properties properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
@@ -26,17 +26,17 @@ public class AnnotationResolver {
     }
 
     @NotNull
-    public static AutoLoad getAutoLoad(Class<?> classType) {
+    public static AutoLoad autoLoad(Class<?> classType) {
         return classType.getAnnotation(AutoLoad.class);
     }
 
     @NotNull
-    public static AutoSave getAutoSave(Class<?> classType) {
+    public static AutoSave autoSave(Class<?> classType) {
         return classType.getAnnotation(AutoSave.class);
     }
 
     @NotNull
-    public static AutoCleanUp getAutoCleanUp(Class<?> classType) {
+    public static AutoCleanUp autoCleanUp(Class<?> classType) {
         return classType.getAnnotation(AutoCleanUp.class);
     }
 }

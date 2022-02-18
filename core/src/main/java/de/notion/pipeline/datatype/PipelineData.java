@@ -30,7 +30,7 @@ public abstract class PipelineData {
     public PipelineData(@NotNull Pipeline pipeline) {
         Objects.requireNonNull(pipeline, "pipeline can't be null!");
         this.pipeline = pipeline;
-        this.dataUpdater = pipeline.getDataUpdaterService().dataUpdater(getClass());
+        this.dataUpdater = pipeline.dataUpdaterService().dataUpdater(getClass());
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .serializeNulls()
@@ -54,15 +54,15 @@ public abstract class PipelineData {
         if (this == o) return true;
         if (!(o instanceof PipelineData)) return false;
         PipelineData pipelineData = (PipelineData) o;
-        return Objects.equals(getObjectUUID(), pipelineData.getObjectUUID());
+        return Objects.equals(objectUUID(), pipelineData.objectUUID());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getObjectUUID());
+        return Objects.hash(objectUUID());
     }
 
-    public UUID getObjectUUID() {
+    public UUID objectUUID() {
         return objectUUID;
     }
 
@@ -84,13 +84,13 @@ public abstract class PipelineData {
         if (this.dataUpdater == null)
             return;
         this.dataUpdater.pushUpdate(this, () -> {
-            if (AnnotationResolver.getContext(getClass()).equals(Context.GLOBAL))
-                pipeline.getSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), getObjectUUID());
+            if (AnnotationResolver.context(getClass()).equals(Context.GLOBAL))
+                pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID());
 
             if (!saveToGlobalStorage)
                 return;
 
-            pipeline.getSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), getObjectUUID(), internal);
+            pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), internal);
         });
     }
 
@@ -150,19 +150,19 @@ public abstract class PipelineData {
 
     public void updateLastUse() {
         this.lastUse = System.currentTimeMillis();
-        if (pipeline.getGlobalCache() != null)
-            pipeline.getGlobalCache().updateExpireTime(getClass(), getObjectUUID());
+        if (pipeline.globalCache() != null)
+            pipeline.globalCache().updateExpireTime(getClass(), objectUUID());
     }
 
-    public long getLastUse() {
+    public long lastUse() {
         return lastUse;
     }
 
-    public DataUpdater getDataManipulator() {
+    public DataUpdater dataUpdater() {
         return dataUpdater;
     }
 
-    public Pipeline getPipeline() {
+    public Pipeline pipeline() {
         return pipeline;
     }
 

@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public interface LocalCache {
     @Nullable
-    <S extends PipelineData> S getData(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
+    <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    <S extends PipelineData> Set<S> getAllData(@NotNull Class<? extends S> dataClass);
+    <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass);
 
     <S extends PipelineData> void save(@NotNull Class<? extends S> dataClass, @NotNull S data);
 
@@ -20,7 +20,7 @@ public interface LocalCache {
 
     <S extends PipelineData> boolean remove(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    <S extends PipelineData> Set<UUID> getSavedUUIDs(@NotNull Class<? extends S> dataClass);
+    <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
 
     <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 }

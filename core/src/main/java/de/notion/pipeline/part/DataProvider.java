@@ -1,7 +1,6 @@
 package de.notion.pipeline.part;
 
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.filter.Filter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -17,6 +16,6 @@ public interface DataProvider {
 
     boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
-    Set<UUID> getSavedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
+    Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
 
 }

@@ -16,6 +16,7 @@ public class H2Storage extends SqlStorage {
 
     public H2Storage(Connection connection) {
         this.connection = connection;
+        System.out.println("H2 Global Storage started"); //DEBUG
     }
 
     @NotNull

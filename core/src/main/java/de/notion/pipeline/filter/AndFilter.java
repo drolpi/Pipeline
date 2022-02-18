@@ -2,15 +2,7 @@ package de.notion.pipeline.filter;
 
 import java.util.Map;
 
-public class AndFilter implements Filter {
-
-    private final Filter first;
-    private final Filter second;
-
-    protected AndFilter(Filter first, Filter second) {
-        this.first = first;
-        this.second = second;
-    }
+public record AndFilter(Filter first, Filter second) implements Filter {
 
     @Override
     public boolean check(Map<String, Object> data) {

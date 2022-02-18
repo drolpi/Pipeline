@@ -18,6 +18,7 @@ public class MySqlStorage extends SqlStorage {
 
     public MySqlStorage(HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
+        System.out.println("MySQL Global Storage started"); //DEBUG
     }
 
     @NotNull

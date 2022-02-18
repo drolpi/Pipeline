@@ -17,7 +17,7 @@ public class PipelineRegistry {
         registry.add(dataClass);
     }
 
-    public Set<Class<? extends PipelineData>> getDataClasses() {
+    public Set<Class<? extends PipelineData>> dataClasses() {
         return registry;
     }
 

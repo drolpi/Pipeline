@@ -10,11 +10,11 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PipelineTaskScheduler extends SystemLoadable {
 
-    <T extends PipelineData> PipelineTask<T> schedulePipelineTask(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
+    <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
 
-    <T extends PipelineData> PipelineTask<T> getExistingPipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
+    <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 
-    <T extends PipelineData> void removePipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
+    <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 
     enum PipelineAction {
         LOAD
@@ -36,27 +36,27 @@ public interface PipelineTaskScheduler extends SystemLoadable {
             this.completableFuture.whenComplete((t, throwable) -> {
                 //System.out.println("Task " + taskUUID + " done: " + type + "  |  " + getObjectUUID() + " [" + t + "] [" + (System.currentTimeMillis() - start) + "ms]"); //DEBUG
                 onComplete.run();
-                pipelineTaskScheduler.removePipelineTask(type, uuid);
+                pipelineTaskScheduler.remove(type, uuid);
             });
         }
 
-        public Class<? extends PipelineData> getType() {
+        public Class<? extends PipelineData> type() {
             return type;
         }
 
-        public UUID getObjectUUID() {
+        public UUID objectUUID() {
             return uuid;
         }
 
-        public PipelineAction getPipelineAction() {
+        public PipelineAction action() {
             return pipelineAction;
         }
 
-        public CompletableFuture<T> getCompletableFuture() {
+        public CompletableFuture<T> completableFuture() {
             return completableFuture;
         }
 
-        public UUID getTaskUUID() {
+        public UUID taskUUID() {
             return taskUUID;
         }
     }

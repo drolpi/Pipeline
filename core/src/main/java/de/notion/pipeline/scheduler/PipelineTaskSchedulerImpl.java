@@ -25,15 +25,15 @@ public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
     }
 
     @Override
-    public synchronized <T extends PipelineData> PipelineTask<T> schedulePipelineTask(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
+    public synchronized <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
         Objects.requireNonNull(type, "type can't be null!");
         Objects.requireNonNull(uuid, "uuid can't be null!");
-        PipelineTask<T> existingTask = getExistingPipelineTask(type, uuid);
+        PipelineTask<T> existingTask = pipelineTask(type, uuid);
         if (existingTask != null) {
             System.out.println("[" + loadingStrategy + "] Found existing Pipeline Task: " + existingTask); //DEBUG
             return existingTask;
         }
-        PipelineTask<T> pipelineTask = new PipelineTask<>(this, pipelineAction, type, uuid, () -> removePipelineTask(type, uuid));
+        PipelineTask<T> pipelineTask = new PipelineTask<>(this, pipelineAction, type, uuid, () -> remove(type, uuid));
         //System.out.println("[" + loadingStrategy + "] Scheduling Pipeline Task: " + pipelineTask); //DEBUG
 
         if (!pendingTasks.containsKey(uuid))
@@ -43,7 +43,7 @@ public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
     }
 
     @Override
-    public synchronized <T extends PipelineData> PipelineTask<T> getExistingPipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
+    public synchronized <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
         Objects.requireNonNull(type, "type can't be null!");
         Objects.requireNonNull(uuid, "uuid can't be null!");
         if (!pendingTasks.containsKey(uuid))
@@ -56,7 +56,7 @@ public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
     }
 
     @Override
-    public synchronized <T extends PipelineData> void removePipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
+    public synchronized <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
         Objects.requireNonNull(type, "type can't be null!");
         Objects.requireNonNull(uuid, "uuid can't be null!");
         if (!pendingTasks.containsKey(uuid))
@@ -77,9 +77,9 @@ public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
         pendingTasks.forEach((uuid, pipelineTasks) -> {
             pipelineTasks.forEach((aClass, pipelineTask) -> {
                 try {
-                    pipelineTask.getCompletableFuture().get(1, TimeUnit.SECONDS);
+                    pipelineTask.completableFuture().get(1, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    System.out.println("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.getCompletableFuture().getClass().getGenericInterfaces()));
+                    System.out.println("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.completableFuture().getClass().getGenericInterfaces()));
                     e.printStackTrace();
                 }
             });

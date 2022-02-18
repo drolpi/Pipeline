@@ -2,15 +2,7 @@ package de.notion.pipeline.filter;
 
 import java.util.Map;
 
-public class FieldFilter implements Filter {
-
-    private final String fieldName;
-    private final Object obj;
-
-    protected FieldFilter(String fieldName, Object obj) {
-        this.fieldName = fieldName;
-        this.obj = obj;
-    }
+public record FieldFilter(String fieldName, Object obj) implements Filter {
 
     @Override
     public boolean check(Map<String, Object> data) {

@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,7 +41,7 @@ public interface Pipeline extends SystemLoadable {
     }
 
     default @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
-        List<UUID> uuids = getGlobalStorage().filter(type, filter);
+        List<UUID> uuids = globalStorage().filter(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
@@ -54,7 +53,7 @@ public interface Pipeline extends SystemLoadable {
 
     default @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
-        List<UUID> uuids = getGlobalStorage().filter(type, filter);
+        List<UUID> uuids = globalStorage().filter(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
@@ -104,13 +103,13 @@ public interface Pipeline extends SystemLoadable {
         return deleteAsync(type, uuid, true, QueryStrategy.ALL);
     }
 
-    LocalCache getLocalCache();
+    LocalCache localCache();
 
-    DataUpdaterService getDataUpdaterService();
+    DataUpdaterService dataUpdaterService();
 
-    GlobalCache getGlobalCache();
+    GlobalCache globalCache();
 
-    GlobalStorage getGlobalStorage();
+    GlobalStorage globalStorage();
 
     void saveAllData();
 
@@ -124,7 +123,7 @@ public interface Pipeline extends SystemLoadable {
 
     void saveData(@NotNull Class<? extends PipelineData> type, @NotNull UUID uuid, Runnable callback);
 
-    PipelineDataSynchronizer getSynchronizer();
+    PipelineDataSynchronizer dataSynchronizer();
 
     PipelineRegistry registry();
 

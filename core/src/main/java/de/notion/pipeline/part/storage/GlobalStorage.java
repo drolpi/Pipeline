@@ -6,9 +6,7 @@ import de.notion.pipeline.part.DataProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public interface GlobalStorage extends DataProvider {
 
