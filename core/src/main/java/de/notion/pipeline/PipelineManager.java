@@ -86,7 +86,7 @@ public class PipelineManager implements Pipeline {
         this.scheduler = new Scheduler();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();
         this.pipelineDataSynchronizer = new PipelineDataSynchronizerImpl(this);
-        scheduler.asyncInterval(() -> {
+        scheduler.interval(() -> {
             registry.dataClasses()
                     .stream()
                     .forEach(aClass -> {
