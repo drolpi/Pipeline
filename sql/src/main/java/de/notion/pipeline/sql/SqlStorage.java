@@ -135,6 +135,11 @@ public abstract class SqlStorage implements GlobalStorage {
                 }, new ArrayList<>());
     }
 
+    @Override
+    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
+        return null;
+    }
+
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(name, "name can't be null!");
