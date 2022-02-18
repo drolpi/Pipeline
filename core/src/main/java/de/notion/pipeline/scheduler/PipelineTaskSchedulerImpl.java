@@ -1,7 +1,6 @@
 package de.notion.pipeline.scheduler;
 
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,13 +15,7 @@ import java.util.concurrent.TimeoutException;
 
 public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
-    private final PipelineManager pipelineManager;
     private final Map<UUID, Map<Class<? extends PipelineData>, PipelineTask<?>>> pendingTasks = new ConcurrentHashMap<>();
-
-    public PipelineTaskSchedulerImpl(@NotNull PipelineManager pipelineManager) {
-        Objects.requireNonNull(pipelineManager, "pipelineManager can't be null!");
-        this.pipelineManager = pipelineManager;
-    }
 
     @Override
     public synchronized <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
