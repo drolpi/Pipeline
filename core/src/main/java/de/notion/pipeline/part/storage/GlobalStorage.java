@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface GlobalStorage extends DataProvider {
 
-    List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter);
+    List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter);
 
 }

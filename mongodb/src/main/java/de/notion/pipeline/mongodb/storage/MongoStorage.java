@@ -99,7 +99,7 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
+    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
         var collection = mongoStorage(type);
         List<UUID> uuids = new ArrayList<>();
         try (var cursor = collection.find().iterator()) {

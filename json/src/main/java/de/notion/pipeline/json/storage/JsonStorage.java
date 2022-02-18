@@ -94,7 +94,7 @@ public class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
+    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
         List<UUID> uuids = new ArrayList<>();
         var parentFolder = parent(type).toFile();
 

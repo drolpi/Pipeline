@@ -114,7 +114,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
+    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
         return executeQuery(
                 String.format("SELECT * FROM `%s`;", tableName(type)),
                 resultSet -> {

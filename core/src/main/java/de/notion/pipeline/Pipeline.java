@@ -4,12 +4,12 @@ import de.notion.common.system.SystemLoadable;
 import de.notion.pipeline.config.PipelineConfig;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.filter.Filter;
-import de.notion.pipeline.registry.PipelineRegistry;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.cache.GlobalCache;
 import de.notion.pipeline.part.local.LocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import de.notion.pipeline.part.storage.GlobalStorage;
+import de.notion.pipeline.registry.PipelineRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +30,10 @@ public interface Pipeline extends SystemLoadable {
         return new PipelineManager(registry, config);
     }
 
+    @Nullable <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
+
+    @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
+
     @Nullable
     default <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
         return load(type, uuid, loadingStrategy, null, creationStrategies);
@@ -40,8 +44,9 @@ public interface Pipeline extends SystemLoadable {
         return loadAsync(type, uuid, loadingStrategy, null, creationStrategies);
     }
 
-    default @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
-        List<UUID> uuids = globalStorage().filter(type, filter);
+    @NotNull
+    default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
+        List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
@@ -51,9 +56,10 @@ public interface Pipeline extends SystemLoadable {
         return data;
     }
 
-    default @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
+    @NotNull
+    default <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
-        List<UUID> uuids = globalStorage().filter(type, filter);
+        List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
@@ -67,17 +73,13 @@ public interface Pipeline extends SystemLoadable {
         return completableFuture;
     }
 
-    @Nullable <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
+    @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
 
-    @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
-
-    @NotNull <T extends PipelineData> Set<T> loadAllData(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
-
-    @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
 
     <T extends PipelineData> boolean exist(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
 
-    <T extends PipelineData> CompletableFuture<Boolean> existAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
+    @NotNull <T extends PipelineData> CompletableFuture<Boolean> existAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
 
     <T extends PipelineData> boolean delete(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies);
 
@@ -93,23 +95,25 @@ public interface Pipeline extends SystemLoadable {
         return delete(type, uuid, true, QueryStrategy.ALL);
     }
 
-    <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies);
+    @NotNull <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies);
 
+    @NotNull
     default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers) {
         return deleteAsync(type, uuid, notifyOthers, QueryStrategy.ALL);
     }
 
+    @NotNull
     default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
         return deleteAsync(type, uuid, true, QueryStrategy.ALL);
     }
 
-    LocalCache localCache();
+    @NotNull LocalCache localCache();
 
-    DataUpdaterService dataUpdaterService();
+    @NotNull DataUpdaterService dataUpdaterService();
 
-    GlobalCache globalCache();
+    @Nullable GlobalCache globalCache();
 
-    GlobalStorage globalStorage();
+    @Nullable GlobalStorage globalStorage();
 
     void saveAllData();
 
@@ -123,8 +127,10 @@ public interface Pipeline extends SystemLoadable {
 
     void saveData(@NotNull Class<? extends PipelineData> type, @NotNull UUID uuid, Runnable callback);
 
+    @NotNull
     PipelineDataSynchronizer dataSynchronizer();
 
+    @NotNull
     PipelineRegistry registry();
 
     enum LoadingStrategy {

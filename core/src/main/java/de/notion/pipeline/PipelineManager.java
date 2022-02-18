@@ -177,7 +177,7 @@ public class PipelineManager implements Pipeline {
 
     @NotNull
     @Override
-    public <T extends PipelineData> Set<T> loadAllData(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
@@ -193,13 +193,13 @@ public class PipelineManager implements Pipeline {
 
     @NotNull
     @Override
-    public <T extends PipelineData> CompletableFuture<Set<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         CompletableFuture<Set<T>> completableFuture = new CompletableFuture<>();
-        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(loadAllData(type, loadingStrategy))));
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, loadingStrategy))));
         return completableFuture;
     }
 
