@@ -1,8 +1,7 @@
 rootProject.name = "notion-pipeline"
 
-include(":pipeline-core")
-include(":pipeline-example")
-include(":pipeline-json")
-include(":pipeline-mongodb")
-include(":pipeline-redis")
-include("pipeline-sql")
+include(":core")
+include(":json")
+include(":mongodb")
+include(":redis")
+include(":sql")
