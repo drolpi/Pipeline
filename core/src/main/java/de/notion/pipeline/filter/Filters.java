@@ -4,17 +4,15 @@ import java.util.Objects;
 
 public class Filters {
 
-    //TODO: null checks
-
     public static Filter or(Filter first, Filter second) {
-        Objects.requireNonNull(first);
-        Objects.requireNonNull(second);
+        Objects.requireNonNull(first, "first Filter can't be null");
+        Objects.requireNonNull(second, "second Filter can't be null");
         return new OrFilter(first, second);
     }
 
     public static Filter and(Filter first, Filter second) {
-        Objects.requireNonNull(first);
-        Objects.requireNonNull(second);
+        Objects.requireNonNull(first, "first Filter can't be null");
+        Objects.requireNonNull(second, "second Filter can't be null");
         return new AndFilter(first, second);
     }
 
