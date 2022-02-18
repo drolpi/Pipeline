@@ -90,7 +90,7 @@ public class PipelineManager implements Pipeline {
         System.out.println("GlobalStorage: " + globalStorage);
 
         this.scheduler = new Scheduler();
-        this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl(this);
+        this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();
         this.pipelineDataSynchronizer = new PipelineDataSynchronizerImpl(this);
         scheduler.asyncInterval(() -> {
             registry.dataClasses()
