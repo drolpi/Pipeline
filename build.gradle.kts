@@ -26,7 +26,7 @@ subprojects {
         implementation("com.google.guava:guava:23.0")
         implementation("com.google.inject:guice:4.1.0")
         implementation("org.reflections:reflections:0.9.12")
-        implementation("com.zaxxer:HikariCP:4.0.3")
+        implementation("com.zaxxer:HikariCP:5.0.1")
     }
 
 /*
