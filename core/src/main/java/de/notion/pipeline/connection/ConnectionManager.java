@@ -3,8 +3,6 @@ package de.notion.pipeline.connection;
 import de.notion.common.concurrent.TaskBatch;
 import de.notion.common.system.SystemLoadable;
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.annotation.auto.AutoLoad;
-import de.notion.pipeline.annotation.auto.AutoSave;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.ConnectionPipelineData;
 import org.jetbrains.annotations.NotNull;
@@ -39,10 +37,11 @@ public class ConnectionManager implements SystemLoadable {
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    var autoLoad = AnnotationResolver.autoLoad(aClass);
-                                    if (autoLoad == null)
+                                    var optional = AnnotationResolver.autoLoad(aClass);
+                                    if (!optional.isPresent())
                                         return;
 
+                                    var autoLoad = optional.get();
                                     var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, autoLoad.creationStrategies());
                                     if (data == null)
                                         return;
@@ -63,8 +62,8 @@ public class ConnectionManager implements SystemLoadable {
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    var autoSave = AnnotationResolver.autoSave(aClass);
-                                    if (autoSave == null)
+                                    var optional = AnnotationResolver.autoSave(aClass);
+                                    if (!optional.isPresent())
                                         return;
 
                                     var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);

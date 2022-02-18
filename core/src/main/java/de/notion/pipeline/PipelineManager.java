@@ -3,14 +3,8 @@ package de.notion.pipeline;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.common.scheduler.Scheduler;
 import de.notion.pipeline.annotation.Context;
-import de.notion.pipeline.annotation.auto.AutoCleanUp;
-import de.notion.pipeline.annotation.auto.AutoLoad;
-import de.notion.pipeline.annotation.auto.AutoSave;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.config.PipelineConfig;
-import de.notion.pipeline.config.part.DataUpdaterConfig;
-import de.notion.pipeline.config.part.GlobalCacheConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
 import de.notion.pipeline.datatype.ConnectionPipelineData;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
@@ -96,10 +90,11 @@ public class PipelineManager implements Pipeline {
             registry.dataClasses()
                     .stream()
                     .forEach(aClass -> {
-                        var autoCleanUp = AnnotationResolver.autoCleanUp(aClass);
-                        if (autoCleanUp == null)
+                        var optional = AnnotationResolver.autoCleanUp(aClass);
+                        if (!optional.isPresent())
                             return;
 
+                        var autoCleanUp = optional.get();
                         var cachedUUIDs = localCache.savedUUIDs(aClass);
                         if (cachedUUIDs.isEmpty())
                             return;
@@ -370,12 +365,13 @@ public class PipelineManager implements Pipeline {
         //Connection
         if (ConnectionPipelineData.class.isAssignableFrom(type))
             return;
-        var autoLoad = AnnotationResolver.autoLoad(type);
+        var optional = AnnotationResolver.autoLoad(type);
 
         // Data will only be preloaded if it is declared properly
-        if (autoLoad == null) {
+        if (!optional.isPresent()) {
             return;
         }
+
         var startTime = System.currentTimeMillis();
         System.out.println("Preloading " + type.getSimpleName()); //DEBUG
         if (globalCache != null)
@@ -413,10 +409,10 @@ public class PipelineManager implements Pipeline {
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        var autoSave = AnnotationResolver.autoSave(type);
+        var optional = AnnotationResolver.autoSave(type);
 
         // Data will only be preloaded if it is declared properly
-        if (autoSave == null)
+        if (!optional.isPresent())
             return;
         var startTime = System.currentTimeMillis();
         System.out.println("Saving " + type.getSimpleName()); //DEBUG
@@ -441,12 +437,12 @@ public class PipelineManager implements Pipeline {
             return;
         pipelineData.onCleanUp();
 
-        var autoSave = AnnotationResolver.autoSave(type);
+        var optional = AnnotationResolver.autoSave(type);
 
-        if (autoSave == null)
+        if (!optional.isPresent())
             return;
 
-        pipelineData.save(autoSave.saveToGlobalStorage(), () -> {
+        pipelineData.save(optional.get().saveToGlobalStorage(), () -> {
             localCache().remove(type, pipelineData.objectUUID());
             if (runnable != null)
                 runnable.run();
