@@ -45,25 +45,25 @@ public interface Pipeline extends SystemLoadable {
     }
 
     @NotNull
-    default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
+    default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy) {
         List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
-            data.add(load(type, uuid, loadingStrategy, creationStrategies));
+            data.add(load(type, uuid, loadingStrategy));
         }
 
         return data;
     }
 
     @NotNull
-    default <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
+    default <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy) {
         CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
         List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
         List<T> data = new ArrayList<>();
 
         for (UUID uuid : uuids) {
-            CompletableFuture<T> future = loadAsync(type, uuid, loadingStrategy, creationStrategies);
+            CompletableFuture<T> future = loadAsync(type, uuid, loadingStrategy);
             future.thenAccept(t -> {
                 data.add(t);
             });
