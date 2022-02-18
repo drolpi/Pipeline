@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public class AnnotationResolver {
 
-    //TODO: Return Optional<Type>
-
     @NotNull
     public static String storageIdentifier(Class<?> classType) {
         var properties = classType.getAnnotation(Properties.class);
