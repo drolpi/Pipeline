@@ -8,7 +8,6 @@ import de.notion.pipeline.filter.Filter;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,15 +72,15 @@ public class JsonStorage implements GlobalStorage {
     public Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Set<UUID> foundUUIDs = new HashSet<>();
-        File parentFolder = parent(dataClass).toFile();
+        var parentFolder = parent(dataClass).toFile();
 
         if (!parentFolder.exists())
             return foundUUIDs;
         try {
             Files.walk(parentFolder.toPath(), 1).forEach(path -> {
-                String fileName = path.toFile().getName().replace(".json", "");
+                var fileName = path.toFile().getName().replace(".json", "");
                 try {
-                    UUID readUUID = UUID.fromString(fileName);
+                    var readUUID = UUID.fromString(fileName);
                     foundUUIDs.add(readUUID);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Could not read file name in JsonStorage because it is not a uuid: " + path.toFile().getAbsolutePath());
@@ -97,18 +96,15 @@ public class JsonStorage implements GlobalStorage {
     @Override
     public List<UUID> filter(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
         List<UUID> uuids = new ArrayList<>();
-        File parentFolder = parent(type).toFile();
+        var parentFolder = parent(type).toFile();
 
         System.out.println(parentFolder);
 
         if (!parentFolder.exists())
             return new ArrayList<>();
-        for (File file : parentFolder.listFiles()) {
-            System.out.println(file);
-            String data = JsonFileUtil.loadFromJson(file.toPath());
-            System.out.println(data);
+        for (var file : parentFolder.listFiles()) {
+            var data = JsonFileUtil.loadFromJson(file.toPath());
             Map<String, Object> document = GSON.fromJson(data, Map.class);
-            System.out.println(document);
 
             if (filter.check(document)) {
                 uuids.add(UUID.fromString((String) document.get("objectUUID")));

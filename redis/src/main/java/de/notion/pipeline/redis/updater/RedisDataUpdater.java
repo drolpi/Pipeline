@@ -31,12 +31,12 @@ public class RedisDataUpdater implements DataUpdater {
         this.messageListener = (channel, dataBlock) -> {
             if (dataBlock.senderUUID.equals(senderUUID))
                 return;
-            PipelineData pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
+            var pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
 
             if (pipelineData == null)
                 return;
             if (dataBlock instanceof UpdateDataBlock) {
-                UpdateDataBlock updateDataBlock = (UpdateDataBlock) dataBlock;
+                var updateDataBlock = (UpdateDataBlock) dataBlock;
                 System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 pipelineData.onSync(pipelineData.deserialize(updateDataBlock.dataToUpdate));
             } else if (dataBlock instanceof RemoveDataBlock) {
@@ -78,7 +78,8 @@ public class RedisDataUpdater implements DataUpdater {
 
     private synchronized RTopic topic(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        String key = "DataTopic:" + AnnotationResolver.storageIdentifier(dataClass);
+        //TODO: CONSTANT
+        var key = "DataTopic:" + AnnotationResolver.storageIdentifier(dataClass);
         return redissonClient.getTopic(key, new SerializationCodec());
     }
 

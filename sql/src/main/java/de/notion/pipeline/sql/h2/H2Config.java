@@ -28,7 +28,7 @@ public class H2Config implements GlobalStorageConfig, PartConfig {
 
     @Override
     public void load() {
-        File file = new File(h2dbFile);
+        var file = new File(h2dbFile);
         if (file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }

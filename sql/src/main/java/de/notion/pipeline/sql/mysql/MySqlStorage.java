@@ -33,7 +33,7 @@ public class MySqlStorage extends SqlStorage {
 
     @Override
     public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
-        try (Connection con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
             // write all parameters
             for (int i = 0; i < objects.length; i++) {
                 statement.setString(i + 1, Objects.toString(objects[i]));
@@ -50,14 +50,14 @@ public class MySqlStorage extends SqlStorage {
 
     @Override
     public <T> T executeQuery(@NotNull String query, @NotNull Function<ResultSet, T> callback, @Nullable T def, @NotNull Object... objects) {
-        try (Connection con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
             // write all parameters
             for (int i = 0; i < objects.length; i++) {
                 statement.setString(i + 1, Objects.toString(objects[i]));
             }
 
             // execute the statement, apply to the result handler
-            try (ResultSet resultSet = statement.executeQuery()) {
+            try (var resultSet = statement.executeQuery()) {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {

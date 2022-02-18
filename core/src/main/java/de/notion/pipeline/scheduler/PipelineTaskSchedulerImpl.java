@@ -48,10 +48,10 @@ public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
         Objects.requireNonNull(uuid, "uuid can't be null!");
         if (!pendingTasks.containsKey(uuid))
             return null;
-        Map<Class<? extends PipelineData>, PipelineTask<?>> map = pendingTasks.get(uuid);
+        var map = pendingTasks.get(uuid);
         if (!map.containsKey(type))
             return null;
-        PipelineTask<?> task = map.get(type);
+        var task = map.get(type);
         return (PipelineTask<T>) task;
     }
 

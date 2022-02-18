@@ -27,7 +27,7 @@ public class H2Storage extends SqlStorage {
 
     @Override
     public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
-        try (PreparedStatement preparedStatement = this.connection().prepareStatement(query)) {
+        try (var preparedStatement = this.connection().prepareStatement(query)) {
             for (int i = 0; i < objects.length; i++) {
                 preparedStatement.setString(i + 1, objects[i].toString());
             }
@@ -42,12 +42,12 @@ public class H2Storage extends SqlStorage {
 
     @Override
     public <T> T executeQuery(@NotNull String query, @NotNull Function<ResultSet, T> callback, @Nullable T def, @NotNull Object... objects) {
-        try (PreparedStatement preparedStatement = this.connection().prepareStatement(query)) {
+        try (var preparedStatement = this.connection().prepareStatement(query)) {
             for (int i = 0; i < objects.length; i++) {
                 preparedStatement.setString(i + 1, objects[i].toString());
             }
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (var resultSet = preparedStatement.executeQuery()) {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {

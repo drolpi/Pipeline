@@ -49,14 +49,14 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         if (pipelineManager.globalStorage() == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
             return false;
 
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
 
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
         if (source.equals(DataSourceType.LOCAL)) {
             if (!pipelineManager.localCache().dataExist(dataClass, objectUUID))
                 return false;
-            PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
+            var data = pipelineManager.localCache().data(dataClass, objectUUID);
             if (data == null)
                 return false;
             data.updateLastUse();
@@ -84,7 +84,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
                     pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
                 }
 
-                PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
+                var data = pipelineManager.localCache().data(dataClass, objectUUID);
                 if (data == null)
                     return false;
                 data.deserialize(globalCachedData);
@@ -98,14 +98,14 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         } else if (source.equals(DataSourceType.GLOBAL_STORAGE)) {
             if (!pipelineManager.globalStorage().dataExist(dataClass, objectUUID))
                 return false;
-            String globalSavedData = pipelineManager.globalStorage().loadData(dataClass, objectUUID);
+            var globalSavedData = pipelineManager.globalStorage().loadData(dataClass, objectUUID);
 
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
                 }
 
-                PipelineData data = pipelineManager.localCache().data(dataClass, objectUUID);
+                var data = pipelineManager.localCache().data(dataClass, objectUUID);
                 if (data == null)
                     return false;
                 data.deserialize(globalSavedData);

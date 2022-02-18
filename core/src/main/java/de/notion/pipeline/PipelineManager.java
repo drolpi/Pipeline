@@ -57,7 +57,7 @@ public class PipelineManager implements Pipeline {
         this.executorService = Executors.newFixedThreadPool(2, new DefaultThreadFactory("Pipeline"));
         this.localCache = new DefaultLocalCache();
 
-        DataUpdaterConfig updaterConfig = config.updaterConfig();
+        var updaterConfig = config.updaterConfig();
         if (updaterConfig != null) {
             updaterConfig.load();
             this.dataUpdaterService = updaterConfig.constructDataManipulator(localCache);
@@ -65,7 +65,7 @@ public class PipelineManager implements Pipeline {
             this.dataUpdaterService = new DefaultDataUpdaterService();
         }
 
-        GlobalCacheConfig globalCacheConfig = config.globalCacheConfig();
+        var globalCacheConfig = config.globalCacheConfig();
         if (globalCacheConfig != null) {
             globalCacheConfig.load();
             this.globalCache = globalCacheConfig.constructGlobalCache();
@@ -73,7 +73,7 @@ public class PipelineManager implements Pipeline {
             this.globalCache = null;
         }
 
-        GlobalStorageConfig globalStorageConfig = config.globalStorageConfig();
+        var globalStorageConfig = config.globalStorageConfig();
         if (globalStorageConfig != null) {
             globalStorageConfig.load();
             this.globalStorage = globalStorageConfig.constructGlobalStorage();
@@ -96,15 +96,15 @@ public class PipelineManager implements Pipeline {
             registry.dataClasses()
                     .stream()
                     .forEach(aClass -> {
-                        AutoCleanUp autoCleanUp = AnnotationResolver.autoCleanUp(aClass);
+                        var autoCleanUp = AnnotationResolver.autoCleanUp(aClass);
                         if (autoCleanUp == null)
                             return;
 
-                        Set<UUID> cachedUUIDs = localCache.savedUUIDs(aClass);
+                        var cachedUUIDs = localCache.savedUUIDs(aClass);
                         if (cachedUUIDs.isEmpty())
                             return;
                         cachedUUIDs.forEach(uuid -> {
-                            PipelineData data = localCache.data(aClass, uuid);
+                            var data = localCache.data(aClass, uuid);
                             if (data == null)
                                 return;
                             if ((System.currentTimeMillis() - data.lastUse()) < autoCleanUp.timeUnit().toMillis(autoCleanUp.time()))
@@ -217,16 +217,16 @@ public class PipelineManager implements Pipeline {
 
         if (strategies.length == 0)
             return false;
-        Set<QueryStrategy> strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
+        var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
 
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.LOCAL)) {
-            boolean localExist = localCache().dataExist(type, uuid);
+            var localExist = localCache().dataExist(type, uuid);
             if (localExist)
                 return true;
         }
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE)) {
             if (globalCache() != null) {
-                boolean globalCacheExists = globalCache().dataExist(type, uuid);
+                var globalCacheExists = globalCache().dataExist(type, uuid);
                 if (globalCacheExists)
                     return true;
             }
@@ -257,7 +257,7 @@ public class PipelineManager implements Pipeline {
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        Set<QueryStrategy> strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
+        var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
         if (strategySet.isEmpty())
             strategySet.add(QueryStrategy.ALL);
         System.out.println("Deleting: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
@@ -317,7 +317,7 @@ public class PipelineManager implements Pipeline {
             });
         }
         if (globalStorage() != null) {
-            Context context = AnnotationResolver.context(type);
+            var context = AnnotationResolver.context(type);
             globalStorage().savedUUIDs(type).forEach(uuid -> {
                 if (!localCache.dataExist(type, uuid)) {
                     pipelineDataSynchronizer.doSynchronisation(PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, PipelineDataSynchronizer.DataSourceType.LOCAL, type, uuid, null);
@@ -370,13 +370,13 @@ public class PipelineManager implements Pipeline {
         //Connection
         if (ConnectionPipelineData.class.isAssignableFrom(type))
             return;
-        AutoLoad autoLoad = AnnotationResolver.autoLoad(type);
+        var autoLoad = AnnotationResolver.autoLoad(type);
 
         // Data will only be preloaded if it is declared properly
         if (autoLoad == null) {
             return;
         }
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
         System.out.println("Preloading " + type.getSimpleName()); //DEBUG
         if (globalCache != null)
             globalCache.savedUUIDs(type).forEach(uuid -> preloadData(type, uuid));
@@ -413,12 +413,12 @@ public class PipelineManager implements Pipeline {
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        AutoSave autoSave = AnnotationResolver.autoSave(type);
+        var autoSave = AnnotationResolver.autoSave(type);
 
         // Data will only be preloaded if it is declared properly
         if (autoSave == null)
             return;
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
         System.out.println("Saving " + type.getSimpleName()); //DEBUG
         localCache.savedUUIDs(type).forEach(uuid -> saveData(type, uuid, () -> {
 
@@ -441,7 +441,7 @@ public class PipelineManager implements Pipeline {
             return;
         pipelineData.onCleanUp();
 
-        AutoSave autoSave = AnnotationResolver.autoSave(type);
+        var autoSave = AnnotationResolver.autoSave(type);
 
         if (autoSave == null)
             return;
@@ -464,7 +464,7 @@ public class PipelineManager implements Pipeline {
         Objects.requireNonNull(uuid, "UUID can't be null");
         if (!registry.dataClasses().contains(dataClass))
             throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
         // ExistCheck LocalCache
         if (localCache.dataExist(dataClass, uuid)) {
             System.out.println("Found Data in Local Cache [" + dataClass.getSimpleName() + "]");
@@ -508,7 +508,7 @@ public class PipelineManager implements Pipeline {
         if (!registry.dataClasses().contains(dataClass))
             throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
 
-        Set<QueryStrategy> strategySet = Arrays.stream(queryStrategies).collect(Collectors.toSet());
+        var strategySet = Arrays.stream(queryStrategies).collect(Collectors.toSet());
         System.out.println("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]"); //DEBUG
         T pipelineData = localCache.data(dataClass, uuid);
 

@@ -106,7 +106,8 @@ public class DefaultLocalCache implements LocalCache {
         }
 
 
-        String defaultData = ("{\"objectUUID\": \"" + objectUUID + "\"}");
+        //TODO: CONSTANT
+        var defaultData = ("{\"objectUUID\": \"" + objectUUID + "\"}");
         instance.deserialize(defaultData);
 
         return instance;

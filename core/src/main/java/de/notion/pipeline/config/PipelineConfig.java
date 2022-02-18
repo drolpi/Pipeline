@@ -5,32 +5,25 @@ import de.notion.pipeline.config.part.GlobalStorageConfig;
 import de.notion.pipeline.config.part.DataUpdaterConfig;
 import org.jetbrains.annotations.Nullable;
 
-public class PipelineConfig {
-
-    private final DataUpdaterConfig updaterConfig;
-    private final GlobalCacheConfig globalCacheConfig;
-    private final GlobalStorageConfig globalStorageConfig;
-
-    private PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig globalCacheConfig, GlobalStorageConfig globalStorageConfig) {
-        this.updaterConfig = updaterConfig;
-        this.globalCacheConfig = globalCacheConfig;
-        this.globalStorageConfig = globalStorageConfig;
-    }
+public record PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig globalCacheConfig, GlobalStorageConfig globalStorageConfig) {
 
     public static Builder builder() {
         return new Builder();
     }
 
+    @Override
     @Nullable
     public DataUpdaterConfig updaterConfig() {
         return updaterConfig;
     }
 
+    @Override
     @Nullable
     public GlobalCacheConfig globalCacheConfig() {
         return globalCacheConfig;
     }
 
+    @Override
     @Nullable
     public GlobalStorageConfig globalStorageConfig() {
         return globalStorageConfig;

@@ -51,9 +51,12 @@ public abstract class PipelineData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PipelineData)) return false;
-        PipelineData pipelineData = (PipelineData) o;
+        if (this == o)
+            return true;
+        if (!(o instanceof PipelineData))
+            return false;
+
+        var pipelineData = (PipelineData) o;
         return Objects.equals(objectUUID(), pipelineData.objectUUID());
     }
 
@@ -71,7 +74,7 @@ public abstract class PipelineData {
     }
 
     public void save(boolean saveToGlobalStorage, Runnable callback) {
-        long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
         System.out.println("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
 
@@ -119,7 +122,6 @@ public abstract class PipelineData {
      * Executed directly after Data was loaded from Pipeline. Not if it was found in LocalCache
      */
     public void onLoad() {
-
     }
 
     /**
@@ -127,7 +129,6 @@ public abstract class PipelineData {
      * You can use this function to load dependent data from pipeline that is directly associated with this data
      */
     public void loadDependentData() {
-
     }
 
     /**

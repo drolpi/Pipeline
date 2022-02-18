@@ -11,7 +11,6 @@ import java.nio.file.Path;
 public class JsonConfig implements GlobalStorageConfig, PartConfig {
 
     private final String jsonDbFile;
-
     private boolean connected;
 
     public JsonConfig(Path jsonDbFile) {
@@ -26,7 +25,7 @@ public class JsonConfig implements GlobalStorageConfig, PartConfig {
 
     @Override
     public void load() {
-        File file = new File(jsonDbFile);
+        var file = new File(jsonDbFile);
         if(!file.exists()) {
             file.mkdirs();
         }

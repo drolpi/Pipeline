@@ -32,7 +32,7 @@ public class MySqlConfig implements GlobalStorageConfig, PartConfig {
     @Override
     public void load() {
         if (isLoaded()) return;
-        HikariConfig config = new HikariConfig();
+        var config = new HikariConfig();
 
         config.setJdbcUrl(String.format(
                 CONNECT_URL_FORMAT,

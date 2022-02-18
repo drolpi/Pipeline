@@ -9,9 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class AnnotationResolver {
 
+    //TODO: Return Optional<Type>
+
     @NotNull
     public static String storageIdentifier(Class<?> classType) {
-        Properties properties = classType.getAnnotation(Properties.class);
+        var properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
         return properties.identifier();
@@ -19,7 +21,7 @@ public class AnnotationResolver {
 
     @NotNull
     public static Context context(Class<?> classType) {
-        Properties properties = classType.getAnnotation(Properties.class);
+        var properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
         return properties.context();

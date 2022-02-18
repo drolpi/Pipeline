@@ -6,7 +6,7 @@ public record FieldFilter(String fieldName, Object obj) implements Filter {
 
     @Override
     public boolean check(Map<String, Object> data) {
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
+        for (var entry : data.entrySet()) {
             if (entry.getKey() == null)
                 continue;
 

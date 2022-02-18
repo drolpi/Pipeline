@@ -23,6 +23,8 @@ import java.util.function.Function;
 
 public abstract class SqlStorage implements GlobalStorage {
 
+    //TODO: Vielleicht queries als CONSTANT
+
     protected static final String TABLE_COLUMN_KEY = "UUID";
     protected static final String TABLE_COLUMN_VAL = "Document";
     protected static final Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -146,7 +148,7 @@ public abstract class SqlStorage implements GlobalStorage {
 
     private String tableName(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        String name = AnnotationResolver.storageIdentifier(dataClass);
+        var name = AnnotationResolver.storageIdentifier(dataClass);
         createTableIfNotExists(dataClass, name);
         return name;
     }

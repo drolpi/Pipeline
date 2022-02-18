@@ -16,8 +16,8 @@ public class JsonFileUtil {
             throw new IllegalArgumentException("The provided path can not be null.");
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(source.toFile()))) {
-            StringBuilder buffer = new StringBuilder();
+        try (var reader = new BufferedReader(new FileReader(source.toFile()))) {
+            var buffer = new StringBuilder();
             while (true) {
                 String line;
                 try {
@@ -48,7 +48,7 @@ public class JsonFileUtil {
             throw new IllegalArgumentException("The provided path can not be null.");
         }
 
-        Path parent = externalPath.getParent();
+        var parent = externalPath.getParent();
 
         if (!Files.exists(externalPath)) {
             if (parent != null && !Files.exists(parent)) {
@@ -56,7 +56,7 @@ public class JsonFileUtil {
             }
         }
 
-        try (FileWriter writer = new FileWriter(externalPath.toFile())) {
+        try (var writer = new FileWriter(externalPath.toFile())) {
             writer.write(object);
         } catch (IOException ignored) {
         }

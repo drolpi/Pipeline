@@ -39,11 +39,11 @@ public class ConnectionManager implements SystemLoadable {
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    AutoLoad autoLoad = AnnotationResolver.autoLoad(aClass);
+                                    var autoLoad = AnnotationResolver.autoLoad(aClass);
                                     if (autoLoad == null)
                                         return;
 
-                                    ConnectionPipelineData data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, autoLoad.creationStrategies());
+                                    var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, autoLoad.creationStrategies());
                                     if (data == null)
                                         return;
 
@@ -63,11 +63,11 @@ public class ConnectionManager implements SystemLoadable {
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    AutoSave autoSave = AnnotationResolver.autoSave(aClass);
+                                    var autoSave = AnnotationResolver.autoSave(aClass);
                                     if (autoSave == null)
                                         return;
 
-                                    ConnectionPipelineData data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
+                                    var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
                                     if (data == null)
                                         return;
 
