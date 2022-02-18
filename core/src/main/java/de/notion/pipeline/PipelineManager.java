@@ -23,10 +23,10 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -153,39 +153,58 @@ public class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
-        return null;
-    }
-
-    @Override
-    public @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
+        Objects.requireNonNull(uuids, "Uuids can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        Set<T> set = new HashSet<>();
+        List<T> set = new ArrayList<>();
         if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE))
-            synchronizeData(type);
+            synchronizeData(type, uuids);
         else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL_ELSE_LOAD))
-            executorService.submit(new CatchingRunnable(() -> synchronizeData(type)));
+            executorService.submit(new CatchingRunnable(() -> synchronizeData(type, uuids)));
         localCache().savedUUIDs(type).forEach(uuid -> set.add(localCache().data(type, uuid)));
         return set;
     }
 
-    @NotNull
     @Override
-    public <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        CompletableFuture<Set<T>> completableFuture = new CompletableFuture<>();
+        CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuids, loadingStrategy))));
+        return completableFuture;
+    }
+
+    @NotNull
+    @Override
+    public <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+        Objects.requireNonNull(type, "Dataclass can't be null");
+        if (!registry.dataClasses().contains(type))
+            throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
+
+        List<UUID> uuids = new ArrayList<>();
+
+        if (globalCache() != null)
+            uuids.addAll(globalCache.savedUUIDs(type));
+
+        if (globalStorage() != null)
+            uuids.addAll(globalStorage.savedUUIDs(type));
+
+        return load(type, uuids, loadingStrategy);
+    }
+
+    @NotNull
+    @Override
+    public <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy) {
+        Objects.requireNonNull(type, "Dataclass can't be null");
+        if (!registry.dataClasses().contains(type))
+            throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
+
+        CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, loadingStrategy))));
         return completableFuture;
     }
@@ -288,20 +307,20 @@ public class PipelineManager implements Pipeline {
         return completableFuture;
     }
 
-    private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> type) {
+    private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
         if (globalCache() != null) {
-            globalCache().savedUUIDs(type).forEach(uuid -> {
-                if (!localCache.dataExist(type, uuid))
+            uuids.forEach(uuid -> {
+                if (globalCache.dataExist(type, uuid) && !localCache.dataExist(type, uuid))
                     pipelineDataSynchronizer.doSynchronisation(PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, PipelineDataSynchronizer.DataSourceType.LOCAL, type, uuid, null);
             });
         }
         if (globalStorage() != null) {
             var context = AnnotationResolver.context(type);
-            globalStorage().savedUUIDs(type).forEach(uuid -> {
-                if (!localCache.dataExist(type, uuid)) {
+            uuids.forEach(uuid -> {
+                if (globalStorage.dataExist(type, uuid) && !localCache.dataExist(type, uuid)) {
                     pipelineDataSynchronizer.doSynchronisation(PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, PipelineDataSynchronizer.DataSourceType.LOCAL, type, uuid, null);
 
                     if (context.equals(Context.GLOBAL) && globalCache != null)

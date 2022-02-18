@@ -13,9 +13,7 @@ import de.notion.pipeline.registry.PipelineRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -46,45 +44,41 @@ public interface Pipeline extends SystemLoadable {
         return loadAsync(type, uuid, loadingStrategy, null, creationStrategies);
     }
 
-    //Load all data by provided filter
+    //Load all data by filteredUUIDs
     @NotNull
     default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy) {
-        List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
-        List<T> data = new ArrayList<>();
-
-        for (UUID uuid : uuids) {
-            data.add(load(type, uuid, loadingStrategy));
-        }
-
-        return data;
+        return load(type, globalStorage().filteredUUIDs(type, filter), loadingStrategy);
     }
 
+    //Maybe call filteredUUIDs async too?
     @NotNull
     default <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Filter filter, @NotNull LoadingStrategy loadingStrategy) {
-        CompletableFuture<List<T>> completableFuture = new CompletableFuture<>();
-        List<UUID> uuids = globalStorage().filteredUUIDs(type, filter);
-        List<T> data = new ArrayList<>();
+        return loadAsync(type, globalStorage().filteredUUIDs(type, filter), loadingStrategy);
+    }
 
-        for (UUID uuid : uuids) {
-            CompletableFuture<T> future = loadAsync(type, uuid, loadingStrategy);
-            future.thenAccept(t -> {
-                data.add(t);
-            });
-        }
+    //Load all data by filteredUUIDs
+    //TODO: Sorter
+    @NotNull
+    default <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Object sorter, @NotNull LoadingStrategy loadingStrategy) {
+        return load(type, globalStorage().sortedUUIDs(type), loadingStrategy);
+    }
 
-        completableFuture.complete(data);
-        return completableFuture;
+    //Maybe call sortedUUIDs async too?
+    //TODO: Sorter
+    @NotNull
+    default <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Object sorter, @NotNull LoadingStrategy loadingStrategy) {
+        return loadAsync(type, globalStorage().sortedUUIDs(type), loadingStrategy);
     }
 
     //Load all data by provided uuids
-    @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
 
-    @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Set<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy);
 
     //Load all data by saved uuids
-    @NotNull <T extends PipelineData> Set<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
 
-    @NotNull <T extends PipelineData> CompletableFuture<Set<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
 
     <T extends PipelineData> boolean exist(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
 
