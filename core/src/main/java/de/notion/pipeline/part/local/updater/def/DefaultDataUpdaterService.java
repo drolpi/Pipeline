@@ -5,12 +5,21 @@ import de.notion.pipeline.part.local.updater.DataUpdater;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DefaultDataUpdaterService implements DataUpdaterService {
 
-    //TODO: Cache data updaters for specific data classes
+    private final Map<Class<? extends PipelineData>, DataUpdater> cache;
+
+    public DefaultDataUpdaterService() {
+        this.cache = new HashMap<>();
+        System.out.println("Default DataUpdaterService started");
+    }
 
     @Override
     public DataUpdater dataUpdater(@NotNull Class<? extends PipelineData> dataClass) {
-        return new DefaultDataUpdater();
+        cache.putIfAbsent(dataClass, new DefaultDataUpdater());
+        return cache.get(dataClass);
     }
 }
