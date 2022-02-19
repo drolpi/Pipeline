@@ -72,7 +72,6 @@ public class AutoConnectionLoader implements SystemLoadable {
 
                                     data.onDisconnect();
                                     pipeline.saveData(aClass, data.objectUUID(), () -> {
-                                        pipeline.delete(aClass, data.objectUUID(), Pipeline.QueryStrategy.GLOBAL_CACHE);
                                         callback.run();
                                     });
                                 })

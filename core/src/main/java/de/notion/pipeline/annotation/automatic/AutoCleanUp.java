@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Target(ElementType.TYPE)
 public @interface AutoCleanUp {
 
-    boolean saveToGlobalStorage();
+    boolean saveToGlobalStorage() default true;
 
     long time() default 20L;
 

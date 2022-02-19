@@ -448,8 +448,12 @@ public class PipelineManager implements Pipeline {
         if (!optional.isPresent())
             return;
 
-        pipelineData.save(optional.get().saveToGlobalStorage(), () -> {
+        var autoSave = optional.get();
+
+        pipelineData.save(autoSave.saveToGlobalStorage(), () -> {
             localCache().remove(type, pipelineData.objectUUID());
+            if (autoSave.deleteFromGlobalCache())
+                delete(type, pipelineData.objectUUID(), QueryStrategy.GLOBAL_CACHE);
             if (runnable != null)
                 runnable.run();
         });

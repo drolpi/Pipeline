@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AutoSave {
 
-    boolean saveToGlobalStorage();
+    boolean deleteFromGlobalCache() default false;
+
+    boolean saveToGlobalStorage() default true;
 
 }
