@@ -58,6 +58,7 @@ public interface Pipeline extends SystemLoadable {
 
     //Load all data by filteredUUIDs
     //TODO: Sorter
+    @Deprecated
     @NotNull
     default <T extends PipelineData> List<T> loadSorted(@NotNull Class<? extends T> type, @NotNull Object sorter, @NotNull LoadingStrategy loadingStrategy) {
         return loadAllData(type, globalStorage().sortedUUIDs(type), loadingStrategy);
@@ -65,6 +66,7 @@ public interface Pipeline extends SystemLoadable {
 
     //Maybe call sortedUUIDs async too?
     //TODO: Sorter
+    @Deprecated
     @NotNull
     default <T extends PipelineData> CompletableFuture<List<T>> loadSortedAsync(@NotNull Class<? extends T> type, @NotNull Object sorter, @NotNull LoadingStrategy loadingStrategy) {
         return loadAllDataAsync(type, globalStorage().sortedUUIDs(type), loadingStrategy);
