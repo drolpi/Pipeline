@@ -15,11 +15,11 @@ import java.util.UUID;
 
 public abstract class PipelineData {
 
-    private final Pipeline pipeline;
-    private Gson gson;
-    private DataUpdater dataUpdater;
-    private long lastUse = System.currentTimeMillis();
-    private boolean markedForRemoval = false;
+    private final transient Pipeline pipeline;
+    private transient Gson gson;
+    private transient DataUpdater dataUpdater;
+    private transient long lastUse = System.currentTimeMillis();
+    private transient boolean markedForRemoval = false;
 
     private UUID objectUUID;
 
