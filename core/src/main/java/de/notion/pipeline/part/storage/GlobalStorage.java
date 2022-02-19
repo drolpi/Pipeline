@@ -12,4 +12,6 @@ public interface GlobalStorage extends DataProvider {
 
     List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter);
 
+    List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type);
+
 }

@@ -1,4 +1,4 @@
-package de.notion.pipeline.connection;
+package de.notion.pipeline.automatic.load;
 
 import de.notion.common.concurrent.TaskBatch;
 import de.notion.common.system.SystemLoadable;
@@ -11,12 +11,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class ConnectionManager implements SystemLoadable {
+public class AutoConnectionLoader implements SystemLoadable {
 
     private final Pipeline pipeline;
     private final boolean loaded;
 
-    public ConnectionManager(@NotNull Pipeline pipelineManager) {
+    public AutoConnectionLoader(@NotNull Pipeline pipelineManager) {
         Objects.requireNonNull(pipelineManager, "pipeline can't be null!");
         this.pipeline = pipelineManager;
         loaded = true;

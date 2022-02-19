@@ -1,4 +1,4 @@
-package de.notion.pipeline.annotation.auto;
+package de.notion.pipeline.annotation.automatic;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

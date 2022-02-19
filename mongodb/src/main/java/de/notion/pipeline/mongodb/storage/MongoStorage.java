@@ -3,7 +3,6 @@ package de.notion.pipeline.mongodb.storage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
@@ -109,6 +108,21 @@ public class MongoStorage implements GlobalStorage {
                 if (filter.check(document)) {
                     uuids.add(UUID.fromString((String) document.get("objectUUID")));
                 }
+            }
+        }
+        return uuids;
+    }
+
+    @Override
+    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
+        var collection = mongoStorage(type);
+        List<UUID> uuids = new ArrayList<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                var document = cursor.next();
+
+                //TODO: Implement sort
+                uuids.add(UUID.fromString((String) document.get("objectUUID")));
             }
         }
         return uuids;

@@ -113,6 +113,11 @@ public class JsonStorage implements GlobalStorage {
         return uuids;
     }
 
+    @Override
+    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
+        return null;
+    }
+
     private Path saveFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
