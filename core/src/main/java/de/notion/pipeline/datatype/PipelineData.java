@@ -1,13 +1,10 @@
 package de.notion.pipeline.datatype;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.Context;
-import de.notion.pipeline.annotation.PersistentData;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.local.updater.DataUpdater;
@@ -24,7 +21,6 @@ public abstract class PipelineData {
     private long lastUse = System.currentTimeMillis();
     private boolean markedForRemoval = false;
 
-    @PersistentData
     private UUID objectUUID;
 
     public PipelineData(@NotNull Pipeline pipeline) {
@@ -34,17 +30,6 @@ public abstract class PipelineData {
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .serializeNulls()
-                .setExclusionStrategies(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes field) {
-                        return field.getAnnotation(PersistentData.class) == null;
-                    }
-                })
                 .registerTypeAdapter(getClass(), (InstanceCreator<PipelineData>) type -> this)
                 .create();
     }
