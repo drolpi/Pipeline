@@ -3,10 +3,9 @@ package de.notion.pipeline.part.local.def;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.LocalCache;
+import de.notion.pipeline.registry.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
 
 public class DefaultLocalCache implements LocalCache {
 
+    private final static String DEFAULT_DATA = "{\"objectUUID\": \"%uuid%\"}";
     private final Map<Class<? extends PipelineData>, Map<UUID, PipelineData>> dataObjects = new ConcurrentHashMap<>();
 
     public DefaultLocalCache() {
@@ -89,25 +89,16 @@ public class DefaultLocalCache implements LocalCache {
         if (dataExist(dataClass, objectUUID))
             return data(dataClass, objectUUID);
 
-        //TODO:
-        /*
-        Injector injector = pipeline.getInjectorProvider().getInjector(dataClass, pipeline);
-        S instance = injector.getInstance(dataClass);
-         */
+        InstanceCreator<S> instanceCreator = pipeline.registry().instanceCreator(dataClass);
 
         S instance = null;
         try {
-            Constructor<? extends S> constructor = dataClass.getConstructor(Pipeline.class);
-            constructor.setAccessible(true);
-
-            instance = constructor.newInstance(pipeline);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+            instance = instanceCreator.get(dataClass, pipeline);
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Error while creating instance of class " + dataClass.getSimpleName(), throwable);
         }
 
-
-        //TODO: CONSTANT
-        var defaultData = ("{\"objectUUID\": \"" + objectUUID + "\"}");
+        var defaultData = DEFAULT_DATA.replace("%uuid%", objectUUID.toString());
         instance.deserialize(defaultData);
 
         return instance;
