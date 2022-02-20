@@ -30,7 +30,6 @@ public class AutoConnectionLoader implements SystemLoadable {
         Objects.requireNonNull(connection, "player can't be null!");
 
         createTaskBatch()
-                .wait(400, TimeUnit.MILLISECONDS)
                 .doAsync(() ->
                         pipeline.registry()
                                 .dataClasses()
