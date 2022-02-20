@@ -25,7 +25,8 @@ public class RedisDataUpdaterService implements DataUpdaterService {
 
     @Override
     public DataUpdater dataUpdater(@NotNull Class<? extends PipelineData> dataClass) {
-        cache.putIfAbsent(dataClass, new RedisDataUpdater(redissonClient, localCache, dataClass));
+        if (!cache.containsKey(dataClass))
+            cache.put(dataClass, new RedisDataUpdater(redissonClient, localCache, dataClass));
         return cache.get(dataClass);
     }
 }
