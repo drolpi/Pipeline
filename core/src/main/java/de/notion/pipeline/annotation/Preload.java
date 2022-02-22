@@ -1,4 +1,4 @@
-package de.notion.pipeline.annotation.automatic;
+package de.notion.pipeline.annotation;
 
 import de.notion.pipeline.Pipeline;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface AutoLoad {
+public @interface Preload {
 
     Pipeline.QueryStrategy[] creationStrategies() default {Pipeline.QueryStrategy.ALL};
 

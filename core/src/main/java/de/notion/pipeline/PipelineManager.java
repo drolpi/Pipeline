@@ -3,6 +3,7 @@ package de.notion.pipeline;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.common.scheduler.Scheduler;
 import de.notion.pipeline.annotation.Context;
+import de.notion.pipeline.annotation.Action;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.automatic.cleanup.AutoCleanUpTask;
 import de.notion.pipeline.config.PipelineConfig;
@@ -25,8 +26,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -371,7 +374,7 @@ public class PipelineManager implements Pipeline {
         //Connection
         if (ConnectionPipelineData.class.isAssignableFrom(type))
             return;
-        var optional = AnnotationResolver.autoLoad(type);
+        var optional = AnnotationResolver.preload(type);
 
         // Data will only be preloaded if it is declared properly
         if (!optional.isPresent()) {
@@ -449,11 +452,19 @@ public class PipelineManager implements Pipeline {
             return;
 
         var autoSave = optional.get();
+        var globalCacheAction = autoSave.globalCacheAction();
+        var globalStorageAction = autoSave.globalStorageAction();
+        Set<QueryStrategy> strategies = new HashSet<>();
 
-        pipelineData.save(autoSave.saveToGlobalStorage(), () -> {
+        if (globalCacheAction.equals(Action.DELETE))
+            strategies.add(QueryStrategy.GLOBAL_CACHE);
+
+        if (globalStorageAction.equals(Action.DELETE))
+            strategies.add(QueryStrategy.GLOBAL_STORAGE);
+
+        pipelineData.save(globalCacheAction.equals(Action.SAVE), globalStorageAction.equals(Action.SAVE), () -> {
             localCache().remove(type, pipelineData.objectUUID());
-            if (autoSave.deleteFromGlobalCache())
-                delete(type, pipelineData.objectUUID(), QueryStrategy.GLOBAL_CACHE);
+            delete(type, pipelineData.objectUUID(), strategies.toArray(new QueryStrategy[0]));
             if (runnable != null)
                 runnable.run();
         });

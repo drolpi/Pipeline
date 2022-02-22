@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.annotation.Context;
-import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.local.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -55,10 +53,10 @@ public abstract class PipelineData {
     }
 
     public void save(boolean saveToGlobalStorage) {
-        save(saveToGlobalStorage, null);
+        save(false, saveToGlobalStorage, null);
     }
 
-    public void save(boolean saveToGlobalStorage, Runnable callback) {
+    public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, Runnable callback) {
         var startTime = System.currentTimeMillis();
         System.out.println("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
@@ -72,13 +70,11 @@ public abstract class PipelineData {
         if (this.dataUpdater == null)
             return;
         this.dataUpdater.pushUpdate(this, () -> {
-            if (AnnotationResolver.context(getClass()).equals(Context.GLOBAL))
+            if (saveToGlobalCache)
                 pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID());
 
-            if (!saveToGlobalStorage)
-                return;
-
-            pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), internal);
+            if (saveToGlobalStorage)
+                pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), internal);
         });
     }
 

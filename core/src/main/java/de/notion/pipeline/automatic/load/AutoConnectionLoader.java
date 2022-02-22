@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class AutoConnectionLoader implements SystemLoadable {
 
@@ -36,7 +35,7 @@ public class AutoConnectionLoader implements SystemLoadable {
                                 .parallelStream()
                                 .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
                                 .forEach(aClass -> {
-                                    var optional = AnnotationResolver.autoLoad(aClass);
+                                    var optional = AnnotationResolver.preload(aClass);
                                     if (!optional.isPresent())
                                         return;
 

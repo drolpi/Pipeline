@@ -79,7 +79,7 @@ public class RedisCache implements GlobalCache {
 
     private void updateExpireTime(@NotNull Class<? extends PipelineData> dataClass, RBucket<?> bucket) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        var optional = AnnotationResolver.autoCleanUp(dataClass);
+        var optional = AnnotationResolver.cleanUp(dataClass);
 
         if (bucket == null)
             return;

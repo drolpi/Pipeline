@@ -1,4 +1,4 @@
-package de.notion.pipeline.annotation.automatic;
+package de.notion.pipeline.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface AutoSave {
+public @interface Unload {
 
-    boolean deleteFromGlobalCache() default false;
+    Action globalCacheAction() default Action.NONE;
 
-    boolean saveToGlobalStorage() default true;
+    Action globalStorageAction() default Action.NONE;
 
 }

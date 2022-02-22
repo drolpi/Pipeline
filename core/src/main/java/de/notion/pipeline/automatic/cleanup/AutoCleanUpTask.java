@@ -22,7 +22,7 @@ public class AutoCleanUpTask implements Runnable {
         registry.dataClasses()
                 .stream()
                 .forEach(aClass -> {
-                    var optional = AnnotationResolver.autoCleanUp(aClass);
+                    var optional = AnnotationResolver.cleanUp(aClass);
                     if (!optional.isPresent())
                         return;
 
@@ -38,8 +38,9 @@ public class AutoCleanUpTask implements Runnable {
                             return;
                         System.out.println("Cleaning up " + aClass.getSimpleName() + " with uuid " + uuid.toString());
                         data.onCleanUp();
-                        data.save(autoCleanUp.saveToGlobalStorage());
-                        localCache.remove(aClass, uuid);
+                        pipelineManager.saveData(aClass, data.objectUUID(), () -> {
+
+                        });
                     });
                 });
     }

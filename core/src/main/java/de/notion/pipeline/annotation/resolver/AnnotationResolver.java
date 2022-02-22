@@ -2,9 +2,9 @@ package de.notion.pipeline.annotation.resolver;
 
 import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.Properties;
-import de.notion.pipeline.annotation.automatic.AutoCleanUp;
-import de.notion.pipeline.annotation.automatic.AutoLoad;
-import de.notion.pipeline.annotation.automatic.AutoSave;
+import de.notion.pipeline.annotation.CleanUp;
+import de.notion.pipeline.annotation.Preload;
+import de.notion.pipeline.annotation.Unload;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -28,17 +28,17 @@ public class AnnotationResolver {
     }
 
     @NotNull
-    public static Optional<AutoLoad> autoLoad(Class<?> classType) {
-        return Optional.ofNullable(classType.getAnnotation(AutoLoad.class));
+    public static Optional<Preload> preload(Class<?> classType) {
+        return Optional.ofNullable(classType.getAnnotation(Preload.class));
     }
 
     @NotNull
-    public static Optional<AutoSave> autoSave(Class<?> classType) {
-        return Optional.ofNullable(classType.getAnnotation(AutoSave.class));
+    public static Optional<Unload> autoSave(Class<?> classType) {
+        return Optional.ofNullable(classType.getAnnotation(Unload.class));
     }
 
     @NotNull
-    public static Optional<AutoCleanUp> autoCleanUp(Class<?> classType) {
-        return Optional.ofNullable(classType.getAnnotation(AutoCleanUp.class));
+    public static Optional<CleanUp> cleanUp(Class<?> classType) {
+        return Optional.ofNullable(classType.getAnnotation(CleanUp.class));
     }
 }
