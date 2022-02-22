@@ -53,7 +53,7 @@ public abstract class PipelineData {
     }
 
     public void save(boolean saveToGlobalStorage) {
-        save(false, saveToGlobalStorage, null);
+        save(true, saveToGlobalStorage, null);
     }
 
     public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, Runnable callback) {

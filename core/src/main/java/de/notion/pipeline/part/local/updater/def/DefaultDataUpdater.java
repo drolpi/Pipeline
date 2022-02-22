@@ -8,11 +8,11 @@ public class DefaultDataUpdater extends AbstractDataUpdater implements DataUpdat
 
     @Override
     public void pushUpdate(PipelineData pipelineData, Runnable callback) {
-
+        callback.run();
     }
 
     @Override
     public void pushRemoval(PipelineData pipelineData, Runnable callback) {
-
+        callback.run();
     }
 }

@@ -35,14 +35,17 @@ public class RedisDataUpdater extends AbstractDataUpdater implements DataUpdater
 
             if (dataBlock instanceof UpdateDataBlock) {
                 var updateDataBlock = (UpdateDataBlock) dataBlock;
-                System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
-                if(pipelineData == null) {
+                if (pipelineData == null) {
+                    if(!tasks.asMap().containsKey(updateDataBlock.dataUUID))
+                        return;
                     registerSyncedData(updateDataBlock.dataUUID, updateDataBlock.dataToUpdate);
-                }else {
+                    System.out.println("Received Sync while loading " + System.currentTimeMillis()); //DEBUG
+                } else {
                     pipelineData.onSync(pipelineData.deserialize(updateDataBlock.dataToUpdate));
+                    System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 }
             } else if (dataBlock instanceof RemoveDataBlock) {
-                if(pipelineData == null)
+                if (pipelineData == null)
                     return;
                 System.out.println("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 pipelineData.markForRemoval();
