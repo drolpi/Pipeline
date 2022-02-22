@@ -462,10 +462,11 @@ public class PipelineManager implements Pipeline {
         if (globalStorageAction.equals(Action.DELETE))
             strategies.add(QueryStrategy.GLOBAL_STORAGE);
 
+        if(strategies.size() > 0)
+            delete(type, pipelineData.objectUUID(), strategies.toArray(new QueryStrategy[0]));
+
         pipelineData.save(globalCacheAction.equals(Action.SAVE), globalStorageAction.equals(Action.SAVE), () -> {
             localCache.remove(type, pipelineData.objectUUID());
-            if(strategies.size() > 0)
-                delete(type, pipelineData.objectUUID(), strategies.toArray(new QueryStrategy[0]));
             if (runnable != null)
                 runnable.run();
         });

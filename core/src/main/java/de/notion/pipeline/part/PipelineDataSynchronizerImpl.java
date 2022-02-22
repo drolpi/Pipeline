@@ -3,7 +3,7 @@ package de.notion.pipeline.part;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.part.local.updater.AbstractDataUpdater;
+import de.notion.pipeline.part.local.updater.LoadingTaskManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,8 +51,8 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
             return false;
 
         var startTime = System.currentTimeMillis();
-        AbstractDataUpdater dataUpdater = (AbstractDataUpdater) pipelineManager.dataUpdaterService().dataUpdater(dataClass);
-        dataUpdater.registerLoadingTask(objectUUID);
+        LoadingTaskManager loadingTaskManager = pipelineManager.dataUpdaterService().dataUpdater(dataClass).loadingTaskManager();
+        loadingTaskManager.registerLoadingTask(objectUUID);
 
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
@@ -121,7 +121,11 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         }
 
         var data = pipelineManager.localCache().data(dataClass, objectUUID);
-        dataUpdater.finishLoadingTask(data);
+        var optional = loadingTaskManager.finishLoadingTask(data);
+        if(optional.isPresent()) {
+            data = optional.get();
+        }
+
         System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         if (callback != null)
             callback.run();
