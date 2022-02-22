@@ -29,24 +29,25 @@ public class AutoConnectionLoader implements SystemLoadable {
         Objects.requireNonNull(connection, "player can't be null!");
 
         createTaskBatch()
-                .doAsync(() ->
-                        pipeline.registry()
-                                .dataClasses()
-                                .parallelStream()
-                                .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
-                                .forEach(aClass -> {
-                                    var optional = AnnotationResolver.preload(aClass);
-                                    if (!optional.isPresent())
-                                        return;
+                .doAsync(() -> {
+                            pipeline.registry()
+                                    .dataClasses()
+                                    .parallelStream()
+                                    .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
+                                    .forEach(aClass -> {
+                                        var optional = AnnotationResolver.preload(aClass);
+                                        if (!optional.isPresent())
+                                            return;
 
-                                    var autoLoad = optional.get();
-                                    var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, autoLoad.creationStrategies());
-                                    if (data == null)
-                                        return;
+                                        var autoLoad = optional.get();
+                                        var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, autoLoad.creationStrategies());
+                                        if (data == null)
+                                            return;
 
-                                    data.onConnect();
-                                    callback.run();
-                                })
+                                        data.onConnect();
+                                    });
+                            callback.run();
+                        }
                 ).executeBatch();
     }
 
@@ -54,25 +55,27 @@ public class AutoConnectionLoader implements SystemLoadable {
         Objects.requireNonNull(connection, "player can't be null!");
 
         createTaskBatch()
-                .doAsync(() ->
-                        pipeline.registry()
-                                .dataClasses()
-                                .parallelStream()
-                                .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
-                                .forEach(aClass -> {
-                                    var optional = AnnotationResolver.autoSave(aClass);
-                                    if (!optional.isPresent())
-                                        return;
+                .doAsync(() -> {
+                            pipeline.registry()
+                                    .dataClasses()
+                                    .parallelStream()
+                                    .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
+                                    .forEach(aClass -> {
+                                        var optional = AnnotationResolver.autoSave(aClass);
+                                        if (!optional.isPresent())
+                                            return;
 
-                                    var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
-                                    if (data == null)
-                                        return;
+                                        var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
+                                        if (data == null)
+                                            return;
 
-                                    data.onDisconnect();
-                                    pipeline.saveData(aClass, data.objectUUID(), () -> {
-                                        callback.run();
+                                        data.onDisconnect();
+                                        pipeline.saveData(aClass, data.objectUUID(), () -> {
+
+                                        });
                                     });
-                                })
+                            callback.run();
+                        }
                 ).executeBatch();
     }
 
