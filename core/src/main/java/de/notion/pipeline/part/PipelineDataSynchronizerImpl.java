@@ -3,6 +3,7 @@ package de.notion.pipeline.part;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
+import de.notion.pipeline.part.local.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +51,8 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
             return false;
 
         var startTime = System.currentTimeMillis();
+        AbstractDataUpdater dataUpdater = (AbstractDataUpdater) pipelineManager.dataUpdaterService().dataUpdater(dataClass);
+        dataUpdater.registerLoadingTask(objectUUID);
 
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
@@ -116,6 +119,9 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
             } else if (destination.equals(DataSourceType.GLOBAL_CACHE))
                 pipelineManager.globalCache().saveData(dataClass, objectUUID, globalSavedData);
         }
+
+        var data = pipelineManager.localCache().data(dataClass, objectUUID);
+        dataUpdater.finishLoadingTask(data);
         System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         if (callback != null)
             callback.run();
