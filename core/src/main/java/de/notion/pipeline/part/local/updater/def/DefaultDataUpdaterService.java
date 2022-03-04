@@ -17,9 +17,10 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         System.out.println("Default DataUpdaterService started");
     }
 
+    @NotNull
     @Override
     public DataUpdater dataUpdater(@NotNull Class<? extends PipelineData> dataClass) {
-        if(!cache.containsKey(dataClass))
+        if (!cache.containsKey(dataClass))
             cache.put(dataClass, new DefaultDataUpdater());
         return cache.get(dataClass);
     }

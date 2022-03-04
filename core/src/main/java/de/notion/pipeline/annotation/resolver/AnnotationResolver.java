@@ -1,15 +1,15 @@
 package de.notion.pipeline.annotation.resolver;
 
-import de.notion.pipeline.annotation.Context;
-import de.notion.pipeline.annotation.Properties;
 import de.notion.pipeline.annotation.CleanUp;
+import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.Preload;
+import de.notion.pipeline.annotation.Properties;
 import de.notion.pipeline.annotation.Unload;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class AnnotationResolver {
+public final class AnnotationResolver {
 
     @NotNull
     public static String storageIdentifier(Class<?> classType) {

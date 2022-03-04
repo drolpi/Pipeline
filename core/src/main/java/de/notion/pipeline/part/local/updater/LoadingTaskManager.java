@@ -26,12 +26,13 @@ public class LoadingTaskManager {
     }
 
     public void receivedData(@NotNull UUID objectUUID, JsonObject data) {
-        if(tasks.asMap().containsKey(objectUUID)) {
+        if (tasks.asMap().containsKey(objectUUID)) {
             tasks.put(objectUUID, Optional.ofNullable(data));
             System.out.println("Received Sync while loading " + System.currentTimeMillis()); //DEBUG
         }
     }
 
+    @NotNull
     public Optional<PipelineData> finishLoadingTask(@NotNull PipelineData pipelineData) {
         var objectUUID = pipelineData.objectUUID();
         var map = tasks.asMap();

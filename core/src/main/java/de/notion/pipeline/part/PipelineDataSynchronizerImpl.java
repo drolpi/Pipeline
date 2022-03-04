@@ -24,18 +24,20 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         this.executorService = pipelineManager.executorService();
     }
 
+    @NotNull
     @Override
     public CompletableFuture<Boolean> synchronize(@NotNull DataSourceType source, @NotNull DataSourceType destination, @NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         return synchronize(source, destination, dataClass, objectUUID, null);
     }
 
+    @NotNull
     @Override
     public synchronized CompletableFuture<Boolean> synchronize(@NotNull DataSourceType source, @NotNull DataSourceType destination, @NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @Nullable Runnable callback) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        var future = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() -> future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
         return future;
     }

@@ -1,6 +1,11 @@
 package de.notion.pipeline.datatype;
 
 import com.google.gson.JsonObject;
+import de.notion.pipeline.part.local.updater.DataUpdater;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public interface DataType {
 
@@ -29,7 +34,6 @@ public interface DataType {
      * Executed directly after Data was loaded from Pipeline. Not if it was found in LocalCache
      */
     default void onLoad() {
-
     }
 
     /**
@@ -37,7 +41,6 @@ public interface DataType {
      * You can use this function to load dependent data from pipeline that is directly associated with this data
      */
     default void loadDependentData() {
-
     }
 
     /**
@@ -46,12 +49,39 @@ public interface DataType {
     default void onCleanUp() {
     }
 
+    @NotNull
+    UUID objectUUID();
+
+    void save(boolean saveToGlobalStorage);
+
+    void save(boolean saveToGlobalCache, boolean saveToGlobalStorage);
+
+    void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, @Nullable Runnable callback);
+
+    boolean isMarkedForRemoval();
+
+    void markForRemoval();
+
+    void unMarkRemoval();
+
+    long lastUse();
+
+    void updateLastUse();
+
+    @NotNull
+    DataUpdater dataUpdater();
+
+    @NotNull
     JsonObject serialize();
+
+    @NotNull
+    String serializeToString();
 
     /**
      * @param jsonObject New Data to deserialize
      * @return The Data before deserialization
      */
+    @NotNull
     DataType deserialize(JsonObject jsonObject);
 
 }

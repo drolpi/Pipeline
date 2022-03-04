@@ -10,10 +10,8 @@ public abstract class ConnectionPipelineData extends PipelineData {
     }
 
     public void onConnect() {
-
     }
 
     public void onDisconnect() {
-
     }
 }

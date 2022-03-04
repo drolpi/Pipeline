@@ -1,12 +1,15 @@
 package de.notion.pipeline.config;
 
+import de.notion.pipeline.config.part.DataUpdaterConfig;
 import de.notion.pipeline.config.part.GlobalCacheConfig;
 import de.notion.pipeline.config.part.GlobalStorageConfig;
-import de.notion.pipeline.config.part.DataUpdaterConfig;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig globalCacheConfig, GlobalStorageConfig globalStorageConfig) {
+public final record PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig globalCacheConfig,
+                                   GlobalStorageConfig globalStorageConfig) {
 
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
@@ -35,21 +38,25 @@ public record PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig 
         private GlobalCacheConfig globalCacheConfig;
         private GlobalStorageConfig globalStorageConfig;
 
-        public Builder updater(DataUpdaterConfig updaterConfig) {
+        @NotNull
+        public Builder updater(@Nullable DataUpdaterConfig updaterConfig) {
             this.updaterConfig = updaterConfig;
             return this;
         }
 
-        public Builder globalCache(GlobalCacheConfig globalCacheConfig) {
+        @NotNull
+        public Builder globalCache(@Nullable GlobalCacheConfig globalCacheConfig) {
             this.globalCacheConfig = globalCacheConfig;
             return this;
         }
 
-        public Builder globalStorage(GlobalStorageConfig globalStorageConfig) {
+        @NotNull
+        public Builder globalStorage(@Nullable GlobalStorageConfig globalStorageConfig) {
             this.globalStorageConfig = globalStorageConfig;
             return this;
         }
 
+        @NotNull
         public PipelineConfig build() {
             return new PipelineConfig(updaterConfig, globalCacheConfig, globalStorageConfig);
         }

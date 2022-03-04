@@ -1,7 +1,7 @@
 package de.notion.pipeline.part.local;
 
-import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.Pipeline;
+import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,10 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface LocalCache {
-    @Nullable
-    <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass);
+    @Nullable <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
+
+    @NotNull <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass);
 
     <S extends PipelineData> void save(@NotNull Class<? extends S> dataClass, @NotNull S data);
 
@@ -21,7 +21,7 @@ public interface LocalCache {
 
     <S extends PipelineData> boolean remove(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
+    @NotNull <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
 
-    <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator);
+    @NotNull <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator);
 }

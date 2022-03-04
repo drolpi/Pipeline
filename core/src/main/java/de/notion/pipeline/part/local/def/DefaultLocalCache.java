@@ -24,6 +24,7 @@ public class DefaultLocalCache implements LocalCache {
         System.out.println("LocalCache started");
     }
 
+    @Nullable
     @Override
     public synchronized <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
@@ -35,6 +36,7 @@ public class DefaultLocalCache implements LocalCache {
         return data;
     }
 
+    @NotNull
     @Override
     public synchronized <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
@@ -82,6 +84,7 @@ public class DefaultLocalCache implements LocalCache {
         return dataObjects.get(dataClass).keySet();
     }
 
+    @NotNull
     @Override
     public synchronized <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");

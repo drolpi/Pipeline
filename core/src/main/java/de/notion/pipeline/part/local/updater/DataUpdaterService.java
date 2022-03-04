@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface DataUpdaterService {
 
+    @NotNull
     DataUpdater dataUpdater(@NotNull Class<? extends PipelineData> dataClass);
 
 }

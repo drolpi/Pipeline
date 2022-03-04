@@ -4,15 +4,16 @@ import de.notion.common.system.SystemLoadable;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface PipelineTaskScheduler extends SystemLoadable {
 
-    <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
+    @NotNull <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
 
-    <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
+    @Nullable <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 
     <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 

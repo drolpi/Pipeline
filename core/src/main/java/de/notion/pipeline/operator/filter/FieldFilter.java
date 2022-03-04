@@ -1,11 +1,12 @@
 package de.notion.pipeline.operator.filter;
 
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
-public record FieldFilter(String fieldName, Object obj) implements Filter {
+public record FieldFilter(@NotNull String fieldName, @NotNull Object obj) implements Filter {
 
     @Override
-    public boolean check(JsonObject data) {
+    public boolean check(@NotNull JsonObject data) {
         for (var entry : data.entrySet()) {
             if (entry.getKey() == null)
                 continue;

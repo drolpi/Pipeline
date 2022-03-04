@@ -3,12 +3,14 @@ package de.notion.pipeline.datatype.instance.def;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class DefaultInstanceCreator<T extends PipelineData> implements InstanceCreator<T> {
 
+    @NotNull
     @Override
     public PipelineData get(Class dataClass, Pipeline pipeline) {
         try {
