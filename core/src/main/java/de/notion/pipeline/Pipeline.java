@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 public interface Pipeline extends SystemLoadable {
 
+    @NotNull
     static Pipeline create(PipelineConfig config, PipelineRegistry registry) {
         return new PipelineManager(registry, config);
     }
