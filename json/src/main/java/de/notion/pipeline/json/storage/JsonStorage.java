@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class JsonStorage implements GlobalStorage {
         this.gson = pipeline.gson();
         this.directory = Paths.get(path);
 
-        System.out.println("Json Storage initialized");
+        System.out.println("Json storage initialized");
     }
 
     @Override
@@ -79,14 +80,14 @@ public class JsonStorage implements GlobalStorage {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     @Override
-    public Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Path parentFolder = parent(dataClass);
+        var parentFolder = parent(dataClass);
         if (!parentFolder.toFile().exists())
             return Set.of();
         try {
@@ -98,14 +99,14 @@ public class JsonStorage implements GlobalStorage {
                     .collect(Collectors.toSet());
         } catch (IOException e) {
             e.printStackTrace();
-            return Set.of();
         }
+        return Set.of();
     }
 
     @Override
-    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
+    public @NotNull List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Path parentFolder = parent(dataClass);
+        var parentFolder = parent(dataClass);
         if (!parentFolder.toFile().exists())
             return List.of();
         try {
@@ -115,41 +116,44 @@ public class JsonStorage implements GlobalStorage {
                     .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
                     .map(UUID::fromString)
                     .filter(uuid -> {
-                        JsonObject data = loadData(dataClass, uuid);
+                        var data = loadData(dataClass, uuid);
+                        if (data == null)
+                            return false;
+
                         return filter.check(data);
                     })
                     .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
-            return List.of();
         }
+        return List.of();
     }
 
     @Override
-    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
-        return null;
+    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
+        return new ArrayList<>();
     }
 
     private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) throws IOException {
         if (dataToSave.isJsonNull())
             return;
-        Path path = savedFile(dataClass, objectUUID);
+        var path = savedFile(dataClass, objectUUID);
 
-        File file = new File(path.toUri());
+        var file = new File(path.toUri());
         if (!file.exists()) {
             if (!file.getParentFile().mkdirs() || !file.createNewFile())
                 throw new RuntimeException("Could not create files for JsonFileStorage [" + path + "]");
         }
-        try (FileWriter writer = new FileWriter(file)) {
+        try (var writer = new FileWriter(file)) {
             gson.toJson(dataToSave, writer);
         }
     }
 
     private JsonObject loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
-        Path path = savedFile(dataClass, objectUUID);
-        File file = new File(path.toUri());
+        var path = savedFile(dataClass, objectUUID);
+        var file = new File(path.toUri());
         if (!file.exists())
-            throw new RuntimeException("Savefile does not exist for " + dataClass.getSimpleName() + ":" + objectUUID);
+            throw new RuntimeException("SavedFile does not exist for " + dataClass.getSimpleName() + ":" + objectUUID);
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path.toFile()))) {
             return JsonParser.parseReader(bufferedReader).getAsJsonObject();
         }
@@ -163,7 +167,7 @@ public class JsonStorage implements GlobalStorage {
 
     private Path parent(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        String storageIdentifier = AnnotationResolver.storageIdentifier(dataClass);
+        var storageIdentifier = AnnotationResolver.storageIdentifier(dataClass);
 
         return Paths.get(directory.toString(), storageIdentifier);
     }
