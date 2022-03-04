@@ -38,8 +38,8 @@ public class RedisCache implements GlobalCache {
         } catch (Exception e) {
             System.out.println("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
             removeData(dataClass, objectUUID);
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -72,7 +72,6 @@ public class RedisCache implements GlobalCache {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var cache = objectCache(dataClass, objectUUID);
-
         return cache.isExists();
     }
 
@@ -86,11 +85,10 @@ public class RedisCache implements GlobalCache {
     private void updateExpireTime(@NotNull Class<? extends PipelineData> dataClass, RBucket<?> bucket) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         var optional = AnnotationResolver.cleanUp(dataClass);
-
         if (bucket == null)
             return;
 
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             bucket.expire(12, TimeUnit.HOURS);
         } else {
             var autoCleanUp = optional.get();
@@ -108,10 +106,11 @@ public class RedisCache implements GlobalCache {
 
     public synchronized Set<String> keys(Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        var mongoIdentifier = AnnotationResolver.storageIdentifier(dataClass);
-        return redissonClient.getKeys().getKeysStream().filter(s -> {
-            var parts = s.split(":");
-            return parts[1].equals(mongoIdentifier);
-        }).collect(Collectors.toSet());
+        var redisIdentifier = AnnotationResolver.storageIdentifier(dataClass);
+        return redissonClient
+                .getKeys()
+                .getKeysStream()
+                .filter(s -> s.split(":")[1].equals(redisIdentifier))
+                .collect(Collectors.toSet());
     }
 }

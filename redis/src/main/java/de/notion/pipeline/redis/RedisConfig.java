@@ -33,9 +33,11 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
 
     @Override
     public void load() {
-        if (isLoaded()) return;
+        if (isLoaded())
+            return;
         if (addresses.length == 0)
             throw new IllegalArgumentException("Address Array empty");
+
         var config = new Config();
         if (clusterMode) {
             var clusterServersConfig = config.useClusterServers();
@@ -47,7 +49,7 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
                 clusterServersConfig.addNodeAddress(addresses);
         } else {
             var address = addresses[0];
-            SingleServerConfig singleServerConfig = config.useSingleServer();
+            var singleServerConfig = config.useSingleServer();
             singleServerConfig.setSubscriptionsPerConnection(30);
 
             if (!password.isEmpty())

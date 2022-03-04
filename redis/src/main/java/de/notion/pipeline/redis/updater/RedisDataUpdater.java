@@ -40,8 +40,7 @@ public class RedisDataUpdater implements DataUpdater {
                 return;
             var pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
 
-            if (dataBlock instanceof UpdateDataBlock) {
-                var updateDataBlock = (UpdateDataBlock) dataBlock;
+            if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
                 var dataToUpdate = JsonParser.parseString(updateDataBlock.dataToUpdate).getAsJsonObject();
                 if (pipelineData == null) {
                     loadingTaskManager.receivedData(updateDataBlock.dataUUID, dataToUpdate);
@@ -85,10 +84,11 @@ public class RedisDataUpdater implements DataUpdater {
     }
 
     @Override
-    public LoadingTaskManager loadingTaskManager() {
+    public @NotNull LoadingTaskManager loadingTaskManager() {
         return loadingTaskManager;
     }
 
+    @NotNull
     private synchronized RTopic topic(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         var key = String.format(DATA_TOPIC, AnnotationResolver.storageIdentifier(dataClass));

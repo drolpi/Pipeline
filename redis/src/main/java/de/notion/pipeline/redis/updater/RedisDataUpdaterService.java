@@ -23,9 +23,13 @@ public class RedisDataUpdaterService implements DataUpdaterService {
         this.registry = pipeline.registry();
         this.redissonClient = redissonClient;
         this.cache = new HashMap<>();
+        this.registerClasses();
+        System.out.println("Redis DataUpdaterService started");
+    }
+
+    private void registerClasses() {
         for (Class<? extends PipelineData> dataClass : registry.dataClasses())
             cache.put(dataClass, new RedisDataUpdater(pipeline, redissonClient, dataClass));
-        System.out.println("Redis DataUpdaterService started");
     }
 
     @Override
