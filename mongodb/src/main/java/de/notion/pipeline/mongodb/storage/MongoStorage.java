@@ -34,8 +34,8 @@ public class MongoStorage implements GlobalStorage {
     public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        var filter = new Document("objectUUID", objectUUID.toString());
 
+        var filter = new Document("objectUUID", objectUUID.toString());
         var mongoDBData = mongoStorage(dataClass).find(filter).first();
 
         if (mongoDBData == null)
@@ -50,8 +50,8 @@ public class MongoStorage implements GlobalStorage {
     public synchronized boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        var document = mongoStorage(dataClass).find(new Document("objectUUID", objectUUID.toString())).first();
-        return document != null;
+
+        return mongoStorage(dataClass).find(new Document("objectUUID", objectUUID.toString())).first() != null;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class MongoStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
-        var filter = new Document("objectUUID", objectUUID.toString());
 
+        var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
 
         if (collection.find(filter).first() == null) {
@@ -77,17 +77,20 @@ public class MongoStorage implements GlobalStorage {
     public synchronized boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        var filter = new Document("objectUUID", objectUUID.toString());
 
+        var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
+
         return collection.deleteOne(filter).getDeletedCount() >= 1;
     }
 
     @Override
     public synchronized Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
+
         var collection = mongoStorage(dataClass);
-        Set<UUID> uuids = new HashSet<>();
+        var uuids = new HashSet<UUID>();
+
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 var document = cursor.next();
@@ -100,9 +103,12 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
-        var collection = mongoStorage(type);
-        List<UUID> uuids = new ArrayList<>();
+    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
+        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+
+        var collection = mongoStorage(dataClass);
+        var uuids = new ArrayList<UUID>();
+
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 var document = cursor.next();
@@ -116,18 +122,8 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
-        var collection = mongoStorage(type);
-        List<UUID> uuids = new ArrayList<>();
-        try (var cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                var document = cursor.next();
-
-                //TODO: Implement sort
-                uuids.add(UUID.fromString((String) document.get("objectUUID")));
-            }
-        }
-        return uuids;
+    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+        return new ArrayList<>();
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {

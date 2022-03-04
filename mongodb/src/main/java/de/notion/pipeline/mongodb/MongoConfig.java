@@ -38,11 +38,16 @@ public class MongoConfig implements GlobalStorageConfig, PartConfig {
 
     @Override
     public void load() {
-        if (isLoaded()) return;
+        if (isLoaded())
+            return;
         if (user.isEmpty() && password.isEmpty())
             this.mongoClient = new MongoClient(host, port);
         else
-            this.mongoClient = new MongoClient(new ServerAddress(host, port), MongoCredential.createCredential(user, database, password.toCharArray()), MongoClientOptions.builder().build());
+            this.mongoClient = new MongoClient(
+                    new ServerAddress(host, port),
+                    MongoCredential.createCredential(user, database, password.toCharArray()),
+                    MongoClientOptions.builder().build()
+            );
 
         this.mongoDatabase = mongoClient.getDatabase(database);
         connected = true;

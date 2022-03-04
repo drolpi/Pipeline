@@ -130,7 +130,7 @@ public class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
+    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         return new ArrayList<>();
     }
 
