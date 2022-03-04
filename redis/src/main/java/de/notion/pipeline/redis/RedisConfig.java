@@ -73,7 +73,7 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
     }
 
     @Override
-    public DataUpdaterService constructDataManipulator(Pipeline pipeline) {
+    public DataUpdaterService constructDataUpdaterService(Pipeline pipeline) {
         return new RedisDataUpdaterService(pipeline, redissonClient);
     }
 

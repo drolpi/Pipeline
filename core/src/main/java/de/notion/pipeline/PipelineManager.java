@@ -56,6 +56,7 @@ public class PipelineManager implements Pipeline {
     private final boolean loaded;
 
     public PipelineManager(@NotNull PipelineRegistry registry, @NotNull PipelineConfig config) {
+        this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(2, new DefaultThreadFactory("Pipeline"));
         this.gson = new GsonBuilder().serializeNulls().create();
         this.localCache = new DefaultLocalCache();
@@ -63,7 +64,7 @@ public class PipelineManager implements Pipeline {
         var updaterConfig = config.updaterConfig();
         if (updaterConfig != null) {
             updaterConfig.load();
-            this.dataUpdaterService = updaterConfig.constructDataManipulator(this);
+            this.dataUpdaterService = updaterConfig.constructDataUpdaterService(this);
         } else {
             this.dataUpdaterService = new DefaultDataUpdaterService();
         }
@@ -83,8 +84,6 @@ public class PipelineManager implements Pipeline {
         } else {
             this.globalStorage = null;
         }
-
-        this.registry = registry;
 
         System.out.println("Starting Pipeline Manager");
         System.out.println("LocalCache: " + localCache);
@@ -513,7 +512,7 @@ public class PipelineManager implements Pipeline {
             if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL) && globalCache != null)
                 pipelineDataSynchronizer.doSynchronisation(PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null);
         } else {
-            System.out.println(creationStrategies.length);
+            System.out.println(System.currentTimeMillis() - startTime);
             if (creationStrategies.length <= 0)
                 return null;
             T data = createNewData(dataClass, uuid, instanceCreator, creationStrategies);

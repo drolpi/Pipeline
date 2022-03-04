@@ -11,14 +11,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
     private final PipelineManager pipelineManager;
+    private final ExecutorService executorService;
 
     public PipelineDataSynchronizerImpl(PipelineManager pipelineManager) {
         this.pipelineManager = pipelineManager;
+        this.executorService = pipelineManager.executorService();
     }
 
     @Override
@@ -33,7 +36,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        pipelineManager.executorService().submit(new CatchingRunnable(() -> future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
+        executorService.submit(new CatchingRunnable(() -> future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
         return future;
     }
 
@@ -51,7 +54,8 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
         var startTime = System.currentTimeMillis();
         LoadingTaskManager loadingTaskManager = pipelineManager.dataUpdaterService().dataUpdater(dataClass).loadingTaskManager();
-        loadingTaskManager.registerLoadingTask(objectUUID);
+        if (destination.equals(DataSourceType.LOCAL))
+            loadingTaskManager.registerLoadingTask(objectUUID);
 
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
@@ -119,10 +123,11 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
                 pipelineManager.globalCache().saveData(dataClass, objectUUID, globalSavedData);
         }
 
-        var data = pipelineManager.localCache().data(dataClass, objectUUID);
-        var optional = loadingTaskManager.finishLoadingTask(data);
-        if (optional.isPresent()) {
-            data = optional.get();
+        if (destination.equals(DataSourceType.LOCAL)) {
+            var data = pipelineManager.localCache().data(dataClass, objectUUID);
+            var optional = loadingTaskManager.finishLoadingTask(data);
+            if (optional.isPresent())
+                pipelineManager.localCache().save(dataClass, optional.get());
         }
 
         System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
@@ -140,8 +145,8 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
     public void shutdown() {
         try {
             System.out.println("Shutting down Data Synchronizer");
-            pipelineManager.executorService().shutdown();
-            pipelineManager.executorService().awaitTermination(5, TimeUnit.SECONDS);
+            executorService.shutdown();
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
             System.out.println("Data Synchronizer shut down successfully");
         } catch (InterruptedException e) {
             e.printStackTrace();
