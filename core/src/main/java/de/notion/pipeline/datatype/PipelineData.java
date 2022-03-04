@@ -3,6 +3,7 @@ package de.notion.pipeline.datatype;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.local.updater.DataUpdater;
@@ -148,12 +149,16 @@ public abstract class PipelineData {
         return pipeline;
     }
 
-    public String serialize() {
+    public JsonObject serialize() {
         unMarkRemoval();
-        return gson.toJson(this);
+        return gson.toJsonTree(this).getAsJsonObject();
     }
 
-    public PipelineData deserialize(String data) {
+    public String serializeToString() {
+        return gson.toJson(serialize());
+    }
+
+    public PipelineData deserialize(JsonObject data) {
         unMarkRemoval();
         return gson.fromJson(data, getClass());
     }

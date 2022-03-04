@@ -1,7 +1,9 @@
 package de.notion.pipeline.sql;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.filter.Filter;
@@ -15,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -27,17 +28,22 @@ public abstract class SqlStorage implements GlobalStorage {
 
     protected static final String TABLE_COLUMN_KEY = "UUID";
     protected static final String TABLE_COLUMN_VAL = "Document";
-    protected static final Gson GSON = new GsonBuilder().serializeNulls().create();
+
+    protected final Gson gson;
+
+    public SqlStorage(Pipeline pipeline) {
+        this.gson = pipeline.gson();
+    }
 
     @Override
-    public String loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeQuery(
                 String.format("SELECT %s FROM `%s` WHERE %s = ?", TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
                 resultSet -> {
                     try {
-                        return resultSet.next() ? resultSet.getString(TABLE_COLUMN_VAL) : null;
+                        return resultSet.next() ? JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject() : null;
                     } catch (SQLException e) {
                         e.printStackTrace();
                         return null;
@@ -67,19 +73,19 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull String dataToSave) {
+    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
         if (!dataExist(dataClass, objectUUID)) {
             executeUpdate(
                     "INSERT INTO `" + tableName(dataClass) + "` (" + TABLE_COLUMN_KEY + "," + TABLE_COLUMN_VAL + ") VALUES (?, ?);",
-                    objectUUID.toString(), dataToSave
+                    objectUUID.toString(), gson.toJson(dataToSave)
             );
         } else {
             executeUpdate(
                     "UPDATE `" + tableName(dataClass) + "` SET " + TABLE_COLUMN_VAL + "=? WHERE " + TABLE_COLUMN_KEY + "=?",
-                    dataToSave, objectUUID.toString()
+                    gson.toJson(dataToSave), objectUUID.toString()
             );
         }
     }
@@ -121,10 +127,10 @@ public abstract class SqlStorage implements GlobalStorage {
                     List<UUID> uuids = new ArrayList<>();
                     try {
                         while (resultSet.next()) {
-                            Map<String, Object> document = GSON.fromJson(resultSet.getString(TABLE_COLUMN_VAL), Map.class);
+                            JsonObject jsonObject = JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject();
 
-                            if (filter.check(document)) {
-                                uuids.add(UUID.fromString((String) document.get("objectUUID")));
+                            if (filter.check(jsonObject)) {
+                                uuids.add(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()));
                             }
                         }
                     } catch (SQLException e) {

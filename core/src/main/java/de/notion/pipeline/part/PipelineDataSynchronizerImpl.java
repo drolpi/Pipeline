@@ -1,5 +1,6 @@
 package de.notion.pipeline.part;
 
+import com.google.gson.JsonObject;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
@@ -64,7 +65,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
                 return false;
             data.updateLastUse();
             data.unMarkRemoval();
-            String dataToSave = data.serialize();
+            JsonObject dataToSave = data.serialize();
             // Local to Global Cache
             if (destination.equals(DataSourceType.GLOBAL_CACHE))
                 pipelineManager.globalCache().saveData(dataClass, objectUUID, dataToSave);
@@ -74,7 +75,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         } else if (source.equals(DataSourceType.GLOBAL_CACHE)) {
             if (!pipelineManager.globalCache().dataExist(dataClass, objectUUID))
                 return false;
-            String globalCachedData = pipelineManager.globalCache().loadData(dataClass, objectUUID);
+            JsonObject globalCachedData = pipelineManager.globalCache().loadData(dataClass, objectUUID);
             // Error while loading from redis
             if (globalCachedData == null) {
                 System.out.println("Trying to load from storage...");

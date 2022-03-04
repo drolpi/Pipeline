@@ -1,5 +1,6 @@
 package de.notion.pipeline.sql.h2;
 
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.config.PartConfig;
 import de.notion.pipeline.config.part.GlobalStorageConfig;
 import de.notion.pipeline.part.storage.GlobalStorage;
@@ -59,7 +60,7 @@ public class H2Config implements GlobalStorageConfig, PartConfig {
     }
 
     @Override
-    public GlobalStorage constructGlobalStorage() {
-        return new H2Storage(connection);
+    public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
+        return new H2Storage(pipeline, connection);
     }
 }

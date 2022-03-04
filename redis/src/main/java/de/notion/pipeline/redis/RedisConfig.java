@@ -1,16 +1,15 @@
 package de.notion.pipeline.redis;
 
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.config.PartConfig;
 import de.notion.pipeline.config.part.DataUpdaterConfig;
 import de.notion.pipeline.config.part.GlobalCacheConfig;
 import de.notion.pipeline.part.cache.GlobalCache;
-import de.notion.pipeline.part.local.LocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import de.notion.pipeline.redis.cache.RedisCache;
 import de.notion.pipeline.redis.updater.RedisDataUpdaterService;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
 
@@ -74,12 +73,12 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
     }
 
     @Override
-    public DataUpdaterService constructDataManipulator(LocalCache localCache) {
-        return new RedisDataUpdaterService(redissonClient, localCache);
+    public DataUpdaterService constructDataManipulator(Pipeline pipeline) {
+        return new RedisDataUpdaterService(pipeline, redissonClient);
     }
 
     @Override
-    public GlobalCache constructGlobalCache() {
-        return new RedisCache(redissonClient);
+    public GlobalCache constructGlobalCache(Pipeline pipeline) {
+        return new RedisCache(pipeline, redissonClient);
     }
 }

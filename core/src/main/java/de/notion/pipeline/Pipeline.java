@@ -1,5 +1,6 @@
 package de.notion.pipeline;
 
+import com.google.gson.Gson;
 import de.notion.common.system.SystemLoadable;
 import de.notion.pipeline.config.PipelineConfig;
 import de.notion.pipeline.datatype.PipelineData;
@@ -19,10 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface Pipeline extends SystemLoadable {
-
-    static Pipeline create(PipelineConfig config) {
-        return create(config, new PipelineRegistry());
-    }
 
     static Pipeline create(PipelineConfig config, PipelineRegistry registry) {
         return new PipelineManager(registry, config);
@@ -137,6 +134,9 @@ public interface Pipeline extends SystemLoadable {
 
     @NotNull
     PipelineRegistry registry();
+
+    @NotNull
+    Gson gson();
 
     enum LoadingStrategy {
         // Data will be loaded from Local Cache

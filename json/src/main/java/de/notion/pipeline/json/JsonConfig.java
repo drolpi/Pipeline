@@ -1,11 +1,11 @@
 package de.notion.pipeline.json;
 
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.config.PartConfig;
 import de.notion.pipeline.config.part.GlobalStorageConfig;
 import de.notion.pipeline.json.storage.JsonStorage;
 import de.notion.pipeline.part.storage.GlobalStorage;
 
-import java.io.File;
 import java.nio.file.Path;
 
 public class JsonConfig implements GlobalStorageConfig, PartConfig {
@@ -17,19 +17,13 @@ public class JsonConfig implements GlobalStorageConfig, PartConfig {
         this.jsonDbFile = jsonDbFile.toString();
     }
 
-    @Deprecated
     @Override
-    public GlobalStorage constructGlobalStorage() {
-        return new JsonStorage(jsonDbFile);
+    public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
+        return new JsonStorage(pipeline, jsonDbFile);
     }
 
     @Override
     public void load() {
-        var file = new File(jsonDbFile);
-        if(!file.exists()) {
-            file.mkdirs();
-        }
-
         connected = true;
     }
 

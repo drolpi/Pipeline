@@ -1,6 +1,7 @@
 package de.notion.pipeline.sql.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.sql.SqlStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,8 @@ public class MySqlStorage extends SqlStorage {
 
     private final HikariDataSource hikariDataSource;
 
-    public MySqlStorage(HikariDataSource hikariDataSource) {
+    public MySqlStorage(Pipeline pipeline, HikariDataSource hikariDataSource) {
+        super(pipeline);
         this.hikariDataSource = hikariDataSource;
         System.out.println("MySQL Global Storage started"); //DEBUG
     }

@@ -1,11 +1,11 @@
 package de.notion.pipeline.filter;
 
-import java.util.Map;
+import com.google.gson.JsonObject;
 
 public record FieldFilter(String fieldName, Object obj) implements Filter {
 
     @Override
-    public boolean check(Map<String, Object> data) {
+    public boolean check(JsonObject data) {
         for (var entry : data.entrySet()) {
             if (entry.getKey() == null)
                 continue;
@@ -13,7 +13,7 @@ public record FieldFilter(String fieldName, Object obj) implements Filter {
             if (entry.getValue() == null)
                 continue;
 
-            if (entry.getKey().equals(fieldName) && entry.getValue().toString().equals(obj.toString())) {
+            if (entry.getKey().equals(fieldName) && entry.getValue().equals(obj)) {
                 return true;
             }
         }

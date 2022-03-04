@@ -1,5 +1,6 @@
 package de.notion.pipeline.redis.updater;
 
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.LocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdater;
@@ -12,13 +13,13 @@ import java.util.Map;
 
 public class RedisDataUpdaterService implements DataUpdaterService {
 
-    private final RedissonClient redissonClient;
     private final LocalCache localCache;
+    private final RedissonClient redissonClient;
     private final Map<Class<? extends PipelineData>, DataUpdater> cache;
 
-    public RedisDataUpdaterService(RedissonClient redissonClient, LocalCache localCache) {
+    public RedisDataUpdaterService(Pipeline pipeline, RedissonClient redissonClient) {
+        this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
-        this.localCache = localCache;
         this.cache = new HashMap<>();
         System.out.println("Redis DataUpdaterService started");
     }

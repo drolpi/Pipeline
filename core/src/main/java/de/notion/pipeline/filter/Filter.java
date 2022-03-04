@@ -1,9 +1,9 @@
 package de.notion.pipeline.filter;
 
-import java.util.Map;
+import com.google.gson.JsonObject;
 
 public interface Filter {
 
-    boolean check(Map<String, Object> data);
+    boolean check(JsonObject data);
 
 }

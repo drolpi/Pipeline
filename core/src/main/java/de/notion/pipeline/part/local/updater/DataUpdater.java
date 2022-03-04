@@ -1,5 +1,6 @@
 package de.notion.pipeline.part.local.updater;
 
+import com.google.gson.JsonObject;
 import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 

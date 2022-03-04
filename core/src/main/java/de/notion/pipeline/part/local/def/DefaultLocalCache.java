@@ -1,5 +1,6 @@
 package de.notion.pipeline.part.local.def;
 
+import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.LocalCache;
@@ -98,9 +99,10 @@ public class DefaultLocalCache implements LocalCache {
             throw new RuntimeException("Error while creating instance of class " + dataClass.getSimpleName(), throwable);
         }
 
-        var defaultData = DEFAULT_DATA.replace("%uuid%", objectUUID.toString());
-        instance.deserialize(defaultData);
+        var defaultObject = new JsonObject();
+        defaultObject.addProperty("objectUUID", objectUUID.toString());
 
+        instance.deserialize(defaultObject);
         return instance;
     }
 }

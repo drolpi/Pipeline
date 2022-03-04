@@ -1,9 +1,11 @@
 package de.notion.pipeline;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.common.scheduler.Scheduler;
-import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.Action;
+import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.automatic.cleanup.AutoCleanUpTask;
 import de.notion.pipeline.config.PipelineConfig;
@@ -49,16 +51,18 @@ public class PipelineManager implements Pipeline {
     private final PipelineTaskScheduler pipelineTaskScheduler;
     private final ExecutorService executorService;
     private final Scheduler scheduler;
+    private final Gson gson;
     private final boolean loaded;
 
     public PipelineManager(@NotNull PipelineRegistry registry, @NotNull PipelineConfig config) {
         this.executorService = Executors.newFixedThreadPool(2, new DefaultThreadFactory("Pipeline"));
+        this.gson = new GsonBuilder().serializeNulls().create();
         this.localCache = new DefaultLocalCache();
 
         var updaterConfig = config.updaterConfig();
         if (updaterConfig != null) {
             updaterConfig.load();
-            this.dataUpdaterService = updaterConfig.constructDataManipulator(localCache);
+            this.dataUpdaterService = updaterConfig.constructDataManipulator(this);
         } else {
             this.dataUpdaterService = new DefaultDataUpdaterService();
         }
@@ -66,7 +70,7 @@ public class PipelineManager implements Pipeline {
         var globalCacheConfig = config.globalCacheConfig();
         if (globalCacheConfig != null) {
             globalCacheConfig.load();
-            this.globalCache = globalCacheConfig.constructGlobalCache();
+            this.globalCache = globalCacheConfig.constructGlobalCache(this);
         } else {
             this.globalCache = null;
         }
@@ -74,7 +78,7 @@ public class PipelineManager implements Pipeline {
         var globalStorageConfig = config.globalStorageConfig();
         if (globalStorageConfig != null) {
             globalStorageConfig.load();
-            this.globalStorage = globalStorageConfig.constructGlobalStorage();
+            this.globalStorage = globalStorageConfig.constructGlobalStorage(this);
         } else {
             this.globalStorage = null;
         }
@@ -462,7 +466,7 @@ public class PipelineManager implements Pipeline {
         if (globalStorageAction.equals(Action.DELETE))
             strategies.add(QueryStrategy.GLOBAL_STORAGE);
 
-        if(strategies.size() > 0)
+        if (strategies.size() > 0)
             delete(type, pipelineData.objectUUID(), strategies.toArray(new QueryStrategy[0]));
 
         pipelineData.save(globalCacheAction.equals(Action.SAVE), globalStorageAction.equals(Action.SAVE), () -> {
@@ -584,5 +588,11 @@ public class PipelineManager implements Pipeline {
     @Override
     public PipelineRegistry registry() {
         return registry;
+    }
+
+    @NotNull
+    @Override
+    public Gson gson() {
+        return gson;
     }
 }

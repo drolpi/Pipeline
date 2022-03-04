@@ -2,6 +2,7 @@ package de.notion.pipeline.part.local.updater;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.JsonObject;
 import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LoadingTaskManager {
 
-    private final Cache<UUID, Optional<String>> tasks;
+    private final Cache<UUID, Optional<JsonObject>> tasks;
 
     public LoadingTaskManager() {
         this.tasks = CacheBuilder
@@ -24,7 +25,7 @@ public class LoadingTaskManager {
         tasks.put(objectUUID, Optional.empty());
     }
 
-    public void receivedData(@NotNull UUID objectUUID, String data) {
+    public void receivedData(@NotNull UUID objectUUID, JsonObject data) {
         if(tasks.asMap().containsKey(objectUUID)) {
             tasks.put(objectUUID, Optional.ofNullable(data));
             System.out.println("Received Sync while loading " + System.currentTimeMillis()); //DEBUG

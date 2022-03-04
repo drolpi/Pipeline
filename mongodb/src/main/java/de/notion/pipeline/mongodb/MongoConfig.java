@@ -5,6 +5,7 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.config.PartConfig;
 import de.notion.pipeline.config.part.GlobalStorageConfig;
 import de.notion.pipeline.mongodb.storage.MongoStorage;
@@ -59,7 +60,7 @@ public class MongoConfig implements GlobalStorageConfig, PartConfig {
     }
 
     @Override
-    public GlobalStorage constructGlobalStorage() {
-        return new MongoStorage(mongoDatabase);
+    public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
+        return new MongoStorage(pipeline, mongoDatabase);
     }
 }

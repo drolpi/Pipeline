@@ -1,5 +1,9 @@
 package de.notion.pipeline.redis.cache;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.cache.GlobalCache;
@@ -16,19 +20,21 @@ import java.util.stream.Collectors;
 
 public class RedisCache implements GlobalCache {
 
+    private final Gson gson;
     private final RedissonClient redissonClient;
 
-    public RedisCache(RedissonClient redissonClient) {
+    public RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
+        this.gson = pipeline.gson();
         this.redissonClient = redissonClient;
         System.out.println("Redis Cache started");
     }
 
     @Override
-    public synchronized String loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         try {
-            return objectCache(dataClass, objectUUID).get();
+            return JsonParser.parseString(objectCache(dataClass, objectUUID).get()).getAsJsonObject();
         } catch (Exception e) {
             System.out.println("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
             removeData(dataClass, objectUUID);
@@ -37,11 +43,11 @@ public class RedisCache implements GlobalCache {
     }
 
     @Override
-    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull String dataToSave) {
+    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var objectCache = objectCache(dataClass, objectUUID);
-        objectCache.set(dataToSave);
+        objectCache.set(gson.toJson(dataToSave));
 
         //Update the expire time again because after setting new data the expire time resets
         updateExpireTime(dataClass, objectCache);

@@ -1,9 +1,10 @@
 package de.notion.pipeline.mongodb.storage;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.filter.Filter;
@@ -20,16 +21,17 @@ import java.util.UUID;
 
 public class MongoStorage implements GlobalStorage {
 
-    protected static final Gson GSON = new GsonBuilder().serializeNulls().create();
+    private final Gson gson;
     private final MongoDatabase mongoDatabase;
 
-    public MongoStorage(MongoDatabase mongoDatabase) {
+    public MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
+        this.gson = pipeline.gson();
         this.mongoDatabase = mongoDatabase;
         System.out.println("Mongo Global Storage started"); //DEBUG
     }
 
     @Override
-    public synchronized String loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var filter = new Document("objectUUID", objectUUID.toString());
@@ -41,7 +43,7 @@ public class MongoStorage implements GlobalStorage {
 
         mongoDBData.remove("_id");
 
-        return GSON.toJson(mongoDBData);
+        return gson.toJsonTree(mongoDBData).getAsJsonObject();
     }
 
     @Override
@@ -53,7 +55,7 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull String dataToSave) {
+    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
@@ -62,10 +64,10 @@ public class MongoStorage implements GlobalStorage {
         var collection = mongoStorage(dataClass);
 
         if (collection.find(filter).first() == null) {
-            var newData = Document.parse(dataToSave);
+            var newData = Document.parse(gson.toJson(dataToSave));
             collection.insertOne(newData);
         } else {
-            var newData = Document.parse(dataToSave);
+            var newData = Document.parse(gson.toJson(dataToSave));
             var updateFunc = new Document("$set", newData);
             collection.updateOne(filter, updateFunc);
         }
@@ -105,7 +107,7 @@ public class MongoStorage implements GlobalStorage {
             while (cursor.hasNext()) {
                 var document = cursor.next();
 
-                if (filter.check(document)) {
+                if (filter.check(gson.toJsonTree(document).getAsJsonObject())) {
                     uuids.add(UUID.fromString((String) document.get("objectUUID")));
                 }
             }

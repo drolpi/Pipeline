@@ -1,5 +1,6 @@
 package de.notion.pipeline.redis.updater;
 
+import com.google.gson.JsonParser;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
@@ -37,10 +38,11 @@ public class RedisDataUpdater implements DataUpdater {
 
             if (dataBlock instanceof UpdateDataBlock) {
                 var updateDataBlock = (UpdateDataBlock) dataBlock;
+                var dataToUpdate = JsonParser.parseString(updateDataBlock.dataToUpdate).getAsJsonObject();
                 if (pipelineData == null) {
-                    loadingTaskManager.receivedData(updateDataBlock.dataUUID, updateDataBlock.dataToUpdate);
+                    loadingTaskManager.receivedData(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
-                    pipelineData.onSync(pipelineData.deserialize(updateDataBlock.dataToUpdate));
+                    pipelineData.onSync(pipelineData.deserialize(dataToUpdate));
                     System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 }
             } else if (dataBlock instanceof RemoveDataBlock) {
@@ -62,7 +64,7 @@ public class RedisDataUpdater implements DataUpdater {
             return;
         }
         pipelineData.unMarkRemoval();
-        dataTopic.publish(new UpdateDataBlock(senderUUID, pipelineData.objectUUID(), pipelineData.serialize()));
+        dataTopic.publish(new UpdateDataBlock(senderUUID, pipelineData.objectUUID(), pipelineData.serializeToString()));
         System.out.println("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
         if (callback != null)
             callback.run();

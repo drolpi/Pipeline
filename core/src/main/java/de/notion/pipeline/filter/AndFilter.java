@@ -1,11 +1,11 @@
 package de.notion.pipeline.filter;
 
-import java.util.Map;
+import com.google.gson.JsonObject;
 
 public record AndFilter(Filter first, Filter second) implements Filter {
 
     @Override
-    public boolean check(Map<String, Object> data) {
+    public boolean check(JsonObject data) {
         return first.check(data) && second.check(data);
     }
 

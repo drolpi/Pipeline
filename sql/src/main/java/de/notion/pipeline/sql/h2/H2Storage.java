@@ -1,5 +1,6 @@
 package de.notion.pipeline.sql.h2;
 
+import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.sql.SqlStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,8 @@ public class H2Storage extends SqlStorage {
 
     private final Connection connection;
 
-    public H2Storage(Connection connection) {
+    public H2Storage(Pipeline pipeline, Connection connection) {
+        super(pipeline);
         this.connection = connection;
         System.out.println("H2 Global Storage started"); //DEBUG
     }
