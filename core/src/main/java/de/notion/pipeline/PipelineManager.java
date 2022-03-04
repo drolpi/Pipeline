@@ -512,7 +512,6 @@ public class PipelineManager implements Pipeline {
             if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL) && globalCache != null)
                 pipelineDataSynchronizer.doSynchronisation(PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null);
         } else {
-            System.out.println(System.currentTimeMillis() - startTime);
             if (creationStrategies.length <= 0)
                 return null;
             T data = createNewData(dataClass, uuid, instanceCreator, creationStrategies);
