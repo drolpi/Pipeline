@@ -1,4 +1,4 @@
-package de.notion.pipeline.registry.instance;
+package de.notion.pipeline.datatype.instance;
 
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;

@@ -1,4 +1,4 @@
-package de.notion.pipeline.filter;
+package de.notion.pipeline.operator.filter;
 
 import com.google.gson.JsonObject;
 

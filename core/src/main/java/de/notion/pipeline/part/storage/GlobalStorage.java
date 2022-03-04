@@ -1,7 +1,7 @@
 package de.notion.pipeline.part.storage;
 
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.filter.Filter;
+import de.notion.pipeline.operator.filter.Filter;
 import de.notion.pipeline.part.DataProvider;
 import org.jetbrains.annotations.NotNull;
 

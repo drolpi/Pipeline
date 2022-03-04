@@ -7,7 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.filter.Filter;
+import de.notion.pipeline.operator.filter.Filter;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;

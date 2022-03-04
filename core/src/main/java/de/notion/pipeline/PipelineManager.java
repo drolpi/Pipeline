@@ -9,8 +9,10 @@ import de.notion.pipeline.annotation.Context;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.automatic.cleanup.AutoCleanUpTask;
 import de.notion.pipeline.config.PipelineConfig;
+import de.notion.pipeline.config.PipelineRegistry;
 import de.notion.pipeline.datatype.ConnectionPipelineData;
 import de.notion.pipeline.datatype.PipelineData;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.PipelineDataSynchronizerImpl;
 import de.notion.pipeline.part.cache.GlobalCache;
@@ -19,7 +21,6 @@ import de.notion.pipeline.part.local.def.DefaultLocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import de.notion.pipeline.part.local.updater.def.DefaultDataUpdaterService;
 import de.notion.pipeline.part.storage.GlobalStorage;
-import de.notion.pipeline.registry.PipelineRegistry;
 import de.notion.pipeline.scheduler.PipelineTaskScheduler;
 import de.notion.pipeline.scheduler.PipelineTaskSchedulerImpl;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -99,7 +100,7 @@ public class PipelineManager implements Pipeline {
     }
 
     @Override
-    public final <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies) {
+    public final <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
         if (!registry.dataClasses().contains(type))
@@ -118,7 +119,7 @@ public class PipelineManager implements Pipeline {
             return data;
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL)) {
             if (creationStrategies.length > 0) {
-                T data = createNewData(type, uuid, creationStrategies);
+                T data = createNewData(type, uuid, instanceCreator, creationStrategies);
                 data.updateLastUse();
                 pipelineTask.completableFuture().complete(data);
                 if (callback != null)
@@ -128,7 +129,7 @@ public class PipelineManager implements Pipeline {
             pipelineTask.completableFuture().complete(null);
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL_ELSE_LOAD)) {
             executorService.submit(new CatchingRunnable(() -> {
-                T data = loadFromPipeline(type, uuid, creationStrategies);
+                T data = loadFromPipeline(type, uuid, instanceCreator, creationStrategies);
                 pipelineTask.completableFuture().complete(data);
                 System.out.println("[" + loadingStrategy + "] Completed with: " + data);
                 if (callback != null)
@@ -136,7 +137,7 @@ public class PipelineManager implements Pipeline {
             }));
             return null;
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE)) {
-            T data = loadFromPipeline(type, uuid, creationStrategies);
+            T data = loadFromPipeline(type, uuid, instanceCreator, creationStrategies);
             pipelineTask.completableFuture().complete(data);
             System.out.println("[" + loadingStrategy + "] Completed with: " + data);
             if (callback != null)
@@ -148,14 +149,14 @@ public class PipelineManager implements Pipeline {
 
     @NotNull
     @Override
-    public <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies) {
+    public <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
         if (!registry.dataClasses().contains(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuid, loadingStrategy, callback, creationStrategies))));
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuid, loadingStrategy, callback, instanceCreator, creationStrategies))));
         return completableFuture;
     }
 
@@ -195,10 +196,10 @@ public class PipelineManager implements Pipeline {
 
         List<UUID> uuids = new ArrayList<>();
 
-        if (globalCache() != null)
+        if (globalCache != null)
             uuids.addAll(globalCache.savedUUIDs(type));
 
-        if (globalStorage() != null)
+        if (globalStorage != null)
             uuids.addAll(globalStorage.savedUUIDs(type));
 
         return loadAllData(type, uuids, loadingStrategy);
@@ -233,19 +234,20 @@ public class PipelineManager implements Pipeline {
                 return true;
         }
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE)) {
-            if (globalCache() != null) {
-                var globalCacheExists = globalCache().dataExist(type, uuid);
+            if (globalCache != null) {
+                var globalCacheExists = globalCache.dataExist(type, uuid);
                 if (globalCacheExists)
                     return true;
             }
         }
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE)) {
-            if (globalStorage() != null)
-                return globalStorage().dataExist(type, uuid);
+            if (globalStorage != null)
+                return globalStorage.dataExist(type, uuid);
         }
         return false;
     }
 
+    @NotNull
     @Override
     public <T extends PipelineData> CompletableFuture<Boolean> existAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies) {
         Objects.requireNonNull(type, "Dataclass can't be null");
@@ -286,16 +288,16 @@ public class PipelineManager implements Pipeline {
                 System.out.println("[LocalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
             }
         }
-        if (globalCache() != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE))) {
+        if (globalCache != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE))) {
             System.out.println("Deleting from Global Cache: " + type.getSimpleName() + " uuid " + uuid + ""); //DEBUG
-            if (!globalCache().removeData(type, uuid))
+            if (!globalCache.removeData(type, uuid))
                 System.out.println("[GlobalCache] Could not delete: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
             else
                 System.out.println("[GlobalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
         }
-        if (globalStorage() != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE))) {
+        if (globalStorage != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE))) {
             System.out.println("Deleting from Global Storage: " + type.getSimpleName() + " uuid " + uuid + ""); //DEBUG
-            if (!globalStorage().removeData(type, uuid))
+            if (!globalStorage.removeData(type, uuid))
                 System.out.println("[GlobalStorage] Could not delete: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
             else
                 System.out.println("[GlobalStorage] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
@@ -303,6 +305,7 @@ public class PipelineManager implements Pipeline {
         return true;
     }
 
+    @NotNull
     @Override
     public <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies) {
         Objects.requireNonNull(type, "Dataclass can't be null");
@@ -337,21 +340,25 @@ public class PipelineManager implements Pipeline {
         }
     }
 
+    @NotNull
     @Override
     public LocalCache localCache() {
         return localCache;
     }
 
+    @NotNull
     @Override
     public DataUpdaterService dataUpdaterService() {
         return dataUpdaterService;
     }
 
+    @Nullable
     @Override
     public GlobalCache globalCache() {
         return globalCache;
     }
 
+    @Nullable
     @Override
     public GlobalStorage globalStorage() {
         return globalStorage;
@@ -381,7 +388,7 @@ public class PipelineManager implements Pipeline {
         var optional = AnnotationResolver.preload(type);
 
         // Data will only be preloaded if it is declared properly
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             return;
         }
 
@@ -425,7 +432,7 @@ public class PipelineManager implements Pipeline {
         var optional = AnnotationResolver.autoSave(type);
 
         // Data will only be preloaded if it is declared properly
-        if (!optional.isPresent())
+        if (optional.isEmpty())
             return;
         var startTime = System.currentTimeMillis();
         System.out.println("Saving " + type.getSimpleName()); //DEBUG
@@ -452,7 +459,7 @@ public class PipelineManager implements Pipeline {
 
         var optional = AnnotationResolver.autoSave(type);
 
-        if (!optional.isPresent())
+        if (optional.isEmpty())
             return;
 
         var autoSave = optional.get();
@@ -477,12 +484,13 @@ public class PipelineManager implements Pipeline {
 
     }
 
+    @NotNull
     @Override
     public PipelineDataSynchronizer dataSynchronizer() {
         return pipelineDataSynchronizer;
     }
 
-    private <T extends PipelineData> T loadFromPipeline(@NotNull Class<? extends T> dataClass, @NotNull UUID uuid, @NotNull QueryStrategy... creationStrategies) {
+    private <T extends PipelineData> T loadFromPipeline(@NotNull Class<? extends T> dataClass, @NotNull UUID uuid, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies) {
         Objects.requireNonNull(dataClass, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
         if (!registry.dataClasses().contains(dataClass))
@@ -508,7 +516,7 @@ public class PipelineManager implements Pipeline {
             System.out.println(creationStrategies.length);
             if (creationStrategies.length <= 0)
                 return null;
-            T data = createNewData(dataClass, uuid, creationStrategies);
+            T data = createNewData(dataClass, uuid, instanceCreator, creationStrategies);
             data.updateLastUse();
             System.out.println("Done loading in " + (System.currentTimeMillis() - startTime) + "ms");
             return data;
@@ -525,7 +533,7 @@ public class PipelineManager implements Pipeline {
         return data;
     }
 
-    private <T extends PipelineData> T createNewData(@NotNull Class<? extends T> dataClass, @NotNull UUID uuid, @NotNull QueryStrategy... queryStrategies) {
+    private <T extends PipelineData> T createNewData(@NotNull Class<? extends T> dataClass, @NotNull UUID uuid, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... queryStrategies) {
         Objects.requireNonNull(dataClass, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
         if (!registry.dataClasses().contains(dataClass))
@@ -537,7 +545,7 @@ public class PipelineManager implements Pipeline {
 
         if (pipelineData == null) {
             if (queryStrategies.length > 0) {
-                pipelineData = localCache.instantiateData(this, dataClass, uuid);
+                pipelineData = localCache.instantiateData(this, dataClass, uuid, instanceCreator);
 
                 pipelineData.loadDependentData();
                 pipelineData.onCreate();
@@ -585,6 +593,7 @@ public class PipelineManager implements Pipeline {
         return executorService;
     }
 
+    @NotNull
     @Override
     public PipelineRegistry registry() {
         return registry;

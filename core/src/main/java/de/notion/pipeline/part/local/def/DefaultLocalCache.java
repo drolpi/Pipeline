@@ -3,9 +3,10 @@ package de.notion.pipeline.part.local.def;
 import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
 import de.notion.pipeline.part.local.LocalCache;
-import de.notion.pipeline.registry.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -83,14 +84,15 @@ public class DefaultLocalCache implements LocalCache {
     }
 
     @Override
-    public synchronized <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
+    public synchronized <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
 
         if (dataExist(dataClass, objectUUID))
             return data(dataClass, objectUUID);
 
-        InstanceCreator<S> instanceCreator = pipeline.registry().instanceCreator(dataClass);
+        if (instanceCreator == null)
+            instanceCreator = pipeline.registry().instanceCreator(dataClass);
 
         S instance = null;
         try {

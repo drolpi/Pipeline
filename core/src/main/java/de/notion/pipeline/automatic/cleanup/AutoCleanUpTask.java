@@ -3,7 +3,7 @@ package de.notion.pipeline.automatic.cleanup;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.part.local.LocalCache;
-import de.notion.pipeline.registry.PipelineRegistry;
+import de.notion.pipeline.config.PipelineRegistry;
 
 public class AutoCleanUpTask implements Runnable {
 

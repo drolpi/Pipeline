@@ -19,14 +19,16 @@ import java.util.UUID;
 
 public class RedisDataUpdater implements DataUpdater {
 
+    private final LocalCache localCache;
     private final RedissonClient redissonClient;
     private final RTopic dataTopic;
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
     private final LoadingTaskManager loadingTaskManager;
 
-    public RedisDataUpdater(@NotNull RedissonClient redissonClient, @NotNull LocalCache localCache, @NotNull Class<? extends PipelineData> dataClass) {
+    public RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient, @NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "DataClass can't be null!");
+        this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
 
         this.dataTopic = topic(dataClass);
@@ -50,7 +52,7 @@ public class RedisDataUpdater implements DataUpdater {
                     return;
                 System.out.println("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 pipelineData.markForRemoval();
-                pipelineData.pipeline().delete(pipelineData.getClass(), pipelineData.objectUUID(), false, Pipeline.QueryStrategy.LOCAL);
+                pipeline.delete(pipelineData.getClass(), pipelineData.objectUUID(), false, Pipeline.QueryStrategy.LOCAL);
             }
         };
         dataTopic.addListener(DataBlock.class, messageListener);

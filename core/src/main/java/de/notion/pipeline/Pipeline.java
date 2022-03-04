@@ -3,14 +3,15 @@ package de.notion.pipeline;
 import com.google.gson.Gson;
 import de.notion.common.system.SystemLoadable;
 import de.notion.pipeline.config.PipelineConfig;
+import de.notion.pipeline.config.PipelineRegistry;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.filter.Filter;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
+import de.notion.pipeline.operator.filter.Filter;
 import de.notion.pipeline.part.PipelineDataSynchronizer;
 import de.notion.pipeline.part.cache.GlobalCache;
 import de.notion.pipeline.part.local.LocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import de.notion.pipeline.part.storage.GlobalStorage;
-import de.notion.pipeline.registry.PipelineRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,19 +27,41 @@ public interface Pipeline extends SystemLoadable {
     }
 
     //Load by provided uuid
-    @Nullable <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
+    @Nullable <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies);
 
-    @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies);
+    @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies);
+
+    //Load by provided uuid without instanceCreator
+    @Nullable
+    default <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies) {
+        return load(type, uuid, loadingStrategy, callback, null, creationStrategies);
+    }
+
+    @NotNull
+    default <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @NotNull QueryStrategy... creationStrategies) {
+        return loadAsync(type, uuid, loadingStrategy, callback, null, creationStrategies);
+    }
 
     //Load by provided uuid without callback
     @Nullable
+    default <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies) {
+        return load(type, uuid, loadingStrategy, null, instanceCreator, creationStrategies);
+    }
+
+    @NotNull
+    default <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @Nullable InstanceCreator<T> instanceCreator, @NotNull QueryStrategy... creationStrategies) {
+        return loadAsync(type, uuid, loadingStrategy, null, instanceCreator, creationStrategies);
+    }
+
+    //Load by provided uuid without callback & instanceCreator
+    @Nullable
     default <T extends PipelineData> T load(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
-        return load(type, uuid, loadingStrategy, null, creationStrategies);
+        return load(type, uuid, loadingStrategy, null, null, creationStrategies);
     }
 
     @NotNull
     default <T extends PipelineData> CompletableFuture<T> loadAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull LoadingStrategy loadingStrategy, @NotNull QueryStrategy... creationStrategies) {
-        return loadAsync(type, uuid, loadingStrategy, null, creationStrategies);
+        return loadAsync(type, uuid, loadingStrategy, null, null, creationStrategies);
     }
 
     //Load all data by filteredUUIDs

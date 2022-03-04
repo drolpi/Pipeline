@@ -1,8 +1,8 @@
-package de.notion.pipeline.registry.instance.def;
+package de.notion.pipeline.datatype.instance.def;
 
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.registry.instance.InstanceCreator;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

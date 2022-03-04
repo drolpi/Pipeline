@@ -2,6 +2,7 @@ package de.notion.pipeline.part.local;
 
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.Pipeline;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,5 +23,5 @@ public interface LocalCache {
 
     <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
 
-    <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
+    <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator);
 }

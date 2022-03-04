@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class PipelineData {
+public abstract class PipelineData implements DataType {
 
     private final transient Pipeline pipeline;
     private transient Gson gson;
@@ -54,7 +54,11 @@ public abstract class PipelineData {
     }
 
     public void save(boolean saveToGlobalStorage) {
-        save(true, saveToGlobalStorage, null);
+        save(true, saveToGlobalStorage);
+    }
+
+    public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage) {
+        save(saveToGlobalCache, saveToGlobalStorage, null);
     }
 
     public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, Runnable callback) {
@@ -77,46 +81,6 @@ public abstract class PipelineData {
             if (saveToGlobalStorage)
                 pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), internal);
         });
-    }
-
-    /**
-     * Executed after a DataManipulator synced the object
-     *
-     * @param dataBeforeSync The data the object had before syncing
-     */
-    public void onSync(PipelineData dataBeforeSync) {
-    }
-
-    /**
-     * Executed after instantiation of the Object
-     * Executed before Object is put into LocalCache
-     */
-    public void onCreate() {
-    }
-
-    /**
-     * Executed before the object is deleted from local cache.
-     */
-    public void onDelete() {
-    }
-
-    /**
-     * Executed directly after Data was loaded from Pipeline. Not if it was found in LocalCache
-     */
-    public void onLoad() {
-    }
-
-    /**
-     * Executed before onLoad and before onCreate everytime the data is being loaded into local cache.
-     * You can use this function to load dependent data from pipeline that is directly associated with this data
-     */
-    public void loadDependentData() {
-    }
-
-    /**
-     * Executed before Data is cleared from LocalCache
-     */
-    public void onCleanUp() {
     }
 
     public void markForRemoval() {
@@ -145,10 +109,7 @@ public abstract class PipelineData {
         return dataUpdater;
     }
 
-    public Pipeline pipeline() {
-        return pipeline;
-    }
-
+    @Override
     public JsonObject serialize() {
         unMarkRemoval();
         return gson.toJsonTree(this).getAsJsonObject();
@@ -158,6 +119,7 @@ public abstract class PipelineData {
         return gson.toJson(serialize());
     }
 
+    @Override
     public PipelineData deserialize(JsonObject data) {
         unMarkRemoval();
         return gson.fromJson(data, getClass());

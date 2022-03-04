@@ -1,8 +1,8 @@
-package de.notion.pipeline.registry;
+package de.notion.pipeline.config;
 
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.registry.instance.InstanceCreator;
-import de.notion.pipeline.registry.instance.def.DefaultInstanceCreator;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
+import de.notion.pipeline.datatype.instance.def.DefaultInstanceCreator;
 
 import java.util.HashMap;
 import java.util.Map;
