@@ -27,7 +27,7 @@ public class MongoStorage implements GlobalStorage {
     public MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
         this.gson = pipeline.gson();
         this.mongoDatabase = mongoDatabase;
-        System.out.println("Mongo Global Storage started"); //DEBUG
+        System.out.println("Mongo storage started"); //DEBUG
     }
 
     @Override
