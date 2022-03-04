@@ -33,9 +33,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        pipelineManager.executorService().submit(new CatchingRunnable(() -> {
-            future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback));
-        }));
+        pipelineManager.executorService().submit(new CatchingRunnable(() -> future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
         return future;
     }
 
@@ -85,7 +83,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
+                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
                 }
 
                 var data = pipelineManager.localCache().data(dataClass, objectUUID);
@@ -106,7 +104,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID));
+                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
                 }
 
                 var data = pipelineManager.localCache().data(dataClass, objectUUID);
@@ -123,7 +121,7 @@ public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
         var data = pipelineManager.localCache().data(dataClass, objectUUID);
         var optional = loadingTaskManager.finishLoadingTask(data);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             data = optional.get();
         }
 

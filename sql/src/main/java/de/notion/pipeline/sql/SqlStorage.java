@@ -24,10 +24,15 @@ import java.util.function.Function;
 
 public abstract class SqlStorage implements GlobalStorage {
 
-    //TODO: Vielleicht queries als CONSTANT
-
     protected static final String TABLE_COLUMN_KEY = "UUID";
     protected static final String TABLE_COLUMN_VAL = "Document";
+
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (%s VARCHAR(64) PRIMARY KEY, %s TEXT);";
+    private static final String SELECT_ALL = "SELECT %s FROM `%s`;";
+    private static final String SELECT_BY_UUID = "SELECT %s FROM `%s` WHERE %s = ?";
+    private static final String INSERT_BY_UUID = "INSERT INTO `%s` (%s,%s) VALUES (?, ?);";
+    private static final String UPDATE_BY_UUID = "UPDATE `%s` SET %s=? WHERE %s=?";
+    private static final String DELETE_BY_UUID = "DELETE FROM `%s` WHERE %s = ?";
 
     protected final Gson gson;
 
@@ -40,7 +45,7 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeQuery(
-                String.format("SELECT %s FROM `%s` WHERE %s = ?", TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
+                String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
                 resultSet -> {
                     try {
                         return resultSet.next() ? JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject() : null;
@@ -59,7 +64,7 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeQuery(
-                String.format("SELECT %s FROM `%s` WHERE %s = ?", TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
+                String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
                 resultSet -> {
                     try {
                         return resultSet.next();
@@ -79,12 +84,12 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
         if (!dataExist(dataClass, objectUUID)) {
             executeUpdate(
-                    "INSERT INTO `" + tableName(dataClass) + "` (" + TABLE_COLUMN_KEY + "," + TABLE_COLUMN_VAL + ") VALUES (?, ?);",
+                    INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL,
                     objectUUID.toString(), gson.toJson(dataToSave)
             );
         } else {
             executeUpdate(
-                    "UPDATE `" + tableName(dataClass) + "` SET " + TABLE_COLUMN_VAL + "=? WHERE " + TABLE_COLUMN_KEY + "=?",
+                    UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY,
                     gson.toJson(dataToSave), objectUUID.toString()
             );
         }
@@ -95,7 +100,7 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeUpdate(
-                String.format("DELETE FROM `%s` WHERE %s = ?", tableName(dataClass), TABLE_COLUMN_KEY),
+                String.format(DELETE_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY),
                 objectUUID.toString()
         ) != -1;
     }
@@ -104,7 +109,7 @@ public abstract class SqlStorage implements GlobalStorage {
     public Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         return executeQuery(
-                String.format("SELECT %s FROM `%s`;", TABLE_COLUMN_KEY, tableName(dataClass)),
+                String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
                 resultSet -> {
                     Set<UUID> keys = new HashSet<>();
                     try {
@@ -120,9 +125,9 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> type, @NotNull Filter filter) {
+    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
         return executeQuery(
-                String.format("SELECT * FROM `%s`;", tableName(type)),
+                String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
                 resultSet -> {
                     List<UUID> uuids = new ArrayList<>();
                     try {
@@ -150,7 +155,7 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(name, "name can't be null!");
         executeUpdate(String.format(
-                "CREATE TABLE IF NOT EXISTS `%s` (%s VARCHAR(64) PRIMARY KEY, %s TEXT);",
+                CREATE_TABLE,
                 name,
                 TABLE_COLUMN_KEY,
                 TABLE_COLUMN_VAL

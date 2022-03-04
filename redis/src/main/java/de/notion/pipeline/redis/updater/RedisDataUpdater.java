@@ -19,6 +19,8 @@ import java.util.UUID;
 
 public class RedisDataUpdater implements DataUpdater {
 
+    private final static String DATA_TOPIC = "DataTopic:%s";
+
     private final LocalCache localCache;
     private final RedissonClient redissonClient;
     private final RTopic dataTopic;
@@ -89,8 +91,7 @@ public class RedisDataUpdater implements DataUpdater {
 
     private synchronized RTopic topic(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        //TODO: CONSTANT
-        var key = "DataTopic:" + AnnotationResolver.storageIdentifier(dataClass);
+        var key = String.format(DATA_TOPIC, AnnotationResolver.storageIdentifier(dataClass));
         return redissonClient.getTopic(key, new SerializationCodec());
     }
 }

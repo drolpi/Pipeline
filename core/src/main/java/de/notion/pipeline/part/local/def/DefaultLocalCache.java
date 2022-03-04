@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 public class DefaultLocalCache implements LocalCache {
 
-    private final static String DEFAULT_DATA = "{\"objectUUID\": \"%uuid%\"}";
     private final Map<Class<? extends PipelineData>, Map<UUID, PipelineData>> dataObjects = new ConcurrentHashMap<>();
 
     public DefaultLocalCache() {
