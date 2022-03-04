@@ -106,7 +106,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         return executeQuery(
                 String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
@@ -121,11 +121,11 @@ public abstract class SqlStorage implements GlobalStorage {
                     }
 
                     return keys;
-                }, new HashSet<>());
+                }, Set.of());
     }
 
     @Override
-    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
+    public @NotNull List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
         return executeQuery(
                 String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
                 resultSet -> {
@@ -143,12 +143,12 @@ public abstract class SqlStorage implements GlobalStorage {
                     }
 
                     return uuids;
-                }, new ArrayList<>());
+                }, List.of());
     }
 
     @Override
-    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> type) {
-        return null;
+    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+        return new ArrayList<>();
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
