@@ -84,12 +84,12 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
         if (!dataExist(dataClass, objectUUID)) {
             executeUpdate(
-                    INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL,
+                    String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
                     objectUUID.toString(), gson.toJson(dataToSave)
             );
         } else {
             executeUpdate(
-                    UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY,
+                    String.format(UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY),
                     gson.toJson(dataToSave), objectUUID.toString()
             );
         }
