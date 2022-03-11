@@ -30,7 +30,7 @@ public final class ConnectionDataLoader {
                                 var optional = AnnotationResolver.preload(aClass);
 
                                 optional.ifPresent(preload -> {
-                                    var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, preload.creationStrategies());
+                                    var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE);
                                     if (data == null)
                                         return;
 

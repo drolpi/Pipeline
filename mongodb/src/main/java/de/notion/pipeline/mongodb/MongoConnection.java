@@ -6,12 +6,12 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import de.notion.pipeline.mongodb.storage.MongoStorage;
 import de.notion.pipeline.part.storage.GlobalStorage;
 
-public class MongoConfig implements GlobalStorageConfig, PartConfig {
+public class MongoConnection implements GlobalStorageConnection, Connection {
 
     private final String host;
     private final int port;
@@ -23,11 +23,11 @@ public class MongoConfig implements GlobalStorageConfig, PartConfig {
     private MongoDatabase mongoDatabase;
     private boolean connected;
 
-    public MongoConfig(String host, int port, String database) {
+    public MongoConnection(String host, int port, String database) {
         this(host, port, database, "", "");
     }
 
-    public MongoConfig(String host, int port, String database, String user, String password) {
+    public MongoConnection(String host, int port, String database, String user, String password) {
         this.host = host;
         this.port = port;
         this.database = database;

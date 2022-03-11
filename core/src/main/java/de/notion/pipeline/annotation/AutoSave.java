@@ -7,10 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Unload {
-
-    Action globalCacheAction() default Action.NONE;
-
-    Action globalStorageAction() default Action.NONE;
+public @interface AutoSave {
 
 }

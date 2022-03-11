@@ -1,23 +1,22 @@
 package de.notion.pipeline.sql.sqllite;
 
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import de.notion.pipeline.part.storage.GlobalStorage;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class SqlLiteConfig implements GlobalStorageConfig, PartConfig {
+public class SqlLiteConnection implements GlobalStorageConnection, Connection {
 
     private final String sqlLiteFile;
-    private Connection connection;
+    private java.sql.Connection connection;
     private boolean connected;
 
-    public SqlLiteConfig(Path sqlLiteFile) {
+    public SqlLiteConnection(Path sqlLiteFile) {
         this.sqlLiteFile = sqlLiteFile.toString();
     }
 

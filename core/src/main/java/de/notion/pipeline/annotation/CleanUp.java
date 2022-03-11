@@ -14,8 +14,4 @@ public @interface CleanUp {
 
     TimeUnit timeUnit() default TimeUnit.MINUTES;
 
-    Action globalCacheAction() default Action.NONE;
-
-    Action globalStorageAction() default Action.NONE;
-
 }

@@ -3,11 +3,11 @@ package de.notion.pipeline.sql.mysql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import de.notion.pipeline.part.storage.GlobalStorage;
 
-public class MySqlConfig implements GlobalStorageConfig, PartConfig {
+public class MySqlConnection implements GlobalStorageConnection, Connection {
 
     private static final String CONNECT_URL_FORMAT = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC&useSSL=%b&trustServerCertificate=%b";
 
@@ -21,7 +21,7 @@ public class MySqlConfig implements GlobalStorageConfig, PartConfig {
     private HikariDataSource hikariDataSource;
     private boolean connected;
 
-    public MySqlConfig(String host, int port, boolean useSsl, String database, String user, String password) {
+    public MySqlConnection(String host, int port, boolean useSsl, String database, String user, String password) {
         this.host = host;
         this.port = port;
         this.useSsl = useSsl;

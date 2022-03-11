@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
+public final class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
 
     private final PipelineManager pipelineManager;
     private final ExecutorService executorService;

@@ -1,19 +1,19 @@
 package de.notion.pipeline.json;
 
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import de.notion.pipeline.json.storage.JsonStorage;
 import de.notion.pipeline.part.storage.GlobalStorage;
 
 import java.nio.file.Path;
 
-public class JsonConfig implements GlobalStorageConfig, PartConfig {
+public class JsonConnection implements GlobalStorageConnection, Connection {
 
     private final String jsonDbFile;
     private boolean connected;
 
-    public JsonConfig(Path jsonDbFile) {
+    public JsonConnection(Path jsonDbFile) {
         this.jsonDbFile = jsonDbFile.toString();
     }
 

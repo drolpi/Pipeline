@@ -1,10 +1,10 @@
 package de.notion.pipeline.annotation.resolver;
 
 import de.notion.pipeline.annotation.CleanUp;
-import de.notion.pipeline.annotation.Context;
+import de.notion.pipeline.annotation.property.Context;
 import de.notion.pipeline.annotation.Preload;
 import de.notion.pipeline.annotation.Properties;
-import de.notion.pipeline.annotation.Unload;
+import de.notion.pipeline.annotation.AutoSave;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -33,8 +33,8 @@ public final class AnnotationResolver {
     }
 
     @NotNull
-    public static Optional<Unload> autoSave(Class<?> classType) {
-        return Optional.ofNullable(classType.getAnnotation(Unload.class));
+    public static Optional<AutoSave> autoSave(Class<?> classType) {
+        return Optional.ofNullable(classType.getAnnotation(AutoSave.class));
     }
 
     @NotNull

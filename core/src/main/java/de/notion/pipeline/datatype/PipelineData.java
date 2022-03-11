@@ -40,33 +40,32 @@ public abstract class PipelineData implements DataType {
     }
 
     @Override
-    public void save(boolean saveToGlobalStorage) {
-        save(true, saveToGlobalStorage);
-    }
-
-    @Override
-    public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage) {
-        save(saveToGlobalCache, saveToGlobalStorage, null);
-    }
-
-    @Override
-    public void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, @Nullable Runnable callback) {
+    public void save(@Nullable Runnable callback) {
         var startTime = System.currentTimeMillis();
         System.out.println("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
 
-        if (this.dataUpdater == null)
-            return;
-        this.dataUpdater.pushUpdate(this, () -> {
-            if (saveToGlobalCache)
-                pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID());
+        var runnable = new Runnable() {
+            private int runCount = 0;
 
-            if (saveToGlobalStorage)
-                pipeline.dataSynchronizer().synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), () -> {
-                    System.out.println("Done saving in " + (System.currentTimeMillis() - startTime) + "ms [" + getClass().getSimpleName() + "]");
-                    if (callback != null)
-                        callback.run();
-                });
+            @Override
+            public void run() {
+                runCount++;
+                if (runCount != 2)
+                    return;
+
+                System.out.println("Done saving in " + (System.currentTimeMillis() - startTime) + "ms [" + getClass().getSimpleName() + "]");
+                if (callback != null)
+                    callback.run();
+            }
+        };
+
+        this.dataUpdater.pushUpdate(this, () -> {
+            pipeline.dataSynchronizer()
+                    .synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable);
+
+            pipeline.dataSynchronizer()
+                    .synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable);
         });
     }
 
@@ -93,8 +92,10 @@ public abstract class PipelineData implements DataType {
     @Override
     public void updateLastUse() {
         this.lastUse = System.currentTimeMillis();
-        if (pipeline.globalCache() != null)
-            pipeline.globalCache().updateExpireTime(getClass(), objectUUID());
+        var globalCache = pipeline.globalCache();
+
+        if (globalCache != null)
+            globalCache.updateExpireTime(getClass(), objectUUID());
     }
 
     @NotNull

@@ -1,9 +1,9 @@
 package de.notion.pipeline.redis;
 
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.DataUpdaterConfig;
-import de.notion.pipeline.config.part.GlobalCacheConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.DataUpdaterConnection;
+import de.notion.pipeline.config.connection.GlobalCacheConnection;
 import de.notion.pipeline.part.cache.GlobalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
 import de.notion.pipeline.redis.cache.RedisCache;
@@ -11,11 +11,10 @@ import de.notion.pipeline.redis.updater.RedisDataUpdaterService;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
 
 import java.util.concurrent.TimeUnit;
 
-public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartConfig {
+public class RedisConnection implements DataUpdaterConnection, GlobalCacheConnection, Connection {
 
     private final boolean clusterMode;
     private final String[] addresses;
@@ -24,7 +23,7 @@ public class RedisConfig implements DataUpdaterConfig, GlobalCacheConfig, PartCo
     private RedissonClient redissonClient;
     private boolean connected;
 
-    public RedisConfig(boolean useCluster, String password, String... addresses) {
+    public RedisConnection(boolean useCluster, String password, String... addresses) {
         this.clusterMode = useCluster;
         this.addresses = addresses;
         this.password = password;

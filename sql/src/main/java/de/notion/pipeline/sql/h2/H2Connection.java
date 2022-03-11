@@ -1,18 +1,17 @@
 package de.notion.pipeline.sql.h2;
 
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.config.PartConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.Connection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.h2.Driver;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class H2Config implements GlobalStorageConfig, PartConfig {
+public class H2Connection implements GlobalStorageConnection, Connection {
 
     static {
         Driver.load();
@@ -20,10 +19,10 @@ public class H2Config implements GlobalStorageConfig, PartConfig {
 
     private final String h2dbFile;
 
-    private Connection connection;
+    private java.sql.Connection connection;
     private boolean connected;
 
-    public H2Config(Path h2dbFile) {
+    public H2Connection(Path h2dbFile) {
         this.h2dbFile = h2dbFile.toString();
     }
 

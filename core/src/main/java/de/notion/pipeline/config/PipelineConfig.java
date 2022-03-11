@@ -1,64 +1,62 @@
 package de.notion.pipeline.config;
 
-import de.notion.pipeline.config.part.DataUpdaterConfig;
-import de.notion.pipeline.config.part.GlobalCacheConfig;
-import de.notion.pipeline.config.part.GlobalStorageConfig;
+import de.notion.pipeline.config.connection.DataUpdaterConnection;
+import de.notion.pipeline.config.connection.GlobalCacheConnection;
+import de.notion.pipeline.config.connection.GlobalStorageConnection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final record PipelineConfig(DataUpdaterConfig updaterConfig, GlobalCacheConfig globalCacheConfig,
-                                   GlobalStorageConfig globalStorageConfig) {
+public final record PipelineConfig(DataUpdaterConnection dataUpdaterConnection,
+                                   GlobalCacheConnection globalCacheConnection,
+                                   GlobalStorageConnection globalStorageConnection) {
 
     @NotNull
     public static Builder builder() {
         return new Builder();
     }
 
-    @Override
     @Nullable
-    public DataUpdaterConfig updaterConfig() {
-        return updaterConfig;
+    public DataUpdaterConnection dataUpdaterConnection() {
+        return dataUpdaterConnection;
     }
 
-    @Override
     @Nullable
-    public GlobalCacheConfig globalCacheConfig() {
-        return globalCacheConfig;
+    public GlobalCacheConnection globalCacheConnection() {
+        return globalCacheConnection;
     }
 
-    @Override
     @Nullable
-    public GlobalStorageConfig globalStorageConfig() {
-        return globalStorageConfig;
+    public GlobalStorageConnection globalStorageConnection() {
+        return globalStorageConnection;
     }
 
     public static class Builder {
 
-        private DataUpdaterConfig updaterConfig;
-        private GlobalCacheConfig globalCacheConfig;
-        private GlobalStorageConfig globalStorageConfig;
+        private DataUpdaterConnection dataUpdaterConnection;
+        private GlobalCacheConnection globalCacheConnection;
+        private GlobalStorageConnection globalStorageConnection;
 
         @NotNull
-        public Builder updater(@Nullable DataUpdaterConfig updaterConfig) {
-            this.updaterConfig = updaterConfig;
+        public Builder dataUpdater(@Nullable DataUpdaterConnection dataUpdaterConnection) {
+            this.dataUpdaterConnection = dataUpdaterConnection;
             return this;
         }
 
         @NotNull
-        public Builder globalCache(@Nullable GlobalCacheConfig globalCacheConfig) {
-            this.globalCacheConfig = globalCacheConfig;
+        public Builder globalCache(@Nullable GlobalCacheConnection globalCacheConnection) {
+            this.globalCacheConnection = globalCacheConnection;
             return this;
         }
 
         @NotNull
-        public Builder globalStorage(@Nullable GlobalStorageConfig globalStorageConfig) {
-            this.globalStorageConfig = globalStorageConfig;
+        public Builder globalStorage(@Nullable GlobalStorageConnection globalStorageConnection) {
+            this.globalStorageConnection = globalStorageConnection;
             return this;
         }
 
         @NotNull
         public PipelineConfig build() {
-            return new PipelineConfig(updaterConfig, globalCacheConfig, globalStorageConfig);
+            return new PipelineConfig(dataUpdaterConnection, globalCacheConnection, globalStorageConnection);
         }
     }
 }

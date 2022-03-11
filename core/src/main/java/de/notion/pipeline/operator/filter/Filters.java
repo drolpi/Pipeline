@@ -4,7 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class Filters {
+public final class Filters {
+
+    private Filters() {
+        throw new UnsupportedOperationException();
+    }
 
     @NotNull
     public static Filter or(@NotNull Filter first, @NotNull Filter second) {

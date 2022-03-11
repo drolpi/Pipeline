@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
+public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     private final Map<UUID, Map<Class<? extends PipelineData>, PipelineTask<?>>> pendingTasks = new ConcurrentHashMap<>();
 

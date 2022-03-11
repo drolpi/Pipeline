@@ -52,11 +52,11 @@ public interface DataType {
     @NotNull
     UUID objectUUID();
 
-    void save(boolean saveToGlobalStorage);
+    default void save() {
+        save(null);
+    }
 
-    void save(boolean saveToGlobalCache, boolean saveToGlobalStorage);
-
-    void save(boolean saveToGlobalCache, boolean saveToGlobalStorage, @Nullable Runnable callback);
+    void save(@Nullable Runnable callback);
 
     boolean isMarkedForRemoval();
 
