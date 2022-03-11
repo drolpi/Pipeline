@@ -18,7 +18,7 @@ public final class ConnectionDataLoader {
         this.pipeline = pipeline;
     }
 
-    protected final void loadConnectionData(@NotNull UUID connection, Runnable callback) {
+    public final void loadConnectionData(@NotNull UUID connection, Runnable callback) {
         Objects.requireNonNull(connection, "player can't be null!");
 
         new TaskBatch().doAsync(() -> {
@@ -42,7 +42,7 @@ public final class ConnectionDataLoader {
         ).executeBatch();
     }
 
-    protected final void removeConnectionData(@NotNull UUID connection, Runnable callback) {
+    public final void removeConnectionData(@NotNull UUID connection, Runnable callback) {
         Objects.requireNonNull(connection, "player can't be null!");
 
         new TaskBatch().doAsync(() -> {
