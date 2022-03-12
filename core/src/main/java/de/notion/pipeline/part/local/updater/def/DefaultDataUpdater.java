@@ -2,16 +2,16 @@ package de.notion.pipeline.part.local.updater.def;
 
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.updater.DataUpdater;
-import de.notion.pipeline.part.local.updater.LoadingTaskManager;
+import de.notion.pipeline.part.local.updater.LoadingTaskSynchronizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultDataUpdater implements DataUpdater {
 
-    private final LoadingTaskManager loadingTaskManager;
+    private final LoadingTaskSynchronizer loadingTaskSynchronizer;
 
     public DefaultDataUpdater() {
-        this.loadingTaskManager = new LoadingTaskManager();
+        this.loadingTaskSynchronizer = new LoadingTaskSynchronizer();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DefaultDataUpdater implements DataUpdater {
 
     @NotNull
     @Override
-    public LoadingTaskManager loadingTaskManager() {
-        return loadingTaskManager;
+    public LoadingTaskSynchronizer loadingTaskManager() {
+        return loadingTaskSynchronizer;
     }
 }

@@ -20,7 +20,7 @@ public interface DataUpdater {
     void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback);
 
     @NotNull
-    LoadingTaskManager loadingTaskManager();
+    LoadingTaskSynchronizer loadingTaskManager();
 
     class RemoveDataBlock extends DataBlock {
         public RemoveDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {

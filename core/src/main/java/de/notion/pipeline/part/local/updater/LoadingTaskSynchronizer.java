@@ -10,11 +10,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class LoadingTaskManager {
+public class LoadingTaskSynchronizer {
 
     private final Cache<UUID, Optional<JsonObject>> tasks;
 
-    public LoadingTaskManager() {
+    public LoadingTaskSynchronizer() {
         this.tasks = CacheBuilder
                 .newBuilder()
                 .expireAfterWrite(30, TimeUnit.SECONDS)
@@ -25,7 +25,7 @@ public class LoadingTaskManager {
         tasks.put(objectUUID, Optional.empty());
     }
 
-    public void receivedData(@NotNull UUID objectUUID, JsonObject data) {
+    public void updateData(@NotNull UUID objectUUID, JsonObject data) {
         if (tasks.asMap().containsKey(objectUUID)) {
             tasks.put(objectUUID, Optional.ofNullable(data));
             System.out.println("Received Sync while loading " + System.currentTimeMillis()); //DEBUG

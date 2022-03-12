@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.part.local.updater.LoadingTaskManager;
+import de.notion.pipeline.part.local.updater.LoadingTaskSynchronizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,9 +55,9 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
             return false;
 
         var startTime = System.currentTimeMillis();
-        LoadingTaskManager loadingTaskManager = pipelineManager.dataUpdaterService().dataUpdater(dataClass).loadingTaskManager();
+        LoadingTaskSynchronizer loadingTaskSynchronizer = pipelineManager.dataUpdaterService().dataUpdater(dataClass).loadingTaskManager();
         if (destination.equals(DataSourceType.LOCAL))
-            loadingTaskManager.registerLoadingTask(objectUUID);
+            loadingTaskSynchronizer.registerLoadingTask(objectUUID);
 
         System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
 
@@ -127,7 +127,7 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
 
         if (destination.equals(DataSourceType.LOCAL)) {
             var data = pipelineManager.localCache().data(dataClass, objectUUID);
-            var optional = loadingTaskManager.finishLoadingTask(data);
+            var optional = loadingTaskSynchronizer.finishLoadingTask(data);
             if (optional.isPresent())
                 pipelineManager.localCache().save(dataClass, optional.get());
         }
