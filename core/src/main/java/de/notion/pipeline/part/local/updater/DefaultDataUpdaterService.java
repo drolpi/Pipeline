@@ -1,8 +1,9 @@
-package de.notion.pipeline.part.local.updater.def;
+package de.notion.pipeline.part.local.updater;
 
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.updater.DataUpdater;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
+import de.notion.pipeline.part.local.updater.DefaultDataUpdater;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

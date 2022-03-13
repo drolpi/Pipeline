@@ -1,10 +1,12 @@
 package de.notion.pipeline.part.local.updater;
 
+import com.google.gson.JsonObject;
 import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DataUpdater {
@@ -19,8 +21,12 @@ public interface DataUpdater {
      */
     void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback);
 
+    void registerLoadingTask(@NotNull UUID objectUUID);
+
+    void receivedData(@NotNull UUID objectUUID, JsonObject data);
+
     @NotNull
-    LoadingTaskSynchronizer loadingTaskManager();
+    Optional<PipelineData> finishLoadingTask(@NotNull PipelineData pipelineData);
 
     class RemoveDataBlock extends DataBlock {
         public RemoveDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {

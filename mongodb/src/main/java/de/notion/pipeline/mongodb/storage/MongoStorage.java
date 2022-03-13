@@ -2,23 +2,19 @@ package de.notion.pipeline.mongodb.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Sorts;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.operator.filter.Filter;
+import de.notion.pipeline.operator.FindOptions;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 public class MongoStorage implements GlobalStorage {
@@ -87,45 +83,39 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public synchronized Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        return findUUIDs(dataClass, new FindOptions());
+    }
+
+    @Override
+    @NotNull
+    public List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
 
         var collection = mongoStorage(dataClass);
-        var uuids = new HashSet<UUID>();
+        var uuids = new ArrayList<UUID>();
+
+        var filter = findOptions.filter();
+        var skip = findOptions.skip();
+        var limit = findOptions.limit() + skip;
 
         try (var cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
+            for (int i = 0; cursor.hasNext(); i++) {
                 var document = cursor.next();
+                if (skip > i)
+                    continue;
+                if (i > limit)
+                    break;
+
+                if (filter != null && !filter.check(gson.toJsonTree(document).getAsJsonObject()))
+                    continue;
                 if (!document.containsKey("objectUUID"))
                     continue;
                 uuids.add(UUID.fromString((String) document.get("objectUUID")));
             }
         }
         return uuids;
-    }
-
-    @Override
-    public List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-
-        var collection = mongoStorage(dataClass);
-        var uuids = new ArrayList<UUID>();
-
-        try (var cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                var document = cursor.next();
-
-                if (filter.check(gson.toJsonTree(document).getAsJsonObject())) {
-                    uuids.add(UUID.fromString((String) document.get("objectUUID")));
-                }
-            }
-        }
-        return uuids;
-    }
-
-    @Override
-    public List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        return new ArrayList<>();
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {

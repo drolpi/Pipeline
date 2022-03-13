@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.part.local.updater.LoadingTaskSynchronizer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,12 +13,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public final class PipelineDataSynchronizerImpl implements PipelineDataSynchronizer {
+public final class DataSynchronizerImpl implements DataSynchronizer {
 
     private final PipelineManager pipelineManager;
     private final ExecutorService executorService;
 
-    public PipelineDataSynchronizerImpl(PipelineManager pipelineManager) {
+    public DataSynchronizerImpl(PipelineManager pipelineManager) {
         this.pipelineManager = pipelineManager;
         this.executorService = pipelineManager.executorService();
     }
@@ -55,11 +54,9 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
             return false;
 
         var startTime = System.currentTimeMillis();
-        LoadingTaskSynchronizer loadingTaskSynchronizer = pipelineManager.dataUpdaterService().dataUpdater(dataClass).loadingTaskManager();
+        var dataUpdater = pipelineManager.dataUpdaterService().dataUpdater(dataClass);
         if (destination.equals(DataSourceType.LOCAL))
-            loadingTaskSynchronizer.registerLoadingTask(objectUUID);
-
-        System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + source + " -> " + destination + "]"); //DEBUG
+            dataUpdater.registerLoadingTask(objectUUID);
 
         if (source.equals(DataSourceType.LOCAL)) {
             if (!pipelineManager.localCache().dataExist(dataClass, objectUUID))
@@ -69,17 +66,18 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
                 return false;
             data.updateLastUse();
             data.unMarkRemoval();
-            JsonObject dataToSave = data.serialize();
-            // Local to Global Cache
+            var dataToSave = data.serialize();
+            System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.LOCAL + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.GLOBAL_CACHE))
+                // Local to Global Cache
                 pipelineManager.globalCache().saveData(dataClass, objectUUID, dataToSave);
-                // Local to Global Storage
             else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
+                // Local to Global Storage
                 pipelineManager.globalStorage().saveData(dataClass, objectUUID, dataToSave);
         } else if (source.equals(DataSourceType.GLOBAL_CACHE)) {
             if (!pipelineManager.globalCache().dataExist(dataClass, objectUUID))
                 return false;
-            JsonObject globalCachedData = pipelineManager.globalCache().loadData(dataClass, objectUUID);
+            var globalCachedData = pipelineManager.globalCache().loadData(dataClass, objectUUID);
             // Error while loading from redis
             if (globalCachedData == null) {
                 System.out.println("Trying to load from storage...");
@@ -87,6 +85,7 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
                 return false;
             }
 
+            System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_CACHE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
@@ -108,6 +107,7 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
                 return false;
             var globalSavedData = pipelineManager.globalStorage().loadData(dataClass, objectUUID);
 
+            System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_STORAGE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
@@ -127,14 +127,13 @@ public final class PipelineDataSynchronizerImpl implements PipelineDataSynchroni
 
         if (destination.equals(DataSourceType.LOCAL)) {
             var data = pipelineManager.localCache().data(dataClass, objectUUID);
-            var optional = loadingTaskSynchronizer.finishLoadingTask(data);
-            if (optional.isPresent())
-                pipelineManager.localCache().save(dataClass, optional.get());
+            var optional = dataUpdater.finishLoadingTask(data);
+            optional.ifPresent(pipelineData -> pipelineManager.localCache().save(dataClass, pipelineData));
         }
 
-        System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         if (callback != null)
             callback.run();
+        System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         return true;
     }
 

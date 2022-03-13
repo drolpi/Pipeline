@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.operator.filter.Filter;
+import de.notion.pipeline.operator.FindOptions;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,10 +15,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -106,37 +104,35 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        return executeQuery(
-                String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
-                resultSet -> {
-                    Set<UUID> keys = new HashSet<>();
-                    try {
-                        while (resultSet.next()) {
-                            keys.add(UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY)));
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-
-                    return keys;
-                }, Set.of());
+        return findUUIDs(dataClass, new FindOptions());
     }
 
     @Override
-    public @NotNull List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
+    public @NotNull List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
         return executeQuery(
                 String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
                 resultSet -> {
-                    List<UUID> uuids = new ArrayList<>();
-                    try {
-                        while (resultSet.next()) {
-                            JsonObject jsonObject = JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject();
+                    var uuids = new ArrayList<UUID>();
 
-                            if (filter.check(jsonObject)) {
-                                uuids.add(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()));
-                            }
+                    var filter = findOptions.filter();
+                    var skip = findOptions.skip();
+                    var limit = findOptions.limit() + skip;
+                    try {
+                        for (int i = 0; resultSet.next(); i++) {
+                            var data = resultSet.getString(TABLE_COLUMN_VAL);
+                            if (skip > i)
+                                continue;
+                            if (i >= limit)
+                                break;
+
+                            JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
+
+                            if (filter != null && !filter.check(jsonObject))
+                                continue;
+
+                            uuids.add(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()));
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -144,11 +140,6 @@ public abstract class SqlStorage implements GlobalStorage {
 
                     return uuids;
                 }, List.of());
-    }
-
-    @Override
-    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        return new ArrayList<>();
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {

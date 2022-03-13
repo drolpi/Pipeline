@@ -59,7 +59,7 @@ public final class ConnectionDataLoader {
                                         return;
 
                                     data.onDisconnect();
-                                    pipeline.saveData(aClass, data.objectUUID(), null);
+                                    pipeline.cleanUpData(aClass, data.objectUUID(), null);
                                 });
                             });
                     callback.run();

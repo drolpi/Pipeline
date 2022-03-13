@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
-import de.notion.pipeline.part.PipelineDataSynchronizer;
+import de.notion.pipeline.part.DataSynchronizer;
 import de.notion.pipeline.part.local.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,10 +62,10 @@ public abstract class PipelineData implements DataType {
 
         this.dataUpdater.pushUpdate(this, () -> {
             pipeline.dataSynchronizer()
-                    .synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable);
+                    .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable);
 
             pipeline.dataSynchronizer()
-                    .synchronize(PipelineDataSynchronizer.DataSourceType.LOCAL, PipelineDataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable);
+                    .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable);
         });
     }
 

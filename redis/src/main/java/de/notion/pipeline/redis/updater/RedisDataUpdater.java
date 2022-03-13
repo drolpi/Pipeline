@@ -5,8 +5,7 @@ import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.LocalCache;
-import de.notion.pipeline.part.local.updater.DataUpdater;
-import de.notion.pipeline.part.local.updater.LoadingTaskSynchronizer;
+import de.notion.pipeline.part.local.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
@@ -17,7 +16,7 @@ import org.redisson.codec.SerializationCodec;
 import java.util.Objects;
 import java.util.UUID;
 
-public class RedisDataUpdater implements DataUpdater {
+public class RedisDataUpdater extends AbstractDataUpdater {
 
     private final static String DATA_TOPIC = "DataTopic:%s";
 
@@ -26,7 +25,6 @@ public class RedisDataUpdater implements DataUpdater {
     private final RTopic dataTopic;
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
-    private final LoadingTaskSynchronizer loadingTaskSynchronizer;
 
     public RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient, @NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "DataClass can't be null!");
@@ -34,7 +32,6 @@ public class RedisDataUpdater implements DataUpdater {
         this.redissonClient = redissonClient;
 
         this.dataTopic = topic(dataClass);
-        this.loadingTaskSynchronizer = new LoadingTaskSynchronizer();
         this.messageListener = (channel, dataBlock) -> {
             if (dataBlock.senderUUID.equals(senderUUID))
                 return;
@@ -43,7 +40,7 @@ public class RedisDataUpdater implements DataUpdater {
             if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
                 var dataToUpdate = JsonParser.parseString(updateDataBlock.dataToUpdate).getAsJsonObject();
                 if (pipelineData == null) {
-                    loadingTaskSynchronizer.updateData(updateDataBlock.dataUUID, dataToUpdate);
+                    receivedData(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
                     pipelineData.onSync(pipelineData.deserialize(dataToUpdate));
                     System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
@@ -81,11 +78,6 @@ public class RedisDataUpdater implements DataUpdater {
         System.out.println("Pushing Removal: " + System.currentTimeMillis());
         if (callback != null)
             callback.run();
-    }
-
-    @Override
-    public @NotNull LoadingTaskSynchronizer loadingTaskManager() {
-        return loadingTaskSynchronizer;
     }
 
     @NotNull

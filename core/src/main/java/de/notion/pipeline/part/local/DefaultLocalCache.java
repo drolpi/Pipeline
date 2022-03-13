@@ -1,4 +1,4 @@
-package de.notion.pipeline.part.local.def;
+package de.notion.pipeline.part.local;
 
 import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;

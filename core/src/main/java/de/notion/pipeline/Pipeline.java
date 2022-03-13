@@ -6,8 +6,8 @@ import de.notion.pipeline.config.PipelineConfig;
 import de.notion.pipeline.config.PipelineRegistry;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
-import de.notion.pipeline.operator.filter.Filter;
-import de.notion.pipeline.part.PipelineDataSynchronizer;
+import de.notion.pipeline.operator.PipelineStream;
+import de.notion.pipeline.part.DataSynchronizer;
 import de.notion.pipeline.part.cache.GlobalCache;
 import de.notion.pipeline.part.local.LocalCache;
 import de.notion.pipeline.part.local.updater.DataUpdaterService;
@@ -27,14 +27,19 @@ public interface Pipeline extends SystemLoadable {
         return new PipelineManager(registry, config);
     }
 
+    @NotNull <T extends PipelineData> PipelineStream<T> find(
+            @NotNull Class<? extends T> type,
+            @NotNull LoadingStrategy loadingStrategy
+    );
+
     //Load by provided uuid
     @Nullable <T extends PipelineData> T load(
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
+            boolean createIfNotExists,
             @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator,
-            boolean createIfNotExists
+            @Nullable InstanceCreator<T> instanceCreator
     );
 
     //Without createIfNotExists
@@ -44,17 +49,18 @@ public interface Pipeline extends SystemLoadable {
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
             @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator) {
-        return load(type, uuid, loadingStrategy, callback, instanceCreator, false);
+            @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        return load(type, uuid, loadingStrategy, false, callback, instanceCreator);
     }
 
     @NotNull <T extends PipelineData> CompletableFuture<T> loadAsync(
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
+            boolean createIfNotExists,
             @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator,
-            boolean createIfNotExists
+            @Nullable InstanceCreator<T> instanceCreator
     );
 
     //Without createIfNotExists
@@ -64,8 +70,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
             @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator) {
-        return loadAsync(type, uuid, loadingStrategy, callback, instanceCreator, false);
+            @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, false, callback, instanceCreator);
     }
 
     //Load by provided uuid without instanceCreator
@@ -74,9 +81,10 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback,
-            boolean createIfNotExists) {
-        return load(type, uuid, loadingStrategy, callback, null, createIfNotExists);
+            boolean createIfNotExists,
+            @Nullable Consumer<T> callback
+    ) {
+        return load(type, uuid, loadingStrategy, createIfNotExists, callback, null);
     }
 
     //Without createIfNotExists
@@ -85,8 +93,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback) {
-        return load(type, uuid, loadingStrategy, callback, null, false);
+            @Nullable Consumer<T> callback
+    ) {
+        return load(type, uuid, loadingStrategy, false, callback, null);
     }
 
     @NotNull
@@ -95,8 +104,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
             @Nullable Consumer<T> callback,
-            boolean createIfNotExists) {
-        return loadAsync(type, uuid, loadingStrategy, callback, null, createIfNotExists);
+            boolean createIfNotExists
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, callback, null);
     }
 
     //Without createIfNotExists
@@ -105,8 +115,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback) {
-        return loadAsync(type, uuid, loadingStrategy, callback, null, false);
+            @Nullable Consumer<T> callback
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, false, callback, null);
     }
 
     //Load by provided uuid without callback
@@ -116,8 +127,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
             @Nullable InstanceCreator<T> instanceCreator,
-            boolean createIfNotExists) {
-        return load(type, uuid, loadingStrategy, null, instanceCreator, createIfNotExists);
+            boolean createIfNotExists
+    ) {
+        return load(type, uuid, loadingStrategy, createIfNotExists, null, instanceCreator);
     }
 
     @Nullable
@@ -125,8 +137,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            @Nullable InstanceCreator<T> instanceCreator) {
-        return load(type, uuid, loadingStrategy, null, instanceCreator, false);
+            @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        return load(type, uuid, loadingStrategy, false, null, instanceCreator);
     }
 
     @NotNull
@@ -135,8 +148,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
             @Nullable InstanceCreator<T> instanceCreator,
-            boolean createIfNotExists) {
-        return loadAsync(type, uuid, loadingStrategy, null, instanceCreator, createIfNotExists);
+            boolean createIfNotExists
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, null, instanceCreator);
     }
 
     @NotNull
@@ -144,8 +158,9 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            @Nullable InstanceCreator<T> instanceCreator) {
-        return loadAsync(type, uuid, loadingStrategy, null, instanceCreator, false);
+            @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, false, null, instanceCreator);
     }
 
     //Load by provided uuid without callback & instanceCreator
@@ -154,16 +169,18 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            boolean createIfNotExists) {
-        return load(type, uuid, loadingStrategy, null, null, createIfNotExists);
+            boolean createIfNotExists
+    ) {
+        return load(type, uuid, loadingStrategy, createIfNotExists, null, null);
     }
 
     @Nullable
     default <T extends PipelineData> T load(
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return load(type, uuid, loadingStrategy, null, null, false);
+            @NotNull LoadingStrategy loadingStrategy
+    ) {
+        return load(type, uuid, loadingStrategy, false, null, null);
     }
 
     @NotNull
@@ -171,56 +188,18 @@ public interface Pipeline extends SystemLoadable {
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
             @NotNull LoadingStrategy loadingStrategy,
-            boolean createIfNotExists) {
-        return loadAsync(type, uuid, loadingStrategy, null, null, createIfNotExists);
+            boolean createIfNotExists
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, null, null);
     }
 
     @NotNull
     default <T extends PipelineData> CompletableFuture<T> loadAsync(
             @NotNull Class<? extends T> type,
             @NotNull UUID uuid,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return loadAsync(type, uuid, loadingStrategy, null, null, false);
-    }
-
-    //Load all data by filteredUUIDs
-    @NotNull
-    default <T extends PipelineData> List<T> loadFiltered(
-            @NotNull Class<? extends T> type,
-            @NotNull Filter filter,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return loadAllData(type, globalStorage().filteredUUIDs(type, filter), loadingStrategy);
-    }
-
-    //Maybe call filteredUUIDs async too?
-    @NotNull
-    default <T extends PipelineData> CompletableFuture<List<T>> loadFilteredAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull Filter filter,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return loadAllDataAsync(type, globalStorage().filteredUUIDs(type, filter), loadingStrategy);
-    }
-
-    //Load all data by filteredUUIDs
-    //TODO: Sorter
-    @Deprecated
-    @NotNull
-    default <T extends PipelineData> List<T> loadSorted(
-            @NotNull Class<? extends T> type,
-            @NotNull Object sorter,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return loadAllData(type, globalStorage().sortedUUIDs(type), loadingStrategy);
-    }
-
-    //Maybe call sortedUUIDs async too?
-    //TODO: Sorter
-    @Deprecated
-    @NotNull
-    default <T extends PipelineData> CompletableFuture<List<T>> loadSortedAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull Object sorter,
-            @NotNull LoadingStrategy loadingStrategy) {
-        return loadAllDataAsync(type, globalStorage().sortedUUIDs(type), loadingStrategy);
+            @NotNull LoadingStrategy loadingStrategy
+    ) {
+        return loadAsync(type, uuid, loadingStrategy, false, null, null);
     }
 
     //Load all data by provided uuids
@@ -236,38 +215,67 @@ public interface Pipeline extends SystemLoadable {
             @NotNull LoadingStrategy loadingStrategy
     );
 
-    //Load all data by saved uuids
-    @NotNull <T extends PipelineData> List<T> loadAllData(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
+    <T extends PipelineData> boolean exist(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid,
+            @NotNull QueryStrategy... strategies
+    );
 
-    @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull LoadingStrategy loadingStrategy);
+    @NotNull <T extends PipelineData> CompletableFuture<Boolean> existAsync(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid,
+            @NotNull QueryStrategy... strategies
+    );
 
-    <T extends PipelineData> boolean exist(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
+    <T extends PipelineData> boolean delete(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid,
+            boolean notifyOthers,
+            @NotNull QueryStrategy... strategies
+    );
 
-    @NotNull <T extends PipelineData> CompletableFuture<Boolean> existAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies);
-
-    <T extends PipelineData> boolean delete(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies);
-
-    default <T extends PipelineData> boolean delete(@NotNull Class<? extends T> type, @NotNull UUID uuid, @NotNull QueryStrategy... strategies) {
+    default <T extends PipelineData> boolean delete(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid,
+            @NotNull QueryStrategy... strategies
+    ) {
         return delete(type, uuid, true, strategies);
     }
 
-    default <T extends PipelineData> boolean delete(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers) {
+    default <T extends PipelineData> boolean delete(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid, boolean notifyOthers
+    ) {
         return delete(type, uuid, notifyOthers, QueryStrategy.ALL);
     }
 
-    default <T extends PipelineData> boolean delete(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
+    default <T extends PipelineData> boolean delete(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid
+    ) {
         return delete(type, uuid, true, QueryStrategy.ALL);
     }
 
-    @NotNull <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers, @NotNull QueryStrategy... strategies);
+    @NotNull <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid, boolean notifyOthers,
+            @NotNull QueryStrategy... strategies
+    );
 
     @NotNull
-    default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid, boolean notifyOthers) {
+    default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid,
+            boolean notifyOthers
+    ) {
         return deleteAsync(type, uuid, notifyOthers, QueryStrategy.ALL);
     }
 
     @NotNull
-    default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
+    default <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(
+            @NotNull Class<? extends T> type,
+            @NotNull UUID uuid
+    ) {
         return deleteAsync(type, uuid, true, QueryStrategy.ALL);
     }
 
@@ -279,20 +287,20 @@ public interface Pipeline extends SystemLoadable {
 
     @Nullable GlobalStorage globalStorage();
 
-    void saveAllData();
-
     void preloadAllData();
 
     void preloadData(@NotNull Class<? extends PipelineData> type);
 
     void preloadData(@NotNull Class<? extends PipelineData> type, @NotNull UUID uuid);
 
-    void saveData(@NotNull Class<? extends PipelineData> type);
+    void cleanUpAllData();
 
-    void saveData(@NotNull Class<? extends PipelineData> type, @NotNull UUID uuid, Runnable callback);
+    void cleanUpData(@NotNull Class<? extends PipelineData> type);
+
+    void cleanUpData(@NotNull Class<? extends PipelineData> type, @NotNull UUID uuid, Runnable callback);
 
     @NotNull
-    PipelineDataSynchronizer dataSynchronizer();
+    DataSynchronizer dataSynchronizer();
 
     @NotNull
     PipelineRegistry registry();

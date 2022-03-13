@@ -36,7 +36,7 @@ public final class CleanUpTask implements Runnable {
 
                             System.out.println("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString());
                             data.onCleanUp();
-                            pipelineManager.saveData(dataClass, data.objectUUID(), null);
+                            pipelineManager.cleanUpData(dataClass, data.objectUUID(), null);
                         });
                     });
                 });

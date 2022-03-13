@@ -12,6 +12,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -62,9 +63,9 @@ public class RedisCache implements GlobalCache {
     }
 
     @Override
-    public synchronized Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        return keys(dataClass).stream().map(s -> UUID.fromString(s.split(":")[2])).collect(Collectors.toSet());
+        return keys(dataClass).stream().map(s -> UUID.fromString(s.split(":")[2])).collect(Collectors.toList());
     }
 
     @Override
@@ -89,10 +90,10 @@ public class RedisCache implements GlobalCache {
             return;
 
         if (optional.isEmpty()) {
-            bucket.expire(12, TimeUnit.HOURS);
+            bucket.expireAsync(12, TimeUnit.HOURS);
         } else {
             var autoCleanUp = optional.get();
-            bucket.expire(autoCleanUp.time(), autoCleanUp.timeUnit());
+            bucket.expireAsync(autoCleanUp.time(), autoCleanUp.timeUnit());
         }
     }
 

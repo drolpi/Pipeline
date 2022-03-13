@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.operator.filter.Filter;
+import de.notion.pipeline.operator.FindOptions;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class JsonStorage implements GlobalStorage {
@@ -85,53 +84,49 @@ public class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        var parentFolder = parent(dataClass);
-        if (!parentFolder.toFile().exists())
-            return Set.of();
-        try {
-            return Files.walk(parentFolder, 1)
-                    .skip(1)
-                    .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
-                    .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
-                    .map(UUID::fromString)
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Set.of();
+        return findUUIDs(dataClass, new FindOptions());
     }
 
     @Override
-    public @NotNull List<UUID> filteredUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull Filter filter) {
+    public @NotNull List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         var parentFolder = parent(dataClass);
         if (!parentFolder.toFile().exists())
             return List.of();
         try {
+            var filter = findOptions.filter();
+            var skip = findOptions.skip();
+            var limit = findOptions.limit() + skip;
+
             return Files.walk(parentFolder, 1)
                     .skip(1)
                     .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
                     .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
                     .map(UUID::fromString)
-                    .filter(uuid -> {
-                        var data = loadData(dataClass, uuid);
-                        if (data == null)
-                            return false;
+                    .filter(new Predicate<UUID>() {
+                        int i = -1;
 
-                        return filter.check(data);
+                        @Override
+                        public boolean test(UUID uuid) {
+                            i++;
+                            if (skip > i)
+                                return false;
+                            if (i >= limit)
+                                return false;
+
+                            var data = loadData(dataClass, uuid);
+                            if (data == null)
+                                return false;
+                            return filter.check(data);
+                        }
                     })
                     .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return List.of();
-    }
-
-    @Override
-    public @NotNull List<UUID> sortedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        return new ArrayList<>();
     }
 
     private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) throws IOException {
