@@ -11,20 +11,21 @@ import java.util.Optional;
 
 public final class AnnotationResolver {
 
-    @NotNull
-    public static String storageIdentifier(Class<?> classType) {
+    public static Properties properties(Class<?> classType) {
         var properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
-        return properties.identifier();
+        return properties;
+    }
+
+    @NotNull
+    public static String storageIdentifier(Class<?> classType) {
+        return properties(classType).identifier();
     }
 
     @NotNull
     public static Context context(Class<?> classType) {
-        var properties = classType.getAnnotation(Properties.class);
-        if (properties == null)
-            throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
-        return properties.context();
+        return properties(classType).context();
     }
 
     @NotNull
