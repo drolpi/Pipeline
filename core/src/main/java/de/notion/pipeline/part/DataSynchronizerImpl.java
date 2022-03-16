@@ -3,6 +3,7 @@ package de.notion.pipeline.part;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
+import de.notion.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +23,14 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         this.executorService = pipelineManager.executorService();
     }
 
-    @NotNull
     @Override
-    public synchronized CompletableFuture<Boolean> synchronize(
+    public @NotNull <T extends PipelineData> CompletableFuture<Boolean> synchronize(
             @NotNull DataSourceType source,
             @NotNull DataSourceType destination,
-            @NotNull Class<? extends PipelineData> dataClass,
+            @NotNull Class<? extends T> dataClass,
             @NotNull UUID objectUUID,
-            @Nullable Runnable callback
+            @Nullable Runnable callback,
+            @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
@@ -37,16 +38,17 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var future = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() ->
-                future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
+                future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback, instanceCreator))));
         return future;
     }
 
-    public synchronized boolean doSynchronisation(
+    public synchronized <T extends PipelineData> boolean doSynchronisation(
             @NotNull DataSourceType source,
             @NotNull DataSourceType destination,
-            @NotNull Class<? extends PipelineData> dataClass,
+            @NotNull Class<? extends T> dataClass,
             @NotNull UUID objectUUID,
-            @Nullable Runnable callback
+            @Nullable Runnable callback,
+            @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
@@ -87,7 +89,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             // Error while loading from redis
             if (globalCachedData == null) {
                 System.out.println("Trying to load from storage...");
-                doSynchronisation(DataSourceType.GLOBAL_STORAGE, DataSourceType.LOCAL, dataClass, objectUUID, callback);
+                doSynchronisation(DataSourceType.GLOBAL_STORAGE, DataSourceType.LOCAL, dataClass, objectUUID, callback, instanceCreator);
                 return false;
             }
 
@@ -96,7 +98,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineManager.localCache().save(
                             dataClass,
-                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null)
+                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, instanceCreator)
                     );
                 }
 
@@ -121,7 +123,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineManager.localCache().save(
                             dataClass,
-                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null)
+                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, instanceCreator)
                     );
                 }
 
