@@ -6,7 +6,7 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.part.DataSynchronizer;
-import de.notion.pipeline.part.local.updater.DataUpdater;
+import de.notion.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

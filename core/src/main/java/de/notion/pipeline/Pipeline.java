@@ -10,7 +10,7 @@ import de.notion.pipeline.operator.PipelineStream;
 import de.notion.pipeline.part.DataSynchronizer;
 import de.notion.pipeline.part.cache.GlobalCache;
 import de.notion.pipeline.part.local.LocalCache;
-import de.notion.pipeline.part.local.updater.DataUpdaterService;
+import de.notion.pipeline.part.updater.DataUpdaterService;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

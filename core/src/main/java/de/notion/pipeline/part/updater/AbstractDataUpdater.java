@@ -1,4 +1,4 @@
-package de.notion.pipeline.part.local.updater;
+package de.notion.pipeline.part.updater;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

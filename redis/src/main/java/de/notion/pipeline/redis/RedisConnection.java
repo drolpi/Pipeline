@@ -5,7 +5,7 @@ import de.notion.pipeline.config.connection.Connection;
 import de.notion.pipeline.config.connection.DataUpdaterConnection;
 import de.notion.pipeline.config.connection.GlobalCacheConnection;
 import de.notion.pipeline.part.cache.GlobalCache;
-import de.notion.pipeline.part.local.updater.DataUpdaterService;
+import de.notion.pipeline.part.updater.DataUpdaterService;
 import de.notion.pipeline.redis.cache.RedisCache;
 import de.notion.pipeline.redis.updater.RedisDataUpdaterService;
 import org.redisson.Redisson;

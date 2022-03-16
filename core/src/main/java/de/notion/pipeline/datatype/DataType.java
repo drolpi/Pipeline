@@ -1,7 +1,7 @@
 package de.notion.pipeline.datatype;
 
 import com.google.gson.JsonObject;
-import de.notion.pipeline.part.local.updater.DataUpdater;
+import de.notion.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

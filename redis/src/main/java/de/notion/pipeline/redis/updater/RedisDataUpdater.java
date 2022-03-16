@@ -5,7 +5,7 @@ import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.part.local.LocalCache;
-import de.notion.pipeline.part.local.updater.AbstractDataUpdater;
+import de.notion.pipeline.part.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;

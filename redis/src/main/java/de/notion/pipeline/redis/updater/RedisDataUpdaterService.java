@@ -3,8 +3,8 @@ package de.notion.pipeline.redis.updater;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.config.PipelineRegistry;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.part.local.updater.DataUpdater;
-import de.notion.pipeline.part.local.updater.DataUpdaterService;
+import de.notion.pipeline.part.updater.DataUpdater;
+import de.notion.pipeline.part.updater.DataUpdaterService;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
