@@ -24,7 +24,7 @@ public interface Pipeline extends SystemLoadable {
 
     @NotNull
     static Pipeline create(@NotNull PipelineConfig config, @NotNull PipelineRegistry registry) {
-        return new PipelineManager(registry, config);
+        return new PipelineImpl(registry, config);
     }
 
     @NotNull <T extends PipelineData> PipelineStream<T> find(

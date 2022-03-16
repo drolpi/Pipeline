@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public final class PipelineManager implements Pipeline {
+public final class PipelineImpl implements Pipeline {
 
     private final GlobalStorage globalStorage;
     private final GlobalCache globalCache;
@@ -53,7 +53,7 @@ public final class PipelineManager implements Pipeline {
     private final Gson gson;
     private final boolean loaded;
 
-    public PipelineManager(@NotNull PipelineRegistry registry, @NotNull PipelineConfig config) {
+    public PipelineImpl(@NotNull PipelineRegistry registry, @NotNull PipelineConfig config) {
         this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(4, new DefaultThreadFactory("Pipeline"));
         this.gson = new GsonBuilder().serializeNulls().create();
