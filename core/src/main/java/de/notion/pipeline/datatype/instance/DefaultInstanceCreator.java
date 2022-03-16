@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class DefaultInstanceCreator<T extends PipelineData> implements InstanceCreator<T> {
+public final class DefaultInstanceCreator<T extends PipelineData> implements InstanceCreator<T> {
 
     @NotNull
     @Override

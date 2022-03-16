@@ -4,7 +4,7 @@ import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DefaultDataUpdater extends AbstractDataUpdater {
+public final class DefaultDataUpdater extends AbstractDataUpdater {
 
     @Override
     public void pushUpdate(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {

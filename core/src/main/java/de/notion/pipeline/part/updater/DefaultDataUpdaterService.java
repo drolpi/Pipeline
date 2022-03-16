@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultDataUpdaterService implements DataUpdaterService {
+public final class DefaultDataUpdaterService implements DataUpdaterService {
 
     private final Map<Class<? extends PipelineData>, DataUpdater> cache;
 
