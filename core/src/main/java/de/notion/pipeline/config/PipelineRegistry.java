@@ -2,7 +2,7 @@ package de.notion.pipeline.config;
 
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
-import de.notion.pipeline.datatype.instance.def.DefaultInstanceCreator;
+import de.notion.pipeline.datatype.instance.DefaultInstanceCreator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

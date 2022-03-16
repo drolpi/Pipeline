@@ -1,4 +1,4 @@
-package de.notion.pipeline.datatype.instance.def;
+package de.notion.pipeline.datatype.instance;
 
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
@@ -12,7 +12,7 @@ public class DefaultInstanceCreator<T extends PipelineData> implements InstanceC
 
     @NotNull
     @Override
-    public PipelineData get(Class dataClass, Pipeline pipeline) {
+    public T get(Class dataClass, Pipeline pipeline) {
         try {
             Constructor<T> constructor = dataClass.getConstructor(Pipeline.class);
             constructor.setAccessible(true);
