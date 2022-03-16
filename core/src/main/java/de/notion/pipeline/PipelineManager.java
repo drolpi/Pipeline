@@ -97,8 +97,8 @@ public final class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> PipelineStream<T> find(@NotNull Class<? extends T> dataClass, @NotNull LoadingStrategy loadingStrategy) {
-        return new PipelineStreamImpl<>(this, dataClass, loadingStrategy);
+    public @NotNull <T extends PipelineData> PipelineStream<T> find(@NotNull Class<? extends T> dataClass, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator) {
+        return new PipelineStreamImpl<>(this, dataClass, loadingStrategy, callback, instanceCreator);
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuids, "Uuids can't be null");
         if (!registry.isRegistered(type))
@@ -182,7 +182,7 @@ public final class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy, @Nullable Consumer<T> callback, @Nullable InstanceCreator<T> instanceCreator) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.isRegistered(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");

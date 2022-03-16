@@ -29,8 +29,36 @@ public interface Pipeline extends SystemLoadable {
 
     @NotNull <T extends PipelineData> PipelineStream<T> find(
             @NotNull Class<? extends T> type,
-            @NotNull LoadingStrategy loadingStrategy
+            @NotNull LoadingStrategy loadingStrategy,
+            @Nullable Consumer<T> callback,
+            @Nullable InstanceCreator<T> instanceCreator
     );
+
+    // Without callback
+    default @NotNull <T extends PipelineData> PipelineStream<T> find(
+            @NotNull Class<? extends T> type,
+            @NotNull LoadingStrategy loadingStrategy,
+            @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        return find(type, loadingStrategy, null, instanceCreator);
+    }
+
+    // Without instance creator
+    default @NotNull <T extends PipelineData> PipelineStream<T> find(
+            @NotNull Class<? extends T> type,
+            @NotNull LoadingStrategy loadingStrategy,
+            @Nullable Consumer<T> callback
+    ) {
+        return find(type, loadingStrategy, callback, null);
+    }
+
+    // Without callback & instance creator
+    default @NotNull <T extends PipelineData> PipelineStream<T> find(
+            @NotNull Class<? extends T> type,
+            @NotNull LoadingStrategy loadingStrategy
+    ) {
+        return find(type, loadingStrategy, null, null);
+    }
 
     //Load by provided uuid
     @Nullable <T extends PipelineData> T load(
@@ -75,7 +103,7 @@ public interface Pipeline extends SystemLoadable {
         return loadAsync(type, uuid, loadingStrategy, false, callback, instanceCreator);
     }
 
-    //Load by provided uuid without instanceCreator
+    //Load by provided uuid without instance creator
     @Nullable
     default <T extends PipelineData> T load(
             @NotNull Class<? extends T> type,
@@ -163,7 +191,7 @@ public interface Pipeline extends SystemLoadable {
         return loadAsync(type, uuid, loadingStrategy, false, null, instanceCreator);
     }
 
-    //Load by provided uuid without callback & instanceCreator
+    //Load by provided uuid without callback & instance creator
     @Nullable
     default <T extends PipelineData> T load(
             @NotNull Class<? extends T> type,
@@ -206,14 +234,35 @@ public interface Pipeline extends SystemLoadable {
     @NotNull <T extends PipelineData> List<T> load(
             @NotNull Class<? extends T> type,
             @NotNull Iterable<UUID> uuids,
-            @NotNull LoadingStrategy loadingStrategy
+            @NotNull LoadingStrategy loadingStrategy,
+            @Nullable Consumer<T> callback,
+            @Nullable InstanceCreator<T> instanceCreator
     );
 
     @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(
             @NotNull Class<? extends T> type,
             @NotNull Iterable<UUID> uuids,
-            @NotNull LoadingStrategy loadingStrategy
+            @NotNull LoadingStrategy loadingStrategy,
+            @Nullable Consumer<T> callback,
+            @Nullable InstanceCreator<T> instanceCreator
     );
+
+    // Without callback & instance creator
+    default @NotNull <T extends PipelineData> List<T> load(
+            @NotNull Class<? extends T> type,
+            @NotNull Iterable<UUID> uuids,
+            @NotNull LoadingStrategy loadingStrategy
+    ) {
+        return load(type, uuids, loadingStrategy, null, null);
+    }
+
+    default @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(
+            @NotNull Class<? extends T> type,
+            @NotNull Iterable<UUID> uuids,
+            @NotNull LoadingStrategy loadingStrategy
+    ) {
+        return loadAsync(type, uuids, loadingStrategy, null, null);
+    }
 
     <T extends PipelineData> boolean exist(
             @NotNull Class<? extends T> type,
