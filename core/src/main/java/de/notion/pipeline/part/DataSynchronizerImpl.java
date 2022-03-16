@@ -1,6 +1,5 @@
 package de.notion.pipeline.part;
 
-import com.google.gson.JsonObject;
 import de.notion.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineManager;
 import de.notion.pipeline.datatype.PipelineData;
@@ -18,30 +17,37 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
     private final PipelineManager pipelineManager;
     private final ExecutorService executorService;
 
-    public DataSynchronizerImpl(PipelineManager pipelineManager) {
+    public DataSynchronizerImpl(@NotNull PipelineManager pipelineManager) {
         this.pipelineManager = pipelineManager;
         this.executorService = pipelineManager.executorService();
     }
 
     @NotNull
     @Override
-    public CompletableFuture<Boolean> synchronize(@NotNull DataSourceType source, @NotNull DataSourceType destination, @NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        return synchronize(source, destination, dataClass, objectUUID, null);
-    }
-
-    @NotNull
-    @Override
-    public synchronized CompletableFuture<Boolean> synchronize(@NotNull DataSourceType source, @NotNull DataSourceType destination, @NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @Nullable Runnable callback) {
+    public synchronized CompletableFuture<Boolean> synchronize(
+            @NotNull DataSourceType source,
+            @NotNull DataSourceType destination,
+            @NotNull Class<? extends PipelineData> dataClass,
+            @NotNull UUID objectUUID,
+            @Nullable Runnable callback
+    ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var future = new CompletableFuture<Boolean>();
-        executorService.submit(new CatchingRunnable(() -> future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
+        executorService.submit(new CatchingRunnable(() ->
+                future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback))));
         return future;
     }
 
-    public synchronized boolean doSynchronisation(@NotNull DataSourceType source, @NotNull DataSourceType destination, @NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @Nullable Runnable callback) {
+    public synchronized boolean doSynchronisation(
+            @NotNull DataSourceType source,
+            @NotNull DataSourceType destination,
+            @NotNull Class<? extends PipelineData> dataClass,
+            @NotNull UUID objectUUID,
+            @Nullable Runnable callback
+    ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
@@ -88,7 +94,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_CACHE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
+                    pipelineManager.localCache().save(
+                            dataClass,
+                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null)
+                    );
                 }
 
                 var data = pipelineManager.localCache().data(dataClass, objectUUID);
@@ -110,7 +119,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             System.out.println("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_STORAGE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineManager.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineManager.localCache().save(dataClass, pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null));
+                    pipelineManager.localCache().save(
+                            dataClass,
+                            pipelineManager.localCache().instantiateData(pipelineManager, dataClass, objectUUID, null)
+                    );
                 }
 
                 var data = pipelineManager.localCache().data(dataClass, objectUUID);
