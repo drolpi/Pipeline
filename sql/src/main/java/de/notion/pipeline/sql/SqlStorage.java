@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.operator.FindOptions;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
@@ -104,42 +104,31 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        return findUUIDs(dataClass, new FindOptions());
+        return data(dataClass).keySet();
     }
 
     @Override
-    public @NotNull List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
+    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
         return executeQuery(
                 String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
                 resultSet -> {
-                    var uuids = new ArrayList<UUID>();
+                    var uuids = new HashMap<UUID, JsonObject>();
 
-                    var filter = findOptions.filter();
-                    var skip = findOptions.skip();
-                    var limit = findOptions.limit() + skip;
                     try {
                         for (int i = 0; resultSet.next(); i++) {
                             var data = resultSet.getString(TABLE_COLUMN_VAL);
-                            if (skip > i)
-                                continue;
-                            if (i >= limit)
-                                break;
 
                             JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
-
-                            if (filter != null && !filter.check(jsonObject))
-                                continue;
-
-                            uuids.add(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()));
+                            uuids.put(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()), jsonObject);
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
 
                     return uuids;
-                }, List.of());
+                }, Map.of());
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {

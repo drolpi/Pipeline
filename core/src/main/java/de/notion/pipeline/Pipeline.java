@@ -203,15 +203,15 @@ public interface Pipeline extends SystemLoadable {
     }
 
     //Load all data by provided uuids
-    @NotNull <T extends PipelineData> List<T> loadAllData(
+    @NotNull <T extends PipelineData> List<T> load(
             @NotNull Class<? extends T> type,
-            @NotNull List<UUID> uuids,
+            @NotNull Iterable<UUID> uuids,
             @NotNull LoadingStrategy loadingStrategy
     );
 
-    @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAllDataAsync(
+    @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(
             @NotNull Class<? extends T> type,
-            @NotNull List<UUID> uuids,
+            @NotNull Iterable<UUID> uuids,
             @NotNull LoadingStrategy loadingStrategy
     );
 

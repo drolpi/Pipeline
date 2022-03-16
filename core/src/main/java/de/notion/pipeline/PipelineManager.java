@@ -164,7 +164,7 @@ public final class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> List<T> loadAllData(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> List<T> load(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuids, "Uuids can't be null");
         if (!registry.isRegistered(type))
@@ -182,13 +182,13 @@ public final class PipelineManager implements Pipeline {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAllDataAsync(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
+    public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids, @NotNull LoadingStrategy loadingStrategy) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.isRegistered(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         var completableFuture = new CompletableFuture<List<T>>();
-        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(loadAllData(type, uuids, loadingStrategy))));
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(type, uuids, loadingStrategy))));
         return completableFuture;
     }
 
@@ -485,7 +485,7 @@ public final class PipelineManager implements Pipeline {
         return pipelineData;
     }
 
-    private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> type, @NotNull List<UUID> uuids) {
+    private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> type, @NotNull Iterable<UUID> uuids) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.isRegistered(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");

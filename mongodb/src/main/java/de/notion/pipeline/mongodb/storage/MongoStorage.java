@@ -7,13 +7,13 @@ import com.mongodb.client.MongoDatabase;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.PipelineData;
-import de.notion.pipeline.operator.FindOptions;
 import de.notion.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -83,39 +83,31 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public synchronized List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        return findUUIDs(dataClass, new FindOptions());
+        return data(dataClass).keySet();
     }
 
     @Override
-    @NotNull
-    public List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
+    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
 
         var collection = mongoStorage(dataClass);
-        var uuids = new ArrayList<UUID>();
-
-        var filter = findOptions.filter();
-        var skip = findOptions.skip();
-        var limit = findOptions.limit() + skip;
+        var data = new HashMap<UUID, JsonObject>();
 
         try (var cursor = collection.find().iterator()) {
-            for (int i = 0; cursor.hasNext(); i++) {
+            while (cursor.hasNext()) {
                 var document = cursor.next();
-                if (skip > i)
-                    continue;
-                if (i > limit)
-                    break;
 
-                if (filter != null && !filter.check(gson.toJsonTree(document).getAsJsonObject()))
-                    continue;
+                System.out.println("T");
+
                 if (!document.containsKey("objectUUID"))
                     continue;
-                uuids.add(UUID.fromString((String) document.get("objectUUID")));
+                data.put(UUID.fromString((String) document.get("objectUUID")), gson.toJsonTree(document).getAsJsonObject());
+                System.out.println("S");
             }
         }
-        return uuids;
+        return data;
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {

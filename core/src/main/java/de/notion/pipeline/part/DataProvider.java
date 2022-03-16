@@ -5,6 +5,7 @@ import de.notion.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,6 @@ public interface DataProvider {
     boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
     @NotNull
-    List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
+    Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
 
 }

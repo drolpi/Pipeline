@@ -1,14 +1,18 @@
 package de.notion.pipeline.operator;
 
+import com.google.gson.JsonObject;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.operator.filter.Filter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PipelineStreamImpl<T extends PipelineData> implements PipelineStream<T> {
 
@@ -27,8 +31,13 @@ public class PipelineStreamImpl<T extends PipelineData> implements PipelineStrea
     @Nullable
     @Override
     public T first() {
-        var uuids = pipeline.globalStorage().findUUIDs(dataClass, findOptions);
-        for (UUID uuid : uuids) {
+        var data = pipeline.globalStorage().data(dataClass);
+        System.out.println(data.size());
+        data = applyOptions(data);
+
+        System.out.println(data.size());
+
+        for (UUID uuid : data.keySet()) {
             return pipeline.load(dataClass, uuid, loadingStrategy);
         }
         return null;
@@ -37,8 +46,9 @@ public class PipelineStreamImpl<T extends PipelineData> implements PipelineStrea
     @NotNull
     @Override
     public List<T> collect() {
-        var uuids = pipeline.globalStorage().findUUIDs(dataClass, findOptions);
-        return pipeline.loadAllData(dataClass, uuids, loadingStrategy);
+        var data = pipeline.globalStorage().data(dataClass);
+        data = applyOptions(data);
+        return pipeline.load(dataClass, data.keySet(), loadingStrategy);
     }
 
     @NotNull
@@ -69,5 +79,32 @@ public class PipelineStreamImpl<T extends PipelineData> implements PipelineStrea
     public PipelineStream<T> skip(int skip) {
         findOptions.setSkip(skip);
         return this;
+    }
+
+    private Map<UUID, JsonObject> applyOptions(Map<UUID, JsonObject> data) {
+        var newData = new HashMap<UUID, JsonObject>();
+
+        var filter = findOptions.filter();
+        var skip = findOptions.skip();
+        var limit = findOptions.limit();
+
+        if(skip != -1 && limit != -1)
+            limit = limit + skip;
+
+        var i = -1;
+        for (var entry : data.entrySet()) {
+            i++;
+            if (skip > i && skip != -1)
+                continue;
+            if (i > limit && limit != -1)
+                break;
+
+            if (filter != null && !filter.check(entry.getValue()))
+                continue;
+
+            newData.put(entry.getKey(), entry.getValue());
+        }
+
+        return newData;
     }
 }

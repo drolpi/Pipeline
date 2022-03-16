@@ -27,31 +27,4 @@ public interface DataUpdater {
 
     @NotNull
     Optional<PipelineData> finishLoadingTask(@NotNull PipelineData pipelineData);
-
-    class RemoveDataBlock extends DataBlock {
-        public RemoveDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {
-            super(senderUUID, dataUUID);
-        }
-    }
-
-    abstract class DataBlock implements Serializable {
-
-        public final UUID senderUUID;
-        public final UUID dataUUID;
-
-        DataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {
-            this.senderUUID = senderUUID;
-            this.dataUUID = dataUUID;
-        }
-    }
-
-    class UpdateDataBlock extends DataBlock {
-
-        public final String dataToUpdate;
-
-        public UpdateDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID, String dataToUpdate) {
-            super(senderUUID, dataUUID);
-            this.dataToUpdate = dataToUpdate;
-        }
-    }
 }
