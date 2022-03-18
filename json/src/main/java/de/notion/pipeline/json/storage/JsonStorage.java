@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -84,49 +87,38 @@ public class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        return findUUIDs(dataClass, new FindOptions());
+        return data(dataClass).keySet();
     }
 
     @Override
-    public @NotNull List<UUID> findUUIDs(@NotNull Class<? extends PipelineData> dataClass, @NotNull FindOptions findOptions) {
+    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         var parentFolder = parent(dataClass);
         if (!parentFolder.toFile().exists())
-            return List.of();
+            return Map.of();
         try {
-            var filter = findOptions.filter();
-            var skip = findOptions.skip();
-            var limit = findOptions.limit() + skip;
+            var data = new HashMap<UUID, JsonObject>();
 
-            return Files.walk(parentFolder, 1)
+            Files.walk(parentFolder, 1)
                     .skip(1)
                     .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
                     .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
                     .map(UUID::fromString)
-                    .filter(new Predicate<UUID>() {
-                        int i = -1;
+                    .forEach(uuid -> {
+                        var jsonObject = loadData(dataClass, uuid);
+                        if(jsonObject == null)
+                            return;
 
-                        @Override
-                        public boolean test(UUID uuid) {
-                            i++;
-                            if (skip > i)
-                                return false;
-                            if (i >= limit)
-                                return false;
+                        data.put(uuid, jsonObject);
+                    });
 
-                            var data = loadData(dataClass, uuid);
-                            if (data == null)
-                                return false;
-                            return filter.check(data);
-                        }
-                    })
-                    .collect(Collectors.toList());
+            return data;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return List.of();
+        return Map.of();
     }
 
     private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) throws IOException {

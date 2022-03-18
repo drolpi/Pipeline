@@ -98,13 +98,9 @@ public class MongoStorage implements GlobalStorage {
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 var document = cursor.next();
-
-                System.out.println("T");
-
                 if (!document.containsKey("objectUUID"))
                     continue;
                 data.put(UUID.fromString((String) document.get("objectUUID")), gson.toJsonTree(document).getAsJsonObject());
-                System.out.println("S");
             }
         }
         return data;
