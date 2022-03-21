@@ -1,4 +1,4 @@
-package de.natrox.pipeline.sql.sqllite;
+package de.natrox.pipeline.sqllite;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
