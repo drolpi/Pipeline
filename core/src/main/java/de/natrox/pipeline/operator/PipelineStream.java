@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface PipelineStream<T extends PipelineData> {
 
@@ -13,7 +14,13 @@ public interface PipelineStream<T extends PipelineData> {
     T first();
 
     @NotNull
+    CompletableFuture<T> firstAsync();
+
+    @NotNull
     List<T> collect();
+
+    @NotNull
+    CompletableFuture<List<T>> collectAsync();
 
     @NotNull
     PipelineStream<T> filter(@NotNull Filter filter);

@@ -1,7 +1,9 @@
 package de.natrox.pipeline.operator;
 
 import com.google.gson.JsonObject;
+import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import de.natrox.pipeline.operator.filter.Filter;
@@ -13,13 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 public final class PipelineStreamImpl<T extends PipelineData> implements PipelineStream<T> {
 
     //TODO: Was ist wenn Pipeline#globalStorage null zurückgibt, weil die Pipeline ohne global storage erzeugt wurde?
 
-    private final Pipeline pipeline;
+    private final PipelineImpl pipeline;
+    private final ExecutorService executorService;
     private final Class<? extends T> dataClass;
     private final Pipeline.LoadingStrategy loadingStrategy;
     private final Consumer<T> callback;
@@ -27,13 +32,14 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
     private final FindOptions findOptions;
 
     public PipelineStreamImpl(
-        @NotNull Pipeline pipeline,
+        @NotNull PipelineImpl pipeline,
         @NotNull Class<? extends T> dataClass,
         @NotNull Pipeline.LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
         this.pipeline = pipeline;
+        this.executorService = pipeline.executorService();
         this.dataClass = dataClass;
         this.loadingStrategy = loadingStrategy;
         this.callback = callback;
@@ -45,10 +51,7 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
     @Override
     public T first() {
         var data = pipeline.globalStorage().data(dataClass);
-        System.out.println(data.size());
         data = applyOptions(data);
-
-        System.out.println(data.size());
 
         for (UUID uuid : data.keySet()) {
             return pipeline.load(dataClass, uuid, loadingStrategy, callback, instanceCreator);
@@ -58,10 +61,26 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
 
     @NotNull
     @Override
+    public CompletableFuture<T> firstAsync() {
+        var completableFuture = new CompletableFuture<T>();
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(first())));
+        return completableFuture;
+    }
+
+    @NotNull
+    @Override
     public List<T> collect() {
         var data = pipeline.globalStorage().data(dataClass);
         data = applyOptions(data);
         return pipeline.load(dataClass, data.keySet(), loadingStrategy, callback, instanceCreator);
+    }
+
+    @NotNull
+    @Override
+    public CompletableFuture<List<T>> collectAsync() {
+        var completableFuture = new CompletableFuture<List<T>>();
+        executorService.submit(new CatchingRunnable(() -> completableFuture.complete(collect())));
+        return completableFuture;
     }
 
     @NotNull
