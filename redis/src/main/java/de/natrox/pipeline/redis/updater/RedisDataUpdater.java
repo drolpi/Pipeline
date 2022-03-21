@@ -1,9 +1,9 @@
 package de.natrox.pipeline.redis.updater;
 
 import com.google.gson.JsonParser;
-import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;

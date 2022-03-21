@@ -1,10 +1,9 @@
 package de.natrox.pipeline.json;
 
-import de.natrox.pipeline.json.storage.JsonStorage;
-import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 
 import java.nio.file.Path;
 

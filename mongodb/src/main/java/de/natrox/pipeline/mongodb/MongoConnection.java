@@ -5,11 +5,10 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
-import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
-import de.natrox.pipeline.mongodb.storage.MongoStorage;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 
 public class MongoConnection implements GlobalStorageConnection, Connection {
 
@@ -44,9 +43,9 @@ public class MongoConnection implements GlobalStorageConnection, Connection {
             this.mongoClient = new MongoClient(host, port);
         else
             this.mongoClient = new MongoClient(
-                    new ServerAddress(host, port),
-                    MongoCredential.createCredential(user, database, password.toCharArray()),
-                    MongoClientOptions.builder().build()
+                new ServerAddress(host, port),
+                MongoCredential.createCredential(user, database, password.toCharArray()),
+                MongoClientOptions.builder().build()
             );
 
         this.mongoDatabase = mongoClient.getDatabase(database);

@@ -27,11 +27,11 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
     private final FindOptions findOptions;
 
     public PipelineStreamImpl(
-            @NotNull Pipeline pipeline,
-            @NotNull Class<? extends T> dataClass,
-            @NotNull Pipeline.LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Pipeline pipeline,
+        @NotNull Class<? extends T> dataClass,
+        @NotNull Pipeline.LoadingStrategy loadingStrategy,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         this.pipeline = pipeline;
         this.dataClass = dataClass;

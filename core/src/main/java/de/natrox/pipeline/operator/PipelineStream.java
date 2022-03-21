@@ -1,7 +1,7 @@
 package de.natrox.pipeline.operator;
 
-import de.natrox.pipeline.operator.filter.Filter;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.operator.filter.Filter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

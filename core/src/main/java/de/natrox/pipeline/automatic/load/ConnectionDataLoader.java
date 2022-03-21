@@ -22,23 +22,23 @@ public final class ConnectionDataLoader {
         Objects.requireNonNull(connection, "player can't be null!");
 
         new TaskBatch().doAsync(() -> {
-                    pipeline.registry()
-                            .dataClasses()
-                            .parallelStream()
-                            .filter(ConnectionPipelineData.class::isAssignableFrom)
-                            .forEach(aClass -> {
-                                var optional = AnnotationResolver.preload(aClass);
+                pipeline.registry()
+                    .dataClasses()
+                    .parallelStream()
+                    .filter(ConnectionPipelineData.class::isAssignableFrom)
+                    .forEach(aClass -> {
+                        var optional = AnnotationResolver.preload(aClass);
 
-                                optional.ifPresent(preload -> {
-                                    var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE);
-                                    if (data == null)
-                                        return;
+                        optional.ifPresent(preload -> {
+                            var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE);
+                            if (data == null)
+                                return;
 
-                                    data.onConnect();
-                                });
-                            });
-                    callback.run();
-                }
+                            data.onConnect();
+                        });
+                    });
+                callback.run();
+            }
         ).executeBatch();
     }
 
@@ -46,24 +46,24 @@ public final class ConnectionDataLoader {
         Objects.requireNonNull(connection, "player can't be null!");
 
         new TaskBatch().doAsync(() -> {
-                    pipeline.registry()
-                            .dataClasses()
-                            .parallelStream()
-                            .filter(ConnectionPipelineData.class::isAssignableFrom)
-                            .forEach(aClass -> {
-                                var optional = AnnotationResolver.autoSave(aClass);
+                pipeline.registry()
+                    .dataClasses()
+                    .parallelStream()
+                    .filter(ConnectionPipelineData.class::isAssignableFrom)
+                    .forEach(aClass -> {
+                        var optional = AnnotationResolver.autoSave(aClass);
 
-                                optional.ifPresent(unload -> {
-                                    var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
-                                    if (data == null)
-                                        return;
+                        optional.ifPresent(unload -> {
+                            var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
+                            if (data == null)
+                                return;
 
-                                    data.onDisconnect();
-                                    pipeline.cleanUpData(aClass, data.objectUUID(), null);
-                                });
-                            });
-                    callback.run();
-                }
+                            data.onDisconnect();
+                            pipeline.cleanUpData(aClass, data.objectUUID(), null);
+                        });
+                    });
+                callback.run();
+            }
         ).executeBatch();
     }
 }

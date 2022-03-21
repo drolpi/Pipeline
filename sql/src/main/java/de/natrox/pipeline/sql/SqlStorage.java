@@ -3,10 +3,10 @@ package de.natrox.pipeline.sql;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,17 +43,17 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeQuery(
-                String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
-                resultSet -> {
-                    try {
-                        return resultSet.next() ? JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject() : null;
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                },
-                null,
-                objectUUID.toString()
+            String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
+            resultSet -> {
+                try {
+                    return resultSet.next() ? JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject() : null;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            },
+            null,
+            objectUUID.toString()
         );
     }
 
@@ -62,17 +62,17 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeQuery(
-                String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
-                resultSet -> {
-                    try {
-                        return resultSet.next();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                },
-                false,
-                objectUUID.toString());
+            String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
+            resultSet -> {
+                try {
+                    return resultSet.next();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            },
+            false,
+            objectUUID.toString());
     }
 
     @Override
@@ -82,13 +82,13 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
         if (!dataExist(dataClass, objectUUID)) {
             executeUpdate(
-                    String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
-                    objectUUID.toString(), gson.toJson(dataToSave)
+                String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
+                objectUUID.toString(), gson.toJson(dataToSave)
             );
         } else {
             executeUpdate(
-                    String.format(UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY),
-                    gson.toJson(dataToSave), objectUUID.toString()
+                String.format(UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY),
+                gson.toJson(dataToSave), objectUUID.toString()
             );
         }
     }
@@ -98,8 +98,8 @@ public abstract class SqlStorage implements GlobalStorage {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         return executeUpdate(
-                String.format(DELETE_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY),
-                objectUUID.toString()
+            String.format(DELETE_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY),
+            objectUUID.toString()
         ) != -1;
     }
 
@@ -112,33 +112,33 @@ public abstract class SqlStorage implements GlobalStorage {
     @Override
     public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
         return executeQuery(
-                String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
-                resultSet -> {
-                    var uuids = new HashMap<UUID, JsonObject>();
+            String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
+            resultSet -> {
+                var uuids = new HashMap<UUID, JsonObject>();
 
-                    try {
-                        for (int i = 0; resultSet.next(); i++) {
-                            var data = resultSet.getString(TABLE_COLUMN_VAL);
+                try {
+                    for (int i = 0; resultSet.next(); i++) {
+                        var data = resultSet.getString(TABLE_COLUMN_VAL);
 
-                            JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
-                            uuids.put(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()), jsonObject);
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                        JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
+                        uuids.put(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()), jsonObject);
                     }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
-                    return uuids;
-                }, Map.of());
+                return uuids;
+            }, Map.of());
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         Objects.requireNonNull(name, "name can't be null!");
         executeUpdate(String.format(
-                CREATE_TABLE,
-                name,
-                TABLE_COLUMN_KEY,
-                TABLE_COLUMN_VAL
+            CREATE_TABLE,
+            name,
+            TABLE_COLUMN_KEY,
+            TABLE_COLUMN_VAL
         ));
     }
 
@@ -155,9 +155,9 @@ public abstract class SqlStorage implements GlobalStorage {
     public abstract int executeUpdate(@NotNull String query, @NotNull Object... objects);
 
     public abstract <T> T executeQuery(
-            @NotNull String query,
-            @NotNull Function<ResultSet, T> callback,
-            @Nullable T def,
-            @NotNull Object... objects
+        @NotNull String query,
+        @NotNull Function<ResultSet, T> callback,
+        @Nullable T def,
+        @NotNull Object... objects
     );
 }

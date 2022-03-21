@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
-import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +28,10 @@ public abstract class PipelineData implements DataType {
         this.pipeline = pipeline;
         this.dataUpdater = pipeline.dataUpdaterService().dataUpdater(getClass());
         this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .registerTypeAdapter(getClass(), (InstanceCreator<PipelineData>) type -> this)
-                .create();
+            .setPrettyPrinting()
+            .serializeNulls()
+            .registerTypeAdapter(getClass(), (InstanceCreator<PipelineData>) type -> this)
+            .create();
     }
 
     @NotNull
@@ -62,10 +62,10 @@ public abstract class PipelineData implements DataType {
 
         this.dataUpdater.pushUpdate(this, () -> {
             pipeline.dataSynchronizer()
-                    .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable, null);
+                .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable, null);
 
             pipeline.dataSynchronizer()
-                    .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable, null);
+                .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable, null);
         });
     }
 

@@ -25,12 +25,12 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
 
     @Override
     public @NotNull <T extends PipelineData> CompletableFuture<Boolean> synchronize(
-            @NotNull DataSourceType source,
-            @NotNull DataSourceType destination,
-            @NotNull Class<? extends T> dataClass,
-            @NotNull UUID objectUUID,
-            @Nullable Runnable callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull DataSourceType source,
+        @NotNull DataSourceType destination,
+        @NotNull Class<? extends T> dataClass,
+        @NotNull UUID objectUUID,
+        @Nullable Runnable callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
@@ -38,17 +38,17 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
         var future = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() ->
-                future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback, instanceCreator))));
+            future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback, instanceCreator))));
         return future;
     }
 
     public synchronized <T extends PipelineData> boolean doSynchronisation(
-            @NotNull DataSourceType source,
-            @NotNull DataSourceType destination,
-            @NotNull Class<? extends T> dataClass,
-            @NotNull UUID objectUUID,
-            @Nullable Runnable callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull DataSourceType source,
+        @NotNull DataSourceType destination,
+        @NotNull Class<? extends T> dataClass,
+        @NotNull UUID objectUUID,
+        @Nullable Runnable callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(source, "source can't be null!");
         Objects.requireNonNull(destination, "destination can't be null!");
@@ -97,8 +97,8 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineImpl.localCache().save(
-                            dataClass,
-                            pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
+                        dataClass,
+                        pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
                     );
                 }
 
@@ -122,8 +122,8 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineImpl.localCache().save(
-                            dataClass,
-                            pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
+                        dataClass,
+                        pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
                     );
                 }
 

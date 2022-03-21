@@ -5,25 +5,25 @@ import com.google.gson.GsonBuilder;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
-import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.operator.PipelineStream;
-import de.natrox.pipeline.operator.PipelineStreamImpl;
-import de.natrox.pipeline.part.DataSynchronizer;
-import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.local.DefaultLocalCache;
-import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.updater.DataUpdaterService;
-import de.natrox.pipeline.part.updater.DefaultDataUpdaterService;
-import de.natrox.pipeline.scheduler.PipelineTaskScheduler;
-import de.natrox.pipeline.scheduler.PipelineTaskSchedulerImpl;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.automatic.cleanup.CleanUpTask;
 import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.ConnectionPipelineData;
+import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.datatype.instance.InstanceCreator;
+import de.natrox.pipeline.operator.PipelineStream;
+import de.natrox.pipeline.operator.PipelineStreamImpl;
+import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.DataSynchronizerImpl;
+import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.local.DefaultLocalCache;
 import de.natrox.pipeline.part.local.LocalCache;
+import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.part.updater.DataUpdaterService;
+import de.natrox.pipeline.part.updater.DefaultDataUpdaterService;
+import de.natrox.pipeline.scheduler.PipelineTaskScheduler;
+import de.natrox.pipeline.scheduler.PipelineTaskSchedulerImpl;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,22 +98,22 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public @NotNull <T extends PipelineData> PipelineStream<T> find(
-            @NotNull Class<? extends T> dataClass,
-            @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> dataClass,
+        @NotNull LoadingStrategy loadingStrategy,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         return new PipelineStreamImpl<>(this, dataClass, loadingStrategy, callback, instanceCreator);
     }
 
     @Override
     public final <T extends PipelineData> T load(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            @NotNull LoadingStrategy loadingStrategy,
-            boolean createIfNotExists,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        @NotNull LoadingStrategy loadingStrategy,
+        boolean createIfNotExists,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -122,7 +122,7 @@ public final class PipelineImpl implements Pipeline {
 
         //System.out.println("[" + loadingStrategy + "] Loading data from pipeline " + type.getSimpleName() + " " + uuid); //DEBUG
         PipelineTaskScheduler.PipelineTask<T> pipelineTask = pipelineTaskScheduler
-                .schedule(PipelineTaskScheduler.PipelineAction.LOAD, loadingStrategy, type, uuid);
+            .schedule(PipelineTaskScheduler.PipelineAction.LOAD, loadingStrategy, type, uuid);
 
         if (localCache.dataExist(type, uuid)) {
             T data = localCache.data(type, uuid);
@@ -166,12 +166,12 @@ public final class PipelineImpl implements Pipeline {
     @NotNull
     @Override
     public <T extends PipelineData> CompletableFuture<T> loadAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            @NotNull LoadingStrategy loadingStrategy,
-            boolean createIfNotExists,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        @NotNull LoadingStrategy loadingStrategy,
+        boolean createIfNotExists,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -180,17 +180,17 @@ public final class PipelineImpl implements Pipeline {
 
         var completableFuture = new CompletableFuture<T>();
         executorService.submit(new CatchingRunnable(() ->
-                completableFuture.complete(load(type, uuid, loadingStrategy, createIfNotExists, callback, instanceCreator))));
+            completableFuture.complete(load(type, uuid, loadingStrategy, createIfNotExists, callback, instanceCreator))));
         return completableFuture;
     }
 
     @Override
     public @NotNull <T extends PipelineData> List<T> load(
-            @NotNull Class<? extends T> type,
-            @NotNull Iterable<UUID> uuids,
-            @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> type,
+        @NotNull Iterable<UUID> uuids,
+        @NotNull LoadingStrategy loadingStrategy,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuids, "Uuids can't be null");
@@ -203,18 +203,18 @@ public final class PipelineImpl implements Pipeline {
             executorService.submit(new CatchingRunnable(() -> synchronizeData(type, uuids, instanceCreator)));
 
         return localCache.savedUUIDs(type)
-                .stream()
-                .map(uuid -> localCache.data(type, uuid))
-                .collect(Collectors.toList());
+            .stream()
+            .map(uuid -> localCache.data(type, uuid))
+            .collect(Collectors.toList());
     }
 
     @Override
     public @NotNull <T extends PipelineData> CompletableFuture<List<T>> loadAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull Iterable<UUID> uuids,
-            @NotNull LoadingStrategy loadingStrategy,
-            @Nullable Consumer<T> callback,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> type,
+        @NotNull Iterable<UUID> uuids,
+        @NotNull LoadingStrategy loadingStrategy,
+        @Nullable Consumer<T> callback,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         if (!registry.isRegistered(type))
@@ -227,9 +227,9 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public <T extends PipelineData> boolean exist(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            @NotNull QueryStrategy... strategies
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        @NotNull QueryStrategy... strategies
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -262,9 +262,9 @@ public final class PipelineImpl implements Pipeline {
     @NotNull
     @Override
     public <T extends PipelineData> CompletableFuture<Boolean> existAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            @NotNull QueryStrategy... strategies
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        @NotNull QueryStrategy... strategies
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -278,10 +278,10 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public <T extends PipelineData> boolean delete(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            boolean notifyOthers,
-            @NotNull QueryStrategy... strategies
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        boolean notifyOthers,
+        @NotNull QueryStrategy... strategies
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -329,10 +329,10 @@ public final class PipelineImpl implements Pipeline {
     @NotNull
     @Override
     public <T extends PipelineData> CompletableFuture<Boolean> deleteAsync(
-            @NotNull Class<? extends T> type,
-            @NotNull UUID uuid,
-            boolean notifyOthers,
-            @NotNull QueryStrategy... strategies
+        @NotNull Class<? extends T> type,
+        @NotNull UUID uuid,
+        boolean notifyOthers,
+        @NotNull QueryStrategy... strategies
     ) {
         Objects.requireNonNull(type, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -416,19 +416,19 @@ public final class PipelineImpl implements Pipeline {
             return;
 
         pipelineDataSynchronizer.doSynchronisation(
-                DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, null
+            DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, null
         );
 
         if (localCache.dataExist(type, uuid))
             return;
 
         pipelineDataSynchronizer.doSynchronisation(
-                DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, null
+            DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, null
         );
 
         if (AnnotationResolver.context(type).equals(Context.GLOBAL) && globalCache != null)
             pipelineDataSynchronizer.doSynchronisation(
-                    DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.GLOBAL_CACHE, type, uuid, null, null
+                DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.GLOBAL_CACHE, type, uuid, null, null
             );
     }
 
@@ -480,10 +480,10 @@ public final class PipelineImpl implements Pipeline {
     }
 
     private <T extends PipelineData> T loadFromPipeline(
-            @NotNull Class<? extends T> dataClass,
-            @NotNull UUID uuid,
-            @Nullable InstanceCreator<T> instanceCreator,
-            boolean createIfNotExists
+        @NotNull Class<? extends T> dataClass,
+        @NotNull UUID uuid,
+        @Nullable InstanceCreator<T> instanceCreator,
+        boolean createIfNotExists
     ) {
         Objects.requireNonNull(dataClass, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -497,21 +497,21 @@ public final class PipelineImpl implements Pipeline {
         // ExistCheck GlobalCache
         else {
             boolean globalCacheExists = pipelineDataSynchronizer.doSynchronisation(
-                    DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
+                DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
             );
 
             if (globalCacheExists)
                 System.out.println("Found Data in Redis Cache [" + dataClass.getSimpleName() + "]"); //DEBUG
             else {
                 boolean globalStorageExists = pipelineDataSynchronizer.doSynchronisation(
-                        DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
+                    DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
                 );
 
                 if (globalStorageExists) {
                     System.out.println("Found Data in Database [" + dataClass.getSimpleName() + "]"); //DEBUG
                     if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL))
                         pipelineDataSynchronizer.synchronize(
-                                DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
+                            DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
                         );
                 } else {
                     if (!createIfNotExists)
@@ -534,9 +534,9 @@ public final class PipelineImpl implements Pipeline {
     }
 
     private <T extends PipelineData> T createNewData(
-            @NotNull Class<? extends T> dataClass,
-            @NotNull UUID uuid,
-            @Nullable InstanceCreator<T> instanceCreator
+        @NotNull Class<? extends T> dataClass,
+        @NotNull UUID uuid,
+        @Nullable InstanceCreator<T> instanceCreator
     ) {
         Objects.requireNonNull(dataClass, "Dataclass can't be null");
         Objects.requireNonNull(uuid, "UUID can't be null");
@@ -554,10 +554,10 @@ public final class PipelineImpl implements Pipeline {
 
         localCache.save(dataClass, pipelineData);
         pipelineDataSynchronizer.synchronize(
-                DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
+            DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
         );
         pipelineDataSynchronizer.synchronize(
-                DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, dataClass, uuid, null, instanceCreator
+            DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, dataClass, uuid, null, instanceCreator
         );
         return pipelineData;
     }
@@ -570,7 +570,7 @@ public final class PipelineImpl implements Pipeline {
             uuids.forEach(uuid -> {
                 if (!localCache.dataExist(type, uuid))
                     pipelineDataSynchronizer.doSynchronisation(
-                            DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, instanceCreator
+                        DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, instanceCreator
                     );
             });
         }
@@ -579,12 +579,12 @@ public final class PipelineImpl implements Pipeline {
             uuids.forEach(uuid -> {
                 if (!localCache.dataExist(type, uuid)) {
                     pipelineDataSynchronizer.doSynchronisation(
-                            DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, instanceCreator
+                        DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, type, uuid, null, instanceCreator
                     );
 
                     if (context.equals(Context.GLOBAL) && globalCache != null)
                         pipelineDataSynchronizer.synchronize(
-                                DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, type, uuid, null, instanceCreator
+                            DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, type, uuid, null, instanceCreator
                         );
                 }
             });

@@ -1,13 +1,13 @@
-package de.natrox.pipeline.mongodb.storage;
+package de.natrox.pipeline.mongodb;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 

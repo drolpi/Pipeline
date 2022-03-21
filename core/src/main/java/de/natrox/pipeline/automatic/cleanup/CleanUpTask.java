@@ -1,9 +1,9 @@
 package de.natrox.pipeline.automatic.cleanup;
 
 import de.natrox.pipeline.PipelineImpl;
-import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.config.PipelineRegistry;
+import de.natrox.pipeline.part.local.LocalCache;
 
 import java.util.UUID;
 

@@ -1,6 +1,5 @@
 package de.natrox.pipeline.redis;
 
-import de.natrox.pipeline.redis.updater.RedisDataUpdaterService;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.DataUpdaterConnection;
@@ -8,6 +7,7 @@ import de.natrox.pipeline.config.connection.GlobalCacheConnection;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.updater.DataUpdaterService;
 import de.natrox.pipeline.redis.cache.RedisCache;
+import de.natrox.pipeline.redis.updater.RedisDataUpdaterService;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;

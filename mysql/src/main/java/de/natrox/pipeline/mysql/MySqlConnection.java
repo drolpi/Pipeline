@@ -36,9 +36,9 @@ public class MySqlConnection implements GlobalStorageConnection, Connection {
         var config = new HikariConfig();
 
         config.setJdbcUrl(String.format(
-                CONNECT_URL_FORMAT,
-                host, port,
-                database, useSsl, useSsl
+            CONNECT_URL_FORMAT,
+            host, port,
+            database, useSsl, useSsl
         ));
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setUsername(user);

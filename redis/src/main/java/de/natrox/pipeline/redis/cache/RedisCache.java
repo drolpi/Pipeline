@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -109,9 +109,9 @@ public class RedisCache implements GlobalCache {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         var redisIdentifier = AnnotationResolver.storageIdentifier(dataClass);
         return redissonClient
-                .getKeys()
-                .getKeysStream()
-                .filter(s -> s.split(":")[1].equals(redisIdentifier))
-                .collect(Collectors.toSet());
+            .getKeys()
+            .getKeysStream()
+            .filter(s -> s.split(":")[1].equals(redisIdentifier))
+            .collect(Collectors.toSet());
     }
 }

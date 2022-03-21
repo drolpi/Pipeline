@@ -1,9 +1,9 @@
 package de.natrox.pipeline.part.local;
 
 import com.google.gson.JsonObject;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.Pipeline;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

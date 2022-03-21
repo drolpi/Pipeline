@@ -16,9 +16,9 @@ public abstract class AbstractDataUpdater implements DataUpdater {
 
     public AbstractDataUpdater() {
         this.tasks = CacheBuilder
-                .newBuilder()
-                .expireAfterWrite(30, TimeUnit.SECONDS)
-                .build();
+            .newBuilder()
+            .expireAfterWrite(30, TimeUnit.SECONDS)
+            .build();
     }
 
     public void registerLoadingTask(@NotNull UUID objectUUID) {

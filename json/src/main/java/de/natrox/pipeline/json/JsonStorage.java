@@ -1,12 +1,12 @@
-package de.natrox.pipeline.json.storage;
+package de.natrox.pipeline.json;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -98,17 +98,17 @@ public class JsonStorage implements GlobalStorage {
             var data = new HashMap<UUID, JsonObject>();
 
             Files.walk(parentFolder, 1)
-                    .skip(1)
-                    .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
-                    .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
-                    .map(UUID::fromString)
-                    .forEach(uuid -> {
-                        var jsonObject = loadData(dataClass, uuid);
-                        if(jsonObject == null)
-                            return;
+                .skip(1)
+                .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
+                .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
+                .map(UUID::fromString)
+                .forEach(uuid -> {
+                    var jsonObject = loadData(dataClass, uuid);
+                    if (jsonObject == null)
+                        return;
 
-                        data.put(uuid, jsonObject);
-                    });
+                    data.put(uuid, jsonObject);
+                });
 
             return data;
         } catch (IOException e) {
