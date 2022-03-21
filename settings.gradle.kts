@@ -1,7 +1,3 @@
-rootProject.name = "notion-pipeline"
+rootProject.name = "Pipeline"
 
-include(":core")
-include(":json")
-include(":mongodb")
-include(":redis")
-include(":sql")
+include(":core", ":json", ":mongodb", ":sql", ":redis")
