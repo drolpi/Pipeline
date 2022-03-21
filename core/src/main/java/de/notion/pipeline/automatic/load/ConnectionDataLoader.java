@@ -1,6 +1,6 @@
 package de.notion.pipeline.automatic.load;
 
-import de.notion.common.concurrent.TaskBatch;
+import de.natrox.common.concurrent.TaskBatch;
 import de.notion.pipeline.Pipeline;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.datatype.ConnectionPipelineData;
@@ -25,7 +25,7 @@ public final class ConnectionDataLoader {
                     pipeline.registry()
                             .dataClasses()
                             .parallelStream()
-                            .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
+                            .filter(ConnectionPipelineData.class::isAssignableFrom)
                             .forEach(aClass -> {
                                 var optional = AnnotationResolver.preload(aClass);
 
@@ -49,7 +49,7 @@ public final class ConnectionDataLoader {
                     pipeline.registry()
                             .dataClasses()
                             .parallelStream()
-                            .filter(aClass -> ConnectionPipelineData.class.isAssignableFrom(aClass))
+                            .filter(ConnectionPipelineData.class::isAssignableFrom)
                             .forEach(aClass -> {
                                 var optional = AnnotationResolver.autoSave(aClass);
 

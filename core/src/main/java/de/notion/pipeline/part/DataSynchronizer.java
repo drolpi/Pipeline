@@ -1,6 +1,7 @@
 package de.notion.pipeline.part;
 
-import de.notion.common.system.SystemLoadable;
+import de.natrox.common.Loadable;
+import de.natrox.common.Shutdownable;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public interface DataSynchronizer extends SystemLoadable {
+public interface DataSynchronizer extends Loadable, Shutdownable {
 
     @NotNull
     <T extends PipelineData> CompletableFuture<Boolean> synchronize(

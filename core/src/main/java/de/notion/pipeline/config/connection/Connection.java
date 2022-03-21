@@ -1,9 +1,8 @@
 package de.notion.pipeline.config.connection;
 
-import de.notion.common.system.SystemLoadable;
+import de.natrox.common.Loadable;
+import de.natrox.common.Shutdownable;
 
-public interface Connection extends SystemLoadable {
-
-    void load();
+public interface Connection extends Loadable, Shutdownable {
 
 }

@@ -1,6 +1,6 @@
 package de.notion.pipeline.part;
 
-import de.notion.common.runnable.CatchingRunnable;
+import de.natrox.common.runnable.CatchingRunnable;
 import de.notion.pipeline.PipelineImpl;
 import de.notion.pipeline.datatype.PipelineData;
 import de.notion.pipeline.datatype.instance.InstanceCreator;
@@ -149,6 +149,11 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             callback.run();
         System.out.println("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         return true;
+    }
+
+    @Override
+    public void load() {
+
     }
 
     @Override

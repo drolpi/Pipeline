@@ -1,7 +1,8 @@
 package de.notion.pipeline;
 
 import com.google.gson.Gson;
-import de.notion.common.system.SystemLoadable;
+import de.natrox.common.Loadable;
+import de.natrox.common.Shutdownable;
 import de.notion.pipeline.config.PipelineConfig;
 import de.notion.pipeline.config.PipelineRegistry;
 import de.notion.pipeline.datatype.PipelineData;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public interface Pipeline extends SystemLoadable {
+public interface Pipeline extends Loadable, Shutdownable {
 
     @NotNull
     static Pipeline create(@NotNull PipelineConfig config, @NotNull PipelineRegistry registry) {

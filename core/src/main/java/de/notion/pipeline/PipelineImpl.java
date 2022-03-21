@@ -2,8 +2,8 @@ package de.notion.pipeline;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.notion.common.runnable.CatchingRunnable;
-import de.notion.common.scheduler.Scheduler;
+import de.natrox.common.runnable.CatchingRunnable;
+import de.natrox.common.scheduler.Scheduler;
 import de.notion.pipeline.annotation.property.Context;
 import de.notion.pipeline.annotation.resolver.AnnotationResolver;
 import de.notion.pipeline.automatic.cleanup.CleanUpTask;
@@ -589,6 +589,11 @@ public final class PipelineImpl implements Pipeline {
                 }
             });
         }
+    }
+
+    @Override
+    public void load() {
+
     }
 
     @Override

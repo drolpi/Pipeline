@@ -60,6 +60,11 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
     }
 
     @Override
+    public void load() {
+
+    }
+
+    @Override
     public boolean isLoaded() {
         return true;
     }

@@ -4,6 +4,8 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
+defaultTasks("build", "shadowJar")
+
 allprojects {
     group = "de.notion"
     version = "1.1.0-SNAPSHOT"
@@ -21,7 +23,7 @@ subprojects {
 
     dependencies {
         //TEMP
-        implementation(files("D:\\NotionPowered\\projects\\notion-common\\build\\libs\\notion-common.jar"))
+        implementation(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
 
         implementation("org.jetbrains:annotations:23.0.0")
         implementation("com.google.guava:guava:23.0")
