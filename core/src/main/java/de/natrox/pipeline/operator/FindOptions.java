@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 public final class FindOptions {
 
     private Filter filter;
+    @Deprecated
     private Object sort;
     private int limit;
     private int skip;
@@ -24,11 +25,13 @@ public final class FindOptions {
         this.filter = filter;
     }
 
+    @Deprecated
     @Nullable
     public Object sort() {
         return this.sort;
     }
 
+    @Deprecated
     public void setSort(@Nullable Object sort) {
         this.sort = sort;
     }

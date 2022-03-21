@@ -18,6 +18,8 @@ public interface PipelineStream<T extends PipelineData> {
     @NotNull
     PipelineStream<T> filter(@NotNull Filter filter);
 
+    //TEMP
+    @Deprecated
     @NotNull
     PipelineStream<T> sort(@NotNull Object sorter);
 
