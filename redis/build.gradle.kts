@@ -1,6 +1,6 @@
 dependencies {
     compileOnly(project(":core"))
-    implementation("org.redisson:redisson-all:3.16.8")
+    implementation("org.redisson:redisson-all:3.17.0")
 }
 
 tasks.withType<Jar> {
