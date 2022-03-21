@@ -6,5 +6,5 @@ dependencies {
 }
 
 tasks.withType<Jar> {
-    archiveFileName.set("pipeline-mysql.jar")
+    archiveFileName.set("pipeline-h2.jar")
 }
