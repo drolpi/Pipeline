@@ -1,4 +1,4 @@
-package de.natrox.pipeline.sql.mysql;
+package de.natrox.pipeline.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;

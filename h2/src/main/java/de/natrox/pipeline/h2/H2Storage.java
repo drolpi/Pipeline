@@ -1,4 +1,4 @@
-package de.natrox.pipeline.sql.h2;
+package de.natrox.pipeline.h2;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.sql.SqlStorage;
