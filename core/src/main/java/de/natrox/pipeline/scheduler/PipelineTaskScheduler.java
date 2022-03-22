@@ -36,7 +36,6 @@ public interface PipelineTaskScheduler extends Loadable, Shutdownable {
             this.uuid = uuid;
             this.completableFuture = new CompletableFuture<>();
             this.completableFuture.whenComplete((t, throwable) -> {
-                //System.out.println("Task " + taskUUID + " done: " + type + "  |  " + getObjectUUID() + " [" + t + "] [" + (System.currentTimeMillis() - start) + "ms]"); //DEBUG
                 onComplete.run();
                 pipelineTaskScheduler.remove(type, uuid);
             });

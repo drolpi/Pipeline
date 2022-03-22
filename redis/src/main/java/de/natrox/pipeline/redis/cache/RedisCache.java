@@ -3,6 +3,8 @@ package de.natrox.pipeline.redis.cache;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -21,13 +23,15 @@ import java.util.stream.Collectors;
 
 public class RedisCache implements GlobalCache {
 
+    private final static Logger LOGGER = LogManager.logger(RedisCache.class);
+
     private final Gson gson;
     private final RedissonClient redissonClient;
 
     public RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
         this.gson = pipeline.gson();
         this.redissonClient = redissonClient;
-        System.out.println("Redis cache started");
+        //LOGGER.info("Redis cache started"); //DEBUG
     }
 
     @Override
@@ -37,7 +41,7 @@ public class RedisCache implements GlobalCache {
         try {
             return JsonParser.parseString(objectCache(dataClass, objectUUID).get()).getAsJsonObject();
         } catch (Exception e) {
-            System.out.println("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
+            LOGGER.severe("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
             removeData(dataClass, objectUUID);
         }
         return null;

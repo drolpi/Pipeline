@@ -1,5 +1,7 @@
 package de.natrox.pipeline.sqllite;
 
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.sql.SqlStorage;
 import org.jetbrains.annotations.NotNull;
@@ -12,12 +14,14 @@ import java.util.function.Function;
 
 public class SqlLiteStorage extends SqlStorage {
 
+    private final static Logger LOGGER = LogManager.logger(SqlLiteStorage.class);
+
     private final Connection connection;
 
     public SqlLiteStorage(Pipeline pipeline, Connection connection) {
         super(pipeline);
         this.connection = connection;
-        System.out.println("SqlLite storage started"); //DEBUG
+        //LOGGER.info("SqlLite storage started"); //DEBUG
     }
 
     @NotNull
@@ -35,7 +39,7 @@ public class SqlLiteStorage extends SqlStorage {
 
             return preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            System.out.println("Exception while executing database update");
+            LOGGER.severe("Exception while executing database update");
             exception.printStackTrace();
             return -1;
         }
@@ -52,7 +56,7 @@ public class SqlLiteStorage extends SqlStorage {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {
-            System.out.println("Exception while executing database query");
+            LOGGER.severe("Exception while executing database query");
             throwable.printStackTrace();
             return null;
         }

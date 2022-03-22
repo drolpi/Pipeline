@@ -1,5 +1,7 @@
 package de.natrox.pipeline.part.updater;
 
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,11 +10,13 @@ import java.util.Map;
 
 public final class DefaultDataUpdaterService implements DataUpdaterService {
 
+    private final static Logger LOGGER = LogManager.logger(DefaultDataUpdaterService.class);
+
     private final Map<Class<? extends PipelineData>, DataUpdater> cache;
 
     public DefaultDataUpdaterService() {
         this.cache = new HashMap<>();
-        System.out.println("Default DataUpdaterService started");
+        //LOGGER.info("Default DataUpdaterService started"); //DEBUG
     }
 
     @NotNull

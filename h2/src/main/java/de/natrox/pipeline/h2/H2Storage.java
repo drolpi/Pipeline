@@ -1,5 +1,7 @@
 package de.natrox.pipeline.h2;
 
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.sql.SqlStorage;
 import org.jetbrains.annotations.NotNull;
@@ -12,12 +14,14 @@ import java.util.function.Function;
 
 public class H2Storage extends SqlStorage {
 
+    private final static Logger LOGGER = LogManager.logger(H2Storage.class);
+
     private final Connection connection;
 
     public H2Storage(Pipeline pipeline, Connection connection) {
         super(pipeline);
         this.connection = connection;
-        System.out.println("H2 storage started"); //DEBUG
+        //LOGGER.info("H2 storage started"); //DEBUG
     }
 
     @NotNull
@@ -35,7 +39,7 @@ public class H2Storage extends SqlStorage {
 
             return preparedStatement.executeUpdate();
         } catch (SQLException exception) {
-            System.out.println("Exception while executing database update");
+            LOGGER.severe("Exception while executing database update");
             exception.printStackTrace();
             return -1;
         }
@@ -52,7 +56,7 @@ public class H2Storage extends SqlStorage {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {
-            System.out.println("Exception while executing database query");
+            LOGGER.severe("Exception while executing database query");
             throwable.printStackTrace();
             return null;
         }

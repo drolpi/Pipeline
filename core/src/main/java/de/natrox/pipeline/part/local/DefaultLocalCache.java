@@ -1,6 +1,8 @@
 package de.natrox.pipeline.part.local;
 
 import com.google.gson.JsonObject;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 
 public final class DefaultLocalCache implements LocalCache {
 
+    private final static Logger LOGGER = LogManager.logger(DefaultLocalCache.class);
+
     private final Map<Class<? extends PipelineData>, Map<UUID, PipelineData>> dataObjects = new ConcurrentHashMap<>();
 
     public DefaultLocalCache() {
-        System.out.println("LocalCache started");
+        //LOGGER.info("LocalCache started."); //DEBUG
     }
 
     @Nullable

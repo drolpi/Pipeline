@@ -3,14 +3,18 @@ package de.natrox.pipeline.part.updater;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonObject;
+import de.natrox.common.logger.LogManager;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public abstract class AbstractDataUpdater implements DataUpdater {
+
+    private final static Logger LOGGER = LogManager.logger(AbstractDataUpdater.class);
 
     private final Cache<UUID, Optional<JsonObject>> tasks;
 
@@ -28,7 +32,7 @@ public abstract class AbstractDataUpdater implements DataUpdater {
     public void receivedData(@NotNull UUID objectUUID, JsonObject data) {
         if (tasks.asMap().containsKey(objectUUID)) {
             tasks.put(objectUUID, Optional.ofNullable(data));
-            System.out.println("Received Sync while loading " + System.currentTimeMillis()); //DEBUG
+            //LOGGER.info("Received Sync while loading " + System.currentTimeMillis()); //DEBUG
         }
     }
 

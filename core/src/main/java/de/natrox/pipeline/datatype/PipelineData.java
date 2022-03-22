@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
@@ -14,6 +16,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class PipelineData implements DataType {
+
+    private final static Logger LOGGER = LogManager.logger(PipelineData.class);
 
     private final transient Pipeline pipeline;
     private final transient Gson gson;
@@ -42,7 +46,7 @@ public abstract class PipelineData implements DataType {
     @Override
     public void save(@Nullable Runnable callback) {
         var startTime = System.currentTimeMillis();
-        System.out.println("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
+        //LOGGER.info("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID); //DEBUG
         updateLastUse();
 
         var runnable = new Runnable() {
@@ -54,7 +58,7 @@ public abstract class PipelineData implements DataType {
                 if (runCount != 2)
                     return;
 
-                System.out.println("Done saving in " + (System.currentTimeMillis() - startTime) + "ms [" + getClass().getSimpleName() + "]");
+                //LOGGER.info("Done saving in " + (System.currentTimeMillis() - startTime) + "ms [" + getClass().getSimpleName() + "]");
                 if (callback != null)
                     callback.run();
             }

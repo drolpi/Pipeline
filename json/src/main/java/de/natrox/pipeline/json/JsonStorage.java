@@ -3,6 +3,8 @@ package de.natrox.pipeline.json;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -26,6 +28,8 @@ import java.util.UUID;
 
 public class JsonStorage implements GlobalStorage {
 
+    private final static Logger LOGGER = LogManager.logger(JsonStorage.class);
+
     private final Gson gson;
     private final Path directory;
 
@@ -33,7 +37,7 @@ public class JsonStorage implements GlobalStorage {
         this.gson = pipeline.gson();
         this.directory = Paths.get(path);
 
-        System.out.println("Json storage initialized");
+        //LOGGER.info("Json storage initialized"); //DEBUG
     }
 
     @Override

@@ -1,6 +1,8 @@
 package de.natrox.pipeline.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.sql.SqlStorage;
 import org.jetbrains.annotations.NotNull;
@@ -15,12 +17,13 @@ import java.util.function.Function;
 
 public class MySqlStorage extends SqlStorage {
 
+    protected final static Logger LOGGER = LogManager.logger(MySqlStorage.class);
+
     private final HikariDataSource hikariDataSource;
 
     public MySqlStorage(Pipeline pipeline, HikariDataSource hikariDataSource) {
         super(pipeline);
         this.hikariDataSource = hikariDataSource;
-        System.out.println("MySQL storage started"); //DEBUG
     }
 
     @NotNull
@@ -44,7 +47,7 @@ public class MySqlStorage extends SqlStorage {
             // execute the statement
             return statement.executeUpdate();
         } catch (SQLException exception) {
-            System.out.println("Exception while executing database update");
+            LOGGER.severe("Exception while executing database update");
             exception.printStackTrace();
             return -1;
         }
@@ -63,7 +66,7 @@ public class MySqlStorage extends SqlStorage {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {
-            System.out.println("Exception while executing database query");
+            LOGGER.severe("Exception while executing database query");
             throwable.printStackTrace();
         }
 

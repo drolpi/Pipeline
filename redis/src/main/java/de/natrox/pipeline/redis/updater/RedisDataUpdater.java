@@ -1,6 +1,8 @@
 package de.natrox.pipeline.redis.updater;
 
 import com.google.gson.JsonParser;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 public class RedisDataUpdater extends AbstractDataUpdater {
 
+    private final static Logger LOGGER = LogManager.logger(RedisDataUpdater.class);
     private final static String DATA_TOPIC = "DataTopic:%s";
 
     private final LocalCache localCache;
@@ -44,12 +47,12 @@ public class RedisDataUpdater extends AbstractDataUpdater {
                     receivedData(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
                     pipelineData.onSync(pipelineData.deserialize(dataToUpdate));
-                    System.out.println("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
+                    //LOGGER.info("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 }
             } else if (dataBlock instanceof RemoveDataBlock) {
                 if (pipelineData == null)
                     return;
-                System.out.println("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
+                //LOGGER.info("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
                 pipelineData.markForRemoval();
                 pipeline.delete(pipelineData.getClass(), pipelineData.objectUUID(), false, Pipeline.QueryStrategy.LOCAL);
             }
@@ -61,12 +64,12 @@ public class RedisDataUpdater extends AbstractDataUpdater {
     public void pushUpdate(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
         Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
         if (pipelineData.isMarkedForRemoval()) {
-            System.out.println("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
+            //LOGGER.info("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
             return;
         }
         pipelineData.unMarkRemoval();
         dataTopic.publish(new UpdateDataBlock(senderUUID, pipelineData.objectUUID(), pipelineData.serializeToString()));
-        System.out.println("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
+        //LOGGER.info("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); //DEBUG
         if (callback != null)
             callback.run();
     }
@@ -76,7 +79,7 @@ public class RedisDataUpdater extends AbstractDataUpdater {
         Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
         pipelineData.markForRemoval();
         dataTopic.publish(new RemoveDataBlock(senderUUID, pipelineData.objectUUID()));
-        System.out.println("Pushing Removal: " + System.currentTimeMillis());
+        //LOGGER.info("Pushing Removal: " + System.currentTimeMillis()); //DEBUG
         if (callback != null)
             callback.run();
     }

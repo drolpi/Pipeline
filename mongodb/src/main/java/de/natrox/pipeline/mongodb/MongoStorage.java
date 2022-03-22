@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -19,13 +21,15 @@ import java.util.UUID;
 
 public class MongoStorage implements GlobalStorage {
 
+    private final static Logger LOGGER = LogManager.logger(MongoStorage.class);
+
     private final Gson gson;
     private final MongoDatabase mongoDatabase;
 
     public MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
         this.gson = pipeline.gson();
         this.mongoDatabase = mongoDatabase;
-        System.out.println("Mongo storage started"); //DEBUG
+        //LOGGER.info("Mongo storage started."); //DEBUG
     }
 
     @Override

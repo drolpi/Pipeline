@@ -1,5 +1,7 @@
 package de.natrox.pipeline.scheduler;
 
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeoutException;
 
 public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
+    private final static Logger LOGGER = LogManager.logger(PipelineTaskSchedulerImpl.class);
+
     private final Map<UUID, Map<Class<? extends PipelineData>, PipelineTask<?>>> pendingTasks = new ConcurrentHashMap<>();
 
     @Override
@@ -23,11 +27,9 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
         Objects.requireNonNull(uuid, "uuid can't be null!");
         PipelineTask<T> existingTask = pipelineTask(type, uuid);
         if (existingTask != null) {
-            System.out.println("[" + loadingStrategy + "] Found existing Pipeline Task: " + existingTask); //DEBUG
             return existingTask;
         }
         PipelineTask<T> pipelineTask = new PipelineTask<>(this, pipelineAction, type, uuid, () -> remove(type, uuid));
-        //System.out.println("[" + loadingStrategy + "] Scheduling Pipeline Task: " + pipelineTask); //DEBUG
 
         if (!pendingTasks.containsKey(uuid))
             pendingTasks.put(uuid, new ConcurrentHashMap<>());
@@ -71,17 +73,17 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public void shutdown() {
-        System.out.println("Shutting down Pipeline Task Scheduler");
+        //LOGGER.info("Shutting down Pipeline Task Scheduler"); //DEBUG
         pendingTasks.forEach((uuid, pipelineTasks) -> {
             pipelineTasks.forEach((aClass, pipelineTask) -> {
                 try {
                     pipelineTask.completableFuture().get(1, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    System.out.println("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.completableFuture().getClass().getGenericInterfaces()));
+                    LOGGER.warning("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.completableFuture().getClass().getGenericInterfaces()));
                     e.printStackTrace();
                 }
             });
         });
-        System.out.println("Pipeline Task Scheduler shut down successfully");
+        //LOGGER.info("Pipeline Task Scheduler shut down successfully"); //DEBUG
     }
 }
