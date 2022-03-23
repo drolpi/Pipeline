@@ -87,11 +87,11 @@ public final class PipelineImpl implements Pipeline {
             this.globalStorage = null;
         }
 
-        LOGGER.info("Pipeline information:");
-        LOGGER.info("LocalCache: " + localCache.getClass().getName());
-        LOGGER.info("DataUpdater: " + dataUpdaterService.getClass().getName());
-        LOGGER.info("GlobalCache: " + globalCache.getClass().getName());
-        LOGGER.info("GlobalStorage: " + globalStorage.getClass().getName());
+        //LOGGER.info("Pipeline information:");
+        //LOGGER.info("LocalCache: " + localCache.getClass().getName());
+        //LOGGER.info("DataUpdater: " + dataUpdaterService.getClass().getName());
+        //LOGGER.info("GlobalCache: " + globalCache.getClass().getName());
+        //LOGGER.info("GlobalStorage: " + globalStorage.getClass().getName());
 
         this.scheduler = new Scheduler();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();
