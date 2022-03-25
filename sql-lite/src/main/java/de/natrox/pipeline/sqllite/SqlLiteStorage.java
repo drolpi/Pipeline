@@ -21,7 +21,7 @@ public class SqlLiteStorage extends SqlStorage {
     public SqlLiteStorage(Pipeline pipeline, Connection connection) {
         super(pipeline);
         this.connection = connection;
-        //LOGGER.info("SqlLite storage started"); //DEBUG
+        LOGGER.debug("SqlLite storage started"); //DEBUG
     }
 
     @NotNull

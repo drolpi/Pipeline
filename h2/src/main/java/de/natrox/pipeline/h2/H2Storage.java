@@ -21,7 +21,7 @@ public class H2Storage extends SqlStorage {
     public H2Storage(Pipeline pipeline, Connection connection) {
         super(pipeline);
         this.connection = connection;
-        //LOGGER.info("H2 storage started"); //DEBUG
+        LOGGER.debug("H2 storage started"); //DEBUG
     }
 
     @NotNull

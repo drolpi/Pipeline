@@ -28,7 +28,7 @@ public class RedisDataUpdaterService implements DataUpdaterService {
         this.redissonClient = redissonClient;
         this.cache = new HashMap<>();
         this.registerClasses();
-        //LOGGER.info("Redis data updater service started"); //DEBUG
+        LOGGER.debug("Redis data updater service started"); //DEBUG
     }
 
     private void registerClasses() {

@@ -79,7 +79,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             data.updateLastUse();
             data.unMarkRemoval();
             var dataToSave = data.serialize();
-            //LOGGER.info("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.LOCAL + " -> " + destination + "]"); //DEBUG
+            LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.LOCAL + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.GLOBAL_CACHE))
                 // Local to Global Cache
                 pipelineImpl.globalCache().saveData(dataClass, objectUUID, dataToSave);
@@ -92,12 +92,12 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             var globalCachedData = pipelineImpl.globalCache().loadData(dataClass, objectUUID);
             // Error while loading from redis
             if (globalCachedData == null) {
-                //LOGGER.info("Trying to load from storage..."); //DEBUG
+                LOGGER.debug("Trying to load from storage..."); //DEBUG
                 doSynchronisation(DataSourceType.GLOBAL_STORAGE, DataSourceType.LOCAL, dataClass, objectUUID, callback, instanceCreator);
                 return false;
             }
 
-            //LOGGER.info("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_CACHE + " -> " + destination + "]"); //DEBUG
+            LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_CACHE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineImpl.localCache().save(
@@ -122,7 +122,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
                 return false;
             var globalSavedData = pipelineImpl.globalStorage().loadData(dataClass, objectUUID);
 
-            //LOGGER.info("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_STORAGE + " -> " + destination + "]"); //DEBUG
+            LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_STORAGE + " -> " + destination + "]"); //DEBUG
             if (destination.equals(DataSourceType.LOCAL)) {
                 if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
                     pipelineImpl.localCache().save(
@@ -151,7 +151,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
 
         if (callback != null)
             callback.run();
-        //LOGGER.info("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
+        LOGGER.debug("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]"); //DEBUG
         return true;
     }
 
@@ -168,10 +168,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
     @Override
     public void shutdown() {
         try {
-            //LOGGER.info("Shutting down Data Synchronizer"); //DEBUG
+            LOGGER.debug("Shutting down Data Synchronizer"); //DEBUG
             executorService.shutdown();
             executorService.awaitTermination(5, TimeUnit.SECONDS);
-            //LOGGER.info("Data Synchronizer shut down successfully"); //DEBUG
+            LOGGER.debug("Data Synchronizer shut down successfully"); //DEBUG
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

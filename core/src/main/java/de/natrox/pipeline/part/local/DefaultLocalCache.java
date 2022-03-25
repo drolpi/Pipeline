@@ -24,7 +24,7 @@ public final class DefaultLocalCache implements LocalCache {
     private final Map<Class<? extends PipelineData>, Map<UUID, PipelineData>> dataObjects = new ConcurrentHashMap<>();
 
     public DefaultLocalCache() {
-        //LOGGER.info("LocalCache started."); //DEBUG
+        LOGGER.debug("LocalCache started."); //DEBUG
     }
 
     @Nullable

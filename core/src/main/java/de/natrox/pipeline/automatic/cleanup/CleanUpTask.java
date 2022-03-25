@@ -34,7 +34,7 @@ public final class CleanUpTask implements Runnable {
                     if ((System.currentTimeMillis() - data.lastUse()) < cleanUp.timeUnit().toMillis(cleanUp.time()))
                         return;
 
-                    //LOGGER.info("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString()); //DEBUG
+                    LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString()); //DEBUG
                     data.onCleanUp();
                     pipelineImpl.cleanUpData(dataClass, data.objectUUID(), null);
                 }
