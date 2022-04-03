@@ -91,13 +91,13 @@ public class RedisDataUpdater extends AbstractDataUpdater {
         return redissonClient.getTopic(key, new SerializationCodec());
     }
 
-    class RemoveDataBlock extends DataBlock {
+    static class RemoveDataBlock extends DataBlock {
         public RemoveDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {
             super(senderUUID, dataUUID);
         }
     }
 
-    abstract class DataBlock implements Serializable {
+    static abstract class DataBlock implements Serializable {
 
         public final UUID senderUUID;
         public final UUID dataUUID;
@@ -108,7 +108,7 @@ public class RedisDataUpdater extends AbstractDataUpdater {
         }
     }
 
-    class UpdateDataBlock extends DataBlock {
+    static class UpdateDataBlock extends DataBlock {
 
         public final String dataToUpdate;
 
