@@ -459,21 +459,26 @@ public final class PipelineImpl implements Pipeline {
         if (!registry.isRegistered(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        var pipelineData = localCache().data(type, uuid);
-        LOGGER.debug("Saving " + uuid + " [" + type + "]"); //DEBUG
-        if (pipelineData == null)
-            return;
-        if (pipelineData.isMarkedForRemoval())
-            return;
-        pipelineData.onCleanUp();
-
         var optional = AnnotationResolver.autoSave(type);
 
-        optional.ifPresent(autoSave -> pipelineData.save(() -> {
-            localCache.remove(type, pipelineData.objectUUID());
-            if (runnable != null)
-                runnable.run();
-        }));
+        optional.ifPresent(autoSave -> {
+            var pipelineData = localCache().data(type, uuid);
+            LOGGER.debug("Saving " + uuid + " [" + type + "]"); //DEBUG
+            if (pipelineData == null)
+                return;
+            if (pipelineData.isMarkedForRemoval())
+                return;
+            pipelineData.onCleanUp();
+
+            if (pipelineData instanceof ConnectionPipelineData connectionPipelineData)
+                connectionPipelineData.onDisconnect();
+
+            pipelineData.save(() -> {
+                localCache.remove(type, pipelineData.objectUUID());
+                if (runnable != null)
+                    runnable.run();
+            });
+        });
     }
 
     @NotNull
@@ -496,7 +501,7 @@ public final class PipelineImpl implements Pipeline {
         // ExistCheck LocalCache
         if (localCache.dataExist(dataClass, uuid))
             LOGGER.debug("Found Data in Local Cache [" + dataClass.getSimpleName() + "]"); //DEBUG
-        // ExistCheck GlobalCache
+            // ExistCheck GlobalCache
         else {
             boolean globalCacheExists = pipelineDataSynchronizer.doSynchronisation(
                 DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
