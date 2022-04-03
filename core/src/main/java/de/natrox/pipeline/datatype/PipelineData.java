@@ -6,6 +6,7 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
+import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
@@ -64,13 +65,13 @@ public abstract class PipelineData implements DataType {
             }
         };
 
-        this.dataUpdater.pushUpdate(this, () -> {
+        this.dataUpdater.pushUpdate(this, new CatchingRunnable(() -> {
             pipeline.dataSynchronizer()
                 .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, getClass(), objectUUID(), runnable, null);
 
             pipeline.dataSynchronizer()
                 .synchronize(DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, getClass(), objectUUID(), runnable, null);
-        });
+        }));
     }
 
     @Override
