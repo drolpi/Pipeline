@@ -29,7 +29,7 @@ public class MongoStorage implements GlobalStorage {
     public MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
         this.gson = pipeline.gson();
         this.mongoDatabase = mongoDatabase;
-        LOGGER.debug("Mongo storage started."); //DEBUG
+        LOGGER.debug("Mongo storage started."); 
     }
 
     @Override

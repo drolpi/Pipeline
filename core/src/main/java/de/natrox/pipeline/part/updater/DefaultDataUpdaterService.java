@@ -16,7 +16,7 @@ public final class DefaultDataUpdaterService implements DataUpdaterService {
 
     public DefaultDataUpdaterService() {
         this.cache = new HashMap<>();
-        LOGGER.debug("Default DataUpdaterService started"); //DEBUG
+        LOGGER.debug("Default DataUpdaterService started"); 
     }
 
     @NotNull

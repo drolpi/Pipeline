@@ -1,10 +1,9 @@
-package de.natrox.pipeline.automatic.load;
+package de.natrox.pipeline.datatype.connection;
 
 import de.natrox.common.concurrent.TaskBatch;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.ConnectionPipelineData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

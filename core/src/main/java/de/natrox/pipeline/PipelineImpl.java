@@ -8,10 +8,10 @@ import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.automatic.cleanup.CleanUpTask;
+import de.natrox.pipeline.cleanup.CleanUpTask;
 import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
-import de.natrox.pipeline.datatype.ConnectionPipelineData;
+import de.natrox.pipeline.datatype.connection.ConnectionPipelineData;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import de.natrox.pipeline.operator.PipelineStream;
@@ -149,7 +149,7 @@ public final class PipelineImpl implements Pipeline {
             executorService.submit(new CatchingRunnable(() -> {
                 T data = loadFromPipeline(type, uuid, instanceCreator, createIfNotExists);
                 pipelineTask.completableFuture().complete(data);
-                LOGGER.debug("[" + loadingStrategy + "] Completed with: " + data); //DEBUG
+                LOGGER.debug("[" + loadingStrategy + "] Completed with: " + data); 
                 if (callback != null)
                     callback.accept(data);
             }));
@@ -157,7 +157,7 @@ public final class PipelineImpl implements Pipeline {
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE)) {
             T data = loadFromPipeline(type, uuid, instanceCreator, createIfNotExists);
             pipelineTask.completableFuture().complete(data);
-            LOGGER.debug("[" + loadingStrategy + "] Completed with: " + data); //DEBUG
+            LOGGER.debug("[" + loadingStrategy + "] Completed with: " + data); 
             if (callback != null)
                 callback.accept(data);
 
@@ -294,9 +294,9 @@ public final class PipelineImpl implements Pipeline {
         var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
         if (strategySet.isEmpty())
             strategySet.add(QueryStrategy.ALL);
-        LOGGER.debug("Deleting: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
+        LOGGER.debug("Deleting: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); 
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.LOCAL)) {
-            LOGGER.debug("Deleting from Local Cache: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
+            LOGGER.debug("Deleting from Local Cache: " + type.getSimpleName() + " uuid " + uuid); 
             T data = localCache().data(type, uuid);
 
             if (data != null) {
@@ -304,27 +304,27 @@ public final class PipelineImpl implements Pipeline {
                 data.onCleanUp();
             }
             if (!localCache().remove(type, uuid))
-                LOGGER.debug("[LocalCache] Could not delete: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
+                LOGGER.debug("[LocalCache] Could not delete: " + type.getSimpleName() + " uuid " + uuid); 
             else if (data != null) {
                 if (notifyOthers)
                     data.dataUpdater().pushRemoval(data, null);
                 data.markForRemoval();
-                LOGGER.debug("[LocalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
+                LOGGER.debug("[LocalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); 
             }
         }
         if (globalCache != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE))) {
-            LOGGER.debug("Deleting from Global Cache: " + type.getSimpleName() + " uuid " + uuid + ""); //DEBUG
+            LOGGER.debug("Deleting from Global Cache: " + type.getSimpleName() + " uuid " + uuid + ""); 
             if (!globalCache.removeData(type, uuid))
-                LOGGER.debug("[GlobalCache] Could not delete: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
+                LOGGER.debug("[GlobalCache] Could not delete: " + type.getSimpleName() + " uuid " + uuid); 
             else
-                LOGGER.debug("[GlobalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
+                LOGGER.debug("[GlobalCache] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); 
         }
         if (globalStorage != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE))) {
-            LOGGER.debug("Deleting from Global Storage: " + type.getSimpleName() + " uuid " + uuid + ""); //DEBUG
+            LOGGER.debug("Deleting from Global Storage: " + type.getSimpleName() + " uuid " + uuid + ""); 
             if (!globalStorage.removeData(type, uuid))
-                LOGGER.debug("[GlobalStorage] Could not delete: " + type.getSimpleName() + " uuid " + uuid); //DEBUG
+                LOGGER.debug("[GlobalStorage] Could not delete: " + type.getSimpleName() + " uuid " + uuid); 
             else
-                LOGGER.debug("[GlobalStorage] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); //DEBUG
+                LOGGER.debug("[GlobalStorage] Deleted: " + type.getSimpleName() + " uuid " + uuid + "" + Arrays.toString(strategies)); 
         }
         return true;
     }
@@ -396,12 +396,12 @@ public final class PipelineImpl implements Pipeline {
         //Data will only be preloaded if it is declared properly
         optional.ifPresent(preload -> {
             var startTime = System.currentTimeMillis();
-            LOGGER.debug("Preloading " + type.getSimpleName()); //DEBUG
+            LOGGER.debug("Preloading " + type.getSimpleName()); 
             if (globalCache != null)
                 globalCache.savedUUIDs(type).forEach(uuid -> preloadData(type, uuid));
             if (globalStorage != null)
                 globalStorage.savedUUIDs(type).forEach(uuid -> preloadData(type, uuid));
-            LOGGER.debug("Done preloading " + type.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms"); //DEBUG
+            LOGGER.debug("Done preloading " + type.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms"); 
         });
     }
 
@@ -446,9 +446,9 @@ public final class PipelineImpl implements Pipeline {
         // Data will only be preloaded if it is declared properly
         optional.ifPresent(unload -> {
             var startTime = System.currentTimeMillis();
-            LOGGER.debug("Saving " + type.getSimpleName()); //DEBUG
+            LOGGER.debug("Saving " + type.getSimpleName()); 
             localCache.savedUUIDs(type).forEach(uuid -> cleanUpData(type, uuid, null));
-            LOGGER.debug("Done saving " + type.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms"); //DEBUG
+            LOGGER.debug("Done saving " + type.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms"); 
         });
     }
 
@@ -463,7 +463,7 @@ public final class PipelineImpl implements Pipeline {
 
         optional.ifPresent(autoSave -> {
             var pipelineData = localCache().data(type, uuid);
-            LOGGER.debug("Saving " + uuid + " [" + type + "]"); //DEBUG
+            LOGGER.debug("Saving " + uuid + " [" + type + "]"); 
             if (pipelineData == null)
                 return;
             if (pipelineData.isMarkedForRemoval())
@@ -500,7 +500,7 @@ public final class PipelineImpl implements Pipeline {
         var startTime = System.currentTimeMillis();
         // ExistCheck LocalCache
         if (localCache.dataExist(dataClass, uuid))
-            LOGGER.debug("Found Data in Local Cache [" + dataClass.getSimpleName() + "]"); //DEBUG
+            LOGGER.debug("Found Data in Local Cache [" + dataClass.getSimpleName() + "]"); 
             // ExistCheck GlobalCache
         else {
             boolean globalCacheExists = pipelineDataSynchronizer.doSynchronisation(
@@ -508,14 +508,14 @@ public final class PipelineImpl implements Pipeline {
             );
 
             if (globalCacheExists)
-                LOGGER.debug("Found Data in Redis Cache [" + dataClass.getSimpleName() + "]"); //DEBUG
+                LOGGER.debug("Found Data in Redis Cache [" + dataClass.getSimpleName() + "]"); 
             else {
                 boolean globalStorageExists = pipelineDataSynchronizer.doSynchronisation(
                     DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
                 );
 
                 if (globalStorageExists) {
-                    LOGGER.debug("Found Data in Database [" + dataClass.getSimpleName() + "]"); //DEBUG
+                    LOGGER.debug("Found Data in Database [" + dataClass.getSimpleName() + "]"); 
                     if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL))
                         pipelineDataSynchronizer.synchronize(
                             DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
@@ -525,12 +525,12 @@ public final class PipelineImpl implements Pipeline {
                         return null;
                     T data = createNewData(dataClass, uuid, instanceCreator);
                     data.updateLastUse();
-                    LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms"); //DEBUG
+                    LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms"); 
                     return data;
                 }
             }
         }
-        LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms"); //DEBUG
+        LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms"); 
         T data = localCache.data(dataClass, uuid);
         if (data != null)
             data.updateLastUse();
@@ -550,7 +550,7 @@ public final class PipelineImpl implements Pipeline {
         if (!registry.dataClasses().contains(dataClass))
             throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
 
-        LOGGER.debug("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]"); //DEBUG
+        LOGGER.debug("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]"); 
         T pipelineData = localCache.data(dataClass, uuid);
 
         if (pipelineData == null) {

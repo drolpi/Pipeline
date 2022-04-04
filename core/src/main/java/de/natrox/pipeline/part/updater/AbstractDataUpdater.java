@@ -32,7 +32,7 @@ public abstract class AbstractDataUpdater implements DataUpdater {
     public void receivedData(@NotNull UUID objectUUID, JsonObject data) {
         if (tasks.asMap().containsKey(objectUUID)) {
             tasks.put(objectUUID, Optional.ofNullable(data));
-            LOGGER.debug("Received Sync while loading " + System.currentTimeMillis()); //DEBUG
+            LOGGER.debug("Received Sync while loading " + System.currentTimeMillis()); 
         }
     }
 

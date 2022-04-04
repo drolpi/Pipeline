@@ -31,7 +31,7 @@ public class RedisCache implements GlobalCache {
     public RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
         this.gson = pipeline.gson();
         this.redissonClient = redissonClient;
-        LOGGER.debug("Redis cache started"); //DEBUG
+        LOGGER.debug("Redis cache started"); 
     }
 
     @Override

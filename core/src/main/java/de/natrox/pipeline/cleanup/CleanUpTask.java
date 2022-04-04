@@ -1,4 +1,4 @@
-package de.natrox.pipeline.automatic.cleanup;
+package de.natrox.pipeline.cleanup;
 
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
@@ -34,7 +34,7 @@ public final class CleanUpTask implements Runnable {
                     if ((System.currentTimeMillis() - data.lastUse()) < cleanUp.timeUnit().toMillis(cleanUp.time()))
                         return;
 
-                    LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString()); //DEBUG
+                    LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString()); 
                     data.onCleanUp();
                     pipelineImpl.cleanUpData(dataClass, data.objectUUID(), null);
                 }

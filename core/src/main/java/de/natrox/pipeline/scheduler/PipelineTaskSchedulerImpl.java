@@ -73,7 +73,7 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public void shutdown() {
-        LOGGER.debug("Shutting down Pipeline Task Scheduler"); //DEBUG
+        LOGGER.debug("Shutting down Pipeline Task Scheduler"); 
         pendingTasks.forEach((uuid, pipelineTasks) -> {
             pipelineTasks.forEach((aClass, pipelineTask) -> {
                 try {
@@ -84,6 +84,6 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
                 }
             });
         });
-        LOGGER.debug("Pipeline Task Scheduler shut down successfully"); //DEBUG
+        LOGGER.debug("Pipeline Task Scheduler shut down successfully"); 
     }
 }
