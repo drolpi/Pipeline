@@ -42,7 +42,7 @@ public abstract class AbstractDataUpdater implements DataUpdater {
         var map = tasks.asMap();
 
         if (!map.containsKey(objectUUID))
-            return null;
+            return Optional.empty();
 
         var optional = map.get(objectUUID);
         return optional.map(data -> {
