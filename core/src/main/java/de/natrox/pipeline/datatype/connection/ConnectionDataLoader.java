@@ -30,12 +30,12 @@ public final class ConnectionDataLoader {
                 pipeline.registry()
                     .dataClasses()
                     .parallelStream()
-                    .filter(ConnectionPipelineData.class::isAssignableFrom)
+                    .filter(ConnectionData.class::isAssignableFrom)
                     .forEach(aClass -> {
                         var optional = AnnotationResolver.preload(aClass);
 
                         optional.ifPresent(preload -> {
-                            var data = (ConnectionPipelineData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
+                            var data = (ConnectionData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
                             if (data == null)
                                 return;
 
@@ -55,12 +55,12 @@ public final class ConnectionDataLoader {
                 pipeline.registry()
                     .dataClasses()
                     .parallelStream()
-                    .filter(ConnectionPipelineData.class::isAssignableFrom)
+                    .filter(ConnectionData.class::isAssignableFrom)
                     .forEach(aClass -> {
                         var optional = AnnotationResolver.autoSave(aClass);
 
                         optional.ifPresent(unload -> {
-                            var data = (ConnectionPipelineData) pipeline.localCache().data(aClass, connection);
+                            var data = (ConnectionData) pipeline.localCache().data(aClass, connection);
                             if (data == null)
                                 return;
 

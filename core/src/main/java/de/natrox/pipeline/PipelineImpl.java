@@ -12,7 +12,7 @@ import de.natrox.pipeline.cleanup.CleanUpTask;
 import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.datatype.connection.ConnectionPipelineData;
+import de.natrox.pipeline.datatype.connection.ConnectionData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.operator.PipelineStreamImpl;
@@ -381,7 +381,7 @@ public final class PipelineImpl implements Pipeline {
     @Override
     public void preloadAllData() {
         LOGGER.debug("Preloading all data...");
-        registry.dataClasses().stream().filter(aClass -> !ConnectionPipelineData.class.isAssignableFrom(aClass)).forEach(this::preloadData);
+        registry.dataClasses().stream().filter(aClass -> !ConnectionData.class.isAssignableFrom(aClass)).forEach(this::preloadData);
     }
 
     @Override
@@ -391,7 +391,7 @@ public final class PipelineImpl implements Pipeline {
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         //Connection
-        if (ConnectionPipelineData.class.isAssignableFrom(type))
+        if (ConnectionData.class.isAssignableFrom(type))
             return;
         var optional = AnnotationResolver.preload(type);
 
@@ -415,7 +415,7 @@ public final class PipelineImpl implements Pipeline {
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
         //Connection
-        if (ConnectionPipelineData.class.isAssignableFrom(type))
+        if (ConnectionData.class.isAssignableFrom(type))
             return;
         if (localCache.dataExist(type, uuid))
             return;
@@ -472,8 +472,8 @@ public final class PipelineImpl implements Pipeline {
                 return;
             pipelineData.onCleanUp();
 
-            if (pipelineData instanceof ConnectionPipelineData connectionPipelineData)
-                connectionPipelineData.onDisconnect();
+            if (pipelineData instanceof ConnectionData connectionData)
+                connectionData.onDisconnect();
 
             pipelineData.save(() -> {
                 localCache.remove(type, pipelineData.objectUUID());

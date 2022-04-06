@@ -4,9 +4,9 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ConnectionPipelineData extends PipelineData {
+public abstract class ConnectionData extends PipelineData {
 
-    public ConnectionPipelineData(@NotNull Pipeline pipeline) {
+    public ConnectionData(@NotNull Pipeline pipeline) {
         super(pipeline);
     }
 
