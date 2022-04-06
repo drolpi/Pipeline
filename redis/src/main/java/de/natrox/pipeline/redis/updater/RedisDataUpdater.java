@@ -38,6 +38,8 @@ public class RedisDataUpdater extends AbstractDataUpdater {
         this.messageListener = (channel, dataBlock) -> {
             if (dataBlock.senderUUID.equals(senderUUID))
                 return;
+            if (!pipeline.registry().isRegistered(dataBlock.identifier))
+                return;
             var dataClass = pipeline.registry().dataClass(dataBlock.identifier);
             var pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
 
