@@ -2,6 +2,7 @@ package de.natrox.pipeline.cleanup;
 
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
+import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.config.PipelineRegistry;
@@ -34,7 +35,7 @@ public final class CleanUpTask implements Runnable {
                     if ((System.currentTimeMillis() - data.lastUse()) < cleanUp.timeUnit().toMillis(cleanUp.time()))
                         return;
 
-                    LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString()); 
+                    LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString());
                     data.onCleanUp();
                     pipelineImpl.cleanUpData(dataClass, data.objectUUID(), null);
                 }
