@@ -1,10 +1,10 @@
 package de.natrox.pipeline.config.connection;
 
-import de.natrox.pipeline.part.updater.DataUpdaterService;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.updater.DataUpdater;
 
 public interface DataUpdaterConnection extends Connection {
 
-    DataUpdaterService constructDataUpdaterService(Pipeline pipeline);
+    DataUpdater constructDataUpdater(Pipeline pipeline);
 
 }

@@ -31,7 +31,7 @@ public abstract class PipelineData implements DataType {
     public PipelineData(@NotNull Pipeline pipeline) {
         Objects.requireNonNull(pipeline, "pipeline can't be null!");
         this.pipeline = pipeline;
-        this.dataUpdater = pipeline.dataUpdaterService().dataUpdater(getClass());
+        this.dataUpdater = pipeline.dataUpdater();
         this.gson = new GsonBuilder()
             .setPrettyPrinting()
             .serializeNulls()

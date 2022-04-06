@@ -20,17 +20,18 @@ public class Example implements Serializable {
         var mongoConnection = new MongoConnection("localhost", 27017, "test");
 
         var config = PipelineConfig
-                .builder()
-                .dataUpdater(redisConnection)
-                .globalCache(redisConnection)
-                .globalStorage(mongoConnection)
-                .build();
+            .builder()
+            .dataUpdater(redisConnection)
+            .globalCache(redisConnection)
+            .globalStorage(mongoConnection)
+            .build();
 
         var registry = new PipelineRegistry();
         registry.register(Player.class);
 
         var pipeline = Pipeline.create(config, registry);
 
+        var player = pipeline.load(Player.class, TEST_ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, (dataClass, pipeline1) -> new Player(pipeline1, "Test", 5), true);
     }
 
 }

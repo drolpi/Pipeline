@@ -28,7 +28,7 @@ public final class CleanUpTask implements Runnable {
     public void run() {
         for (var dataClass : registry.dataClasses()) {
             AnnotationResolver.cleanUp(dataClass).ifPresent(cleanUp -> {
-                for (UUID uuid : localCache.savedUUIDs(dataClass)) {
+                for (var uuid : localCache.savedUUIDs(dataClass)) {
                     var data = localCache.data(dataClass, uuid);
                     if (data == null)
                         return;

@@ -12,7 +12,7 @@ import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.updater.DataUpdaterService;
+import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -331,7 +331,7 @@ public interface Pipeline extends Loadable, Shutdownable {
 
     @NotNull LocalCache localCache();
 
-    @NotNull DataUpdaterService dataUpdaterService();
+    @NotNull DataUpdater dataUpdater();
 
     @Nullable GlobalCache globalCache();
 

@@ -22,8 +22,8 @@ import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.local.DefaultLocalCache;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.updater.DataUpdaterService;
-import de.natrox.pipeline.part.updater.DefaultDataUpdaterService;
+import de.natrox.pipeline.part.updater.DataUpdater;
+import de.natrox.pipeline.part.updater.DefaultDataUpdater;
 import de.natrox.pipeline.scheduler.PipelineTaskScheduler;
 import de.natrox.pipeline.scheduler.PipelineTaskSchedulerImpl;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +46,7 @@ public final class PipelineImpl implements Pipeline {
 
     private final GlobalStorage globalStorage;
     private final GlobalCache globalCache;
-    private final DataUpdaterService dataUpdaterService;
+    private final DataUpdater dataUpdater;
     private final LocalCache localCache;
     private final PipelineRegistry registry;
     private final DataSynchronizerImpl pipelineDataSynchronizer;
@@ -65,9 +65,9 @@ public final class PipelineImpl implements Pipeline {
         var updaterConfig = config.dataUpdaterConnection();
         if (updaterConfig != null) {
             updaterConfig.load();
-            this.dataUpdaterService = updaterConfig.constructDataUpdaterService(this);
+            this.dataUpdater = updaterConfig.constructDataUpdater(this);
         } else {
-            this.dataUpdaterService = new DefaultDataUpdaterService();
+            this.dataUpdater = new DefaultDataUpdater();
         }
 
         var globalCacheConfig = config.globalCacheConnection();
@@ -88,7 +88,7 @@ public final class PipelineImpl implements Pipeline {
 
         LOGGER.debug("Pipeline information:");
         LOGGER.debug("LocalCache: " + localCache.getClass().getName());
-        LOGGER.debug("DataUpdater: " + dataUpdaterService.getClass().getName());
+        LOGGER.debug("DataUpdater: " + dataUpdater.getClass().getName());
         LOGGER.debug("GlobalCache: " + globalCache.getClass().getName());
         LOGGER.debug("GlobalStorage: " + globalStorage.getClass().getName());
 
@@ -356,8 +356,8 @@ public final class PipelineImpl implements Pipeline {
 
     @NotNull
     @Override
-    public DataUpdaterService dataUpdaterService() {
-        return dataUpdaterService;
+    public DataUpdater dataUpdater() {
+        return dataUpdater;
     }
 
     @Nullable

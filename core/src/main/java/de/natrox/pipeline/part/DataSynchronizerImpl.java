@@ -66,7 +66,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             return false;
 
         var startTime = System.currentTimeMillis();
-        var dataUpdater = pipelineImpl.dataUpdaterService().dataUpdater(dataClass);
+        var dataUpdater = pipelineImpl.dataUpdater();
         if (destination.equals(DataSourceType.LOCAL))
             dataUpdater.registerLoadingTask(objectUUID);
 

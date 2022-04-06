@@ -5,9 +5,9 @@ import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.DataUpdaterConnection;
 import de.natrox.pipeline.config.connection.GlobalCacheConnection;
 import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.updater.DataUpdaterService;
+import de.natrox.pipeline.part.updater.DataUpdater;
 import de.natrox.pipeline.redis.cache.RedisCache;
-import de.natrox.pipeline.redis.updater.RedisDataUpdaterService;
+import de.natrox.pipeline.redis.updater.RedisDataUpdater;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -74,8 +74,8 @@ public class RedisConnection implements DataUpdaterConnection, GlobalCacheConnec
     }
 
     @Override
-    public DataUpdaterService constructDataUpdaterService(Pipeline pipeline) {
-        return new RedisDataUpdaterService(pipeline, redissonClient);
+    public DataUpdater constructDataUpdater(Pipeline pipeline) {
+        return new RedisDataUpdater(pipeline, redissonClient);
     }
 
     @Override

@@ -22,7 +22,7 @@ import java.util.UUID;
 public class RedisDataUpdater extends AbstractDataUpdater {
 
     private final static Logger LOGGER = LogManager.logger(RedisDataUpdater.class);
-    private final static String DATA_TOPIC = "DataTopic:%s";
+    private final static String DATA_TOPIC = "DataTopic";
 
     private final LocalCache localCache;
     private final RedissonClient redissonClient;
@@ -30,15 +30,15 @@ public class RedisDataUpdater extends AbstractDataUpdater {
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
 
-    public RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient, @NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "DataClass can't be null!");
+    public RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient) {
         this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
 
-        this.dataTopic = topic(dataClass);
+        this.dataTopic = topic();
         this.messageListener = (channel, dataBlock) -> {
             if (dataBlock.senderUUID.equals(senderUUID))
                 return;
+            var dataClass = pipeline.registry().dataClass(dataBlock.identifier);
             var pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
 
             if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
@@ -47,12 +47,12 @@ public class RedisDataUpdater extends AbstractDataUpdater {
                     receivedData(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
                     pipelineData.onSync(pipelineData.deserialize(dataToUpdate));
-                    LOGGER.debug("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); 
+                    LOGGER.debug("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
                 }
             } else if (dataBlock instanceof RemoveDataBlock) {
                 if (pipelineData == null)
                     return;
-                LOGGER.debug("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); 
+                LOGGER.debug("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
                 pipelineData.markForRemoval();
                 pipeline.delete(pipelineData.getClass(), pipelineData.objectUUID(), false, Pipeline.QueryStrategy.LOCAL);
             }
@@ -64,12 +64,12 @@ public class RedisDataUpdater extends AbstractDataUpdater {
     public void pushUpdate(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
         Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
         if (pipelineData.isMarkedForRemoval()) {
-            LOGGER.debug("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); 
+            LOGGER.debug("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
             return;
         }
         pipelineData.unMarkRemoval();
-        dataTopic.publish(new UpdateDataBlock(senderUUID, pipelineData.objectUUID(), pipelineData.serializeToString()));
-        LOGGER.debug("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis()); 
+        dataTopic.publish(new UpdateDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID(), pipelineData.serializeToString()));
+        LOGGER.debug("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
         if (callback != null)
             callback.run();
     }
@@ -78,31 +78,31 @@ public class RedisDataUpdater extends AbstractDataUpdater {
     public void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
         Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
         pipelineData.markForRemoval();
-        dataTopic.publish(new RemoveDataBlock(senderUUID, pipelineData.objectUUID()));
-        LOGGER.debug("Pushing Removal: " + System.currentTimeMillis()); 
+        dataTopic.publish(new RemoveDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID()));
+        LOGGER.debug("Pushing Removal: " + System.currentTimeMillis());
         if (callback != null)
             callback.run();
     }
 
     @NotNull
-    private synchronized RTopic topic(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        var key = String.format(DATA_TOPIC, AnnotationResolver.storageIdentifier(dataClass));
-        return redissonClient.getTopic(key, new SerializationCodec());
+    private synchronized RTopic topic() {
+        return redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
     }
 
     static class RemoveDataBlock extends DataBlock {
-        public RemoveDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {
-            super(senderUUID, dataUUID);
+        public RemoveDataBlock(@NotNull String identifier, @NotNull UUID senderUUID, @NotNull UUID dataUUID) {
+            super(identifier, senderUUID, dataUUID);
         }
     }
 
     static abstract class DataBlock implements Serializable {
 
+        public final String identifier;
         public final UUID senderUUID;
         public final UUID dataUUID;
 
-        DataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID) {
+        DataBlock(@NotNull String identifier, @NotNull UUID senderUUID, @NotNull UUID dataUUID) {
+            this.identifier = identifier;
             this.senderUUID = senderUUID;
             this.dataUUID = dataUUID;
         }
@@ -112,8 +112,8 @@ public class RedisDataUpdater extends AbstractDataUpdater {
 
         public final String dataToUpdate;
 
-        public UpdateDataBlock(@NotNull UUID senderUUID, @NotNull UUID dataUUID, String dataToUpdate) {
-            super(senderUUID, dataUUID);
+        public UpdateDataBlock(@NotNull String identifier, @NotNull UUID senderUUID, @NotNull UUID dataUUID, String dataToUpdate) {
+            super(identifier, senderUUID, dataUUID);
             this.dataToUpdate = dataToUpdate;
         }
     }
