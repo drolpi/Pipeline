@@ -29,7 +29,6 @@ subprojects {
         compileOnly("com.google.guava:guava:23.0")
         compileOnly("org.reflections:reflections:0.10.2")
         compileOnly("org.jodd:jodd-core:5.3.0")
-        compileOnly("org.slf4j:slf4j-nop:1.7.36")
     }
 
     tasks.withType<JavaCompile> {
