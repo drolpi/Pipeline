@@ -67,7 +67,7 @@ public class RedisCache implements GlobalCache {
     }
 
     @Override
-    public synchronized List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         return keys(dataClass).stream().map(s -> UUID.fromString(s.split(":")[2])).collect(Collectors.toList());
     }

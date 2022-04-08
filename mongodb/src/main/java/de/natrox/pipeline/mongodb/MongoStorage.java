@@ -87,7 +87,7 @@ public class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public synchronized Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
         Objects.requireNonNull(dataClass, "dataClass can't be null!");
         return data(dataClass).keySet();
     }
