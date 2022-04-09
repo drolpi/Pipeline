@@ -8,6 +8,9 @@ dependencies {
 
     testImplementation(project(":mongodb"))
     testImplementation(project(":redis"))
+    testImplementation(project(":h2"))
+    testImplementation(project(":mysql"))
+    testImplementation(project(":sqlite"))
 }
 
 tasks.withType<Jar> {

@@ -8,5 +8,5 @@ include(
     ":sql",
     ":mysql",
     ":h2",
-    ":sql-lite"
+    ":sqlite"
 )

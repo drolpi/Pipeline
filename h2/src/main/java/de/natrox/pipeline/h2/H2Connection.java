@@ -1,15 +1,16 @@
 package de.natrox.pipeline.h2;
 
+import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.sql.HikariUtil;
 import org.h2.Driver;
+import org.h2.jdbcx.JdbcDataSource;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class H2Connection implements GlobalStorageConnection, Connection {
 
@@ -19,7 +20,7 @@ public class H2Connection implements GlobalStorageConnection, Connection {
 
     private final String h2dbFile;
 
-    private java.sql.Connection connection;
+    private HikariDataSource hikariDataSource;
     private boolean connected;
 
     public H2Connection(Path h2dbFile) {
@@ -33,12 +34,13 @@ public class H2Connection implements GlobalStorageConnection, Connection {
             file.getParentFile().mkdirs();
         }
 
-        try {
-            this.connection = DriverManager.getConnection("jdbc:h2:" + file.getAbsolutePath());
-            connected = true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        if (isLoaded()) return;
+        this.hikariDataSource = HikariUtil.createDataSource(config -> {
+            var dataSource = new JdbcDataSource();
+            dataSource.setUrl("jdbc:h2:file:" + file.getAbsolutePath());
+            config.setDataSource(dataSource);
+        });
+        connected = true;
     }
 
     @Override
@@ -48,18 +50,12 @@ public class H2Connection implements GlobalStorageConnection, Connection {
 
     @Override
     public void shutdown() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        hikariDataSource.close();
         connected = false;
     }
 
     @Override
     public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
-        return new H2Storage(pipeline, connection);
+        return new H2Storage(pipeline, hikariDataSource);
     }
 }

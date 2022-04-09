@@ -1,22 +1,24 @@
 package de.natrox.pipeline.sqllite;
 
+import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.sql.HikariUtil;
+import org.sqlite.SQLiteDataSource;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
-public class SqlLiteConnection implements GlobalStorageConnection, Connection {
+public class SQLiteConnection implements GlobalStorageConnection, Connection {
 
     private final String sqlLiteFile;
-    private java.sql.Connection connection;
+
+    private HikariDataSource hikariDataSource;
     private boolean connected;
 
-    public SqlLiteConnection(Path sqlLiteFile) {
+    public SQLiteConnection(Path sqlLiteFile) {
         this.sqlLiteFile = sqlLiteFile.toString();
     }
 
@@ -26,17 +28,18 @@ public class SqlLiteConnection implements GlobalStorageConnection, Connection {
         if (file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
-        try {
-            this.connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
-            connected = true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        if (isLoaded()) return;
+        this.hikariDataSource = HikariUtil.createDataSource(config -> {
+            var dataSource = new SQLiteDataSource();
+            dataSource.setUrl("jdbc:sqlite:" + file.getAbsolutePath());
+            config.setDataSource(dataSource);
+        });
+        connected = true;
     }
 
     @Override
     public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
-        return new SqlLiteStorage(pipeline, connection);
+        return new SQLiteStorage(pipeline, hikariDataSource);
     }
 
     @Override
@@ -46,13 +49,7 @@ public class SqlLiteConnection implements GlobalStorageConnection, Connection {
 
     @Override
     public void shutdown() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        hikariDataSource.close();
         connected = false;
     }
 }

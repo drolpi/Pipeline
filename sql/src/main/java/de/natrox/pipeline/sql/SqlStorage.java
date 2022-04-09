@@ -3,6 +3,9 @@ package de.natrox.pipeline.sql;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.logger.LogManager;
+import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -11,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -22,9 +26,10 @@ import java.util.function.Function;
 
 public abstract class SqlStorage implements GlobalStorage {
 
-    protected static final String TABLE_COLUMN_KEY = "UUID";
-    protected static final String TABLE_COLUMN_VAL = "Document";
+    private final static Logger LOGGER = LogManager.logger(SqlStorage.class);
 
+    private static final String TABLE_COLUMN_KEY = "UUID";
+    private static final String TABLE_COLUMN_VAL = "Document";
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (%s VARCHAR(64) PRIMARY KEY, %s TEXT);";
     private static final String SELECT_ALL = "SELECT %s FROM `%s`;";
     private static final String SELECT_BY_UUID = "SELECT %s FROM `%s` WHERE %s = ?";
@@ -32,9 +37,11 @@ public abstract class SqlStorage implements GlobalStorage {
     private static final String UPDATE_BY_UUID = "UPDATE `%s` SET %s=? WHERE %s=?";
     private static final String DELETE_BY_UUID = "DELETE FROM `%s` WHERE %s = ?";
 
-    protected final Gson gson;
+    private final Gson gson;
+    private final HikariDataSource hikariDataSource;
 
-    public SqlStorage(Pipeline pipeline) {
+    public SqlStorage(Pipeline pipeline, HikariDataSource hikariDataSource) {
+        this.hikariDataSource = hikariDataSource;
         this.gson = pipeline.gson();
     }
 
@@ -150,14 +157,46 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @NotNull
-    public abstract Connection connection();
+    public Connection connection() {
+        try {
+            return this.hikariDataSource.getConnection();
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Unable to retrieve connection from pool", exception);
+        }
+    }
 
-    public abstract int executeUpdate(@NotNull String query, @NotNull Object... objects);
+    public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
+        try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+            // write all parameters
+            for (int i = 0; i < objects.length; i++) {
+                statement.setString(i + 1, Objects.toString(objects[i]));
+            }
 
-    public abstract <T> T executeQuery(
-        @NotNull String query,
-        @NotNull Function<ResultSet, T> callback,
-        @Nullable T def,
-        @NotNull Object... objects
-    );
+            // execute the statement
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            LOGGER.severe("Exception while executing database update");
+            exception.printStackTrace();
+            return -1;
+        }
+    }
+
+    public <T> T executeQuery(@NotNull String query, @NotNull Function<ResultSet, T> callback, @Nullable T def, @NotNull Object... objects) {
+        try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+            // write all parameters
+            for (int i = 0; i < objects.length; i++) {
+                statement.setString(i + 1, Objects.toString(objects[i]));
+            }
+
+            // execute the statement, apply to the result handler
+            try (var resultSet = statement.executeQuery()) {
+                return callback.apply(resultSet);
+            }
+        } catch (Throwable throwable) {
+            LOGGER.severe("Exception while executing database query");
+            throwable.printStackTrace();
+        }
+
+        return def;
+    }
 }

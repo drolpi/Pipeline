@@ -1,11 +1,11 @@
 package de.natrox.pipeline.mysql;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.sql.HikariUtil;
 
 public class MySqlConnection implements GlobalStorageConnection, Connection {
 
@@ -33,34 +33,27 @@ public class MySqlConnection implements GlobalStorageConnection, Connection {
     @Override
     public void load() {
         if (isLoaded()) return;
-        var config = new HikariConfig();
+        this.hikariDataSource = HikariUtil.createDataSource(config -> {
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            config.addDataSourceProperty("maintainTimeStats", "false");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            config.addDataSourceProperty("rewriteBatchedStatements", "true");
+            config.addDataSourceProperty("elideSetAutoCommits", "true");
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("useServerPrepStmts", "true");
+            config.addDataSourceProperty("useLocalSessionState", "true");
+            config.addDataSourceProperty("cacheResultSetMetadata", "true");
+            config.addDataSourceProperty("cacheServerConfiguration", "true");
 
-        config.setJdbcUrl(String.format(
-            CONNECT_URL_FORMAT,
-            host, port,
-            database, useSsl, useSsl
-        ));
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        config.setUsername(user);
-        config.setPassword(password);
-
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("useServerPrepStmts", "true");
-        config.addDataSourceProperty("useLocalSessionState", "true");
-        config.addDataSourceProperty("rewriteBatchedStatements", "true");
-        config.addDataSourceProperty("cacheResultSetMetadata", "true");
-        config.addDataSourceProperty("cacheServerConfiguration", "true");
-        config.addDataSourceProperty("elideSetAutoCommits", "true");
-        config.addDataSourceProperty("maintainTimeStats", "false");
-
-        config.setMinimumIdle(2);
-        config.setMaximumPoolSize(100);
-        config.setConnectionTimeout(10_000);
-        config.setValidationTimeout(10_000);
-
-        this.hikariDataSource = new HikariDataSource(config);
+            config.setJdbcUrl(String.format(
+                CONNECT_URL_FORMAT,
+                host, port,
+                database, useSsl, useSsl
+            ));
+            config.setUsername(user);
+            config.setPassword(password);
+        });
         connected = true;
     }
 
