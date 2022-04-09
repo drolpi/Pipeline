@@ -1,7 +1,7 @@
 package de.natrox.pipeline.datatype.connection;
 
 import de.natrox.common.concurrent.SimpleTaskBatchFactory;
-import de.natrox.common.concurrent.TaskBatchFactory;
+import de.natrox.common.concurrent.TaskBatch;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public final class ConnectionDataLoader {
 
     private final Pipeline pipeline;
-    private final TaskBatchFactory taskBatchFactory;
+    private final TaskBatch.Factory taskBatchFactory;
 
     public ConnectionDataLoader(@NotNull Pipeline pipeline) {
         Objects.requireNonNull(pipeline, "pipeline can't be null!");
