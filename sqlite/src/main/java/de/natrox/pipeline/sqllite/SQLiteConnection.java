@@ -6,6 +6,7 @@ import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.sql.HikariUtil;
+import org.jetbrains.annotations.Nullable;
 import org.sqlite.SQLiteDataSource;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class SQLiteConnection implements GlobalStorageConnection, Connection {
 
     private final String sqlLiteFile;
 
-    private HikariDataSource hikariDataSource;
+    private @Nullable HikariDataSource hikariDataSource;
     private boolean connected;
 
     public SQLiteConnection(Path sqlLiteFile) {
@@ -49,7 +50,9 @@ public class SQLiteConnection implements GlobalStorageConnection, Connection {
 
     @Override
     public void shutdown() {
-        hikariDataSource.close();
+        if (hikariDataSource != null) {
+            hikariDataSource.close();
+        }
         connected = false;
     }
 }

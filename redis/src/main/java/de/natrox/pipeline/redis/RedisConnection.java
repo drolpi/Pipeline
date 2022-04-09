@@ -8,6 +8,7 @@ import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import de.natrox.pipeline.redis.cache.RedisCache;
 import de.natrox.pipeline.redis.updater.RedisDataUpdater;
+import org.jetbrains.annotations.Nullable;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -20,6 +21,7 @@ public class RedisConnection implements DataUpdaterConnection, GlobalCacheConnec
     private final String[] addresses;
     private final String password;
 
+    @Nullable
     private RedissonClient redissonClient;
     private boolean connected;
 
@@ -64,7 +66,9 @@ public class RedisConnection implements DataUpdaterConnection, GlobalCacheConnec
 
     @Override
     public void shutdown() {
-        redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
+        if (redissonClient != null) {
+            redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
+        }
         connected = false;
     }
 

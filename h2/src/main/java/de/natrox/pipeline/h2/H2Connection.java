@@ -8,6 +8,7 @@ import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.sql.HikariUtil;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ public class H2Connection implements GlobalStorageConnection, Connection {
 
     private final String h2dbFile;
 
-    private HikariDataSource hikariDataSource;
+    private @Nullable HikariDataSource hikariDataSource;
     private boolean connected;
 
     public H2Connection(Path h2dbFile) {
@@ -50,7 +51,9 @@ public class H2Connection implements GlobalStorageConnection, Connection {
 
     @Override
     public void shutdown() {
-        hikariDataSource.close();
+        if (hikariDataSource != null) {
+            hikariDataSource.close();
+        }
         connected = false;
     }
 

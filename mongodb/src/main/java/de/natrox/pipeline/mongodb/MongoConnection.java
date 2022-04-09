@@ -9,6 +9,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.connection.Connection;
 import de.natrox.pipeline.config.connection.GlobalStorageConnection;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import org.jetbrains.annotations.Nullable;
 
 public class MongoConnection implements GlobalStorageConnection, Connection {
 
@@ -18,8 +19,8 @@ public class MongoConnection implements GlobalStorageConnection, Connection {
     private final String user;
     private final String password;
 
-    private MongoClient mongoClient;
-    private MongoDatabase mongoDatabase;
+    private @Nullable MongoClient mongoClient;
+    private @Nullable MongoDatabase mongoDatabase;
     private boolean connected;
 
     public MongoConnection(String host, int port, String database) {
@@ -54,7 +55,9 @@ public class MongoConnection implements GlobalStorageConnection, Connection {
 
     @Override
     public void shutdown() {
-        mongoClient.close();
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
         connected = false;
     }
 
