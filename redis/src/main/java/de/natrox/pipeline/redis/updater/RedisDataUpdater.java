@@ -46,7 +46,7 @@ public class RedisDataUpdater extends AbstractDataUpdater {
             if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
                 var dataToUpdate = JsonParser.parseString(updateDataBlock.dataToUpdate).getAsJsonObject();
                 if (pipelineData == null) {
-                    receivedData(updateDataBlock.dataUUID, dataToUpdate);
+                    this.receivedSync(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
                     pipelineData.onSync(pipelineData.deserialize(dataToUpdate));
                     LOGGER.debug("Received Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());

@@ -1,12 +1,10 @@
 package de.natrox.pipeline.part.updater;
 
-import com.google.gson.JsonObject;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface DataUpdater {
 
@@ -20,10 +18,6 @@ public interface DataUpdater {
      */
     void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback);
 
-    void registerLoadingTask(@NotNull UUID objectUUID);
-
-    void receivedData(@NotNull UUID objectUUID, JsonObject data);
-
     @NotNull
-    Optional<PipelineData> finishLoadingTask(@NotNull PipelineData pipelineData);
+    Optional<PipelineData> applySync(@NotNull PipelineData pipelineData);
 }
