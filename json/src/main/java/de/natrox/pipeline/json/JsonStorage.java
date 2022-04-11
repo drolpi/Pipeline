@@ -37,7 +37,7 @@ public class JsonStorage implements GlobalStorage {
         this.gson = pipeline.gson();
         this.directory = Paths.get(path);
 
-        LOGGER.debug("Json storage initialized"); 
+        LOGGER.debug("Json storage initialized");
     }
 
     @Override

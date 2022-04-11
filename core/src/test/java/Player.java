@@ -1,6 +1,6 @@
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.annotation.Properties;
+import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
 

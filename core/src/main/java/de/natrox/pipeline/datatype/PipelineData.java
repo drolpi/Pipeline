@@ -47,7 +47,7 @@ public abstract class PipelineData implements DataType {
     @Override
     public void save(@Nullable Runnable callback) {
         var startTime = System.currentTimeMillis();
-        LOGGER.debug("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID); 
+        LOGGER.debug("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
 
         var runnable = new Runnable() {

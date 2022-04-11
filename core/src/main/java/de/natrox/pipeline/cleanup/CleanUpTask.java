@@ -2,13 +2,10 @@ package de.natrox.pipeline.cleanup;
 
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
-import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.part.local.LocalCache;
-
-import java.util.UUID;
 
 public final class CleanUpTask implements Runnable {
 
