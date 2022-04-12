@@ -1,5 +1,6 @@
 package de.natrox.pipeline.redis;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
@@ -66,7 +67,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
 
     @Override
     public void pushUpdate(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
-        Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
+        Preconditions.checkNotNull(pipelineData, "pipelineData");
         if (pipelineData.isMarkedForRemoval()) {
             LOGGER.debug("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
             return;
@@ -80,7 +81,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
 
     @Override
     public void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
-        Objects.requireNonNull(pipelineData, "pipelineData can't be null!");
+        Preconditions.checkNotNull(pipelineData, "pipelineData");
         pipelineData.markForRemoval();
         dataTopic.publish(new RemoveDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID()));
         LOGGER.debug("Pushing Removal: " + System.currentTimeMillis());
