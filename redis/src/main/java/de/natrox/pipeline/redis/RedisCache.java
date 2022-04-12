@@ -1,5 +1,6 @@
 package de.natrox.pipeline.redis;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,6 +15,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,8 +39,9 @@ final class RedisCache implements GlobalCache {
 
     @Override
     public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         try {
             return JsonParser.parseString(objectCache(dataClass, objectUUID).get()).getAsJsonObject();
         } catch (Exception e) {
@@ -49,11 +52,22 @@ final class RedisCache implements GlobalCache {
     }
 
     @Override
-    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+    public synchronized boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
+        var cache = objectCache(dataClass, objectUUID);
+        return cache.isExists();
+    }
+
+    @Override
+    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Preconditions.checkNotNull(data, "data");
+
         var objectCache = objectCache(dataClass, objectUUID);
-        objectCache.set(gson.toJson(dataToSave));
+        objectCache.set(gson.toJson(data));
 
         //Update the expire time again because after setting new data the expire time resets
         updateExpireTime(dataClass, objectCache);
@@ -61,57 +75,52 @@ final class RedisCache implements GlobalCache {
 
     @Override
     public synchronized boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         var bucket = objectCache(dataClass, objectUUID);
         return bucket.delete();
     }
 
     @Override
     public synchronized @NotNull List<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return keys(dataClass).stream().map(s -> UUID.fromString(s.split(":")[2])).collect(Collectors.toList());
     }
 
     @Override
-    public synchronized boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        var cache = objectCache(dataClass, objectUUID);
-        return cache.isExists();
-    }
-
-    @Override
     public void updateExpireTime(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         updateExpireTime(dataClass, objectCache(dataClass, objectUUID));
     }
 
     private void updateExpireTime(@NotNull Class<? extends PipelineData> dataClass, RBucket<?> bucket) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var optional = AnnotationResolver.cleanUp(dataClass);
         if (bucket == null)
             return;
 
         if (optional.isEmpty()) {
-            bucket.expireAsync(12, TimeUnit.HOURS);
+            bucket.expireAsync(Duration.ofHours(12));
         } else {
             var autoCleanUp = optional.get();
-            bucket.expireAsync(autoCleanUp.time(), autoCleanUp.timeUnit());
+            bucket.expireAsync(Duration.of(autoCleanUp.time(), autoCleanUp.timeUnit()));
         }
     }
 
     public synchronized RBucket<String> objectCache(Class<? extends PipelineData> dataClass, UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         RBucket<String> objectCache = redissonClient.getBucket("Cache:" + AnnotationResolver.storageIdentifier(dataClass) + ":" + objectUUID, new StringCodec());
         updateExpireTime(dataClass, objectCache);
         return objectCache;
     }
 
     public synchronized Set<String> keys(Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var redisIdentifier = AnnotationResolver.storageIdentifier(dataClass);
         return redissonClient
             .getKeys()
