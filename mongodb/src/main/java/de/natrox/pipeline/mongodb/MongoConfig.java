@@ -2,7 +2,7 @@ package de.natrox.pipeline.mongodb;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,7 +98,7 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
         return new MongoProvider(this);
     }
 
-    public static class Builder implements ConfigBuilder<MongoConfig> {
+    public static class Builder implements IBuilder<MongoConfig> {
 
         private String host;
         private int port;

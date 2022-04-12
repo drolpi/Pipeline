@@ -2,7 +2,7 @@ package de.natrox.pipeline.mysql;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +52,7 @@ public final class MySqlConfig implements PartConfig<MySqlProvider> {
     }
 
 
-    public static class Builder implements ConfigBuilder<MySqlConfig> {
+    public static class Builder implements IBuilder<MySqlConfig> {
 
         private final ImmutableList.Builder<MySqlEndpoint> endpoints;
         private String username;

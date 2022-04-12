@@ -1,7 +1,7 @@
 package de.natrox.pipeline.h2;
 
 import com.google.common.base.Preconditions;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public final class H2Config implements PartConfig<H2Provider> {
         return new H2Provider(this);
     }
 
-    public static class Builder implements ConfigBuilder<H2Config> {
+    public static class Builder implements IBuilder<H2Config> {
 
         private Path path;
 

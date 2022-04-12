@@ -1,7 +1,7 @@
 package de.natrox.pipeline.sqllite;
 
 import com.google.common.base.Preconditions;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public final class SQLiteConfig implements PartConfig<SQLiteProvider> {
         return new SQLiteProvider(this);
     }
 
-    public static class Builder implements ConfigBuilder<SQLiteConfig> {
+    public static class Builder implements IBuilder<SQLiteConfig> {
 
         private Path path;
 

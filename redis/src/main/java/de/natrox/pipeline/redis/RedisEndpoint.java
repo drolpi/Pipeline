@@ -1,7 +1,7 @@
 package de.natrox.pipeline.redis;
 
 import com.google.common.base.Preconditions;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public final class RedisEndpoint {
@@ -33,7 +33,7 @@ public final class RedisEndpoint {
         return this.database;
     }
 
-    public static class Builder implements ConfigBuilder<RedisEndpoint> {
+    public static class Builder implements IBuilder<RedisEndpoint> {
 
         private String host;
         private int port;

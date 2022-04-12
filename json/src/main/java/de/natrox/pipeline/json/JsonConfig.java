@@ -1,7 +1,7 @@
 package de.natrox.pipeline.json;
 
 import com.google.common.base.Preconditions;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
         return new JsonProvider(this);
     }
 
-    public static class Builder implements ConfigBuilder<JsonConfig> {
+    public static class Builder implements IBuilder<JsonConfig> {
 
         private Path path;
 

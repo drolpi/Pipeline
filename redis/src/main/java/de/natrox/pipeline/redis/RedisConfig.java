@@ -2,7 +2,7 @@ package de.natrox.pipeline.redis;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +43,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         return new RedisProvider(this);
     }
 
-    public static class Builder implements ConfigBuilder<RedisConfig> {
+    public static class Builder implements IBuilder<RedisConfig> {
 
         private final ImmutableList.Builder<RedisEndpoint> endpoints;
         private String username;

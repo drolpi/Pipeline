@@ -1,7 +1,7 @@
 package de.natrox.pipeline.mysql;
 
 import com.google.common.base.Preconditions;
-import de.natrox.pipeline.config.part.ConfigBuilder;
+import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public final class MySqlEndpoint {
@@ -41,7 +41,7 @@ public final class MySqlEndpoint {
         return this.useSsl;
     }
 
-    public static class Builder implements ConfigBuilder<MySqlEndpoint> {
+    public static class Builder implements IBuilder<MySqlEndpoint> {
 
         private String host;
         private int port;
