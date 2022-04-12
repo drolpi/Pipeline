@@ -7,6 +7,8 @@ import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 
 public final class PipelineConfig {
 
+    //TODO: Implement config loader
+
     private PartConfig<DataUpdaterProvider> dataUpdater;
     private PartConfig<GlobalCacheProvider> globalCache;
     private PartConfig<GlobalStorageProvider> globalStorage;
