@@ -7,6 +7,8 @@ import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.part.local.LocalCache;
 
+import java.time.Duration;
+
 public final class CleanUpTask implements Runnable {
 
     private final static Logger LOGGER = LogManager.logger(CleanUpTask.class);
@@ -29,7 +31,7 @@ public final class CleanUpTask implements Runnable {
                     var data = localCache.data(dataClass, uuid);
                     if (data == null)
                         return;
-                    if ((System.currentTimeMillis() - data.lastUse()) < cleanUp.timeUnit().toMillis(cleanUp.time()))
+                    if ((System.currentTimeMillis() - data.lastUse()) < Duration.of(cleanUp.time(), cleanUp.timeUnit()).toMillis())
                         return;
 
                     LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString());
