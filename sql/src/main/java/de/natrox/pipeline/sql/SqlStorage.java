@@ -1,5 +1,6 @@
 package de.natrox.pipeline.sql;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -47,8 +48,9 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
             resultSet -> {
@@ -66,8 +68,9 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
             resultSet -> {
@@ -83,27 +86,29 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
+    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Preconditions.checkNotNull(data, "data");
+
         if (!dataExist(dataClass, objectUUID)) {
             executeUpdate(
                 String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
-                objectUUID.toString(), gson.toJson(dataToSave)
+                objectUUID.toString(), gson.toJson(data)
             );
         } else {
             executeUpdate(
                 String.format(UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY),
-                gson.toJson(dataToSave), objectUUID.toString()
+                gson.toJson(data), objectUUID.toString()
             );
         }
     }
 
     @Override
     public boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         return executeUpdate(
             String.format(DELETE_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY),
             objectUUID.toString()
@@ -112,12 +117,13 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return data(dataClass).keySet();
     }
 
     @Override
     public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return executeQuery(
             String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
             resultSet -> {
@@ -139,8 +145,9 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(name, "name can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(name, "name");
+
         executeUpdate(String.format(
             CREATE_TABLE,
             name,
@@ -150,7 +157,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     private String tableName(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var name = AnnotationResolver.storageIdentifier(dataClass);
         createTableIfNotExists(dataClass, name);
         return name;
