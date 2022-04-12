@@ -130,6 +130,7 @@ final class JsonStorage implements GlobalStorage {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         Preconditions.checkNotNull(data, "data");
+
         if (data.isJsonNull())
             return;
         var path = savedFile(dataClass, objectUUID);
@@ -147,6 +148,7 @@ final class JsonStorage implements GlobalStorage {
     private JsonObject loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         var path = savedFile(dataClass, objectUUID);
         var file = new File(path.toUri());
         if (!file.exists())
@@ -159,6 +161,7 @@ final class JsonStorage implements GlobalStorage {
     private Path savedFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         return Paths.get(parent(dataClass).toString(), objectUUID + ".json");
     }
 
