@@ -9,7 +9,6 @@ import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.cleanup.CleanUpTask;
-import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.connection.ConnectionData;
@@ -19,10 +18,13 @@ import de.natrox.pipeline.operator.PipelineStreamImpl;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.DataSynchronizerImpl;
 import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.local.DefaultLocalCache;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import de.natrox.pipeline.part.updater.DataUpdater;
+import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import de.natrox.pipeline.part.updater.DefaultDataUpdater;
 import de.natrox.pipeline.scheduler.PipelineTaskScheduler;
 import de.natrox.pipeline.scheduler.PipelineTaskSchedulerImpl;
@@ -56,41 +58,46 @@ public final class PipelineImpl implements Pipeline {
     private final Gson gson;
     private final boolean loaded;
 
-    public PipelineImpl(@NotNull PipelineRegistry registry, @NotNull PipelineConfig config) {
+    protected PipelineImpl(
+        @Nullable DataUpdaterProvider dataUpdaterProvider,
+        @Nullable GlobalCacheProvider globalCacheProvider,
+        @Nullable GlobalStorageProvider globalStorageProvider,
+        @NotNull PipelineRegistry registry
+    ) throws Exception {
         this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(4);
         this.gson = new GsonBuilder().serializeNulls().create();
         this.localCache = new DefaultLocalCache();
 
-        var updaterConfig = config.dataUpdaterConnection();
-        if (updaterConfig != null) {
-            updaterConfig.load();
-            this.dataUpdater = updaterConfig.constructDataUpdater(this);
+        LOGGER.debug("Pipeline information:");
+        LOGGER.debug("Local cache: " + localCache.getClass().getName());
+
+        // check if there is a data updater provider or initialize the default one
+        if (dataUpdaterProvider != null && dataUpdaterProvider.init()) {
+            this.dataUpdater = dataUpdaterProvider.constructDataUpdater(this);
         } else {
             this.dataUpdater = new DefaultDataUpdater();
         }
 
-        var globalCacheConfig = config.globalCacheConnection();
-        if (globalCacheConfig != null) {
-            globalCacheConfig.load();
-            this.globalCache = globalCacheConfig.constructGlobalCache(this);
+        LOGGER.debug("Data updater: " + dataUpdater.getClass().getName());
+
+        // check if there is a global cache provider or initialize null
+        if (globalCacheProvider != null && globalCacheProvider.init()) {
+            this.globalCache = globalCacheProvider.constructGlobalCache(this);
+            LOGGER.debug("GlobalCache: " + globalCache.getClass().getName());
         } else {
             this.globalCache = null;
+            LOGGER.debug("No global cache found");
         }
 
-        var globalStorageConfig = config.globalStorageConnection();
-        if (globalStorageConfig != null) {
-            globalStorageConfig.load();
-            this.globalStorage = globalStorageConfig.constructGlobalStorage(this);
+        // check if there is a global storage provider or or initialize null
+        if (globalStorageProvider != null && globalStorageProvider.init()) {
+            this.globalStorage = globalStorageProvider.constructGlobalStorage(this);
+            LOGGER.debug("Global storage: " + globalStorage.getClass().getName());
         } else {
             this.globalStorage = null;
+            LOGGER.debug("No global storage found");
         }
-
-        LOGGER.debug("Pipeline information:");
-        LOGGER.debug("LocalCache: " + localCache.getClass().getName());
-        LOGGER.debug("DataUpdater: " + dataUpdater.getClass().getName());
-        LOGGER.debug("GlobalCache: " + globalCache.getClass().getName());
-        LOGGER.debug("GlobalStorage: " + globalStorage.getClass().getName());
 
         this.scheduler = Scheduler.create();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();

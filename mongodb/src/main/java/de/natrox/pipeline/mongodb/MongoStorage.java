@@ -19,17 +19,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class MongoStorage implements GlobalStorage {
+final class MongoStorage implements GlobalStorage {
 
     private final static Logger LOGGER = LogManager.logger(MongoStorage.class);
 
     private final Gson gson;
     private final MongoDatabase mongoDatabase;
 
-    public MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
+    protected MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
         this.gson = pipeline.gson();
         this.mongoDatabase = mongoDatabase;
-        LOGGER.debug("Mongo storage started.");
+
+        LOGGER.debug("Mongo storage initialized");
     }
 
     @Override

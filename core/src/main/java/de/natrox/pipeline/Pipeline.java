@@ -3,18 +3,21 @@ package de.natrox.pipeline;
 import com.google.gson.Gson;
 import de.natrox.common.Loadable;
 import de.natrox.common.Shutdownable;
-import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import de.natrox.pipeline.part.updater.DataUpdater;
+import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,8 +27,8 @@ import java.util.function.Consumer;
 public interface Pipeline extends Loadable, Shutdownable {
 
     @NotNull
-    static Pipeline create(@NotNull PipelineConfig config, @NotNull PipelineRegistry registry) {
-        return new PipelineImpl(registry, config);
+    static Builder builder() {
+        return new PipelineBuilder();
     }
 
     @NotNull <T extends PipelineData> PipelineStream<T> find(
@@ -376,5 +379,19 @@ public interface Pipeline extends Loadable, Shutdownable {
         GLOBAL_STORAGE,
         // Instruction will be executed for all
         ALL
+    }
+
+    interface Builder {
+
+        @NotNull Builder registry(@NotNull PipelineRegistry registry);
+
+        @NotNull Builder dataUpdater(@UnknownNullability DataUpdaterProvider connection);
+
+        @NotNull Builder globalCache(@UnknownNullability GlobalCacheProvider connection);
+
+        @NotNull Builder globalStorage(@UnknownNullability GlobalStorageProvider connection);
+
+        @NotNull Pipeline build() throws Exception;
+
     }
 }
