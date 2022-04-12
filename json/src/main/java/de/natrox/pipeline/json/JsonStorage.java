@@ -1,5 +1,6 @@
 package de.natrox.pipeline.json;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -42,8 +43,9 @@ final class JsonStorage implements GlobalStorage {
 
     @Override
     public JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         try {
             return loadFromFile(dataClass, objectUUID);
         } catch (IOException e) {
@@ -54,18 +56,20 @@ final class JsonStorage implements GlobalStorage {
 
     @Override
     public boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         return Files.exists(savedFile(dataClass, objectUUID));
     }
 
     @Override
-    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
+    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Preconditions.checkNotNull(data, "data");
+
         try {
-            saveJsonToFile(dataClass, objectUUID, dataToSave);
+            saveJsonToFile(dataClass, objectUUID, data);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,8 +77,9 @@ final class JsonStorage implements GlobalStorage {
 
     @Override
     public boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         if (!dataExist(dataClass, objectUUID))
             return false;
         try {
@@ -88,13 +93,13 @@ final class JsonStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return data(dataClass).keySet();
     }
 
     @Override
     public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var parentFolder = parent(dataClass);
         if (!parentFolder.toFile().exists())
             return Map.of();
@@ -121,8 +126,11 @@ final class JsonStorage implements GlobalStorage {
         return Map.of();
     }
 
-    private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) throws IOException {
-        if (dataToSave.isJsonNull())
+    private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) throws IOException {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Preconditions.checkNotNull(data, "data");
+        if (data.isJsonNull())
             return;
         var path = savedFile(dataClass, objectUUID);
 
@@ -132,11 +140,13 @@ final class JsonStorage implements GlobalStorage {
                 throw new RuntimeException("Could not create files for JsonFileStorage [" + path + "]");
         }
         try (var writer = new FileWriter(file)) {
-            gson.toJson(dataToSave, writer);
+            gson.toJson(data, writer);
         }
     }
 
     private JsonObject loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         var path = savedFile(dataClass, objectUUID);
         var file = new File(path.toUri());
         if (!file.exists())
@@ -147,13 +157,13 @@ final class JsonStorage implements GlobalStorage {
     }
 
     private Path savedFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         return Paths.get(parent(dataClass).toString(), objectUUID + ".json");
     }
 
     private Path parent(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var storageIdentifier = AnnotationResolver.storageIdentifier(dataClass);
 
         return Paths.get(directory.toString(), storageIdentifier);
