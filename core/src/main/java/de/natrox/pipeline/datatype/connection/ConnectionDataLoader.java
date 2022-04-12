@@ -1,13 +1,14 @@
 package de.natrox.pipeline.datatype.connection;
 
+import com.google.common.base.Preconditions;
 import de.natrox.common.concurrent.SimpleTaskBatchFactory;
 import de.natrox.common.concurrent.TaskBatch;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public final class ConnectionDataLoader {
@@ -16,13 +17,13 @@ public final class ConnectionDataLoader {
     private final TaskBatch.Factory taskBatchFactory;
 
     public ConnectionDataLoader(@NotNull Pipeline pipeline) {
-        Objects.requireNonNull(pipeline, "pipeline can't be null!");
+        Preconditions.checkNotNull(pipeline, "pipeline");
         this.pipeline = pipeline;
         this.taskBatchFactory = new SimpleTaskBatchFactory();
     }
 
-    public final void loadConnectionData(@NotNull UUID connection, Runnable callback) {
-        Objects.requireNonNull(connection, "player can't be null!");
+    public final void loadConnectionData(@NotNull UUID uuid, @Nullable Runnable callback) {
+        Preconditions.checkNotNull(uuid, "uuid");
 
         taskBatchFactory
             .createTaskBatch()
@@ -36,7 +37,7 @@ public final class ConnectionDataLoader {
 
                         optional.ifPresent(preload -> {
                             pipeline
-                                .load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, true)
+                                .load(aClass, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, true)
                                 .map(pipelineData -> (ConnectionData) pipelineData)
                                 .ifPresent(ConnectionData::onConnect);
                         });
@@ -45,8 +46,8 @@ public final class ConnectionDataLoader {
             })).execute();
     }
 
-    public final void removeConnectionData(@NotNull UUID connection, Runnable callback) {
-        Objects.requireNonNull(connection, "player can't be null!");
+    public final void removeConnectionData(@NotNull UUID uuid, Runnable callback) {
+        Preconditions.checkNotNull(uuid, "uuid");
 
         taskBatchFactory
             .createTaskBatch()
@@ -59,7 +60,7 @@ public final class ConnectionDataLoader {
                         var optional = AnnotationResolver.autoSave(aClass);
 
                         optional.ifPresent(unload -> {
-                            var data = (ConnectionData) pipeline.localCache().data(aClass, connection);
+                            var data = (ConnectionData) pipeline.localCache().data(aClass, uuid);
                             if (data == null)
                                 return;
 

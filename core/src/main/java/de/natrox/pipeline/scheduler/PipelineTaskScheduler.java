@@ -12,9 +12,9 @@ import java.util.concurrent.CompletableFuture;
 
 public interface PipelineTaskScheduler extends Loadable, Shutdownable {
 
-    @NotNull <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
+    <T extends PipelineData> @NotNull PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull UUID uuid);
 
-    @Nullable <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
+    <T extends PipelineData> @Nullable PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 
     <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid);
 

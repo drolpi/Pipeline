@@ -10,8 +10,7 @@ import java.util.UUID;
 
 public interface DataProvider {
 
-    @Nullable
-    JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
+    @Nullable JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
     boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
@@ -19,7 +18,6 @@ public interface DataProvider {
 
     boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
-    @NotNull
-    Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
+    @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
 
 }

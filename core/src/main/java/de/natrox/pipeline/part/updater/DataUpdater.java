@@ -18,6 +18,5 @@ public interface DataUpdater {
      */
     void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback);
 
-    @NotNull
-    Optional<PipelineData> applySync(@NotNull PipelineData pipelineData);
+    @NotNull Optional<PipelineData> applySync(@NotNull PipelineData pipelineData);
 }

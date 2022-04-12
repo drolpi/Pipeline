@@ -1,5 +1,6 @@
 package de.natrox.pipeline.part.local;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,11 +27,10 @@ public final class DefaultLocalCache implements LocalCache {
         LOGGER.debug("LocalCache started.");
     }
 
-    @Nullable
     @Override
-    public synchronized <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+    public synchronized <S extends PipelineData> @Nullable S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         if (!dataExist(dataClass, objectUUID))
             return null;
         S data = dataClass.cast(dataObjects.get(dataClass).get(objectUUID));
@@ -39,17 +38,16 @@ public final class DefaultLocalCache implements LocalCache {
         return data;
     }
 
-    @NotNull
     @Override
-    public synchronized <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+    public synchronized <S extends PipelineData> @NotNull Set<S> allData(@NotNull Class<? extends S> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return savedUUIDs(dataClass).stream().map(uuid -> data(dataClass, uuid)).collect(Collectors.toSet());
     }
 
     @Override
     public synchronized <S extends PipelineData> void save(@NotNull Class<? extends S> dataClass, @NotNull S data) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(data, "data can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(data, "data");
         if (dataExist(dataClass, data.objectUUID()))
             return;
         if (!dataObjects.containsKey(dataClass))
@@ -60,8 +58,8 @@ public final class DefaultLocalCache implements LocalCache {
 
     @Override
     public synchronized <S extends PipelineData> boolean dataExist(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         if (!dataObjects.containsKey(dataClass))
             return false;
         return dataObjects.get(dataClass).containsKey(objectUUID);
@@ -69,8 +67,8 @@ public final class DefaultLocalCache implements LocalCache {
 
     @Override
     public synchronized <S extends PipelineData> boolean remove(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         if (!dataExist(dataClass, objectUUID))
             return false;
         dataObjects.get(dataClass).remove(objectUUID);
@@ -80,18 +78,18 @@ public final class DefaultLocalCache implements LocalCache {
     }
 
     @Override
-    public synchronized <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+    public synchronized <S extends PipelineData> @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
         if (!dataObjects.containsKey(dataClass))
             return new HashSet<>();
         return dataObjects.get(dataClass).keySet();
     }
 
-    @NotNull
+    @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Override
-    public synchronized <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+    public synchronized <S extends PipelineData> @NotNull S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         if (dataExist(dataClass, objectUUID))
             return data(dataClass, objectUUID);
@@ -99,7 +97,7 @@ public final class DefaultLocalCache implements LocalCache {
         if (instanceCreator == null)
             instanceCreator = pipeline.registry().instanceCreator(dataClass);
 
-        S instance = null;
+        S instance;
         try {
             instance = instanceCreator.get(dataClass, pipeline);
         } catch (Throwable throwable) {

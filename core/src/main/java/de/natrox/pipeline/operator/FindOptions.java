@@ -16,8 +16,7 @@ public final class FindOptions {
         this.skip = -1;
     }
 
-    @Nullable
-    public Filter filter() {
+    public @Nullable Filter filter() {
         return this.filter;
     }
 
@@ -26,8 +25,7 @@ public final class FindOptions {
     }
 
     @Deprecated
-    @Nullable
-    public Object sort() {
+    public @Nullable Object sort() {
         return this.sort;
     }
 

@@ -1,5 +1,6 @@
 package de.natrox.pipeline.scheduler;
 
+import com.google.common.base.Preconditions;
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
@@ -8,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -22,14 +22,14 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
     private final Map<UUID, Map<Class<? extends PipelineData>, PipelineTask<?>>> pendingTasks = new ConcurrentHashMap<>();
 
     @Override
-    public synchronized <T extends PipelineData> PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
-        Objects.requireNonNull(type, "type can't be null!");
-        Objects.requireNonNull(uuid, "uuid can't be null!");
+    public synchronized <T extends PipelineData> @NotNull PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
+        Preconditions.checkNotNull(type, "type");
+        Preconditions.checkNotNull(uuid, "uuid");
         PipelineTask<T> existingTask = pipelineTask(type, uuid);
         if (existingTask != null) {
             return existingTask;
         }
-        PipelineTask<T> pipelineTask = new PipelineTask<>(this, pipelineAction, type, uuid, () -> remove(type, uuid));
+        var pipelineTask = new PipelineTask<T>(this, pipelineAction, type, uuid, () -> remove(type, uuid));
 
         if (!pendingTasks.containsKey(uuid))
             pendingTasks.put(uuid, new ConcurrentHashMap<>());
@@ -39,8 +39,8 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public synchronized <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
-        Objects.requireNonNull(type, "type can't be null!");
-        Objects.requireNonNull(uuid, "uuid can't be null!");
+        Preconditions.checkNotNull(type, "type");
+        Preconditions.checkNotNull(uuid, "uuid");
         if (!pendingTasks.containsKey(uuid))
             return null;
         var map = pendingTasks.get(uuid);
@@ -52,8 +52,8 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public synchronized <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
-        Objects.requireNonNull(type, "type can't be null!");
-        Objects.requireNonNull(uuid, "uuid can't be null!");
+        Preconditions.checkNotNull(type, "type");
+        Preconditions.checkNotNull(uuid, "uuid");
         if (!pendingTasks.containsKey(uuid))
             return;
         pendingTasks.get(uuid).remove(type);

@@ -1,5 +1,6 @@
 package de.natrox.pipeline.annotation.resolver;
 
+import com.google.common.base.Preconditions;
 import de.natrox.pipeline.annotation.AutoSave;
 import de.natrox.pipeline.annotation.CleanUp;
 import de.natrox.pipeline.annotation.Preload;
@@ -11,35 +12,40 @@ import java.util.Optional;
 
 public final class AnnotationResolver {
 
+    private AnnotationResolver() {
+        throw new UnsupportedOperationException();
+    }
+
     public static Properties properties(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         var properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
         return properties;
     }
 
-    @NotNull
-    public static String storageIdentifier(Class<?> classType) {
+    public static @NotNull String storageIdentifier(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         return properties(classType).identifier();
     }
 
-    @NotNull
-    public static Context context(Class<?> classType) {
+    public static @NotNull Context context(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         return properties(classType).context();
     }
 
-    @NotNull
-    public static Optional<Preload> preload(Class<?> classType) {
+    public static @NotNull Optional<Preload> preload(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(Preload.class));
     }
 
-    @NotNull
-    public static Optional<AutoSave> autoSave(Class<?> classType) {
+    public static @NotNull Optional<AutoSave> autoSave(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(AutoSave.class));
     }
 
-    @NotNull
-    public static Optional<CleanUp> cleanUp(Class<?> classType) {
+    public static @NotNull Optional<CleanUp> cleanUp(Class<?> classType) {
+        Preconditions.checkNotNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(CleanUp.class));
     }
 }

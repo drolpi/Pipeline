@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public interface LocalCache {
 
-    @Nullable <S extends PipelineData> S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
+    <S extends PipelineData> @Nullable S data(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    @NotNull <S extends PipelineData> Set<S> allData(@NotNull Class<? extends S> dataClass);
+    <S extends PipelineData> @NotNull Set<S> allData(@NotNull Class<? extends S> dataClass);
 
     <S extends PipelineData> void save(@NotNull Class<? extends S> dataClass, @NotNull S data);
 
@@ -21,7 +21,7 @@ public interface LocalCache {
 
     <S extends PipelineData> boolean remove(@NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID);
 
-    @NotNull <S extends PipelineData> Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
+    <S extends PipelineData> @NotNull Set<UUID> savedUUIDs(@NotNull Class<? extends S> dataClass);
 
-    @NotNull <S extends PipelineData> S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator);
+    <S extends PipelineData> @NotNull S instantiateData(Pipeline pipeline, @NotNull Class<? extends S> dataClass, @NotNull UUID objectUUID, @Nullable InstanceCreator<S> instanceCreator);
 }

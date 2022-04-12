@@ -1,8 +1,7 @@
 package de.natrox.pipeline.operator.filter;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public final class Filters {
 
@@ -12,22 +11,22 @@ public final class Filters {
 
     @NotNull
     public static Filter or(@NotNull Filter first, @NotNull Filter second) {
-        Objects.requireNonNull(first, "first Filter can't be null");
-        Objects.requireNonNull(second, "second Filter can't be null");
+        Preconditions.checkNotNull(first, "first Filter");
+        Preconditions.checkNotNull(second, "second Filter");
         return new OrFilter(first, second);
     }
 
     @NotNull
     public static Filter and(@NotNull Filter first, @NotNull Filter second) {
-        Objects.requireNonNull(first, "first Filter can't be null");
-        Objects.requireNonNull(second, "second Filter can't be null");
+        Preconditions.checkNotNull(first, "first Filter");
+        Preconditions.checkNotNull(second, "second Filter");
         return new AndFilter(first, second);
     }
 
     @NotNull
-    public static Filter field(@NotNull String fieldName, @NotNull Object obj) {
-        Objects.requireNonNull(fieldName, "fieldName can't be null");
-        Objects.requireNonNull(obj, "obj can't be null");
-        return new FieldFilter(fieldName, obj);
+    public static Filter field(@NotNull String fieldName, @NotNull Object value) {
+        Preconditions.checkNotNull(fieldName, "fieldName");
+        Preconditions.checkNotNull(value, "value");
+        return new FieldFilter(fieldName, value);
     }
 }

@@ -1,5 +1,6 @@
 package de.natrox.pipeline.datatype;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -29,7 +30,7 @@ public abstract class PipelineData implements DataType {
     private UUID objectUUID;
 
     public PipelineData(@NotNull Pipeline pipeline) {
-        Objects.requireNonNull(pipeline, "pipeline can't be null!");
+        Preconditions.checkNotNull(pipeline, "pipeline");
         this.pipeline = pipeline;
         this.dataUpdater = pipeline.dataUpdater();
         this.gson = new GsonBuilder()
@@ -39,8 +40,7 @@ public abstract class PipelineData implements DataType {
             .create();
     }
 
-    @NotNull
-    public UUID objectUUID() {
+    public @NotNull UUID objectUUID() {
         return objectUUID;
     }
 
@@ -103,27 +103,24 @@ public abstract class PipelineData implements DataType {
             globalCache.updateExpireTime(getClass(), objectUUID());
     }
 
-    @NotNull
     @Override
-    public DataUpdater dataUpdater() {
+    public @NotNull DataUpdater dataUpdater() {
         return dataUpdater;
     }
 
-    @NotNull
     @Override
-    public JsonObject serialize() {
+    public @NotNull JsonObject serialize() {
         unMarkRemoval();
         return gson.toJsonTree(this).getAsJsonObject();
     }
 
-    @NotNull
-    public String serializeToString() {
+    public @NotNull String serializeToString() {
         return gson.toJson(serialize());
     }
 
-    @NotNull
     @Override
-    public PipelineData deserialize(JsonObject data) {
+    public @NotNull PipelineData deserialize(@NotNull JsonObject data) {
+        Preconditions.checkNotNull(data, "jsonObject");
         unMarkRemoval();
         return gson.fromJson(data, getClass());
     }

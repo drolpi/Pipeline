@@ -49,8 +49,7 @@ public interface DataType {
     default void onCleanUp() {
     }
 
-    @NotNull
-    UUID objectUUID();
+    @NotNull UUID objectUUID();
 
     default void save() {
         save(null);
@@ -68,20 +67,12 @@ public interface DataType {
 
     void updateLastUse();
 
-    @NotNull
-    DataUpdater dataUpdater();
+    @NotNull DataUpdater dataUpdater();
 
-    @NotNull
-    JsonObject serialize();
+    @NotNull JsonObject serialize();
 
-    @NotNull
-    String serializeToString();
+    @NotNull String serializeToString();
 
-    /**
-     * @param jsonObject New Data to deserialize
-     * @return The Data before deserialization
-     */
-    @NotNull
-    DataType deserialize(JsonObject jsonObject);
+    @NotNull DataType deserialize(@NotNull JsonObject jsonObject);
 
 }

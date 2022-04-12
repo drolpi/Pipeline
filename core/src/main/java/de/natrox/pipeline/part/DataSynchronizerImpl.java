@@ -1,5 +1,6 @@
 package de.natrox.pipeline.part;
 
+import com.google.common.base.Preconditions;
 import de.natrox.common.logger.LogManager;
 import de.natrox.common.logger.Logger;
 import de.natrox.common.runnable.CatchingRunnable;
@@ -9,7 +10,6 @@ import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +28,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
     }
 
     @Override
-    public @NotNull <T extends PipelineData> CompletableFuture<Boolean> synchronize(
+    public <T extends PipelineData> @NotNull CompletableFuture<Boolean> synchronize(
         @NotNull DataSourceType source,
         @NotNull DataSourceType destination,
         @NotNull Class<? extends T> dataClass,
@@ -36,10 +36,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         @Nullable Runnable callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Objects.requireNonNull(source, "source can't be null!");
-        Objects.requireNonNull(destination, "destination can't be null!");
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(source, "source");
+        Preconditions.checkNotNull(destination, "destination");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         var future = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() ->
             future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback, instanceCreator))));
@@ -54,10 +54,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         @Nullable Runnable callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Objects.requireNonNull(source, "source can't be null!");
-        Objects.requireNonNull(destination, "destination can't be null!");
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(source, "source");
+        Preconditions.checkNotNull(destination, "destination");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
         if (source.equals(destination))
             return false;
         if (pipelineImpl.globalCache() == null && (source.equals(DataSourceType.GLOBAL_CACHE) || destination.equals(DataSourceType.GLOBAL_CACHE)))

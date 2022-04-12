@@ -1,10 +1,12 @@
 package de.natrox.pipeline;
 
+import com.google.common.base.Preconditions;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class PipelineBuilder implements Pipeline.Builder {
 
@@ -19,24 +21,25 @@ final class PipelineBuilder implements Pipeline.Builder {
 
     @Override
     public Pipeline.@NotNull Builder registry(@NotNull PipelineRegistry registry) {
+        Preconditions.checkNotNull(registry, "registry");
         this.pipelineRegistry = registry;
         return this;
     }
 
     @Override
-    public Pipeline.@NotNull Builder dataUpdater(DataUpdaterProvider connection) {
+    public Pipeline.@NotNull Builder dataUpdater(@Nullable DataUpdaterProvider connection) {
         this.dataUpdaterConnection = connection;
         return this;
     }
 
     @Override
-    public Pipeline.@NotNull Builder globalCache(GlobalCacheProvider connection) {
+    public Pipeline.@NotNull Builder globalCache(@Nullable GlobalCacheProvider connection) {
         this.globalCacheConnection = connection;
         return this;
     }
 
     @Override
-    public Pipeline.@NotNull Builder globalStorage(GlobalStorageProvider connection) {
+    public Pipeline.@NotNull Builder globalStorage(@Nullable GlobalStorageProvider connection) {
         this.globalStorageConnection = connection;
         return this;
     }

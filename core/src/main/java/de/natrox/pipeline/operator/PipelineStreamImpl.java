@@ -1,5 +1,6 @@
 package de.natrox.pipeline.operator;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -59,56 +59,49 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
         return Optional.empty();
     }
 
-    @NotNull
     @Override
-    public CompletableFuture<Optional<T>> firstAsync() {
+    public @NotNull CompletableFuture<Optional<T>> firstAsync() {
         var completableFuture = new CompletableFuture<Optional<T>>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(first())));
         return completableFuture;
     }
 
-    @NotNull
     @Override
-    public List<T> collect() {
+    public @NotNull List<T> collect() {
         var data = pipeline.globalStorage().data(dataClass);
         data = applyOptions(data);
         return pipeline.load(dataClass, data.keySet(), loadingStrategy, callback, instanceCreator);
     }
 
-    @NotNull
     @Override
-    public CompletableFuture<List<T>> collectAsync() {
+    public @NotNull CompletableFuture<List<T>> collectAsync() {
         var completableFuture = new CompletableFuture<List<T>>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(collect())));
         return completableFuture;
     }
 
-    @NotNull
     @Override
-    public PipelineStream<T> filter(@NotNull Filter filter) {
-        Objects.requireNonNull(filter, "Filter can't be null");
+    public @NotNull PipelineStream<T> filter(@NotNull Filter filter) {
+        Preconditions.checkNotNull(filter, "filter");
         findOptions.setFilter(filter);
         return this;
     }
 
-    @NotNull
     @Override
-    public PipelineStream<T> sort(@NotNull Object sorter) {
-        Objects.requireNonNull(sorter, "Sorter can't be null");
+    public @NotNull PipelineStream<T> sort(@NotNull Object sorter) {
+        Preconditions.checkNotNull(sorter, "sorter");
         findOptions.setSort(sorter);
         return this;
     }
 
-    @NotNull
     @Override
-    public PipelineStream<T> limit(int limit) {
+    public @NotNull PipelineStream<T> limit(int limit) {
         findOptions.setLimit(limit);
         return this;
     }
 
-    @NotNull
     @Override
-    public PipelineStream<T> skip(int skip) {
+    public @NotNull PipelineStream<T> skip(int skip) {
         findOptions.setSkip(skip);
         return this;
     }
