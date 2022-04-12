@@ -1,5 +1,6 @@
 package de.natrox.pipeline.mongodb;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
@@ -35,8 +36,8 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         var filter = new Document("objectUUID", objectUUID.toString());
         var mongoDBData = mongoStorage(dataClass).find(filter).first();
@@ -51,26 +52,26 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         return mongoStorage(dataClass).find(new Document("objectUUID", objectUUID.toString())).first() != null;
     }
 
     @Override
-    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
-        Objects.requireNonNull(dataToSave, "dataToSave can't be null!");
+    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Preconditions.checkNotNull(data, "data");
 
         var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
 
         if (collection.find(filter).first() == null) {
-            var newData = Document.parse(gson.toJson(dataToSave));
+            var newData = Document.parse(gson.toJson(data));
             collection.insertOne(newData);
         } else {
-            var newData = Document.parse(gson.toJson(dataToSave));
+            var newData = Document.parse(gson.toJson(data));
             var updateFunc = new Document("$set", newData);
             collection.updateOne(filter, updateFunc);
         }
@@ -78,8 +79,8 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-        Objects.requireNonNull(objectUUID, "objectUUID can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
@@ -89,14 +90,13 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return data(dataClass).keySet();
     }
 
     @Override
     public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
-
+        Preconditions.checkNotNull(dataClass, "dataClass");
         var collection = mongoStorage(dataClass);
         var data = new HashMap<UUID, JsonObject>();
 
@@ -112,12 +112,12 @@ final class MongoStorage implements GlobalStorage {
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {
-        Objects.requireNonNull(dataClass, "dataClass can't be null!");
+        Preconditions.checkNotNull(dataClass, "dataClass");
         return collection(AnnotationResolver.storageIdentifier(dataClass));
     }
 
     private synchronized MongoCollection<Document> collection(@NotNull String name) {
-        Objects.requireNonNull(name, "name can't be null!");
+        Preconditions.checkNotNull(name, "name");
         try {
             return mongoDatabase.getCollection(name);
         }
