@@ -26,16 +26,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class JsonStorage implements GlobalStorage {
+final class JsonStorage implements GlobalStorage {
 
     private final static Logger LOGGER = LogManager.logger(JsonStorage.class);
 
     private final Gson gson;
     private final Path directory;
 
-    public JsonStorage(Pipeline pipeline, String path) {
+    protected JsonStorage(Pipeline pipeline, Path path) {
         this.gson = pipeline.gson();
-        this.directory = Paths.get(path);
+        this.directory = path;
 
         LOGGER.debug("Json storage initialized");
     }

@@ -6,8 +6,9 @@ dependencies {
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.google.code.gson:gson:2.9.0")
 
-    testImplementation(project(":mongodb"))
     testImplementation(project(":redis"))
+    testImplementation(project(":mongodb"))
+    testImplementation(project(":json"))
     testImplementation(project(":h2"))
     testImplementation(project(":mysql"))
     testImplementation(project(":sqlite"))

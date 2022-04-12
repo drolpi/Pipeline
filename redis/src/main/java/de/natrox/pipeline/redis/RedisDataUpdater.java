@@ -1,4 +1,4 @@
-package de.natrox.pipeline.redis.updater;
+package de.natrox.pipeline.redis;
 
 import com.google.gson.JsonParser;
 import de.natrox.common.logger.LogManager;
@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-public class RedisDataUpdater extends AbstractDataUpdater {
+final class RedisDataUpdater extends AbstractDataUpdater {
 
     private final static Logger LOGGER = LogManager.logger(RedisDataUpdater.class);
     private final static String DATA_TOPIC = "DataTopic";
@@ -30,7 +30,7 @@ public class RedisDataUpdater extends AbstractDataUpdater {
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
 
-    public RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient) {
+    protected RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient) {
         this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
 
@@ -60,6 +60,8 @@ public class RedisDataUpdater extends AbstractDataUpdater {
             }
         };
         dataTopic.addListener(DataBlock.class, messageListener);
+
+        LOGGER.debug("Redis data updater initialized");
     }
 
     @Override

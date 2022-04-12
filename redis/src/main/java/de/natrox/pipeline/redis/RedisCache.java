@@ -1,4 +1,4 @@
-package de.natrox.pipeline.redis.cache;
+package de.natrox.pipeline.redis;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -21,17 +21,18 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class RedisCache implements GlobalCache {
+final class RedisCache implements GlobalCache {
 
     private final static Logger LOGGER = LogManager.logger(RedisCache.class);
 
     private final Gson gson;
     private final RedissonClient redissonClient;
 
-    public RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
+    protected RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
         this.gson = pipeline.gson();
         this.redissonClient = redissonClient;
-        LOGGER.debug("Redis cache started");
+
+        LOGGER.debug("Redis cache initialized");
     }
 
     @Override

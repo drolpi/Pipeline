@@ -2,43 +2,99 @@ import de.natrox.common.logger.LogManager;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.config.PipelineConfig;
 import de.natrox.pipeline.config.PipelineRegistry;
-import de.natrox.pipeline.h2.H2Connection;
-import de.natrox.pipeline.mongodb.MongoConnection;
-import de.natrox.pipeline.mysql.MySqlConnection;
-import de.natrox.pipeline.redis.RedisConnection;
-import de.natrox.pipeline.sqllite.SQLiteConnection;
+import de.natrox.pipeline.h2.H2Config;
+import de.natrox.pipeline.json.JsonConfig;
+import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.mysql.MySqlConfig;
+import de.natrox.pipeline.mysql.MySqlEndpoint;
+import de.natrox.pipeline.redis.RedisConfig;
+import de.natrox.pipeline.redis.RedisEndpoint;
+import de.natrox.pipeline.sqllite.SQLiteConfig;
 
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class Example implements Serializable {
+public class Example {
 
-    private final static UUID TEST_ID = UUID.nameUUIDFromBytes("ID".getBytes(StandardCharsets.UTF_8));
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         LogManager.setDebug(true);
 
-        var redisConnection = new RedisConnection(false, "", "redis://localhost:6379");
-        var mongoConnection = new MongoConnection("localhost", 27017, "test");
-        var h2Connection = new H2Connection(Path.of("db.h2"));
-        var sqlLiteConnection = new SQLiteConnection(Path.of("db.sqlite"));
-        var mysqlConnection = new MySqlConnection("localhost", 3306, false, "test", "root", "");
+        var configLoader = new Object();
+        var config = new PipelineConfig();
 
-        var config = PipelineConfig
+        var dataUpdaterProvider = config.dataUpdater() != null ? config.dataUpdater().createProvider() : null;
+
+        var redisConfig = RedisConfig
             .builder()
-            .dataUpdater(redisConnection)
-            .globalCache(redisConnection)
-            .globalStorage(mongoConnection)
+            .username("")
+            .password("")
+            .endpoints(
+                RedisEndpoint
+                    .builder()
+                    .host("127.0.0.1")
+                    .port(6379)
+                    .database(0)
+                    .build()
+            )
             .build();
+        var redisProvider = redisConfig.createProvider();
+
+        var globalCacheProvider = config.globalCache() != null ? config.globalCache().createProvider() : null;
+
+        var h2Config = H2Config
+            .builder()
+            .path(Path.of("D:", "Dev", "database"))
+            .build();
+        var h2Provider = h2Config.createProvider();
+
+        var jsonConfig = JsonConfig
+            .builder()
+            .path(Path.of("D:", "Dev", "database"))
+            .build();
+        var jsonProvider = jsonConfig.createProvider();
+
+        var mongoConfig = MongoConfig
+            .builder()
+            .host("127.0.0.1")
+            .port(27017)
+            .database("test")
+            .build();
+        var mongoProvider = mongoConfig.createProvider();
+
+        var mySqlConfig = MySqlConfig
+            .builder()
+            .endpoints(
+                MySqlEndpoint
+                    .builder()
+                    .host("127.0.0.1")
+                    .port(3306)
+                    .database("test")
+                    .build()
+            )
+            .username("root")
+            .password("")
+            .build();
+        var mySqlProvider = mySqlConfig.createProvider();
+
+        var sQLiteConfig = SQLiteConfig
+            .builder()
+            .path(Path.of("D:", "Dev", "db.sqlite"))
+            .build();
+        var sQLiteProvider = sQLiteConfig.createProvider();
+
+        var globalStorageProvider = config.globalStorage() != null ? config.globalStorage().createProvider() : null;
 
         var registry = new PipelineRegistry();
         registry.register(Player.class);
 
-        var pipeline = Pipeline.create(config, registry);
+        var pipeline = Pipeline
+            .builder()
+            .registry(registry)
+            .globalCache(redisProvider)
+            .build();
 
-        var player = pipeline.load(Player.class, TEST_ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, (dataClass, pipeline1) -> new Player(pipeline1, "Test", 5), true);
+        var uuid = UUID.randomUUID();
+        pipeline.load(Player.class, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, (dataClass, pipeline1) -> new Player(pipeline1, "Niklas", 5),true);
     }
 
 }
