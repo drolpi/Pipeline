@@ -35,11 +35,10 @@ public final class ConnectionDataLoader {
                         var optional = AnnotationResolver.preload(aClass);
 
                         optional.ifPresent(preload -> {
-                            var data = (ConnectionData) pipeline.load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
-                            if (data == null)
-                                return;
-
-                            data.onConnect();
+                            pipeline
+                                .load(aClass, connection, Pipeline.LoadingStrategy.LOAD_PIPELINE, true)
+                                .map(pipelineData -> (ConnectionData) pipelineData)
+                                .ifPresent(ConnectionData::onConnect);
                         });
                     });
                 callback.run();

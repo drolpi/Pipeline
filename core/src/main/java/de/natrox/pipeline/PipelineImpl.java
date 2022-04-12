@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -120,7 +121,7 @@ public final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public final <T extends PipelineData> T load(
+    public final <T extends PipelineData> @NotNull Optional<T> load(
         @NotNull Class<? extends T> type,
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy,
@@ -143,7 +144,7 @@ public final class PipelineImpl implements Pipeline {
             if (data != null)
                 data.updateLastUse();
             pipelineTask.completableFuture().complete(data);
-            return data;
+            return Optional.ofNullable(data);
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL)) {
             if (createIfNotExists) {
                 T data = createNewData(type, uuid, instanceCreator);
@@ -151,7 +152,7 @@ public final class PipelineImpl implements Pipeline {
                 pipelineTask.completableFuture().complete(data);
                 if (callback != null)
                     callback.accept(data);
-                return data;
+                return Optional.ofNullable(data);
             }
             pipelineTask.completableFuture().complete(null);
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL_ELSE_LOAD)) {
@@ -170,14 +171,14 @@ public final class PipelineImpl implements Pipeline {
             if (callback != null)
                 callback.accept(data);
 
-            return data;
+            return Optional.ofNullable(data);
         }
-        return null;
+        return Optional.empty();
     }
 
     @NotNull
     @Override
-    public <T extends PipelineData> CompletableFuture<T> loadAsync(
+    public <T extends PipelineData> CompletableFuture<Optional<T>> loadAsync(
         @NotNull Class<? extends T> type,
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy,
@@ -190,7 +191,7 @@ public final class PipelineImpl implements Pipeline {
         if (!registry.isRegistered(type))
             throw new IllegalStateException("The class " + type.getSimpleName() + " is not registered in the pipeline");
 
-        var completableFuture = new CompletableFuture<T>();
+        var completableFuture = new CompletableFuture<Optional<T>>();
         executorService.submit(new CatchingRunnable(() ->
             completableFuture.complete(load(type, uuid, loadingStrategy, createIfNotExists, callback, instanceCreator))));
         return completableFuture;

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -47,22 +48,21 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
         this.findOptions = new FindOptions();
     }
 
-    @Nullable
     @Override
-    public T first() {
+    public @NotNull Optional<T> first() {
         var data = pipeline.globalStorage().data(dataClass);
         data = applyOptions(data);
 
         for (UUID uuid : data.keySet()) {
             return pipeline.load(dataClass, uuid, loadingStrategy, callback, instanceCreator);
         }
-        return null;
+        return Optional.empty();
     }
 
     @NotNull
     @Override
-    public CompletableFuture<T> firstAsync() {
-        var completableFuture = new CompletableFuture<T>();
+    public CompletableFuture<Optional<T>> firstAsync() {
+        var completableFuture = new CompletableFuture<Optional<T>>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(first())));
         return completableFuture;
     }

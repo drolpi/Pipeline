@@ -6,15 +6,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface PipelineStream<T extends PipelineData> {
 
-    @Nullable
-    T first();
+    @NotNull
+    Optional<T> first();
 
     @NotNull
-    CompletableFuture<T> firstAsync();
+    CompletableFuture<Optional<T>> firstAsync();
 
     @NotNull
     List<T> collect();
