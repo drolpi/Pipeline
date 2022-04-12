@@ -74,7 +74,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         }
 
         @Override
-        public  @NotNull RedisConfig build() {
+        public @NotNull RedisConfig build() {
             return new RedisConfig(username, password, endpoints.build());
         }
     }

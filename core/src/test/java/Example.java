@@ -94,7 +94,7 @@ public class Example {
             .build();
 
         var uuid = UUID.randomUUID();
-        pipeline.load(Player.class, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, (dataClass, pipeline1) -> new Player(pipeline1, "Niklas", 5),true);
+        pipeline.load(Player.class, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, (dataClass, pipeline1) -> new Player(pipeline1, "Niklas", 5), true);
     }
 
 }

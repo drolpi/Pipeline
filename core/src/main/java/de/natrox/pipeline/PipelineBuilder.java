@@ -1,9 +1,9 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.config.PipelineRegistry;
-import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.storage.GlobalStorageProvider;
+import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilder implements Pipeline.Builder {
