@@ -125,9 +125,9 @@ public final class PipelineImpl implements Pipeline {
         @NotNull Class<? extends T> dataClass,
         @NotNull UUID objectUUID,
         @NotNull LoadingStrategy loadingStrategy,
-        boolean createIfNotExists,
         @Nullable Consumer<T> callback,
-        @Nullable InstanceCreator<T> instanceCreator
+        @Nullable InstanceCreator<T> instanceCreator,
+        boolean createIfNotExists
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
@@ -183,9 +183,9 @@ public final class PipelineImpl implements Pipeline {
         @NotNull Class<? extends T> dataClass,
         @NotNull UUID objectUUID,
         @NotNull LoadingStrategy loadingStrategy,
-        boolean createIfNotExists,
         @Nullable Consumer<T> callback,
-        @Nullable InstanceCreator<T> instanceCreator
+        @Nullable InstanceCreator<T> instanceCreator,
+        boolean createIfNotExists
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
@@ -195,7 +195,7 @@ public final class PipelineImpl implements Pipeline {
 
         var completableFuture = new CompletableFuture<Optional<T>>();
         executorService.submit(new CatchingRunnable(() ->
-            completableFuture.complete(load(dataClass, objectUUID, loadingStrategy, createIfNotExists, callback, instanceCreator))));
+            completableFuture.complete(load(dataClass, objectUUID, loadingStrategy, callback, instanceCreator, createIfNotExists))));
         return completableFuture;
     }
 

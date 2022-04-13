@@ -70,9 +70,9 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull Class<? extends T> type,
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy,
-        boolean createIfNotExists,
         @Nullable Consumer<T> callback,
-        @Nullable InstanceCreator<T> instanceCreator
+        @Nullable InstanceCreator<T> instanceCreator,
+        boolean createIfNotExists
     );
 
     //Without createIfNotExists
@@ -84,19 +84,18 @@ public interface Pipeline extends Loadable, Shutdownable {
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return load(type, uuid, loadingStrategy, false, callback, instanceCreator);
+        return load(type, uuid, loadingStrategy, callback, instanceCreator, false);
     }
 
     @NotNull <T extends PipelineData> CompletableFuture<Optional<T>> loadAsync(
         @NotNull Class<? extends T> type,
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy,
-        boolean createIfNotExists,
         @Nullable Consumer<T> callback,
-        @Nullable InstanceCreator<T> instanceCreator
+        @Nullable InstanceCreator<T> instanceCreator,
+        boolean createIfNotExists
     );
 
-    //Without createIfNotExists
     @NotNull
     default <T extends PipelineData> CompletableFuture<Optional<T>> loadAsync(
         @NotNull Class<? extends T> type,
@@ -105,7 +104,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return loadAsync(type, uuid, loadingStrategy, false, callback, instanceCreator);
+        return loadAsync(type, uuid, loadingStrategy, callback, instanceCreator, false);
     }
 
     //Load by provided uuid without instance creator
@@ -114,10 +113,10 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull Class<? extends T> type,
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy,
-        boolean createIfNotExists,
-        @Nullable Consumer<T> callback
+        @Nullable Consumer<T> callback,
+        boolean createIfNotExists
     ) {
-        return load(type, uuid, loadingStrategy, createIfNotExists, callback, null);
+        return load(type, uuid, loadingStrategy, callback, null, createIfNotExists);
     }
 
     //Without createIfNotExists
@@ -128,7 +127,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback
     ) {
-        return load(type, uuid, loadingStrategy, false, callback, null);
+        return load(type, uuid, loadingStrategy, callback, null, false);
     }
 
     @NotNull
@@ -139,10 +138,9 @@ public interface Pipeline extends Loadable, Shutdownable {
         @Nullable Consumer<T> callback,
         boolean createIfNotExists
     ) {
-        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, callback, null);
+        return loadAsync(type, uuid, loadingStrategy, callback, null, createIfNotExists);
     }
 
-    //Without createIfNotExists
     @NotNull
     default <T extends PipelineData> CompletableFuture<Optional<T>> loadAsync(
         @NotNull Class<? extends T> type,
@@ -150,7 +148,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback
     ) {
-        return loadAsync(type, uuid, loadingStrategy, false, callback, null);
+        return loadAsync(type, uuid, loadingStrategy, callback, null, false);
     }
 
     //Load by provided uuid without callback
@@ -162,7 +160,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @Nullable InstanceCreator<T> instanceCreator,
         boolean createIfNotExists
     ) {
-        return load(type, uuid, loadingStrategy, createIfNotExists, null, instanceCreator);
+        return load(type, uuid, loadingStrategy, null, instanceCreator, createIfNotExists);
     }
 
     @NotNull
@@ -172,7 +170,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return load(type, uuid, loadingStrategy, false, null, instanceCreator);
+        return load(type, uuid, loadingStrategy, null, instanceCreator, false);
     }
 
     @NotNull
@@ -183,7 +181,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @Nullable InstanceCreator<T> instanceCreator,
         boolean createIfNotExists
     ) {
-        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, null, instanceCreator);
+        return loadAsync(type, uuid, loadingStrategy, null, instanceCreator, createIfNotExists);
     }
 
     @NotNull
@@ -193,7 +191,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return loadAsync(type, uuid, loadingStrategy, false, null, instanceCreator);
+        return loadAsync(type, uuid, loadingStrategy, null, instanceCreator, false);
     }
 
     //Load by provided uuid without callback & instance creator
@@ -204,7 +202,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         boolean createIfNotExists
     ) {
-        return load(type, uuid, loadingStrategy, createIfNotExists, null, null);
+        return load(type, uuid, loadingStrategy, null, null, createIfNotExists);
     }
 
     @NotNull
@@ -213,7 +211,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy
     ) {
-        return load(type, uuid, loadingStrategy, false, null, null);
+        return load(type, uuid, loadingStrategy, null, null, false);
     }
 
     @NotNull
@@ -223,7 +221,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull LoadingStrategy loadingStrategy,
         boolean createIfNotExists
     ) {
-        return loadAsync(type, uuid, loadingStrategy, createIfNotExists, null, null);
+        return loadAsync(type, uuid, loadingStrategy, null, null, createIfNotExists);
     }
 
     @NotNull
@@ -232,7 +230,7 @@ public interface Pipeline extends Loadable, Shutdownable {
         @NotNull UUID uuid,
         @NotNull LoadingStrategy loadingStrategy
     ) {
-        return loadAsync(type, uuid, loadingStrategy, false, null, null);
+        return loadAsync(type, uuid, loadingStrategy, null, null, false);
     }
 
     //Load all data by provided uuids
