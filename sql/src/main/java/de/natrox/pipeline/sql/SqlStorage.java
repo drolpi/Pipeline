@@ -130,10 +130,10 @@ public abstract class SqlStorage implements GlobalStorage {
                 var uuids = new HashMap<UUID, JsonObject>();
 
                 try {
-                    for (int i = 0; resultSet.next(); i++) {
+                    while (resultSet.next()) {
                         var data = resultSet.getString(TABLE_COLUMN_VAL);
 
-                        JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
+                        var jsonObject = JsonParser.parseString(data).getAsJsonObject();
                         uuids.put(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()), jsonObject);
                     }
                 } catch (SQLException e) {
