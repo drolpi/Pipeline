@@ -17,7 +17,6 @@ import org.redisson.api.listener.MessageListener;
 import org.redisson.codec.SerializationCodec;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.UUID;
 
 final class RedisDataUpdater extends AbstractDataUpdater {

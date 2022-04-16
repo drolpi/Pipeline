@@ -10,7 +10,6 @@ import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

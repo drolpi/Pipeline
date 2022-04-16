@@ -17,10 +17,8 @@ import org.redisson.client.codec.StringCodec;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 final class RedisCache implements GlobalCache {
