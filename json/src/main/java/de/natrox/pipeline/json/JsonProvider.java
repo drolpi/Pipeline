@@ -12,24 +12,16 @@ import java.nio.file.Path;
 
 public final class JsonProvider implements GlobalStorageProvider {
 
-    private final JsonConfig config;
     private final Path path;
 
-    protected JsonProvider(@NotNull JsonConfig config) {
+    protected JsonProvider(@NotNull JsonConfig config) throws Exception {
         Preconditions.checkNotNull(config, "config");
-        this.config = config;
         this.path = Path.of(config.path());
-    }
-
-    @Override
-    public boolean init() {
         var parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {
             FileUtil.createDirectory(parent);
         }
-
-        return true;
     }
 
     @Override

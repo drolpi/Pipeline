@@ -64,7 +64,7 @@ public final class PipelineImpl implements Pipeline {
         @Nullable GlobalCacheProvider globalCacheProvider,
         @Nullable GlobalStorageProvider globalStorageProvider,
         @NotNull PipelineRegistry registry
-    ) throws Exception {
+    ) {
         this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(4);
         this.gson = new GsonBuilder().serializeNulls().create();
@@ -74,7 +74,7 @@ public final class PipelineImpl implements Pipeline {
         LOGGER.debug("Local cache: " + localCache.getClass().getName());
 
         // check if there is a data updater provider or initialize the default one
-        if (dataUpdaterProvider != null && dataUpdaterProvider.init()) {
+        if (dataUpdaterProvider != null) {
             this.dataUpdater = dataUpdaterProvider.constructDataUpdater(this);
         } else {
             this.dataUpdater = new DefaultDataUpdater();
@@ -83,7 +83,7 @@ public final class PipelineImpl implements Pipeline {
         LOGGER.debug("Data updater: " + dataUpdater.getClass().getName());
 
         // check if there is a global cache provider or initialize null
-        if (globalCacheProvider != null && globalCacheProvider.init()) {
+        if (globalCacheProvider != null) {
             this.globalCache = globalCacheProvider.constructGlobalCache(this);
             LOGGER.debug("GlobalCache: " + globalCache.getClass().getName());
         } else {
@@ -92,7 +92,7 @@ public final class PipelineImpl implements Pipeline {
         }
 
         // check if there is a global storage provider or or initialize null
-        if (globalStorageProvider != null && globalStorageProvider.init()) {
+        if (globalStorageProvider != null) {
             this.globalStorage = globalStorageProvider.constructGlobalStorage(this);
             LOGGER.debug("Global storage: " + globalStorage.getClass().getName());
         } else {

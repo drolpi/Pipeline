@@ -8,7 +8,6 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sqlite.SQLiteDataSource;
 
 import java.nio.file.Files;
@@ -16,41 +15,33 @@ import java.nio.file.Path;
 
 public final class SQLiteProvider implements GlobalStorageProvider {
 
-    private final Path path;
-    private @Nullable HikariDataSource hikariDataSource;
+    private final HikariDataSource hikariDataSource;
 
-    protected SQLiteProvider(@NotNull SQLiteConfig config) {
+    protected SQLiteProvider(@NotNull SQLiteConfig config) throws Exception {
         Preconditions.checkNotNull(config, "config");
-        this.path = Path.of(config.path());
-    }
-
-    @Override
-    public boolean init() throws Exception {
+        var path = Path.of(config.path());
         var parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {
             FileUtil.createDirectory(parent);
         }
-        var config = new HikariConfig();
+        var hikariConfig = new HikariConfig();
 
         var dataSource = new SQLiteDataSource();
         dataSource.setUrl("jdbc:sqlite:" + path.toAbsolutePath());
-        config.setDataSource(dataSource);
+        hikariConfig.setDataSource(dataSource);
 
-        config.setMinimumIdle(2);
-        config.setMaximumPoolSize(100);
-        config.setConnectionTimeout(10_000);
-        config.setValidationTimeout(10_000);
+        hikariConfig.setMinimumIdle(2);
+        hikariConfig.setMaximumPoolSize(100);
+        hikariConfig.setConnectionTimeout(10_000);
+        hikariConfig.setValidationTimeout(10_000);
 
-        this.hikariDataSource = new HikariDataSource(config);
-        return true;
+        this.hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
     @Override
     public void shutdown() {
-        if (hikariDataSource != null) {
-            hikariDataSource.close();
-        }
+        hikariDataSource.close();
     }
 
     @Override

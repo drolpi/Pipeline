@@ -8,7 +8,6 @@ import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import de.natrox.pipeline.part.updater.DataUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -18,61 +17,53 @@ import java.util.concurrent.TimeUnit;
 
 public final class RedisProvider implements DataUpdaterProvider, GlobalCacheProvider {
 
-    private final RedisConfig config;
-    private @Nullable RedissonClient redissonClient;
+    private final RedissonClient redissonClient;
 
-    protected RedisProvider(@NotNull RedisConfig config) {
+    protected RedisProvider(@NotNull RedisConfig config) throws Exception {
         Preconditions.checkNotNull(config, "config");
-        this.config = config;
-    }
 
-    @Override
-    public boolean init() throws Exception {
         var endpoints = config.endpoints();
         var size = endpoints.size();
         if (size == 0)
             throw new IllegalArgumentException("Endpoints Array is empty");
 
-        var config = new Config();
+        var redisConfig = new Config();
         if (size > 1) {
-            var clusterServersConfig = config.useClusterServers();
+            var clusterServersConfig = redisConfig.useClusterServers();
 
             for (var endpoint : endpoints) {
                 var uri = new RedisURI("redis", endpoint.host(), endpoint.port());
                 clusterServersConfig.addNodeAddress(uri.toString());
             }
 
-            if (!Strings.isNullOrEmpty(this.config.username()))
-                clusterServersConfig.setUsername(this.config.username());
-            if (!Strings.isNullOrEmpty(this.config.password()))
-                clusterServersConfig.setPassword(this.config.password());
+            if (!Strings.isNullOrEmpty(config.username()))
+                clusterServersConfig.setUsername(config.username());
+            if (!Strings.isNullOrEmpty(config.password()))
+                clusterServersConfig.setPassword(config.password());
 
         } else {
             var endpoint = endpoints.get(0);
-            var singleServerConfig = config.useSingleServer();
+            var singleServerConfig = redisConfig.useSingleServer();
             var uri = new RedisURI("redis", endpoint.host(), endpoint.port());
             singleServerConfig
                 .setSubscriptionsPerConnection(30)
                 .setAddress(uri.toString())
                 .setDatabase(endpoint.database());
 
-            if (!Strings.isNullOrEmpty(this.config.username()))
-                singleServerConfig.setUsername(this.config.username());
-            if (!Strings.isNullOrEmpty(this.config.password()))
-                singleServerConfig.setPassword(this.config.password());
+            if (!Strings.isNullOrEmpty(config.username()))
+                singleServerConfig.setUsername(config.username());
+            if (!Strings.isNullOrEmpty(config.password()))
+                singleServerConfig.setPassword(config.password());
         }
 
-        config.setNettyThreads(4);
-        config.setThreads(4);
-        this.redissonClient = Redisson.create(config);
-        return true;
+        redisConfig.setNettyThreads(4);
+        redisConfig.setThreads(4);
+        this.redissonClient = Redisson.create(redisConfig);
     }
 
     @Override
     public void shutdown() {
-        if (redissonClient != null) {
-            redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
-        }
+        redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
     }
 
     @Override

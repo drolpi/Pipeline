@@ -390,7 +390,7 @@ public interface Pipeline extends Loadable, Shutdownable {
 
         @NotNull Builder globalStorage(@UnknownNullability GlobalStorageProvider connection);
 
-        @NotNull Pipeline build() throws Exception;
+        @NotNull Pipeline build();
 
     }
 }

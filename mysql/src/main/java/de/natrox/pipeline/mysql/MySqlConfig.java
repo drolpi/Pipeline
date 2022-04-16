@@ -47,10 +47,9 @@ public final class MySqlConfig implements PartConfig<MySqlProvider> {
     }
 
     @Override
-    public @NotNull MySqlProvider createProvider() {
+    public @NotNull MySqlProvider createProvider() throws Exception {
         return new MySqlProvider(this);
     }
-
 
     public static class Builder implements IBuilder<MySqlConfig> {
 

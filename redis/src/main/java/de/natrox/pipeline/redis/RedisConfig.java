@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class RedisConfig implements PartConfig<RedisProvider> {
 
     private final String username;
@@ -39,7 +40,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
     }
 
     @Override
-    public @NotNull RedisProvider createProvider() {
+    public @NotNull RedisProvider createProvider() throws Exception {
         return new RedisProvider(this);
     }
 

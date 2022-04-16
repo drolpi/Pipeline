@@ -25,7 +25,7 @@ public final class H2Config implements PartConfig<H2Provider> {
     }
 
     @Override
-    public @NotNull H2Provider createProvider() {
+    public @NotNull H2Provider createProvider() throws Exception {
         return new H2Provider(this);
     }
 

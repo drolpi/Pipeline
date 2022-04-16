@@ -45,7 +45,7 @@ final class PipelineBuilder implements Pipeline.Builder {
     }
 
     @Override
-    public @NotNull Pipeline build() throws Exception {
+    public @NotNull Pipeline build() {
         return new PipelineImpl(dataUpdaterConnection, globalCacheConnection, globalStorageConnection, pipelineRegistry);
     }
 }

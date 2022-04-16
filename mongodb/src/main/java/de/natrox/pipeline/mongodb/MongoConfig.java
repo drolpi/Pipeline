@@ -94,7 +94,7 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
     }
 
     @Override
-    public @NotNull MongoProvider createProvider() {
+    public @NotNull MongoProvider createProvider() throws Exception {
         return new MongoProvider(this);
     }
 

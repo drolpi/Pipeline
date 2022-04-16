@@ -25,7 +25,7 @@ public final class SQLiteConfig implements PartConfig<SQLiteProvider> {
     }
 
     @Override
-    public @NotNull SQLiteProvider createProvider() {
+    public @NotNull SQLiteProvider createProvider() throws Exception {
         return new SQLiteProvider(this);
     }
 

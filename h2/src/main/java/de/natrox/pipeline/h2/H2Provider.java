@@ -22,33 +22,29 @@ public final class H2Provider implements GlobalStorageProvider {
     }
 
     private final Path path;
-    private @Nullable HikariDataSource hikariDataSource;
+    private final HikariDataSource hikariDataSource;
 
-    protected H2Provider(@NotNull H2Config config) {
+    protected H2Provider(@NotNull H2Config config) throws Exception {
         Preconditions.checkNotNull(config, "config");
         this.path = Path.of(config.path());
-    }
 
-    @Override
-    public boolean init() {
         var parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {
             FileUtil.createDirectory(parent);
         }
-        var config = new HikariConfig();
+        var hikariConfig = new HikariConfig();
 
         var dataSource = new JdbcDataSource();
         dataSource.setUrl("jdbc:h2:file:" + path.toAbsolutePath());
-        config.setDataSource(dataSource);
+        hikariConfig.setDataSource(dataSource);
 
-        config.setMinimumIdle(2);
-        config.setMaximumPoolSize(100);
-        config.setConnectionTimeout(10_000);
-        config.setValidationTimeout(10_000);
+        hikariConfig.setMinimumIdle(2);
+        hikariConfig.setMaximumPoolSize(100);
+        hikariConfig.setConnectionTimeout(10_000);
+        hikariConfig.setValidationTimeout(10_000);
 
-        this.hikariDataSource = new HikariDataSource(config);
-        return true;
+        this.hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
     @Override

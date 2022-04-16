@@ -25,7 +25,7 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
     }
 
     @Override
-    public @NotNull JsonProvider createProvider() {
+    public @NotNull JsonProvider createProvider() throws Exception {
         return new JsonProvider(this);
     }
 

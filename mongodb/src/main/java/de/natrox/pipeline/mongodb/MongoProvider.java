@@ -8,32 +8,22 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class MongoProvider implements GlobalStorageProvider {
 
-    private final MongoConfig config;
-    private @Nullable MongoClient mongoClient;
-    private @Nullable MongoDatabase mongoDatabase;
+    private final MongoClient mongoClient;
+    private final MongoDatabase mongoDatabase;
 
-    protected MongoProvider(@NotNull MongoConfig config) {
+    protected MongoProvider(@NotNull MongoConfig config) throws Exception {
         Preconditions.checkNotNull(config, "config");
-        this.config = config;
-    }
 
-    @Override
-    public boolean init() throws Exception {
-        this.mongoClient = MongoClients.create(this.config.buildConnectionUri());
-        this.mongoDatabase = this.mongoClient.getDatabase(this.config.database());
-
-        return true;
+        this.mongoClient = MongoClients.create(config.buildConnectionUri());
+        this.mongoDatabase = this.mongoClient.getDatabase(config.database());
     }
 
     @Override
     public void shutdown() {
-        if (this.mongoClient != null) {
-            this.mongoClient.close();
-        }
+        this.mongoClient.close();
     }
 
     @Override
