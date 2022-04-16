@@ -27,6 +27,7 @@ public abstract class PipelineData implements DataType {
     private transient long lastUse = System.currentTimeMillis();
     private transient boolean markedForRemoval = false;
 
+    @SuppressWarnings("unused")
     private UUID objectUUID;
 
     public PipelineData(@NotNull Pipeline pipeline) {
