@@ -131,9 +131,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         PipelineTaskScheduler.PipelineTask<T> pipelineTask = pipelineTaskScheduler
             .schedule(PipelineTaskScheduler.PipelineAction.LOAD, loadingStrategy, dataClass, objectUUID);
@@ -189,9 +187,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<Optional<T>>();
         executorService.submit(new CatchingRunnable(() ->
@@ -209,9 +205,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE))
             synchronizeData(dataClass, objectUUIDs, instanceCreator);
@@ -234,9 +228,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<List<T>>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(load(dataClass, objectUUIDs, loadingStrategy))));
@@ -251,9 +243,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         if (strategies.length == 0)
             return false;
@@ -287,9 +277,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(exist(dataClass, objectUUID, strategies))));
@@ -305,9 +293,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
         if (strategySet.isEmpty())
@@ -357,9 +343,8 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
+        registry.checkRegistered(dataClass);
 
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
         var completableFuture = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(delete(dataClass, objectUUID, notifyOthers, strategies))));
         return completableFuture;
@@ -404,8 +389,7 @@ public final class PipelineImpl implements Pipeline {
     @Override
     public void preloadData(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         //Connection
         if (ConnectionData.class.isAssignableFrom(dataClass))
@@ -428,9 +412,7 @@ public final class PipelineImpl implements Pipeline {
     public void preloadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         //Connection
         if (ConnectionData.class.isAssignableFrom(dataClass))
@@ -458,8 +440,7 @@ public final class PipelineImpl implements Pipeline {
     @Override
     public void cleanUpData(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var optional = AnnotationResolver.autoSave(dataClass);
 
@@ -476,9 +457,7 @@ public final class PipelineImpl implements Pipeline {
     public void cleanUpData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, Runnable runnable) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         var optional = AnnotationResolver.autoSave(dataClass);
 
@@ -516,9 +495,8 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
+        registry.checkRegistered(dataClass);
 
-        if (!registry.dataClasses().contains(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
         var startTime = System.currentTimeMillis();
         // ExistCheck LocalCache
         if (localCache.dataExist(dataClass, objectUUID))
@@ -569,9 +547,7 @@ public final class PipelineImpl implements Pipeline {
     ) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
-
-        if (!registry.dataClasses().contains(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        registry.checkRegistered(dataClass);
 
         LOGGER.debug("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]");
         T pipelineData = localCache.data(dataClass, objectUUID);
@@ -595,9 +571,8 @@ public final class PipelineImpl implements Pipeline {
     private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> dataClass, @NotNull Iterable<UUID> objectUUIDs, InstanceCreator<T> instanceCreator) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
+        registry.checkRegistered(dataClass);
 
-        if (!registry.isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
         if (globalCache() != null) {
             objectUUIDs.forEach(uuid -> {
                 if (!localCache.dataExist(dataClass, uuid))

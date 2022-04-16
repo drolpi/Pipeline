@@ -51,15 +51,15 @@ public final class PipelineRegistry {
 
     public @NotNull InstanceCreator instanceCreator(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        if (!isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        this.checkRegistered(dataClass);
+
         return registry.get(dataClass).instanceCreator();
     }
 
     public @NotNull String identifier(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        if (!isRegistered(dataClass))
-            throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
+        this.checkRegistered(dataClass);
+
         return registry.get(dataClass).identifier();
     }
 
@@ -74,6 +74,12 @@ public final class PipelineRegistry {
             .findFirst()
             .map(Map.Entry::getKey)
             .orElseThrow();
+    }
+
+    public void checkRegistered(@NotNull Class<? extends PipelineData> dataClass) {
+        if (isRegistered(dataClass))
+            return;
+        throw new IllegalStateException("The class " + dataClass.getSimpleName() + " is not registered in the pipeline");
     }
 
     record Entry(@NotNull InstanceCreator instanceCreator, @NotNull String identifier) {
