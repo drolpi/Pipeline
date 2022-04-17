@@ -1,10 +1,10 @@
 package de.natrox.pipeline.part.updater;
 
 import com.google.gson.JsonObject;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractDataUpdater implements DataUpdater {
 
-    private final static Logger LOGGER = LogManager.logger(AbstractDataUpdater.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDataUpdater.class);
 
     protected final Map<UUID, JsonObject> syncs;
 

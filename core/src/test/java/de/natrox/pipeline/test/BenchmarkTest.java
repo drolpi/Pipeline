@@ -53,20 +53,24 @@ public class BenchmarkTest {
             .globalStorage(mongoProvider)
             .build();
 
+        pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE);
+
         var startInstant = Instant.now();
 
-        var player = pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, true).orElse(null);
+        pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
 
         var middleInstant = Instant.now();
         System.out.println(Duration.between(startInstant, middleInstant).toMillis());
 
-        var player2 = pipeline.load(Player.class, ID_2, Pipeline.LoadingStrategy.LOAD_PIPELINE, true).orElse(null);
+        for (Player player1 : pipeline.find(Player.class, Pipeline.LoadingStrategy.LOAD_PIPELINE).collect()) {
+            System.out.println(player1);
+        }
 
         System.out.println(Duration.between(middleInstant, Instant.now()).toMillis());
     }
 
 
-    @Properties(identifier = "Player", context = Context.GLOBAL)
+    @Properties(identifier = "PlayerBench", context = Context.GLOBAL)
     static class Player extends PipelineData {
 
         public Player(@NotNull Pipeline pipeline) {

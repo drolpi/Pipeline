@@ -4,14 +4,14 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,7 +28,7 @@ import java.util.UUID;
 
 final class JsonStorage implements GlobalStorage {
 
-    private final static Logger LOGGER = LogManager.logger(JsonStorage.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(JsonStorage.class);
 
     private final Gson gson;
     private final Path directory;

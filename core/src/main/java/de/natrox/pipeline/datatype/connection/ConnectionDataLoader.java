@@ -1,8 +1,8 @@
 package de.natrox.pipeline.datatype.connection;
 
 import com.google.common.base.Preconditions;
-import de.natrox.common.concurrent.SimpleTaskBatchFactory;
-import de.natrox.common.concurrent.TaskBatch;
+import de.natrox.common.batch.SimpleTaskBatchFactory;
+import de.natrox.common.batch.TaskBatch;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;

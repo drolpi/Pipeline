@@ -4,8 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -14,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 final class RedisCache implements GlobalCache {
 
-    private final static Logger LOGGER = LogManager.logger(RedisCache.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(RedisCache.class);
 
     private final Gson gson;
     private final RedissonClient redissonClient;
@@ -43,7 +43,7 @@ final class RedisCache implements GlobalCache {
         try {
             return JsonParser.parseString(objectCache(dataClass, objectUUID).get()).getAsJsonObject();
         } catch (Exception e) {
-            LOGGER.severe("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
+            LOGGER.error("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
             removeData(dataClass, objectUUID);
         }
         return null;

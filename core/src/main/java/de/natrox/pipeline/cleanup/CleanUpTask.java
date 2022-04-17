@@ -1,17 +1,17 @@
 package de.natrox.pipeline.cleanup;
 
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.part.local.LocalCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
 public final class CleanUpTask implements Runnable {
 
-    private final static Logger LOGGER = LogManager.logger(CleanUpTask.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CleanUpTask.class);
 
     private final PipelineImpl pipelineImpl;
     private final PipelineRegistry registry;

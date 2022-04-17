@@ -2,13 +2,13 @@ package de.natrox.pipeline.part.local;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 
 public final class DefaultLocalCache implements LocalCache {
 
-    private final static Logger LOGGER = LogManager.logger(DefaultLocalCache.class);
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultLocalCache.class);
     private final Map<Class<? extends PipelineData>, Map<UUID, PipelineData>> dataObjects = new ConcurrentHashMap<>();
 
     public DefaultLocalCache() {

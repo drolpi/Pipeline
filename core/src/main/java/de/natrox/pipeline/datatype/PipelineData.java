@@ -5,21 +5,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonObject;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public abstract class PipelineData implements DataType {
 
-    private final static Logger LOGGER = LogManager.logger(PipelineData.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(PipelineData.class);
 
     private final transient Pipeline pipeline;
     private final transient Gson gson;

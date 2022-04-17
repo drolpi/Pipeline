@@ -2,8 +2,6 @@ package de.natrox.pipeline.redis;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -15,13 +13,15 @@ import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
 import org.redisson.codec.SerializationCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 final class RedisDataUpdater extends AbstractDataUpdater {
 
-    private final static Logger LOGGER = LogManager.logger(RedisDataUpdater.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(RedisDataUpdater.class);
     private final static String DATA_TOPIC = "DataTopic";
 
     private final LocalCache localCache;

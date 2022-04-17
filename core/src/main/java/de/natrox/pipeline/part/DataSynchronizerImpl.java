@@ -1,14 +1,14 @@
 package de.natrox.pipeline.part;
 
 import com.google.common.base.Preconditions;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class DataSynchronizerImpl implements DataSynchronizer {
 
-    private final static Logger LOGGER = LogManager.logger(DataSynchronizerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DataSynchronizerImpl.class);
 
     private final PipelineImpl pipelineImpl;
     private final ExecutorService executorService;

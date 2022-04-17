@@ -5,14 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.zaxxer.hikari.HikariDataSource;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +27,7 @@ import java.util.function.Function;
 
 public abstract class SqlStorage implements GlobalStorage {
 
-    private final static Logger LOGGER = LogManager.logger(SqlStorage.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SqlStorage.class);
 
     private static final String TABLE_COLUMN_KEY = "UUID";
     private static final String TABLE_COLUMN_VAL = "Document";
@@ -182,7 +182,7 @@ public abstract class SqlStorage implements GlobalStorage {
             // execute the statement
             return statement.executeUpdate();
         } catch (SQLException exception) {
-            LOGGER.severe("Exception while executing database update");
+            LOGGER.error("Exception while executing database update");
             exception.printStackTrace();
             return -1;
         }
@@ -200,7 +200,7 @@ public abstract class SqlStorage implements GlobalStorage {
                 return callback.apply(resultSet);
             }
         } catch (Throwable throwable) {
-            LOGGER.severe("Exception while executing database query");
+            LOGGER.error("Exception while executing database query");
             throwable.printStackTrace();
         }
 

@@ -3,8 +3,6 @@ package de.natrox.pipeline;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
@@ -31,6 +29,8 @@ import de.natrox.pipeline.scheduler.PipelineTaskScheduler;
 import de.natrox.pipeline.scheduler.PipelineTaskSchedulerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 
 public final class PipelineImpl implements Pipeline {
 
-    private final static Logger LOGGER = LogManager.logger(PipelineImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(PipelineImpl.class);
 
     private final GlobalStorage globalStorage;
     private final GlobalCache globalCache;
@@ -535,7 +535,7 @@ public final class PipelineImpl implements Pipeline {
         if (data != null)
             data.updateLastUse();
         else
-            LOGGER.warning("Data deleted from other thread while loading " + dataClass.getSimpleName() + " with uuid: " + objectUUID);
+            LOGGER.warn("Data deleted from other thread while loading " + dataClass.getSimpleName() + " with uuid: " + objectUUID);
 
         return data;
     }

@@ -1,11 +1,11 @@
 package de.natrox.pipeline.scheduler;
 
 import com.google.common.base.Preconditions;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
-    private final static Logger LOGGER = LogManager.logger(PipelineTaskSchedulerImpl.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(PipelineTaskSchedulerImpl.class);
 
     private final Map<UUID, Map<Class<? extends PipelineData>, PipelineTask<?>>> pendingTasks = new ConcurrentHashMap<>();
 
@@ -79,7 +79,7 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
                 try {
                     pipelineTask.completableFuture().get(1, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    LOGGER.warning("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.completableFuture().getClass().getGenericInterfaces()));
+                    LOGGER.warn("Pipeline Task took too long for type: " + Arrays.toString(pipelineTask.completableFuture().getClass().getGenericInterfaces()));
                     e.printStackTrace();
                 }
             });

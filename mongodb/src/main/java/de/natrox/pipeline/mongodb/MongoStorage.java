@@ -5,14 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import de.natrox.common.logger.LogManager;
-import de.natrox.common.logger.Logger;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 final class MongoStorage implements GlobalStorage {
 
-    private final static Logger LOGGER = LogManager.logger(MongoStorage.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MongoStorage.class);
 
     private final Gson gson;
     private final MongoDatabase mongoDatabase;
