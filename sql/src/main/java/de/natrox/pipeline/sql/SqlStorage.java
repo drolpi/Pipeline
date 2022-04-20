@@ -2,12 +2,12 @@ package de.natrox.pipeline.sql;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.function.ThrowableFunction;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,12 +18,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 public abstract class SqlStorage implements GlobalStorage {
 
@@ -47,51 +50,38 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
-            resultSet -> {
-                try {
-                    return resultSet.next() ? JsonParser.parseString(resultSet.getString(TABLE_COLUMN_VAL)).getAsJsonObject() : null;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            },
+            resultSet -> resultSet.next() ? JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)) : null,
             null,
             objectUUID.toString()
         );
     }
 
     @Override
-    public boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
-            resultSet -> {
-                try {
-                    return resultSet.next();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            },
+            ResultSet::next,
             false,
-            objectUUID.toString());
+            objectUUID.toString()
+        );
     }
 
     @Override
-    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+    public void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         Preconditions.checkNotNull(data, "data");
 
-        if (!dataExist(dataClass, objectUUID)) {
+        if (!exists(dataClass, objectUUID)) {
             executeUpdate(
                 String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
                 objectUUID.toString(), gson.toJson(data)
@@ -105,7 +95,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
@@ -116,38 +106,89 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        return data(dataClass).keySet();
-    }
-
-    @Override
-    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         return executeQuery(
             String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
             resultSet -> {
-                var uuids = new HashMap<UUID, JsonObject>();
-
-                try {
-                    while (resultSet.next()) {
-                        var data = resultSet.getString(TABLE_COLUMN_VAL);
-
-                        var jsonObject = JsonParser.parseString(data).getAsJsonObject();
-                        uuids.put(UUID.fromString(jsonObject.getAsJsonPrimitive("objectUUID").getAsString()), jsonObject);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                Collection<UUID> keys = new ArrayList<>();
+                while (resultSet.next()) {
+                    keys.add(UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY)));
                 }
+                return keys;
+            }, List.of());
+    }
 
-                return uuids;
+    @Override
+    public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        return executeQuery(
+            String.format(SELECT_ALL, TABLE_COLUMN_VAL, tableName(dataClass)),
+            resultSet -> {
+                Collection<JsonDocument> documents = new ArrayList<>();
+                while (resultSet.next()) {
+                    documents.add(JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)));
+                }
+                return documents;
+            }, List.of());
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        return executeQuery(
+            String.format(SELECT_ALL, tableName(dataClass)),
+            resultSet -> {
+                Map<UUID, JsonDocument> map = new HashMap<>();
+                while (resultSet.next()) {
+                    map.put(
+                        UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY)),
+                        JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL))
+                    );
+                }
+                return map;
             }, Map.of());
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(predicate, "predicate");
+        return executeQuery(
+            String.format(SELECT_ALL, tableName(dataClass)),
+            resultSet -> {
+                Map<UUID, JsonDocument> map = new HashMap<>();
+                while (resultSet.next()) {
+                    var key = UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY));
+                    var document = JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
+
+                    if (predicate.test(key, document)) {
+                        map.put(key, document);
+                    }
+                }
+                return map;
+            }, Map.of());
+    }
+
+    @Override
+    public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(consumer, "consumer");
+        executeQuery(
+            String.format(SELECT_ALL, tableName(dataClass)),
+            resultSet -> {
+                while (resultSet.next()) {
+                    var key = UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY));
+                    var document = JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
+                    consumer.accept(key, document);
+                }
+                return null;
+            }, null);
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(name, "name");
-
         executeUpdate(String.format(
             CREATE_TABLE,
             name,
@@ -188,7 +229,7 @@ public abstract class SqlStorage implements GlobalStorage {
         }
     }
 
-    public <T> T executeQuery(@NotNull String query, @NotNull Function<ResultSet, T> callback, @Nullable T def, @NotNull Object... objects) {
+    public <T> T executeQuery(@NotNull String query, @NotNull ThrowableFunction<ResultSet, T, SQLException> callback, @Nullable T def, @NotNull Object... objects) {
         try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
             // write all parameters
             for (int i = 0; i < objects.length; i++) {

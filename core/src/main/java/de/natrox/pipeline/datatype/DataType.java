@@ -1,6 +1,6 @@
 package de.natrox.pipeline.datatype;
 
-import com.google.gson.JsonObject;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,10 +69,8 @@ public interface DataType {
 
     @NotNull DataUpdater dataUpdater();
 
-    @NotNull JsonObject serialize();
+    @NotNull JsonDocument serialize();
 
-    @NotNull String serializeToString();
-
-    @NotNull DataType deserialize(@NotNull JsonObject jsonObject);
+    @NotNull DataType deserialize(@NotNull JsonDocument jsonObject);
 
 }

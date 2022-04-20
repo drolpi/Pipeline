@@ -5,6 +5,10 @@ import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
+import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.local.LocalCache;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -20,10 +24,16 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
     private final static Logger LOGGER = LoggerFactory.getLogger(DataSynchronizerImpl.class);
 
     private final PipelineImpl pipelineImpl;
+    private final LocalCache localCache;
+    private final GlobalCache globalCache;
+    private final GlobalStorage globalStorage;
     private final ExecutorService executorService;
 
     public DataSynchronizerImpl(@NotNull PipelineImpl pipelineImpl) {
         this.pipelineImpl = pipelineImpl;
+        this.localCache = pipelineImpl.localCache();
+        this.globalCache = pipelineImpl.globalCache();
+        this.globalStorage = pipelineImpl.globalStorage();
         this.executorService = pipelineImpl.executorService();
     }
 
@@ -58,19 +68,18 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         Preconditions.checkNotNull(destination, "destination");
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
+
         if (source.equals(destination))
             return false;
-        if (pipelineImpl.globalCache() == null && (source.equals(DataSourceType.GLOBAL_CACHE) || destination.equals(DataSourceType.GLOBAL_CACHE)))
+        if (globalCache == null && (source.equals(DataSourceType.GLOBAL_CACHE) || destination.equals(DataSourceType.GLOBAL_CACHE)))
             return false;
-        if (pipelineImpl.globalStorage() == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
+        if (globalStorage == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
             return false;
 
         var startTime = System.currentTimeMillis();
 
         if (source.equals(DataSourceType.LOCAL)) {
-            if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID))
-                return false;
-            var data = pipelineImpl.localCache().data(dataClass, objectUUID);
+            var data = localCache.get(dataClass, objectUUID);
             if (data == null)
                 return false;
             data.updateLastUse();
@@ -79,72 +88,44 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.LOCAL + " -> " + destination + "]");
             if (destination.equals(DataSourceType.GLOBAL_CACHE))
                 // Local to Global Cache
-                pipelineImpl.globalCache().saveData(dataClass, objectUUID, dataToSave);
+                globalCache.save(dataClass, objectUUID, dataToSave);
             else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
                 // Local to Global Storage
-                pipelineImpl.globalStorage().saveData(dataClass, objectUUID, dataToSave);
+                globalStorage.save(dataClass, objectUUID, dataToSave);
         } else if (source.equals(DataSourceType.GLOBAL_CACHE)) {
-            if (!pipelineImpl.globalCache().dataExist(dataClass, objectUUID))
+            var globalCachedData = globalCache.get(dataClass, objectUUID);
+            // Error while loading from global cache
+            if (globalCachedData == null)
                 return false;
-            var globalCachedData = pipelineImpl.globalCache().loadData(dataClass, objectUUID);
-            // Error while loading from redis
-            if (globalCachedData == null) {
-                LOGGER.debug("Trying to load from storage...");
-                doSynchronisation(DataSourceType.GLOBAL_STORAGE, DataSourceType.LOCAL, dataClass, objectUUID, callback, instanceCreator);
-                return false;
-            }
-
             LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_CACHE + " -> " + destination + "]");
             if (destination.equals(DataSourceType.LOCAL)) {
-                if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineImpl.localCache().save(
-                        dataClass,
-                        pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
-                    );
-                }
-
-                var data = pipelineImpl.localCache().data(dataClass, objectUUID);
-                if (data == null)
+                var localData = toLocal(dataClass, objectUUID, globalCachedData, instanceCreator);
+                // Error while storing in local cache
+                if(localData == null)
                     return false;
-                data.deserialize(globalCachedData);
-                data.updateLastUse();
-                data.loadDependentData();
-                data.onLoad();
-                pipelineImpl.localCache().save(dataClass, data);
             } else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
-                pipelineImpl.globalStorage().saveData(dataClass, objectUUID, globalCachedData);
+                globalStorage.save(dataClass, objectUUID, globalCachedData);
 
         } else if (source.equals(DataSourceType.GLOBAL_STORAGE)) {
-            if (!pipelineImpl.globalStorage().dataExist(dataClass, objectUUID))
+            var globalSavedData = globalStorage.get(dataClass, objectUUID);
+            // Error while loading from global storage
+            if (globalSavedData == null)
                 return false;
-            var globalSavedData = pipelineImpl.globalStorage().loadData(dataClass, objectUUID);
-
             LOGGER.debug("Syncing " + dataClass.getSimpleName() + " with uuid " + objectUUID + " [" + DataSourceType.GLOBAL_STORAGE + " -> " + destination + "]");
             if (destination.equals(DataSourceType.LOCAL)) {
-                if (!pipelineImpl.localCache().dataExist(dataClass, objectUUID)) {
-                    pipelineImpl.localCache().save(
-                        dataClass,
-                        pipelineImpl.localCache().instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
-                    );
-                }
-
-                var data = pipelineImpl.localCache().data(dataClass, objectUUID);
-                if (data == null)
+                var localData = toLocal(dataClass, objectUUID, globalSavedData, instanceCreator);
+                // Error while storing in local cache
+                if(localData == null)
                     return false;
-                data.deserialize(globalSavedData);
-                data.updateLastUse();
-                data.loadDependentData();
-                data.onLoad();
-                pipelineImpl.localCache().save(dataClass, data);
             } else if (destination.equals(DataSourceType.GLOBAL_CACHE))
-                pipelineImpl.globalCache().saveData(dataClass, objectUUID, globalSavedData);
+                globalCache.save(dataClass, objectUUID, globalSavedData);
         }
 
         if (destination.equals(DataSourceType.LOCAL)) {
             var dataUpdater = pipelineImpl.dataUpdater();
-            var data = pipelineImpl.localCache().data(dataClass, objectUUID);
+            var data = localCache.get(dataClass, objectUUID);
             var optional = dataUpdater.applySync(data);
-            optional.ifPresent(pipelineData -> pipelineImpl.localCache().save(dataClass, pipelineData));
+            optional.ifPresent(pipelineData -> localCache.save(dataClass, pipelineData));
         }
 
         if (callback != null)
@@ -173,5 +154,29 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public  <T extends PipelineData> @Nullable T toLocal(
+        @NotNull Class<? extends T> dataClass,
+        @NotNull UUID objectUUID,
+        @NotNull JsonDocument document,
+        @Nullable InstanceCreator<T> instanceCreator
+    ) {
+        if (!localCache.exists(dataClass, objectUUID)) {
+            localCache.save(
+                dataClass,
+                localCache.instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
+            );
+        }
+
+        var data = localCache.get(dataClass, objectUUID);
+        if (data == null)
+            return null;
+        data.deserialize(document);
+        data.updateLastUse();
+        data.loadDependentData();
+        data.onLoad();
+        localCache.save(dataClass, data);
+        return data;
     }
 }

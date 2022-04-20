@@ -1,23 +1,34 @@
 package de.natrox.pipeline.part;
 
-import com.google.gson.JsonObject;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 public interface DataProvider {
 
-    @Nullable JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
+    @Nullable JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
-    boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
+    boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
-    void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject dataToSave);
+    void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument dataToSave);
 
-    boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
+    boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID);
 
-    @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass);
+    @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass);
+
+    @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass);
+
+    @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass);
+
+    @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate);
+
+    void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer);
 
 }

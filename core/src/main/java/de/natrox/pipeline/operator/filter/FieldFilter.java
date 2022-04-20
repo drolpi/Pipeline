@@ -1,20 +1,20 @@
 package de.natrox.pipeline.operator.filter;
 
-import com.google.gson.JsonObject;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 
 public record FieldFilter(@NotNull String fieldName, @NotNull Object obj) implements Filter {
 
     @Override
-    public boolean check(@NotNull JsonObject data) {
-        for (var entry : data.entrySet()) {
-            if (entry.getKey() == null)
+    public boolean check(@NotNull JsonDocument data) {
+        for (var key : data.keys()) {
+            if (key == null)
+                continue;
+            var value = data.get(key);
+            if (value == null)
                 continue;
 
-            if (entry.getValue() == null)
-                continue;
-
-            if (entry.getKey().equals(fieldName) && entry.getValue().equals(obj)) {
+            if (key.equals(fieldName) && value.equals(obj)) {
                 return true;
             }
         }

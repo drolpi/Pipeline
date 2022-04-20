@@ -1,16 +1,17 @@
 package de.natrox.pipeline.operator;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
 import de.natrox.common.runnable.CatchingRunnable;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.operator.filter.Filter;
+import de.natrox.pipeline.part.DataSynchronizerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,27 +23,25 @@ import java.util.function.Consumer;
 
 public final class PipelineStreamImpl<T extends PipelineData> implements PipelineStream<T> {
 
-    //TODO: Was ist wenn Pipeline#globalStorage null zurückgibt, weil die Pipeline ohne global storage erzeugt wurde?
-
     private final PipelineImpl pipeline;
+    private final DataSynchronizerImpl dataSynchronizer;
     private final ExecutorService executorService;
     private final Class<? extends T> dataClass;
-    private final Pipeline.LoadingStrategy loadingStrategy;
     private final Consumer<T> callback;
     private final InstanceCreator<T> instanceCreator;
     private final FindOptions findOptions;
 
     public PipelineStreamImpl(
         @NotNull PipelineImpl pipeline,
+        @NotNull DataSynchronizerImpl dataSynchronizer,
         @NotNull Class<? extends T> dataClass,
-        @NotNull Pipeline.LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
         this.pipeline = pipeline;
         this.executorService = pipeline.executorService();
+        this.dataSynchronizer = dataSynchronizer;
         this.dataClass = dataClass;
-        this.loadingStrategy = loadingStrategy;
         this.callback = callback;
         this.instanceCreator = instanceCreator;
         this.findOptions = new FindOptions();
@@ -50,11 +49,15 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
 
     @Override
     public @NotNull Optional<T> first() {
-        var data = pipeline.globalStorage().data(dataClass);
+        var data = pipeline.entries(dataClass);
         data = applyOptions(data);
 
-        for (UUID uuid : data.keySet()) {
-            return pipeline.load(dataClass, uuid, loadingStrategy, callback, instanceCreator);
+        for (var entry : data.entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
+            var startTime = System.currentTimeMillis();
+            var localData = dataSynchronizer.toLocal(dataClass, key, value, instanceCreator);
+            return Optional.ofNullable(localData);
         }
         return Optional.empty();
     }
@@ -68,9 +71,17 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
 
     @Override
     public @NotNull List<T> collect() {
-        var data = pipeline.globalStorage().data(dataClass);
+        var data = pipeline.entries(dataClass);
         data = applyOptions(data);
-        return pipeline.load(dataClass, data.keySet(), loadingStrategy, callback, instanceCreator);
+
+        List<T> values = new ArrayList<>();
+        for (var entry : data.entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
+            var localData = dataSynchronizer.toLocal(dataClass, key, value, instanceCreator);
+            values.add(localData);
+        }
+        return values;
     }
 
     @Override
@@ -106,8 +117,8 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
         return this;
     }
 
-    private Map<UUID, JsonObject> applyOptions(Map<UUID, JsonObject> data) {
-        var newData = new HashMap<UUID, JsonObject>();
+    private Map<UUID, JsonDocument> applyOptions(Map<UUID, JsonDocument> data) {
+        var newData = new HashMap<UUID, JsonDocument>();
 
         var filter = findOptions.filter();
         var skip = findOptions.skip();
@@ -123,7 +134,6 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
                 continue;
             if (i > limit && limit != -1)
                 break;
-
             if (filter != null && !filter.check(entry.getValue()))
                 continue;
 

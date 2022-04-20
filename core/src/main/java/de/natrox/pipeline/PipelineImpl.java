@@ -12,6 +12,7 @@ import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.connection.ConnectionData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.operator.PipelineStreamImpl;
 import de.natrox.pipeline.part.DataSynchronizer;
@@ -33,7 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -52,7 +56,7 @@ public final class PipelineImpl implements Pipeline {
     private final DataUpdater dataUpdater;
     private final LocalCache localCache;
     private final PipelineRegistry registry;
-    private final DataSynchronizerImpl pipelineDataSynchronizer;
+    private final DataSynchronizerImpl dataSynchronizer;
     private final PipelineTaskScheduler pipelineTaskScheduler;
     private final ExecutorService executorService;
     private final Scheduler scheduler;
@@ -102,7 +106,7 @@ public final class PipelineImpl implements Pipeline {
 
         this.scheduler = Scheduler.create();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();
-        this.pipelineDataSynchronizer = new DataSynchronizerImpl(this);
+        this.dataSynchronizer = new DataSynchronizerImpl(this);
         this.scheduler
             .buildTask(new CleanUpTask(this))
             .repeat(300, TimeUnit.SECONDS)
@@ -113,11 +117,10 @@ public final class PipelineImpl implements Pipeline {
     @Override
     public @NotNull <T extends PipelineData> PipelineStream<T> find(
         @NotNull Class<? extends T> dataClass,
-        @NotNull LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return new PipelineStreamImpl<>(this, dataClass, loadingStrategy, callback, instanceCreator);
+        return new PipelineStreamImpl<>(this, dataSynchronizer, dataClass, callback, instanceCreator);
     }
 
     @Override
@@ -136,8 +139,8 @@ public final class PipelineImpl implements Pipeline {
         PipelineTaskScheduler.PipelineTask<T> pipelineTask = pipelineTaskScheduler
             .schedule(PipelineTaskScheduler.PipelineAction.LOAD, loadingStrategy, dataClass, objectUUID);
 
-        if (localCache.dataExist(dataClass, objectUUID)) {
-            T data = localCache.data(dataClass, objectUUID);
+        if (localCache.exists(dataClass, objectUUID)) {
+            T data = localCache.get(dataClass, objectUUID);
             if (callback != null)
                 callback.accept(data);
             if (data != null)
@@ -212,9 +215,9 @@ public final class PipelineImpl implements Pipeline {
         else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL_ELSE_LOAD))
             executorService.submit(new CatchingRunnable(() -> synchronizeData(dataClass, objectUUIDs, instanceCreator)));
 
-        return localCache.savedUUIDs(dataClass)
+        return localCache.keys(dataClass)
             .stream()
-            .map(uuid -> localCache.data(dataClass, uuid))
+            .map(uuid -> localCache.get(dataClass, uuid))
             .collect(Collectors.toList());
     }
 
@@ -250,20 +253,20 @@ public final class PipelineImpl implements Pipeline {
         var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
 
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.LOCAL)) {
-            var localExist = localCache().dataExist(dataClass, objectUUID);
+            var localExist = localCache().exists(dataClass, objectUUID);
             if (localExist)
                 return true;
         }
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE)) {
             if (globalCache != null) {
-                var globalCacheExists = globalCache.dataExist(dataClass, objectUUID);
+                var globalCacheExists = globalCache.exists(dataClass, objectUUID);
                 if (globalCacheExists)
                     return true;
             }
         }
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE)) {
             if (globalStorage != null)
-                return globalStorage.dataExist(dataClass, objectUUID);
+                return globalStorage.exists(dataClass, objectUUID);
         }
         return false;
     }
@@ -301,7 +304,7 @@ public final class PipelineImpl implements Pipeline {
         LOGGER.debug("Deleting: " + dataClass.getSimpleName() + " uuid " + objectUUID + "" + Arrays.toString(strategies));
         if (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.LOCAL)) {
             LOGGER.debug("Deleting from Local Cache: " + dataClass.getSimpleName() + " uuid " + objectUUID);
-            T data = localCache().data(dataClass, objectUUID);
+            T data = localCache().get(dataClass, objectUUID);
 
             if (data != null) {
                 data.onDelete();
@@ -318,14 +321,14 @@ public final class PipelineImpl implements Pipeline {
         }
         if (globalCache != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_CACHE))) {
             LOGGER.debug("Deleting from Global Cache: " + dataClass.getSimpleName() + " uuid " + objectUUID + "");
-            if (!globalCache.removeData(dataClass, objectUUID))
+            if (!globalCache.remove(dataClass, objectUUID))
                 LOGGER.debug("[GlobalCache] Could not delete: " + dataClass.getSimpleName() + " uuid " + objectUUID);
             else
                 LOGGER.debug("[GlobalCache] Deleted: " + dataClass.getSimpleName() + " uuid " + objectUUID + "" + Arrays.toString(strategies));
         }
         if (globalStorage != null && (strategySet.contains(QueryStrategy.ALL) || strategySet.contains(QueryStrategy.GLOBAL_STORAGE))) {
             LOGGER.debug("Deleting from Global Storage: " + dataClass.getSimpleName() + " uuid " + objectUUID + "");
-            if (!globalStorage.removeData(dataClass, objectUUID))
+            if (!globalStorage.remove(dataClass, objectUUID))
                 LOGGER.debug("[GlobalStorage] Could not delete: " + dataClass.getSimpleName() + " uuid " + objectUUID);
             else
                 LOGGER.debug("[GlobalStorage] Deleted: " + dataClass.getSimpleName() + " uuid " + objectUUID + "" + Arrays.toString(strategies));
@@ -348,6 +351,46 @@ public final class PipelineImpl implements Pipeline {
         var completableFuture = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() -> completableFuture.complete(delete(dataClass, objectUUID, notifyOthers, strategies))));
         return completableFuture;
+    }
+
+    @Override
+    public @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
+        if (globalStorage != null) {
+            return globalStorage.keys(dataClass);
+        } else if (globalCache != null) {
+            return globalCache.keys(dataClass);
+        } else {
+            return localCache.keys(dataClass);
+        }
+    }
+
+    @Override
+    public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
+        if (globalStorage != null) {
+            return globalStorage.documents(dataClass);
+        } else if (globalCache != null) {
+            return globalCache.documents(dataClass);
+        } else {
+            return localCache.values(dataClass).stream().map(PipelineData::serialize).collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
+        if (globalStorage != null) {
+            return globalStorage.entries(dataClass);
+        } else if (globalCache != null) {
+            return globalCache.entries(dataClass);
+        } else {
+            Map<UUID, JsonDocument> entries = new HashMap<>();
+            for (var entry : localCache.entries(dataClass).entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue().serialize();
+
+                entries.put(key, value);
+            }
+            return entries;
+        }
     }
 
     @NotNull
@@ -401,9 +444,9 @@ public final class PipelineImpl implements Pipeline {
             var startTime = System.currentTimeMillis();
             LOGGER.debug("Preloading " + dataClass.getSimpleName());
             if (globalCache != null)
-                globalCache.savedUUIDs(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
+                globalCache.keys(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
             if (globalStorage != null)
-                globalStorage.savedUUIDs(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
+                globalStorage.keys(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
             LOGGER.debug("Done preloading " + dataClass.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms");
         });
     }
@@ -417,22 +460,22 @@ public final class PipelineImpl implements Pipeline {
         //Connection
         if (ConnectionData.class.isAssignableFrom(dataClass))
             return;
-        if (localCache.dataExist(dataClass, objectUUID))
+        if (localCache.exists(dataClass, objectUUID))
             return;
 
-        pipelineDataSynchronizer.doSynchronisation(
+        dataSynchronizer.doSynchronisation(
             DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, objectUUID, null, null
         );
 
-        if (localCache.dataExist(dataClass, objectUUID))
+        if (localCache.exists(dataClass, objectUUID))
             return;
 
-        pipelineDataSynchronizer.doSynchronisation(
+        dataSynchronizer.doSynchronisation(
             DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, objectUUID, null, null
         );
 
         if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL) && globalCache != null)
-            pipelineDataSynchronizer.doSynchronisation(
+            dataSynchronizer.doSynchronisation(
                 DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, objectUUID, null, null
             );
     }
@@ -448,7 +491,7 @@ public final class PipelineImpl implements Pipeline {
         optional.ifPresent(unload -> {
             var startTime = System.currentTimeMillis();
             LOGGER.debug("Saving " + dataClass.getSimpleName());
-            localCache.savedUUIDs(dataClass).forEach(uuid -> cleanUpData(dataClass, uuid, null));
+            localCache.keys(dataClass).forEach(uuid -> cleanUpData(dataClass, uuid, null));
             LOGGER.debug("Done saving " + dataClass.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms");
         });
     }
@@ -462,7 +505,7 @@ public final class PipelineImpl implements Pipeline {
         var optional = AnnotationResolver.autoSave(dataClass);
 
         optional.ifPresent(autoSave -> {
-            var pipelineData = localCache().data(dataClass, objectUUID);
+            var pipelineData = localCache().get(dataClass, objectUUID);
             LOGGER.debug("Saving " + objectUUID + " [" + dataClass + "]");
             if (pipelineData == null)
                 return;
@@ -484,7 +527,7 @@ public final class PipelineImpl implements Pipeline {
     @NotNull
     @Override
     public DataSynchronizer dataSynchronizer() {
-        return pipelineDataSynchronizer;
+        return dataSynchronizer;
     }
 
     private <T extends PipelineData> T loadFromPipeline(
@@ -499,25 +542,25 @@ public final class PipelineImpl implements Pipeline {
 
         var startTime = System.currentTimeMillis();
         // ExistCheck LocalCache
-        if (localCache.dataExist(dataClass, objectUUID))
+        if (localCache.exists(dataClass, objectUUID))
             LOGGER.debug("Found Data in Local Cache [" + dataClass.getSimpleName() + "]");
             // ExistCheck GlobalCache
         else {
-            boolean globalCacheExists = pipelineDataSynchronizer.doSynchronisation(
+            boolean globalCacheExists = dataSynchronizer.doSynchronisation(
                 DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, objectUUID, null, instanceCreator
             );
 
             if (globalCacheExists)
                 LOGGER.debug("Found Data in Redis Cache [" + dataClass.getSimpleName() + "]");
             else {
-                boolean globalStorageExists = pipelineDataSynchronizer.doSynchronisation(
+                boolean globalStorageExists = dataSynchronizer.doSynchronisation(
                     DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, objectUUID, null, instanceCreator
                 );
 
                 if (globalStorageExists) {
                     LOGGER.debug("Found Data in Database [" + dataClass.getSimpleName() + "]");
                     if (AnnotationResolver.context(dataClass).equals(Context.GLOBAL))
-                        pipelineDataSynchronizer.synchronize(
+                        dataSynchronizer.synchronize(
                             DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, objectUUID, null, instanceCreator
                         );
                 } else {
@@ -531,7 +574,7 @@ public final class PipelineImpl implements Pipeline {
             }
         }
         LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms");
-        T data = localCache.data(dataClass, objectUUID);
+        T data = localCache.get(dataClass, objectUUID);
         if (data != null)
             data.updateLastUse();
         else
@@ -550,7 +593,7 @@ public final class PipelineImpl implements Pipeline {
         registry.checkRegistered(dataClass);
 
         LOGGER.debug("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]");
-        T pipelineData = localCache.data(dataClass, objectUUID);
+        T pipelineData = localCache.get(dataClass, objectUUID);
 
         if (pipelineData == null) {
             pipelineData = localCache.instantiateData(this, dataClass, objectUUID, instanceCreator);
@@ -559,10 +602,10 @@ public final class PipelineImpl implements Pipeline {
         pipelineData.loadDependentData();
 
         localCache.save(dataClass, pipelineData);
-        pipelineDataSynchronizer.synchronize(
+        dataSynchronizer.synchronize(
             DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, objectUUID, null, instanceCreator
         );
-        pipelineDataSynchronizer.synchronize(
+        dataSynchronizer.synchronize(
             DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_STORAGE, dataClass, objectUUID, null, instanceCreator
         );
         return pipelineData;
@@ -575,8 +618,8 @@ public final class PipelineImpl implements Pipeline {
 
         if (globalCache() != null) {
             objectUUIDs.forEach(uuid -> {
-                if (!localCache.dataExist(dataClass, uuid))
-                    pipelineDataSynchronizer.doSynchronisation(
+                if (!localCache.exists(dataClass, uuid))
+                    dataSynchronizer.doSynchronisation(
                         DataSynchronizer.DataSourceType.GLOBAL_CACHE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
                     );
             });
@@ -584,13 +627,13 @@ public final class PipelineImpl implements Pipeline {
         if (globalStorage() != null) {
             var context = AnnotationResolver.context(dataClass);
             objectUUIDs.forEach(uuid -> {
-                if (!localCache.dataExist(dataClass, uuid)) {
-                    pipelineDataSynchronizer.doSynchronisation(
+                if (!localCache.exists(dataClass, uuid)) {
+                    dataSynchronizer.doSynchronisation(
                         DataSynchronizer.DataSourceType.GLOBAL_STORAGE, DataSynchronizer.DataSourceType.LOCAL, dataClass, uuid, null, instanceCreator
                     );
 
                     if (context.equals(Context.GLOBAL) && globalCache != null)
-                        pipelineDataSynchronizer.synchronize(
+                        dataSynchronizer.synchronize(
                             DataSynchronizer.DataSourceType.LOCAL, DataSynchronizer.DataSourceType.GLOBAL_CACHE, dataClass, uuid, null, instanceCreator
                         );
                 }
@@ -612,7 +655,7 @@ public final class PipelineImpl implements Pipeline {
     public void shutdown() {
         try {
             scheduler.shutdown();
-            pipelineDataSynchronizer.shutdown();
+            dataSynchronizer.shutdown();
             executorService.shutdown();
             pipelineTaskScheduler.shutdown();
             executorService.awaitTermination(5, TimeUnit.SECONDS);

@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
-import com.google.gson.JsonObject;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -110,20 +110,16 @@ public abstract class PipelineData implements DataType {
     }
 
     @Override
-    public @NotNull JsonObject serialize() {
+    public @NotNull JsonDocument serialize() {
         unMarkRemoval();
-        return gson.toJsonTree(this).getAsJsonObject();
-    }
-
-    public @NotNull String serializeToString() {
-        return gson.toJson(serialize());
+        return JsonDocument.newDocument(this);
     }
 
     @Override
-    public @NotNull PipelineData deserialize(@NotNull JsonObject data) {
+    public @NotNull PipelineData deserialize(@NotNull JsonDocument data) {
         Preconditions.checkNotNull(data, "jsonObject");
         unMarkRemoval();
-        return gson.fromJson(data, getClass());
+        return data.toInstanceOf(getClass(), gson);
     }
 
     @Override

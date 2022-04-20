@@ -6,6 +6,7 @@ import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.operator.filter.Filters;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import org.jetbrains.annotations.NotNull;
@@ -48,27 +49,35 @@ public class BenchmarkTest {
         var pipeline = Pipeline
             .builder()
             .registry(registry)
-            .dataUpdater(redisProvider)
-            .globalCache(redisProvider)
-            .globalStorage(mongoProvider)
             .build();
 
         pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE);
 
         var startInstant = Instant.now();
 
-        pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
+        var optionalPlayer = pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE);
+        optionalPlayer.ifPresent(player -> {
+            System.out.println(player.objectUUID());
+        });
+
+        for (int i = 0; i < 1000; i++) {
+            pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
+        }
 
         var middleInstant = Instant.now();
         System.out.println(Duration.between(startInstant, middleInstant).toMillis());
+        /*
+        for (Player player : pipeline.find(Player.class).collect()) {
 
-        for (Player player1 : pipeline.find(Player.class, Pipeline.LoadingStrategy.LOAD_PIPELINE).collect()) {
-            System.out.println(player1);
+        }
+         */
+
+        for (Player player : pipeline.find(Player.class).collect()) {
+
         }
 
         System.out.println(Duration.between(middleInstant, Instant.now()).toMillis());
     }
-
 
     @Properties(identifier = "PlayerBench", context = Context.GLOBAL)
     static class Player extends PipelineData {

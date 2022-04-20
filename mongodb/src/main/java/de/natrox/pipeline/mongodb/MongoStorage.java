@@ -2,24 +2,36 @@ package de.natrox.pipeline.mongodb;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 final class MongoStorage implements GlobalStorage {
+
+    protected static final String KEY_NAME = "Key";
+    protected static final String VALUE_NAME = "Value";
+    protected static final IndexOptions UNIQUE_KEY_OPTIONS = new IndexOptions().unique(true);
+    protected static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoStorage.class);
 
@@ -34,80 +46,116 @@ final class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public synchronized JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public synchronized JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
-        var filter = new Document("objectUUID", objectUUID.toString());
-        var mongoDBData = mongoStorage(dataClass).find(filter).first();
+        var collection = mongoStorage(dataClass);
+        var document = collection
+            .find(Filters.eq(KEY_NAME, objectUUID))
+            .first();
 
-        if (mongoDBData == null)
-            mongoDBData = filter;
-
-        mongoDBData.remove("_id");
-
-        return gson.toJsonTree(mongoDBData).getAsJsonObject();
+        return document == null ? null : JsonDocument.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
     }
 
     @Override
-    public synchronized boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public synchronized boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
-        return mongoStorage(dataClass).find(new Document("objectUUID", objectUUID.toString())).first() != null;
+        var collection = mongoStorage(dataClass);
+        var document = collection
+            .find(Filters.eq(KEY_NAME, objectUUID))
+            .first();
+
+        return document != null;
     }
 
     @Override
-    public synchronized void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+    public synchronized void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         Preconditions.checkNotNull(data, "data");
 
-        var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
-
-        if (collection.find(filter).first() == null) {
-            var newData = Document.parse(gson.toJson(data));
-            collection.insertOne(newData);
-        } else {
-            var newData = Document.parse(gson.toJson(data));
-            var updateFunc = new Document("$set", newData);
-            collection.updateOne(filter, updateFunc);
-        }
+        collection.updateOne(
+            Filters.eq(KEY_NAME, objectUUID),
+            Updates.combine(
+                Updates.setOnInsert(new Document(KEY_NAME, objectUUID)),
+                Updates.set(VALUE_NAME, Document.parse(data.toString()))
+            ),
+            INSERT_OR_REPLACE_OPTIONS);
     }
 
     @Override
-    public synchronized boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public synchronized boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
-        var filter = new Document("objectUUID", objectUUID.toString());
         var collection = mongoStorage(dataClass);
-
-        return collection.deleteOne(filter).getDeletedCount() >= 1;
+        return collection.deleteOne(Filters.eq(KEY_NAME, objectUUID)).getDeletedCount() > 0;
     }
 
     @Override
-    public synchronized @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public synchronized @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        return data(dataClass).keySet();
+
+        var collection = mongoStorage(dataClass);
+        Collection<UUID> keys = new ArrayList<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                keys.add(cursor.next().get(KEY_NAME, UUID.class));
+            }
+        }
+        return keys;
     }
 
     @Override
-    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        var collection = mongoStorage(dataClass);
-        var data = new HashMap<UUID, JsonObject>();
 
+        var collection = mongoStorage(dataClass);
+        Collection<JsonDocument> documents = new ArrayList<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                documents.add(JsonDocument.fromJsonString(cursor.next().get(VALUE_NAME, Document.class).toJson()));
+            }
+        }
+        return documents;
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        return this.filter(dataClass, (key, value) -> true);
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(predicate, "predicate");
+
+        var collection = mongoStorage(dataClass);
+        Map<UUID, JsonDocument> entries = new HashMap<>();
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 var document = cursor.next();
-                if (!document.containsKey("objectUUID"))
-                    continue;
-                data.put(UUID.fromString((String) document.get("objectUUID")), gson.toJsonTree(document).getAsJsonObject());
+                var key = document.get(KEY_NAME, UUID.class);
+                var value = JsonDocument.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
+
+                if (predicate.test(key, value)) {
+                    entries.put(key, value);
+                }
             }
         }
-        return data;
+        return entries;
+    }
+
+    @Override
+    public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(consumer, "consumer");
+        this.entries(dataClass).forEach(consumer);
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {

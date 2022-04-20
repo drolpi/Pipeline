@@ -6,6 +6,7 @@ import de.natrox.common.Shutdownable;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.GlobalCache;
@@ -19,7 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +36,6 @@ public interface Pipeline extends Loadable, Shutdownable {
 
     <T extends PipelineData> @NotNull PipelineStream<T> find(
         @NotNull Class<? extends T> type,
-        @NotNull LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     );
@@ -41,27 +43,24 @@ public interface Pipeline extends Loadable, Shutdownable {
     // Without callback
     default <T extends PipelineData> @NotNull PipelineStream<T> find(
         @NotNull Class<? extends T> type,
-        @NotNull LoadingStrategy loadingStrategy,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        return find(type, loadingStrategy, null, instanceCreator);
+        return find(type, null, instanceCreator);
     }
 
     // Without instance creator
     default <T extends PipelineData> @NotNull PipelineStream<T> find(
         @NotNull Class<? extends T> type,
-        @NotNull LoadingStrategy loadingStrategy,
         @Nullable Consumer<T> callback
     ) {
-        return find(type, loadingStrategy, callback, null);
+        return find(type, callback, null);
     }
 
     // Without callback & instance creator
     default <T extends PipelineData> @NotNull PipelineStream<T> find(
-        @NotNull Class<? extends T> type,
-        @NotNull LoadingStrategy loadingStrategy
+        @NotNull Class<? extends T> type
     ) {
-        return find(type, loadingStrategy, null, null);
+        return find(type, null, null);
     }
 
     //Load by provided uuid
@@ -313,6 +312,12 @@ public interface Pipeline extends Loadable, Shutdownable {
     ) {
         return deleteAsync(type, uuid, true, QueryStrategy.ALL);
     }
+
+    @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass);
+
+    @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass);
+
+    @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass);
 
     @NotNull LocalCache localCache();
 

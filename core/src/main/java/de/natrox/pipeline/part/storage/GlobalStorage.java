@@ -10,6 +10,4 @@ import java.util.UUID;
 
 public interface GlobalStorage extends DataProvider {
 
-    @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> type);
-
 }

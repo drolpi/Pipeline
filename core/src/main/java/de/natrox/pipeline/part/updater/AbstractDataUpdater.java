@@ -1,27 +1,32 @@
 package de.natrox.pipeline.part.updater;
 
-import com.google.gson.JsonObject;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractDataUpdater implements DataUpdater {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractDataUpdater.class);
 
-    protected final Map<UUID, JsonObject> syncs;
+    protected final Cache<UUID, JsonDocument> syncs;
 
     public AbstractDataUpdater() {
-        this.syncs = new ConcurrentHashMap<>();
+        this.syncs = CacheBuilder
+            .newBuilder()
+            .expireAfterWrite(Duration.of(30, ChronoUnit.SECONDS))
+            .build();
     }
 
-    public void receivedSync(@NotNull UUID objectUUID, JsonObject data) {
+    public void receivedSync(@NotNull UUID objectUUID, JsonDocument data) {
         syncs.put(objectUUID, data);
         LOGGER.debug("Received Sync while loading " + System.currentTimeMillis());
     }
@@ -29,13 +34,14 @@ public abstract class AbstractDataUpdater implements DataUpdater {
     @NotNull
     public Optional<PipelineData> applySync(@NotNull PipelineData pipelineData) {
         var objectUUID = pipelineData.objectUUID();
+        var map = syncs.asMap();
 
-        if (!syncs.containsKey(objectUUID))
+        if (!map.containsKey(objectUUID))
             return Optional.empty();
 
-        var data = syncs.get(objectUUID);
-        syncs.remove(objectUUID);
-        return Optional.ofNullable(pipelineData.deserialize(data));
+        var data = map.get(objectUUID);
+        map.remove(objectUUID);
+        return Optional.of(pipelineData.deserialize(data));
     }
 
 }

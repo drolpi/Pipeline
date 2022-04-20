@@ -60,7 +60,7 @@ public final class ConnectionDataLoader {
                         var optional = AnnotationResolver.autoSave(aClass);
 
                         optional.ifPresent(unload -> {
-                            var data = (ConnectionData) pipeline.localCache().data(aClass, uuid);
+                            var data = (ConnectionData) pipeline.localCache().get(aClass, uuid);
                             if (data == null)
                                 return;
 

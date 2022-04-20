@@ -2,29 +2,31 @@ package de.natrox.pipeline.json;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 final class JsonStorage implements GlobalStorage {
 
@@ -41,7 +43,7 @@ final class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public JsonObject loadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
@@ -54,7 +56,7 @@ final class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public boolean dataExist(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
@@ -62,7 +64,7 @@ final class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public void saveData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) {
+    public void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         Preconditions.checkNotNull(data, "data");
@@ -75,11 +77,11 @@ final class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public boolean removeData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
+    public boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
-        if (!dataExist(dataClass, objectUUID))
+        if (!exists(dataClass, objectUUID))
             return false;
         try {
             Files.deleteIfExists(savedFile(dataClass, objectUUID));
@@ -91,47 +93,104 @@ final class JsonStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull Collection<UUID> savedUUIDs(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
-        return data(dataClass).keySet();
+
+        var parentFolder = parent(dataClass);
+        if (parentFolder.toFile().exists()) {
+            try {
+                return Files.walk(parentFolder, 1)
+                    .skip(1)
+                    .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
+                    .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
+                    .map(UUID::fromString)
+                    .collect(Collectors.toList());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return List.of();
     }
 
     @Override
-    public @NotNull Map<UUID, JsonObject> data(@NotNull Class<? extends PipelineData> dataClass) {
+    public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
         Preconditions.checkNotNull(dataClass, "dataClass");
+
         var parentFolder = parent(dataClass);
-        if (!parentFolder.toFile().exists())
-            return Map.of();
-        try {
-            var data = new HashMap<UUID, JsonObject>();
+        if (parentFolder.toFile().exists()) {
+            try {
+                var keys = Files.walk(parentFolder, 1)
+                    .skip(1)
+                    .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
+                    .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
+                    .map(UUID::fromString)
+                    .collect(Collectors.toList());
 
-            Files.walk(parentFolder, 1)
-                .skip(1)
-                .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
-                .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
-                .map(UUID::fromString)
-                .forEach(uuid -> {
-                    var jsonObject = loadData(dataClass, uuid);
-                    if (jsonObject == null)
-                        return;
-
-                    data.put(uuid, jsonObject);
-                });
-
-            return data;
-        } catch (IOException e) {
-            e.printStackTrace();
+                Collection<JsonDocument> documents = new ArrayList<>();
+                for (UUID uuid : keys) {
+                    var value = loadFromFile(dataClass, uuid);
+                    documents.add(value);
+                }
+                return documents;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        return List.of();
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        return this.filter(dataClass, (key, value) -> true);
+    }
+
+    @Override
+    public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(predicate, "predicate");
+
+        var parentFolder = parent(dataClass);
+        if (parentFolder.toFile().exists()) {
+            try {
+                var keys = Files.walk(parentFolder, 1)
+                    .skip(1)
+                    .filter(path1 -> FileNameUtil.getExtension(path1.getFileName().toString()).equals(".json"))
+                    .map(path1 -> FileNameUtil.getBaseName(path1.toString()))
+                    .map(UUID::fromString)
+                    .collect(Collectors.toList());
+
+                Map<UUID, JsonDocument> entries = new HashMap<>();
+                for (UUID key : keys) {
+                    var value = loadFromFile(dataClass, key);
+
+                    if (predicate.test(key, value)) {
+                        entries.put(key, value);
+                    }
+                }
+                return entries;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return Map.of();
     }
 
-    private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonObject data) throws IOException {
+    @Override
+    public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
+        Preconditions.checkNotNull(dataClass, "dataClass");
+        Preconditions.checkNotNull(consumer, "consumer");
+        this.entries(dataClass).forEach(consumer);
+    }
+
+    private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) throws IOException {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         Preconditions.checkNotNull(data, "data");
 
-        if (data.isJsonNull())
-            return;
         var path = savedFile(dataClass, objectUUID);
 
         var file = new File(path.toUri());
@@ -139,12 +198,11 @@ final class JsonStorage implements GlobalStorage {
             if (!file.getParentFile().mkdirs() || !file.createNewFile())
                 throw new RuntimeException("Could not create files for JsonFileStorage [" + path + "]");
         }
-        try (var writer = new FileWriter(file)) {
-            gson.toJson(data, writer);
-        }
+        var writer = new FileWriter(file);
+        data.write(writer);
     }
 
-    private JsonObject loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
+    private JsonDocument loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
         Preconditions.checkNotNull(dataClass, "dataClass");
         Preconditions.checkNotNull(objectUUID, "objectUUID");
 
@@ -152,9 +210,7 @@ final class JsonStorage implements GlobalStorage {
         var file = new File(path.toUri());
         if (!file.exists())
             throw new RuntimeException("SavedFile does not exist for " + dataClass.getSimpleName() + ":" + objectUUID);
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path.toFile()))) {
-            return JsonParser.parseReader(bufferedReader).getAsJsonObject();
-        }
+        return JsonDocument.newDocument(path);
     }
 
     private Path savedFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {

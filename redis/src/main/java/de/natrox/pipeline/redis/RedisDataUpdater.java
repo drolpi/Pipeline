@@ -1,10 +1,10 @@
 package de.natrox.pipeline.redis;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonParser;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.json.gson.JsonDocument;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -41,10 +41,10 @@ final class RedisDataUpdater extends AbstractDataUpdater {
             if (!pipeline.registry().isRegistered(dataBlock.identifier))
                 return;
             var dataClass = pipeline.registry().dataClass(dataBlock.identifier);
-            var pipelineData = localCache.data(dataClass, dataBlock.dataUUID);
+            var pipelineData = localCache.get(dataClass, dataBlock.dataUUID);
 
             if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
-                var dataToUpdate = JsonParser.parseString(updateDataBlock.dataToUpdate).getAsJsonObject();
+                var dataToUpdate = JsonDocument.fromJsonString(updateDataBlock.dataToUpdate);
                 if (pipelineData == null) {
                     this.receivedSync(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
@@ -72,7 +72,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
             return;
         }
         pipelineData.unMarkRemoval();
-        dataTopic.publish(new UpdateDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID(), pipelineData.serializeToString()));
+        dataTopic.publish(new UpdateDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID(), pipelineData.serialize().toString()));
         LOGGER.debug("Pushing Sync " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
         if (callback != null)
             callback.run();
