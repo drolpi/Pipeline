@@ -49,30 +49,26 @@ public class BenchmarkTest {
         var pipeline = Pipeline
             .builder()
             .registry(registry)
+            .dataUpdater(redisProvider)
+            .globalCache(redisProvider)
+            .globalStorage(mongoProvider)
             .build();
 
         pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE);
 
         var startInstant = Instant.now();
 
-        var optionalPlayer = pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE);
+        var optionalPlayer = pipeline.load(Player.class, ID, Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
         optionalPlayer.ifPresent(player -> {
             System.out.println(player.objectUUID());
+            player.setName("Herbet");
+            player.save();
         });
-
-        for (int i = 0; i < 1000; i++) {
-            pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE, true);
-        }
 
         var middleInstant = Instant.now();
         System.out.println(Duration.between(startInstant, middleInstant).toMillis());
-        /*
-        for (Player player : pipeline.find(Player.class).collect()) {
 
-        }
-         */
-
-        for (Player player : pipeline.find(Player.class).collect()) {
+        for (Player player : pipeline.find(Player.class).filter(Filters.field("name", "Herbet")).collect()) {
 
         }
 
@@ -82,8 +78,15 @@ public class BenchmarkTest {
     @Properties(identifier = "PlayerBench", context = Context.GLOBAL)
     static class Player extends PipelineData {
 
+        private String name;
+
         public Player(@NotNull Pipeline pipeline) {
             super(pipeline);
+        }
+
+        public Player setName(String name) {
+            this.name = name;
+            return this;
         }
     }
 

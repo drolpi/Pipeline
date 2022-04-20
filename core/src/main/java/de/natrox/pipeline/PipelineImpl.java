@@ -154,7 +154,7 @@ public final class PipelineImpl implements Pipeline {
                 pipelineTask.completableFuture().complete(data);
                 if (callback != null)
                     callback.accept(data);
-                return Optional.ofNullable(data);
+                return Optional.of(data);
             }
             pipelineTask.completableFuture().complete(null);
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_LOCAL_ELSE_LOAD)) {
@@ -165,7 +165,7 @@ public final class PipelineImpl implements Pipeline {
                 if (callback != null)
                     callback.accept(data);
             }));
-            return null;
+            return Optional.empty();
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE)) {
             T data = loadFromPipeline(dataClass, objectUUID, instanceCreator, createIfNotExists);
             pipelineTask.completableFuture().complete(data);
