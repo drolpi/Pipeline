@@ -7,6 +7,7 @@ import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.gson.GsonProvider;
 import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.mongodb.MongoProvider;
 import de.natrox.pipeline.operator.filter.Filters;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
@@ -42,7 +43,7 @@ public class BenchmarkTest {
             .port(27017)
             .database("test")
             .build();
-        var mongoProvider = mongoConfig.createProvider();
+        MongoProvider mongoProvider = mongoConfig.createProvider();
 
         var registry = new PipelineRegistry();
         registry.register(Player.class);

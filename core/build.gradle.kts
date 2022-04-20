@@ -8,7 +8,7 @@ dependencies {
 
     testImplementation(project(":redis"))
     testImplementation(project(":mongodb"))
-    testImplementation(project(":json"))
+    testImplementation(project(":jsonfile"))
     testImplementation(project(":h2"))
     testImplementation(project(":mysql"))
     testImplementation(project(":sqlite"))

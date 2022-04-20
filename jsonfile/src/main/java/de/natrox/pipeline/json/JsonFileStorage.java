@@ -27,14 +27,14 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
-final class JsonStorage implements GlobalStorage {
+final class JsonFileStorage implements GlobalStorage {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(JsonStorage.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(JsonFileStorage.class);
 
     private final JsonDocument.Factory documentFactory;
     private final Path directory;
 
-    protected JsonStorage(Pipeline pipeline, Path path) {
+    protected JsonFileStorage(Pipeline pipeline, Path path) {
         this.documentFactory = pipeline.documentFactory();
         this.directory = path;
 

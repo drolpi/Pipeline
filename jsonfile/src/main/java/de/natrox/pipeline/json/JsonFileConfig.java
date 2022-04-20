@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class JsonConfig implements PartConfig<JsonProvider> {
+public final class JsonFileConfig implements PartConfig<JsonFileProvider> {
 
     private final String path;
 
-    private JsonConfig(@NotNull Path path) {
+    private JsonFileConfig(@NotNull Path path) {
         Preconditions.checkNotNull(path, "path");
         this.path = path.toAbsolutePath().toString();
     }
@@ -25,11 +25,11 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
     }
 
     @Override
-    public @NotNull JsonProvider createProvider() throws Exception {
-        return new JsonProvider(this);
+    public @NotNull JsonFileProvider createProvider() throws Exception {
+        return new JsonFileProvider(this);
     }
 
-    public static class Builder implements IBuilder<JsonConfig> {
+    public static class Builder implements IBuilder<JsonFileConfig> {
 
         private Path path;
 
@@ -44,8 +44,8 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
         }
 
         @Override
-        public @NotNull JsonConfig build() {
-            return new JsonConfig(path);
+        public @NotNull JsonFileConfig build() {
+            return new JsonFileConfig(path);
         }
     }
 

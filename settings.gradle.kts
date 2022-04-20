@@ -2,12 +2,12 @@ rootProject.name = "Pipeline"
 
 include(
     ":core",
-    ":json",
+    ":jsonfile",
     ":mongodb",
     ":redis",
     ":sql",
     ":mysql",
     ":h2",
-    ":sqlite"
+    ":sqlite",
+    ":gson"
 )
-include("gson")

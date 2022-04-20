@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public final class JsonProvider implements GlobalStorageProvider {
+public final class JsonFileProvider implements GlobalStorageProvider {
 
     private final Path path;
 
-    protected JsonProvider(@NotNull JsonConfig config) throws Exception {
+    protected JsonFileProvider(@NotNull JsonFileConfig config) throws Exception {
         Preconditions.checkNotNull(config, "config");
         this.path = Path.of(config.path());
         var parent = path.getParent();
@@ -31,7 +31,7 @@ public final class JsonProvider implements GlobalStorageProvider {
 
     @Override
     public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
-        return new JsonStorage(pipeline, path);
+        return new JsonFileStorage(pipeline, path);
     }
 
 }
