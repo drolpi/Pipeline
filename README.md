@@ -20,7 +20,11 @@ Gradle:
 Maven:
 
 # Parts
-Description
+The pipeline is divided into different parts
+- [GlobalStorage](#globalstorage) also known as a database, which stores its data in persistent storage
+- [GlobalCache](#globalcache) also known as a database, which holds its data in temporary memory
+- [DataUpdater](#dataupdater) is a updater, which updates the data in the local tempory memory
+- LocalCache also know as a cache, which holds its data in the local temporary memory
 
 ## Config
 Description
