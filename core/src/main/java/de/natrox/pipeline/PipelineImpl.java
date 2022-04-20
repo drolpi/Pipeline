@@ -67,12 +67,15 @@ public final class PipelineImpl implements Pipeline {
         @Nullable DataUpdaterProvider dataUpdaterProvider,
         @Nullable GlobalCacheProvider globalCacheProvider,
         @Nullable GlobalStorageProvider globalStorageProvider,
-        @NotNull PipelineRegistry registry,
-        @NotNull JsonProvider jsonProvider
+        @Nullable JsonProvider jsonProvider,
+        @Nullable PipelineRegistry registry
     ) {
+        Preconditions.checkNotNull(jsonProvider, "jsonProvider");
+        Preconditions.checkNotNull(registry, "registry");
+
+        this.jsonProvider = jsonProvider;
         this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(4);
-        this.jsonProvider = jsonProvider;
         this.localCache = new DefaultLocalCache();
 
         LOGGER.debug("Pipeline information:");
@@ -104,6 +107,8 @@ public final class PipelineImpl implements Pipeline {
             this.globalStorage = null;
             LOGGER.debug("No global storage found");
         }
+
+        LOGGER.debug("JsonProvider: " + jsonProvider.getClass().getName());
 
         this.scheduler = Scheduler.create();
         this.pipelineTaskScheduler = new PipelineTaskSchedulerImpl();

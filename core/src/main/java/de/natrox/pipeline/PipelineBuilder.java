@@ -59,8 +59,8 @@ final class PipelineBuilder implements Pipeline.Builder {
             dataUpdaterConnection,
             globalCacheConnection,
             globalStorageConnection,
-            pipelineRegistry,
-            jsonProvider
+            jsonProvider,
+            pipelineRegistry
         );
     }
 }
