@@ -22,7 +22,7 @@ import de.natrox.pipeline.mysql.MySqlProvider;
 
 public class MySqlTest {
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         MySqlConfig mySqlConfig = MySqlConfig
             .builder()
             .endpoints(
