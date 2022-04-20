@@ -2,6 +2,7 @@ package de.natrox.pipeline;
 
 import com.google.common.base.Preconditions;
 import de.natrox.pipeline.config.PipelineRegistry;
+import de.natrox.pipeline.json.JsonProvider;
 import de.natrox.pipeline.part.cache.GlobalCacheProvider;
 import de.natrox.pipeline.part.storage.GlobalStorageProvider;
 import de.natrox.pipeline.part.updater.DataUpdaterProvider;
@@ -14,6 +15,7 @@ final class PipelineBuilder implements Pipeline.Builder {
     private DataUpdaterProvider dataUpdaterConnection;
     private GlobalCacheProvider globalCacheConnection;
     private GlobalStorageProvider globalStorageConnection;
+    private JsonProvider jsonProvider;
 
     protected PipelineBuilder() {
 
@@ -23,6 +25,13 @@ final class PipelineBuilder implements Pipeline.Builder {
     public Pipeline.@NotNull Builder registry(@NotNull PipelineRegistry registry) {
         Preconditions.checkNotNull(registry, "registry");
         this.pipelineRegistry = registry;
+        return this;
+    }
+
+    @Override
+    public Pipeline.@NotNull Builder jsonProvider(@NotNull JsonProvider jsonProvider) {
+        Preconditions.checkNotNull(jsonProvider, "jsonProvider");
+        this.jsonProvider = jsonProvider;
         return this;
     }
 
@@ -46,6 +55,12 @@ final class PipelineBuilder implements Pipeline.Builder {
 
     @Override
     public @NotNull Pipeline build() {
-        return new PipelineImpl(dataUpdaterConnection, globalCacheConnection, globalStorageConnection, pipelineRegistry);
+        return new PipelineImpl(
+            dataUpdaterConnection,
+            globalCacheConnection,
+            globalStorageConnection,
+            pipelineRegistry,
+            jsonProvider
+        );
     }
 }

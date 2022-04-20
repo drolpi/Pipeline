@@ -1,7 +1,7 @@
 package de.natrox.pipeline.part;
 
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

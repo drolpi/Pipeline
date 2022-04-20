@@ -5,6 +5,7 @@ import de.natrox.pipeline.annotation.Properties;
 import de.natrox.pipeline.annotation.property.Context;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.gson.GsonProvider;
 import de.natrox.pipeline.mongodb.MongoConfig;
 import de.natrox.pipeline.operator.filter.Filters;
 import de.natrox.pipeline.redis.RedisConfig;
@@ -52,6 +53,7 @@ public class BenchmarkTest {
             .dataUpdater(redisProvider)
             .globalCache(redisProvider)
             .globalStorage(mongoProvider)
+            .jsonProvider(new GsonProvider())
             .build();
 
         pipeline.load(Player.class, UUID.randomUUID(), Pipeline.LoadingStrategy.LOAD_PIPELINE);

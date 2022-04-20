@@ -1,11 +1,10 @@
 package de.natrox.pipeline.redis;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBucket;
@@ -30,11 +29,11 @@ final class RedisCache implements GlobalCache {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RedisCache.class);
 
-    private final Gson gson;
+    private final JsonDocument.Factory documentFactory;
     private final RedissonClient redissonClient;
 
     protected RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
-        this.gson = pipeline.gson();
+        this.documentFactory = pipeline.documentFactory();
         this.redissonClient = redissonClient;
 
         LOGGER.debug("Redis cache initialized");
@@ -48,7 +47,7 @@ final class RedisCache implements GlobalCache {
         var bucket = objectCache(dataClass, objectUUID);
 
         try {
-            return JsonDocument.fromJsonString(bucket.get());
+            return documentFactory.fromJsonString(bucket.get());
         } catch (Exception e) {
             LOGGER.error("Error while loading " + dataClass + " with uuid " + objectUUID + " -> removing ...");
             remove(dataClass, objectUUID);
@@ -112,7 +111,7 @@ final class RedisCache implements GlobalCache {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(JsonDocument.fromJsonString(stringValue));
+            documents.add(documentFactory.fromJsonString(stringValue));
         }
         return documents;
     }
@@ -140,7 +139,7 @@ final class RedisCache implements GlobalCache {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            var value = JsonDocument.fromJsonString(stringValue);
+            var value = documentFactory.fromJsonString(stringValue);
 
             if (predicate.test(key, value)) {
                 entries.put(key, value);

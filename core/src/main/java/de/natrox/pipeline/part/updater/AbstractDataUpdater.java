@@ -3,7 +3,7 @@ package de.natrox.pipeline.part.updater;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

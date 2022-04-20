@@ -1,4 +1,4 @@
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.json.document;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

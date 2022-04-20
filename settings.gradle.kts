@@ -10,3 +10,4 @@ include(
     ":h2",
     ":sqlite"
 )
+include("gson")

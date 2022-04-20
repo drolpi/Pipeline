@@ -1,4 +1,4 @@
-package de.natrox.pipeline.json.gson;
+package de.natrox.pipeline.gson;
 
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
@@ -11,18 +11,18 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 @Internal
-final class JsonDocumentTypeAdapter extends TypeAdapter<JsonDocument> {
+final class JsonDocumentTypeAdapter extends TypeAdapter<GsonDocument> {
 
     @Override
-    public void write(JsonWriter jsonWriter, JsonDocument document) throws IOException {
+    public void write(JsonWriter jsonWriter, GsonDocument document) throws IOException {
         TypeAdapters.JSON_ELEMENT.write(jsonWriter, document == null ? new JsonObject() : document.object);
     }
 
     @Override
-    public @Nullable JsonDocument read(JsonReader jsonReader) throws IOException {
+    public @Nullable GsonDocument read(JsonReader jsonReader) throws IOException {
         var jsonElement = TypeAdapters.JSON_ELEMENT.read(jsonReader);
         if (jsonElement != null && jsonElement.isJsonObject()) {
-            return new JsonDocument(jsonElement.getAsJsonObject());
+            return new GsonDocument(jsonElement.getAsJsonObject());
         } else {
             return null;
         }

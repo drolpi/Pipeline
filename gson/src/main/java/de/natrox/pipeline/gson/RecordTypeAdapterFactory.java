@@ -1,4 +1,4 @@
-package de.natrox.pipeline.json.gson;
+package de.natrox.pipeline.gson;
 
 import com.google.common.base.Defaults;
 import com.google.gson.Gson;

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.json.gson.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -140,7 +139,7 @@ public final class DefaultLocalCache implements LocalCache {
             throw new RuntimeException("Error while creating instance of class " + dataClass.getSimpleName(), throwable);
         }
 
-        var defaultObject = JsonDocument.newDocument();
+        var defaultObject = pipeline.documentFactory().newDocument();
         defaultObject.append("objectUUID", objectUUID.toString());
 
         instance.deserialize(defaultObject);

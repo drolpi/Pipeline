@@ -5,7 +5,7 @@ import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.storage.GlobalStorage;
@@ -101,7 +101,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             if (destination.equals(DataSourceType.LOCAL)) {
                 var localData = toLocal(dataClass, objectUUID, globalCachedData, instanceCreator);
                 // Error while storing in local cache
-                if(localData == null)
+                if (localData == null)
                     return false;
             } else if (destination.equals(DataSourceType.GLOBAL_STORAGE))
                 globalStorage.save(dataClass, objectUUID, globalCachedData);
@@ -115,7 +115,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
             if (destination.equals(DataSourceType.LOCAL)) {
                 var localData = toLocal(dataClass, objectUUID, globalSavedData, instanceCreator);
                 // Error while storing in local cache
-                if(localData == null)
+                if (localData == null)
                     return false;
             } else if (destination.equals(DataSourceType.GLOBAL_CACHE))
                 globalCache.save(dataClass, objectUUID, globalSavedData);
@@ -156,7 +156,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         }
     }
 
-    public  <T extends PipelineData> @Nullable T toLocal(
+    public <T extends PipelineData> @Nullable T toLocal(
         @NotNull Class<? extends T> dataClass,
         @NotNull UUID objectUUID,
         @NotNull JsonDocument document,

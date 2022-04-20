@@ -1,7 +1,6 @@
 package de.natrox.pipeline.mongodb;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -11,7 +10,7 @@ import com.mongodb.client.model.Updates;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
@@ -35,11 +34,11 @@ final class MongoStorage implements GlobalStorage {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoStorage.class);
 
-    private final Gson gson;
+    private final JsonDocument.Factory documentFactory;
     private final MongoDatabase mongoDatabase;
 
     protected MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
-        this.gson = pipeline.gson();
+        this.documentFactory = pipeline.documentFactory();
         this.mongoDatabase = mongoDatabase;
 
         LOGGER.debug("Mongo storage initialized");
@@ -55,7 +54,7 @@ final class MongoStorage implements GlobalStorage {
             .find(Filters.eq(KEY_NAME, objectUUID))
             .first();
 
-        return document == null ? null : JsonDocument.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
+        return document == null ? null : documentFactory.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
     }
 
     @Override
@@ -118,7 +117,7 @@ final class MongoStorage implements GlobalStorage {
         Collection<JsonDocument> documents = new ArrayList<>();
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(JsonDocument.fromJsonString(cursor.next().get(VALUE_NAME, Document.class).toJson()));
+                documents.add(documentFactory.fromJsonString(cursor.next().get(VALUE_NAME, Document.class).toJson()));
             }
         }
         return documents;
@@ -141,7 +140,7 @@ final class MongoStorage implements GlobalStorage {
             while (cursor.hasNext()) {
                 var document = cursor.next();
                 var key = document.get(KEY_NAME, UUID.class);
-                var value = JsonDocument.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
+                var value = documentFactory.fromJsonString(document.get(VALUE_NAME, Document.class).toJson());
 
                 if (predicate.test(key, value)) {
                     entries.put(key, value);

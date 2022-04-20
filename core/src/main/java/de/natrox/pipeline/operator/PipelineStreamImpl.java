@@ -5,7 +5,7 @@ import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.operator.filter.Filter;
 import de.natrox.pipeline.part.DataSynchronizerImpl;
 import org.jetbrains.annotations.NotNull;

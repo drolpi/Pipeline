@@ -1,6 +1,6 @@
 package de.natrox.pipeline.operator.filter;
 
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 
 public record OrFilter(@NotNull Filter first, @NotNull Filter second) implements Filter {

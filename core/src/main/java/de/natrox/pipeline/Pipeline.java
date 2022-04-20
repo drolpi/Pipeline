@@ -1,12 +1,13 @@
 package de.natrox.pipeline;
 
-import com.google.gson.Gson;
 import de.natrox.common.Loadable;
 import de.natrox.common.Shutdownable;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.JsonProvider;
+import de.natrox.pipeline.json.document.JsonDocument;
+import de.natrox.pipeline.json.serializer.PipelineDataSerializer;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.GlobalCache;
@@ -343,7 +344,9 @@ public interface Pipeline extends Loadable, Shutdownable {
 
     @NotNull PipelineRegistry registry();
 
-    @NotNull Gson gson();
+    @NotNull JsonDocument.Factory documentFactory();
+
+    @NotNull PipelineDataSerializer.Factory serializerFactory();
 
     enum LoadingStrategy {
         // Data will be loaded from Local Cache
@@ -368,6 +371,8 @@ public interface Pipeline extends Loadable, Shutdownable {
     interface Builder {
 
         @NotNull Builder registry(@NotNull PipelineRegistry registry);
+
+        @NotNull Builder jsonProvider(@NotNull JsonProvider jsonProvider);
 
         @NotNull Builder dataUpdater(@UnknownNullability DataUpdaterProvider connection);
 

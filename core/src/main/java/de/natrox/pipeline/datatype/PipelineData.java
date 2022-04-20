@@ -1,12 +1,10 @@
 package de.natrox.pipeline.datatype;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
+import de.natrox.pipeline.json.serializer.PipelineDataSerializer;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +20,7 @@ public abstract class PipelineData implements DataType {
     private final static Logger LOGGER = LoggerFactory.getLogger(PipelineData.class);
 
     private final transient Pipeline pipeline;
-    private final transient Gson gson;
+    private final transient PipelineDataSerializer serializer;
     private final transient DataUpdater dataUpdater;
     private transient long lastUse = System.currentTimeMillis();
     private transient boolean markedForRemoval = false;
@@ -34,11 +32,7 @@ public abstract class PipelineData implements DataType {
         Preconditions.checkNotNull(pipeline, "pipeline");
         this.pipeline = pipeline;
         this.dataUpdater = pipeline.dataUpdater();
-        this.gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeNulls()
-            .registerTypeAdapter(getClass(), (InstanceCreator<PipelineData>) type -> this)
-            .create();
+        this.serializer = pipeline.serializerFactory().create(this);
     }
 
     public @NotNull UUID objectUUID() {
@@ -112,14 +106,14 @@ public abstract class PipelineData implements DataType {
     @Override
     public @NotNull JsonDocument serialize() {
         unMarkRemoval();
-        return JsonDocument.newDocument(this);
+        return pipeline.documentFactory().newDocument(this);
     }
 
     @Override
     public @NotNull PipelineData deserialize(@NotNull JsonDocument data) {
         Preconditions.checkNotNull(data, "jsonObject");
         unMarkRemoval();
-        return data.toInstanceOf(getClass(), gson);
+        return serializer.toPipelineData(data);
     }
 
     @Override

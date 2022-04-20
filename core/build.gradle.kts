@@ -12,6 +12,8 @@ dependencies {
     testImplementation(project(":h2"))
     testImplementation(project(":mysql"))
     testImplementation(project(":sqlite"))
+
+    testImplementation(project(":gson"))
 }
 
 tasks.withType<Jar> {

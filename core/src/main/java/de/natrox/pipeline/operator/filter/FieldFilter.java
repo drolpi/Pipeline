@@ -1,6 +1,6 @@
 package de.natrox.pipeline.operator.filter;
 
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import org.jetbrains.annotations.NotNull;
 
 public record FieldFilter(@NotNull String fieldName, @NotNull Object obj) implements Filter {

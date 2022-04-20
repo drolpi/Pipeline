@@ -1,11 +1,10 @@
 package de.natrox.pipeline.json;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
@@ -32,11 +31,11 @@ final class JsonStorage implements GlobalStorage {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(JsonStorage.class);
 
-    private final Gson gson;
+    private final JsonDocument.Factory documentFactory;
     private final Path directory;
 
     protected JsonStorage(Pipeline pipeline, Path path) {
-        this.gson = pipeline.gson();
+        this.documentFactory = pipeline.documentFactory();
         this.directory = path;
 
         LOGGER.debug("Json storage initialized");
@@ -210,7 +209,7 @@ final class JsonStorage implements GlobalStorage {
         var file = new File(path.toUri());
         if (!file.exists())
             throw new RuntimeException("SavedFile does not exist for " + dataClass.getSimpleName() + ":" + objectUUID);
-        return JsonDocument.newDocument(path);
+        return documentFactory.newDocument(path);
     }
 
     private Path savedFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {

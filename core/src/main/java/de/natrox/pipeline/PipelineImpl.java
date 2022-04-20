@@ -1,8 +1,6 @@
 package de.natrox.pipeline;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
@@ -12,7 +10,9 @@ import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.connection.ConnectionData;
 import de.natrox.pipeline.datatype.instance.InstanceCreator;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.JsonProvider;
+import de.natrox.pipeline.json.document.JsonDocument;
+import de.natrox.pipeline.json.serializer.PipelineDataSerializer;
 import de.natrox.pipeline.operator.PipelineStream;
 import de.natrox.pipeline.operator.PipelineStreamImpl;
 import de.natrox.pipeline.part.DataSynchronizer;
@@ -60,18 +60,19 @@ public final class PipelineImpl implements Pipeline {
     private final PipelineTaskScheduler pipelineTaskScheduler;
     private final ExecutorService executorService;
     private final Scheduler scheduler;
-    private final Gson gson;
+    private final JsonProvider jsonProvider;
     private final boolean loaded;
 
     protected PipelineImpl(
         @Nullable DataUpdaterProvider dataUpdaterProvider,
         @Nullable GlobalCacheProvider globalCacheProvider,
         @Nullable GlobalStorageProvider globalStorageProvider,
-        @NotNull PipelineRegistry registry
+        @NotNull PipelineRegistry registry,
+        @NotNull JsonProvider jsonProvider
     ) {
         this.registry = registry;
         this.executorService = Executors.newFixedThreadPool(4);
-        this.gson = new GsonBuilder().serializeNulls().create();
+        this.jsonProvider = jsonProvider;
         this.localCache = new DefaultLocalCache();
 
         LOGGER.debug("Pipeline information:");
@@ -677,7 +678,12 @@ public final class PipelineImpl implements Pipeline {
 
     @NotNull
     @Override
-    public Gson gson() {
-        return gson;
+    public JsonDocument.Factory documentFactory() {
+        return jsonProvider.documentFactory();
+    }
+
+    @Override
+    public @NotNull PipelineDataSerializer.Factory serializerFactory() {
+        return jsonProvider.serializerFactory();
     }
 }

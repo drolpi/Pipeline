@@ -1,4 +1,4 @@
-package de.natrox.pipeline.json.gson;
+package de.natrox.pipeline.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,102 +6,42 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import de.natrox.pipeline.json.Document;
-import de.natrox.pipeline.json.Persistable;
-import de.natrox.pipeline.json.Readable;
-import org.jetbrains.annotations.ApiStatus.Internal;
+import de.natrox.pipeline.json.document.JsonDocument;
+import de.natrox.pipeline.json.document.Persistable;
+import de.natrox.pipeline.json.document.Readable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
- * The Gson implementation of IDocument class. It includes simple append and remove operations, file reading and writing
+ * The Gson implementation of Document class. It includes simple append and remove operations, file reading and writing
  * to create simple configuration files
  */
-public class JsonDocument implements Document<JsonDocument> {
+final class GsonDocument implements JsonDocument {
 
-    @Internal
     public static final Gson GSON = new GsonBuilder()
         .serializeNulls()
         .setPrettyPrinting()
         .disableHtmlEscaping()
         .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .registerTypeHierarchyAdapter(JsonDocument.class, new JsonDocumentTypeAdapter())
+        .registerTypeHierarchyAdapter(GsonDocument.class, new JsonDocumentTypeAdapter())
         .create();
 
-    private static final JsonDocument EMPTY = JsonDocument.newDocument();
+    final JsonObject object;
 
-    /* package */ final JsonObject object;
-
-    protected JsonDocument() {
+    public GsonDocument() {
         this(new JsonObject());
     }
 
-    protected JsonDocument(@NotNull JsonObject object) {
+    protected GsonDocument(@NotNull JsonObject object) {
         this.object = object;
-    }
-
-    public static @NotNull JsonDocument emptyDocument() {
-        return JsonDocument.EMPTY;
-    }
-
-    public static @NotNull JsonDocument newDocument() {
-        return new JsonDocument();
-    }
-
-    public static @NotNull JsonDocument newDocument(@Nullable Object value) {
-        return new JsonDocument(value == null ? new JsonObject() : GSON.toJsonTree(value).getAsJsonObject());
-    }
-
-    public static @NotNull JsonDocument newDocument(@NotNull String key, @Nullable Object value) {
-        // we can ignore null
-        if (value == null) {
-            return JsonDocument.newDocument().append(key, (Object) null);
-        }
-        // append the correct type for the value
-        if (value instanceof Number) {
-            return JsonDocument.newDocument().append(key, (Number) value);
-        } else if (value instanceof Character) {
-            return JsonDocument.newDocument().append(key, (Character) value);
-        } else if (value instanceof String) {
-            return JsonDocument.newDocument().append(key, (String) value);
-        } else if (value instanceof Boolean) {
-            return JsonDocument.newDocument().append(key, (Boolean) value);
-        } else if (value instanceof JsonDocument) {
-            return JsonDocument.newDocument().append(key, (JsonDocument) value);
-        } else {
-            return JsonDocument.newDocument().append(key, value);
-        }
-    }
-
-    public static @NotNull JsonDocument fromJsonBytes(byte[] bytes) {
-        return fromJsonString(new String(bytes, StandardCharsets.UTF_8));
-    }
-
-    public static @NotNull JsonDocument fromJsonString(@NotNull String json) {
-        return new JsonDocument(JsonParser.parseString(json).getAsJsonObject());
-    }
-
-    public static @NotNull JsonDocument newDocument(@NotNull InputStream stream) {
-        var document = JsonDocument.newDocument();
-        document.read(stream);
-        return document;
-    }
-
-    public static @NotNull JsonDocument newDocument(@NotNull Path path) {
-        var document = JsonDocument.newDocument();
-        document.read(path);
-        return document;
     }
 
     @Override
@@ -115,8 +55,7 @@ public class JsonDocument implements Document<JsonDocument> {
     }
 
     @Override
-    public @NotNull
-    JsonDocument clear() {
+    public @NotNull GsonDocument clear() {
         for (var key : Set.copyOf(this.object.keySet())) {
             this.object.remove(key);
         }
@@ -125,8 +64,7 @@ public class JsonDocument implements Document<JsonDocument> {
     }
 
     @Override
-    public @NotNull
-    JsonDocument remove(@NotNull String key) {
+    public @NotNull GsonDocument remove(@NotNull String key) {
         this.object.remove(key);
         return this;
     }
@@ -136,74 +74,61 @@ public class JsonDocument implements Document<JsonDocument> {
         return this.object.has(key);
     }
 
-    public <T> @UnknownNullability T toInstanceOf(@NotNull Class<T> clazz, Gson gson) {
-        return gson.fromJson(this.object, clazz);
-    }
-
     @Override
-    public @NotNull JsonDocument append(@NotNull String key, @Nullable Object value) {
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable Object value) {
         this.object.add(key, value == null ? JsonNull.INSTANCE : GSON.toJsonTree(value));
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@NotNull String key, @Nullable Number value) {
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable Number value) {
         this.object.addProperty(key, value);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@NotNull String key, @Nullable Boolean value) {
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable Boolean value) {
         this.object.addProperty(key, value);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@NotNull String key, @Nullable String value) {
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable String value) {
         this.object.addProperty(key, value);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@NotNull String key, @Nullable Character value) {
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable Character value) {
         this.object.addProperty(key, value);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@NotNull String key, @Nullable JsonDocument value) {
-        this.object.add(key, value == null ? JsonNull.INSTANCE : value.object);
+    public @NotNull GsonDocument append(@NotNull String key, @Nullable JsonDocument value) {
+        if (value instanceof GsonDocument gsonDocument)
+            this.object.add(key, value == null ? JsonNull.INSTANCE : gsonDocument.object);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument append(@Nullable JsonDocument document) {
-        if (document != null) {
-            for (var entry : document.object.entrySet()) {
+    public @NotNull GsonDocument append(@Nullable JsonDocument document) {
+        if (document instanceof GsonDocument gsonDocument)
+            for (var entry : gsonDocument.object.entrySet())
                 this.object.add(entry.getKey(), entry.getValue());
-            }
-        }
 
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument appendNull(@NotNull String key) {
+    public @NotNull GsonDocument appendNull(@NotNull String key) {
         this.object.add(key, JsonNull.INSTANCE);
         return this;
     }
 
     @Override
-    public @NotNull
-    JsonDocument getDocument(@NotNull String key) {
-        return this.getDocument(key, JsonDocument.newDocument());
+    public @NotNull GsonDocument getDocument(@NotNull String key) {
+        return this.getDocument(key);
     }
 
     @Override
@@ -282,7 +207,7 @@ public class JsonDocument implements Document<JsonDocument> {
     public @UnknownNullability JsonDocument getDocument(@NotNull String key, @Nullable JsonDocument def) {
         var element = this.object.get(key);
         if (element != null && element.isJsonObject()) {
-            return new JsonDocument(element.getAsJsonObject());
+            return new GsonDocument(element.getAsJsonObject());
         } else {
             return def;
         }
@@ -313,15 +238,14 @@ public class JsonDocument implements Document<JsonDocument> {
     }
 
     @Override
-    public @NotNull
-    Iterator<String> iterator() {
+    public @NotNull Iterator<String> iterator() {
         return this.object.keySet().iterator();
     }
 
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
-    public @NotNull JsonDocument clone() {
-        return new JsonDocument(this.object.deepCopy());
+    public @NotNull GsonDocument clone() {
+        return new GsonDocument(this.object.deepCopy());
     }
 
     public @NotNull String toPrettyJson() {
@@ -338,7 +262,7 @@ public class JsonDocument implements Document<JsonDocument> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonDocument document)) {
+        if (!(o instanceof GsonDocument document)) {
             return false;
         }
 

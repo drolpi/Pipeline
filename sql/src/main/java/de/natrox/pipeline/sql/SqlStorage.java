@@ -1,13 +1,12 @@
 package de.natrox.pipeline.sql;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +40,12 @@ public abstract class SqlStorage implements GlobalStorage {
     private static final String UPDATE_BY_UUID = "UPDATE `%s` SET %s=? WHERE %s=?";
     private static final String DELETE_BY_UUID = "DELETE FROM `%s` WHERE %s = ?";
 
-    private final Gson gson;
+    private final JsonDocument.Factory documentFactory;
     private final HikariDataSource hikariDataSource;
 
     public SqlStorage(Pipeline pipeline, HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
-        this.gson = pipeline.gson();
+        this.documentFactory = pipeline.documentFactory();
     }
 
     @Override
@@ -56,7 +55,7 @@ public abstract class SqlStorage implements GlobalStorage {
 
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
-            resultSet -> resultSet.next() ? JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)) : null,
+            resultSet -> resultSet.next() ? documentFactory.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)) : null,
             null,
             objectUUID.toString()
         );
@@ -84,12 +83,12 @@ public abstract class SqlStorage implements GlobalStorage {
         if (!exists(dataClass, objectUUID)) {
             executeUpdate(
                 String.format(INSERT_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY, TABLE_COLUMN_VAL),
-                objectUUID.toString(), gson.toJson(data)
+                objectUUID.toString(), data.toString()
             );
         } else {
             executeUpdate(
                 String.format(UPDATE_BY_UUID, tableName(dataClass), TABLE_COLUMN_VAL, TABLE_COLUMN_KEY),
-                gson.toJson(data), objectUUID.toString()
+                data.toString(), objectUUID.toString()
             );
         }
     }
@@ -127,7 +126,7 @@ public abstract class SqlStorage implements GlobalStorage {
             resultSet -> {
                 Collection<JsonDocument> documents = new ArrayList<>();
                 while (resultSet.next()) {
-                    documents.add(JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)));
+                    documents.add(documentFactory.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL)));
                 }
                 return documents;
             }, List.of());
@@ -143,7 +142,7 @@ public abstract class SqlStorage implements GlobalStorage {
                 while (resultSet.next()) {
                     map.put(
                         UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY)),
-                        JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL))
+                        documentFactory.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL))
                     );
                 }
                 return map;
@@ -160,7 +159,7 @@ public abstract class SqlStorage implements GlobalStorage {
                 Map<UUID, JsonDocument> map = new HashMap<>();
                 while (resultSet.next()) {
                     var key = UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY));
-                    var document = JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
+                    var document = documentFactory.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
 
                     if (predicate.test(key, document)) {
                         map.put(key, document);
@@ -179,7 +178,7 @@ public abstract class SqlStorage implements GlobalStorage {
             resultSet -> {
                 while (resultSet.next()) {
                     var key = UUID.fromString(resultSet.getString(TABLE_COLUMN_KEY));
-                    var document = JsonDocument.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
+                    var document = documentFactory.fromJsonString(resultSet.getString(TABLE_COLUMN_VAL));
                     consumer.accept(key, document);
                 }
                 return null;

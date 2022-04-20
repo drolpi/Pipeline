@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
-import de.natrox.pipeline.json.gson.JsonDocument;
+import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.part.local.LocalCache;
 import de.natrox.pipeline.part.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
 
     private final LocalCache localCache;
     private final RedissonClient redissonClient;
+    private final JsonDocument.Factory documentFactory;
     private final RTopic dataTopic;
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
@@ -33,6 +34,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
     protected RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient) {
         this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
+        this.documentFactory = pipeline.documentFactory();
 
         this.dataTopic = topic();
         this.messageListener = (channel, dataBlock) -> {
@@ -44,7 +46,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
             var pipelineData = localCache.get(dataClass, dataBlock.dataUUID);
 
             if (dataBlock instanceof UpdateDataBlock updateDataBlock) {
-                var dataToUpdate = JsonDocument.fromJsonString(updateDataBlock.dataToUpdate);
+                var dataToUpdate = documentFactory.fromJsonString(updateDataBlock.dataToUpdate);
                 if (pipelineData == null) {
                     this.receivedSync(updateDataBlock.dataUUID, dataToUpdate);
                 } else {
