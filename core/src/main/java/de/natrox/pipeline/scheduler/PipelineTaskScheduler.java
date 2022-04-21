@@ -44,7 +44,6 @@ public interface PipelineTaskScheduler extends Loadable, Shutdownable {
         private final UUID uuid;
         private final CompletableFuture<T> completableFuture;
         private final UUID taskUUID = UUID.randomUUID();
-        private final long start = System.currentTimeMillis();
 
         public PipelineTask(PipelineTaskScheduler pipelineTaskScheduler, PipelineAction pipelineAction, Class<? extends T> type, UUID uuid, Runnable onComplete) {
             this.pipelineAction = pipelineAction;

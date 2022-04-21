@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 
 public final class CleanUpTask implements Runnable {
 
@@ -47,7 +48,7 @@ public final class CleanUpTask implements Runnable {
                     var data = localCache.get(dataClass, uuid);
                     if (data == null)
                         return;
-                    if ((System.currentTimeMillis() - data.lastUse()) < Duration.of(cleanUp.time(), cleanUp.timeUnit()).toMillis())
+                    if (Duration.between(data.lastUse(), Instant.now()).toMillis() < Duration.of(cleanUp.time(), cleanUp.timeUnit()).toMillis())
                         return;
 
                     LOGGER.debug("Cleaning up " + dataClass.getSimpleName() + " with uuid " + uuid.toString());

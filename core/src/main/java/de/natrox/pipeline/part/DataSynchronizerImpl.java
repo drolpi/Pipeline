@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +94,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         if (globalStorage == null && (source.equals(DataSourceType.GLOBAL_STORAGE) || destination.equals(DataSourceType.GLOBAL_STORAGE)))
             return false;
 
-        var startTime = System.currentTimeMillis();
+        var startInstant = Instant.now();
 
         if (source.equals(DataSourceType.LOCAL)) {
             var data = localCache.get(dataClass, objectUUID);
@@ -146,7 +148,7 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
 
         if (callback != null)
             callback.run();
-        LOGGER.debug("Done syncing in " + (System.currentTimeMillis() - startTime) + "ms [" + dataClass.getSimpleName() + "]");
+        LOGGER.debug("Done syncing in " + Duration.between(startInstant, Instant.now()) + "ms [" + dataClass.getSimpleName() + "]");
         return true;
     }
 

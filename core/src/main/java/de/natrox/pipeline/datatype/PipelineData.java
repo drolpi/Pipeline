@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ public abstract class PipelineData implements DataType {
     private final transient Pipeline pipeline;
     private final transient PipelineDataSerializer serializer;
     private final transient DataUpdater dataUpdater;
-    private transient long lastUse = System.currentTimeMillis();
+    private transient Instant lastUse = Instant.now();
     private transient boolean markedForRemoval = false;
 
     @SuppressWarnings("unused")
@@ -57,7 +59,7 @@ public abstract class PipelineData implements DataType {
 
     @Override
     public void save(@Nullable Runnable callback) {
-        var startTime = System.currentTimeMillis();
+        var startInstant = Instant.now();
         LOGGER.debug("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
 
@@ -70,7 +72,7 @@ public abstract class PipelineData implements DataType {
                 if (runCount != 2)
                     return;
 
-                LOGGER.debug("Done saving in " + (System.currentTimeMillis() - startTime) + "ms [" + getClass().getSimpleName() + "]");
+                LOGGER.debug("Done saving in " + Duration.between(startInstant, Instant.now()).toMillis() + "ms [" + getClass().getSimpleName() + "]");
                 if (callback != null)
                     callback.run();
             }
@@ -101,13 +103,13 @@ public abstract class PipelineData implements DataType {
     }
 
     @Override
-    public long lastUse() {
+    public Instant lastUse() {
         return lastUse;
     }
 
     @Override
     public void updateLastUse() {
-        this.lastUse = System.currentTimeMillis();
+        this.lastUse = Instant.now();
         var globalCache = pipeline.globalCache();
 
         if (globalCache != null)

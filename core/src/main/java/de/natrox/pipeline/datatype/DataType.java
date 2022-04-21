@@ -21,6 +21,7 @@ import de.natrox.pipeline.part.updater.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public interface DataType {
@@ -79,7 +80,7 @@ public interface DataType {
 
     void unMarkRemoval();
 
-    long lastUse();
+    Instant lastUse();
 
     void updateLastUse();
 

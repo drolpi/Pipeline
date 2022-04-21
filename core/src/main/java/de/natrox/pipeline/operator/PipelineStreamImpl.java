@@ -71,7 +71,6 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
         for (var entry : data.entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();
-            var startTime = System.currentTimeMillis();
             var localData = dataSynchronizer.toLocal(dataClass, key, value, instanceCreator);
             return Optional.ofNullable(localData);
         }

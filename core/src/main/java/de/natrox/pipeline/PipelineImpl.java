@@ -49,6 +49,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -462,13 +464,13 @@ public final class PipelineImpl implements Pipeline {
 
         //Data will only be preloaded if it is declared properly
         optional.ifPresent(preload -> {
-            var startTime = System.currentTimeMillis();
+            var startInstant = Instant.now();
             LOGGER.debug("Preloading " + dataClass.getSimpleName());
             if (globalCache != null)
                 globalCache.keys(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
             if (globalStorage != null)
                 globalStorage.keys(dataClass).forEach(uuid -> preloadData(dataClass, uuid));
-            LOGGER.debug("Done preloading " + dataClass.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms");
+            LOGGER.debug("Done preloading " + dataClass.getSimpleName() + " in " + Duration.between(startInstant, Instant.now()).toMillis() + "ms");
         });
     }
 
@@ -508,12 +510,12 @@ public final class PipelineImpl implements Pipeline {
 
         var optional = AnnotationResolver.autoSave(dataClass);
 
-        // Data will only be preloaded if it is declared properly
+        // Data will only be cleaned up if it is declared properly
         optional.ifPresent(unload -> {
-            var startTime = System.currentTimeMillis();
+            var startInstant = Instant.now();
             LOGGER.debug("Saving " + dataClass.getSimpleName());
             localCache.keys(dataClass).forEach(uuid -> cleanUpData(dataClass, uuid, null));
-            LOGGER.debug("Done saving " + dataClass.getSimpleName() + " in " + (System.currentTimeMillis() - startTime) + "ms");
+            LOGGER.debug("Done saving " + dataClass.getSimpleName() + " in " + Duration.between(startInstant, Instant.now()) + "ms");
         });
     }
 
@@ -561,7 +563,7 @@ public final class PipelineImpl implements Pipeline {
         Preconditions.checkNotNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
-        var startTime = System.currentTimeMillis();
+        var startInstant = Instant.now();
         // ExistCheck LocalCache
         if (localCache.exists(dataClass, objectUUID))
             LOGGER.debug("Found Data in Local Cache [" + dataClass.getSimpleName() + "]");
@@ -589,12 +591,12 @@ public final class PipelineImpl implements Pipeline {
                         return null;
                     T data = createNewData(dataClass, objectUUID, instanceCreator);
                     data.updateLastUse();
-                    LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms");
+                    LOGGER.debug("Done loading in " + Duration.between(startInstant, Instant.now()).toMillis() + "ms");
                     return data;
                 }
             }
         }
-        LOGGER.debug("Done loading in " + (System.currentTimeMillis() - startTime) + "ms");
+        LOGGER.debug("Done loading in " + Duration.between(startInstant, Instant.now()) + "ms");
         T data = localCache.get(dataClass, objectUUID);
         if (data != null)
             data.updateLastUse();
