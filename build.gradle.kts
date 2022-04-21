@@ -44,7 +44,6 @@ subprojects {
         compileOnly("org.jetbrains:annotations:23.0.0")
         compileOnly("org.reflections:reflections:0.10.2")
         compileOnly("org.jodd:jodd-core:5.3.0")
-        compileOnly("com.google.code.gson:gson:2.9.0")
     }
 
     tasks.withType<JavaCompile> {
