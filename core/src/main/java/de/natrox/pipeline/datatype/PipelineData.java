@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class PipelineData implements DataType {
 
@@ -63,13 +64,19 @@ public abstract class PipelineData implements DataType {
         LOGGER.debug("Saving " + getClass().getSimpleName() + " with uuid " + objectUUID);
         updateLastUse();
 
+        var shouldRunCount = new AtomicInteger();
+        if (pipeline.globalCache() != null)
+            shouldRunCount.getAndIncrement();
+        if (pipeline.globalStorage() != null)
+            shouldRunCount.getAndIncrement();
+
         var runnable = new Runnable() {
             private int runCount = 0;
 
             @Override
             public void run() {
                 runCount++;
-                if (runCount != 2)
+                if (runCount != shouldRunCount.get())
                     return;
 
                 LOGGER.debug("Done saving in " + Duration.between(startInstant, Instant.now()).toMillis() + "ms [" + getClass().getSimpleName() + "]");
