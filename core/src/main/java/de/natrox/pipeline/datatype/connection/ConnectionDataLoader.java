@@ -41,22 +41,20 @@ public final class ConnectionDataLoader {
     public final void loadConnectionData(@NotNull UUID uuid, @Nullable Runnable callback) {
         Check.notNull(uuid, "uuid");
 
-        taskBatchFactory
+        this.taskBatchFactory
             .createTaskBatch()
             .async(new CatchingRunnable(() -> {
-                pipeline.registry()
+                this.pipeline.registry()
                     .dataClasses()
                     .parallelStream()
                     .filter(ConnectionData.class::isAssignableFrom)
                     .forEach(aClass -> {
                         var optional = AnnotationResolver.preload(aClass);
 
-                        optional.ifPresent(preload -> {
-                            pipeline
-                                .load(aClass, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, true)
-                                .map(pipelineData -> (ConnectionData) pipelineData)
-                                .ifPresent(ConnectionData::onConnect);
-                        });
+                        optional.flatMap(preload -> this.pipeline
+                            .load(aClass, uuid, Pipeline.LoadingStrategy.LOAD_PIPELINE, true)
+                            .map(pipelineData -> (ConnectionData) pipelineData))
+                            .ifPresent(ConnectionData::onConnect);
                     });
                 callback.run();
             })).execute();
@@ -65,10 +63,10 @@ public final class ConnectionDataLoader {
     public final void removeConnectionData(@NotNull UUID uuid, Runnable callback) {
         Check.notNull(uuid, "uuid");
 
-        taskBatchFactory
+        this.taskBatchFactory
             .createTaskBatch()
             .async(new CatchingRunnable(() -> {
-                pipeline.registry()
+                this.pipeline.registry()
                     .dataClasses()
                     .parallelStream()
                     .filter(ConnectionData.class::isAssignableFrom)
@@ -76,11 +74,11 @@ public final class ConnectionDataLoader {
                         var optional = AnnotationResolver.autoSave(aClass);
 
                         optional.ifPresent(unload -> {
-                            var data = (ConnectionData) pipeline.localCache().get(aClass, uuid);
+                            var data = (ConnectionData) this.pipeline.localCache().get(aClass, uuid);
                             if (data == null)
                                 return;
 
-                            pipeline.cleanUpData(aClass, data.objectUUID(), null);
+                            this.pipeline.cleanUpData(aClass, data.objectUUID(), null);
                         });
                     });
                 callback.run();
