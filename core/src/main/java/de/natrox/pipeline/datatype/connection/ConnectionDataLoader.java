@@ -56,11 +56,12 @@ public final class ConnectionDataLoader {
                             .map(pipelineData -> (ConnectionData) pipelineData))
                             .ifPresent(ConnectionData::onConnect);
                     });
-                callback.run();
+                if (callback != null)
+                    callback.run();
             })).execute();
     }
 
-    public final void removeConnectionData(@NotNull UUID uuid, Runnable callback) {
+    public final void removeConnectionData(@NotNull UUID uuid, @Nullable Runnable callback) {
         Check.notNull(uuid, "uuid");
 
         this.taskBatchFactory
@@ -81,7 +82,8 @@ public final class ConnectionDataLoader {
                             this.pipeline.cleanUpData(aClass, data.objectUUID(), null);
                         });
                     });
-                callback.run();
+                if (callback != null)
+                    callback.run();
             })).execute();
     }
 }
