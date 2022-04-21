@@ -83,7 +83,7 @@ DataUpdaterProvider dataUpdaterProvider = dataUpdaterConfig.createProvider();
 ## Custom
 Unlike the [config](#config) feature, here the developer can configure the parts himself and statically and specify which parts are to be used.
 
-**Note:** It is also possible to mix the two features, e.g. use the GlobalStorage from the configuration and statically define that redis should be used as GlobalCache. But more about this below.
+**Note:** It is also possible to mix the two features, e.g. use the GlobalStorage from the configuration and statically define that redis should be used as GlobalCache. But more about this [below](#build-your-pipeline).
 
 ## GlobalStorage
 
@@ -333,9 +333,9 @@ public class PlayerData extends PipelineData {
 }
 ```
 
-### Constructor & final transient fields
+### Constructor and final transient fields
 
-**Note:** To use paramters in the constructor you must use a custom InstanceCreator. But more about this below.
+**Note:** To use paramters in the constructor you must use a custom InstanceCreator. But more about this [below](#registry).
 
 Code example:
 ```java
