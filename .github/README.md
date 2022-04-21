@@ -363,7 +363,7 @@ Code example:
 ```java
 @Override
 public void onSync(DataType dataBeforeSync) {
-    //code here
+    //Code here
 }
 ```
 
@@ -374,7 +374,7 @@ Code example:
 ```java
 @Override
 public void onCreate() {
-    //code here
+    //Code here
 }
 ```
 
@@ -385,7 +385,7 @@ Code example:
 ```java
 @Override
 public void onDelete() {
-    //code here
+    //Code here
 }
 ```
 
@@ -396,7 +396,7 @@ Code example:
 ```java
 @Override
 public void onLoad() {
-    //code here
+    //Code here
 }
 ```
 
@@ -407,7 +407,7 @@ Code example:
 ```java
 @Override
 public void loadDependentData() {
-    //code here
+    //Code here
 }
 ```
 
@@ -418,7 +418,7 @@ Code example:
 ```java
 @Override
 public void onCleanUp() {
-    //code here
+    //Code here
 }
 ```
 **Step 5:** You can add additional annotations.
@@ -484,13 +484,13 @@ public PlayerListener(Pipeline pipeline) {
 
 public void onPlayerJoin(UUID uuid) {
     connectionDataLoader.loadConnectionData(uuid, () -> {
-        //callback
+        //Callback
     });
 }
 
 public void onPlayerLeave(UUID uuid) {
     connectionDataLoader.removeConnectionData(uuid, () -> {
-        //callback
+        //Callback
     });
 }
 ```
@@ -507,12 +507,12 @@ public class PlayerData extends ConnectionData {
 
     @Override
     public void onConnect() {
-        //code here
+        //Code here
     }
 
     @Override
     public void onDisconnect() {
-        //code here
+        //Code here
     }
 }
 ```
@@ -533,7 +533,7 @@ registry.register(PlayerData.class);
 Code example:
 ```java
 PipelineRegistry registry = new PipelineRegistry();
-PlayerManager playerManager; //a example class
+PlayerManager playerManager; //A example class
 
 registry.register(PlayerData.class, (dataClass, pipeline) -> new PlayerData(pipeline, playerManager));
 ```
@@ -543,19 +543,19 @@ Now the time has finally come, you can start building your pipeline.
 
 Code example:
 ```java
-PipelineRegistry registry; //the PipelineRegistry you created in the "Registry" section.
-JsonProvider jsonProvider; //the JsonProvider you created in the "JsonProvider" section.
-MongoProvider mongoProvider; //the MongoProvider you created in the "MongoDB" section.
-GlobalCacheProvider globalCacheProvider; //the GlobalCacheProvider your created in the "Config" section.
-RedisProvider redisProvider; //the RedisProvider you created in the "Redis" section.
+PipelineRegistry registry; //The PipelineRegistry you created in the "Registry" section
+JsonProvider jsonProvider; //The JsonProvider you created in the "JsonProvider" section
+MongoProvider mongoProvider; //The MongoProvider you created in the "MongoDB" section
+GlobalCacheProvider globalCacheProvider; //The GlobalCacheProvider your created in the "Config" section
+RedisProvider redisProvider; //The RedisProvider you created in the "Redis" section
 
 Pipeline pipeline = Pipeline
     .builder()
     .registry(registry)
     .jsonProvider(jsonProvider)
-    .globalStorage(mongoProvider) //optional
-    .globalCache(globalCacheProvider) //optional
-    .dataUpdater(redisProvider) //optional
+    .globalStorage(mongoProvider) //Optional
+    .globalCache(globalCacheProvider) //Optional
+    .dataUpdater(redisProvider) //Optional
     .build();
 ```
 
