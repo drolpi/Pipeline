@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.mongodb;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.google.common.base.Strings;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
@@ -49,8 +49,8 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
         @NotNull String database,
         @Nullable String overridingConnectionUri
     ) {
-        Preconditions.checkNotNull(host, "host");
-        Preconditions.checkNotNull(database, "database");
+        Check.notNull(host, "host");
+        Check.notNull(database, "database");
 
         this.host = host;
         this.port = port;
@@ -132,7 +132,7 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
         }
 
         public @NotNull Builder host(@NotNull String host) {
-            Preconditions.checkNotNull(host, "host");
+            Check.notNull(host, "host");
             this.host = host;
             return this;
         }
@@ -158,7 +158,7 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
         }
 
         public @NotNull Builder database(@NotNull String database) {
-            Preconditions.checkNotNull(database, "database");
+            Check.notNull(database, "database");
             this.database = database;
             return this;
         }

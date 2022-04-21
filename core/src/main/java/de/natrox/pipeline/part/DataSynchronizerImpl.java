@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -64,10 +64,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         @Nullable Runnable callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Preconditions.checkNotNull(source, "source");
-        Preconditions.checkNotNull(destination, "destination");
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(source, "source");
+        Check.notNull(destination, "destination");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         var future = new CompletableFuture<Boolean>();
         executorService.submit(new CatchingRunnable(() ->
             future.complete(doSynchronisation(source, destination, dataClass, objectUUID, callback, instanceCreator))));
@@ -82,10 +82,10 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         @Nullable Runnable callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Preconditions.checkNotNull(source, "source");
-        Preconditions.checkNotNull(destination, "destination");
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(source, "source");
+        Check.notNull(destination, "destination");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         if (source.equals(destination))
             return false;

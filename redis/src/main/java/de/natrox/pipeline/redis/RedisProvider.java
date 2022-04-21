@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.google.common.base.Strings;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.cache.GlobalCache;
@@ -36,7 +36,7 @@ public final class RedisProvider implements DataUpdaterProvider, GlobalCacheProv
     private final RedissonClient redissonClient;
 
     protected RedisProvider(@NotNull RedisConfig config) throws Exception {
-        Preconditions.checkNotNull(config, "config");
+        Check.notNull(config, "config");
 
         var endpoints = config.endpoints();
         var size = endpoints.size();

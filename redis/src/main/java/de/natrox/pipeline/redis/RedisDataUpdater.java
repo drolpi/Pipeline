@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -84,7 +84,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
 
     @Override
     public void pushUpdate(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
-        Preconditions.checkNotNull(pipelineData, "pipelineData");
+        Check.notNull(pipelineData, "pipelineData");
         if (pipelineData.isMarkedForRemoval()) {
             LOGGER.debug("Push rejected as it is marked for removal " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
             return;
@@ -98,7 +98,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
 
     @Override
     public void pushRemoval(@NotNull PipelineData pipelineData, @Nullable Runnable callback) {
-        Preconditions.checkNotNull(pipelineData, "pipelineData");
+        Check.notNull(pipelineData, "pipelineData");
         pipelineData.markForRemoval();
         dataTopic.publish(new RemoveDataBlock(AnnotationResolver.storageIdentifier(pipelineData.getClass()), senderUUID, pipelineData.objectUUID()));
         LOGGER.debug("Pushing Removal: " + System.currentTimeMillis());

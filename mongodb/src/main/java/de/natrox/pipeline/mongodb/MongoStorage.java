@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.mongodb;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -62,8 +62,8 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         var collection = mongoStorage(dataClass);
         var document = collection
@@ -75,8 +75,8 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         var collection = mongoStorage(dataClass);
         var document = collection
@@ -88,9 +88,9 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
-        Preconditions.checkNotNull(data, "data");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
+        Check.notNull(data, "data");
 
         var collection = mongoStorage(dataClass);
         collection.updateOne(
@@ -104,8 +104,8 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         var collection = mongoStorage(dataClass);
         return collection.deleteOne(Filters.eq(KEY_NAME, objectUUID)).getDeletedCount() > 0;
@@ -113,7 +113,7 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public synchronized @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
 
         var collection = mongoStorage(dataClass);
         Collection<UUID> keys = new ArrayList<>();
@@ -127,7 +127,7 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
 
         var collection = mongoStorage(dataClass);
         Collection<JsonDocument> documents = new ArrayList<>();
@@ -141,14 +141,14 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return this.filter(dataClass, (key, value) -> true);
     }
 
     @Override
     public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(predicate, "predicate");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(predicate, "predicate");
 
         var collection = mongoStorage(dataClass);
         Map<UUID, JsonDocument> entries = new HashMap<>();
@@ -168,18 +168,18 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(consumer, "consumer");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(consumer, "consumer");
         this.entries(dataClass).forEach(consumer);
     }
 
     private synchronized MongoCollection<Document> mongoStorage(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return collection(AnnotationResolver.storageIdentifier(dataClass));
     }
 
     private synchronized MongoCollection<Document> collection(@NotNull String name) {
-        Preconditions.checkNotNull(name, "name");
+        Check.notNull(name, "name");
         try {
             return mongoDatabase.getCollection(name);
         }

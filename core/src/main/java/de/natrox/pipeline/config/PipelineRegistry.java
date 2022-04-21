@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.config;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
 import de.natrox.pipeline.datatype.instance.DefaultInstanceCreator;
@@ -36,13 +36,13 @@ public final class PipelineRegistry {
     }
 
     public <T extends PipelineData> void register(@NotNull Class<T> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         register(dataClass, new DefaultInstanceCreator<>());
     }
 
     public <T extends PipelineData> void register(@NotNull Class<T> dataClass, @NotNull InstanceCreator<T> instanceCreator) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(instanceCreator, "instanceCreator");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(instanceCreator, "instanceCreator");
 
         var identifier = AnnotationResolver.storageIdentifier(dataClass);
         if (isRegistered(dataClass) && isRegistered(identifier))
@@ -56,31 +56,31 @@ public final class PipelineRegistry {
     }
 
     public boolean isRegistered(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return this.dataClasses().contains(dataClass);
     }
 
     public boolean isRegistered(@NotNull String identifier) {
-        Preconditions.checkNotNull(identifier, "identifier");
+        Check.notNull(identifier, "identifier");
         return this.registry.values().stream().anyMatch(entry -> entry.identifier().equals(identifier));
     }
 
     public @NotNull InstanceCreator instanceCreator(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         this.checkRegistered(dataClass);
 
         return registry.get(dataClass).instanceCreator();
     }
 
     public @NotNull String identifier(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         this.checkRegistered(dataClass);
 
         return registry.get(dataClass).identifier();
     }
 
     public @NotNull Class<? extends PipelineData> dataClass(@NotNull String identifier) {
-        Preconditions.checkNotNull(identifier, "identifier");
+        Check.notNull(identifier, "identifier");
         if (!isRegistered(identifier))
             throw new IllegalStateException("A class with the identifier " + identifier + " is not registered in the pipeline");
         return registry

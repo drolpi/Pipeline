@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.scheduler.Scheduler;
 import de.natrox.pipeline.annotation.property.Context;
@@ -88,8 +88,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable JsonProvider jsonProvider,
         @Nullable PipelineRegistry registry
     ) {
-        Preconditions.checkNotNull(jsonProvider, "jsonProvider");
-        Preconditions.checkNotNull(registry, "registry");
+        Check.notNull(jsonProvider, "jsonProvider");
+        Check.notNull(registry, "registry");
 
         this.jsonProvider = jsonProvider;
         this.registry = registry;
@@ -156,8 +156,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable InstanceCreator<T> instanceCreator,
         boolean createIfNotExists
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         PipelineTaskScheduler.PipelineTask<T> pipelineTask = pipelineTaskScheduler
@@ -211,8 +211,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable InstanceCreator<T> instanceCreator,
         boolean createIfNotExists
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<Optional<T>>();
@@ -229,8 +229,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUIDs, "objectUUIDs");
         registry.checkRegistered(dataClass);
 
         if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE))
@@ -252,8 +252,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable Consumer<T> callback,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUIDs, "objectUUIDs");
         registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<List<T>>();
@@ -267,8 +267,8 @@ public final class PipelineImpl implements Pipeline {
         @NotNull UUID objectUUID,
         @NotNull QueryStrategy... strategies
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         if (strategies.length == 0)
@@ -301,8 +301,8 @@ public final class PipelineImpl implements Pipeline {
         @NotNull UUID objectUUID,
         @NotNull QueryStrategy... strategies
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<Boolean>();
@@ -317,8 +317,8 @@ public final class PipelineImpl implements Pipeline {
         boolean notifyOthers,
         @NotNull QueryStrategy... strategies
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var strategySet = Arrays.stream(strategies).collect(Collectors.toSet());
@@ -367,8 +367,8 @@ public final class PipelineImpl implements Pipeline {
         boolean notifyOthers,
         @NotNull QueryStrategy... strategies
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var completableFuture = new CompletableFuture<Boolean>();
@@ -454,7 +454,7 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public void preloadData(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         registry.checkRegistered(dataClass);
 
         //Connection
@@ -476,8 +476,8 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public void preloadData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         //Connection
@@ -505,7 +505,7 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public void cleanUpData(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         registry.checkRegistered(dataClass);
 
         var optional = AnnotationResolver.autoSave(dataClass);
@@ -521,8 +521,8 @@ public final class PipelineImpl implements Pipeline {
 
     @Override
     public void cleanUpData(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, Runnable runnable) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var optional = AnnotationResolver.autoSave(dataClass);
@@ -559,8 +559,8 @@ public final class PipelineImpl implements Pipeline {
         @Nullable InstanceCreator<T> instanceCreator,
         boolean createIfNotExists
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         var startInstant = Instant.now();
@@ -611,8 +611,8 @@ public final class PipelineImpl implements Pipeline {
         @NotNull UUID objectUUID,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
         registry.checkRegistered(dataClass);
 
         LOGGER.debug("No Data was found. Creating new data! [" + dataClass.getSimpleName() + "]");
@@ -635,8 +635,8 @@ public final class PipelineImpl implements Pipeline {
     }
 
     private <T extends PipelineData> void synchronizeData(@NotNull Class<? extends T> dataClass, @NotNull Iterable<UUID> objectUUIDs, InstanceCreator<T> instanceCreator) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUIDs, "objectUUIDs");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUIDs, "objectUUIDs");
         registry.checkRegistered(dataClass);
 
         if (globalCache() != null) {

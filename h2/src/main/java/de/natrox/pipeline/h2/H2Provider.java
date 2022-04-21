@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.h2;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
@@ -40,7 +40,7 @@ public final class H2Provider implements GlobalStorageProvider {
     private final HikariDataSource hikariDataSource;
 
     protected H2Provider(@NotNull H2Config config) throws Exception {
-        Preconditions.checkNotNull(config, "config");
+        Check.notNull(config, "config");
         this.path = Path.of(config.path());
 
         var parent = path.getParent();

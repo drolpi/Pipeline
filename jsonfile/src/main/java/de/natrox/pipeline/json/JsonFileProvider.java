@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.json;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.io.FileUtil;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.storage.GlobalStorage;
@@ -31,7 +31,7 @@ public final class JsonFileProvider implements GlobalStorageProvider {
     private final Path path;
 
     protected JsonFileProvider(@NotNull JsonFileConfig config) throws Exception {
-        Preconditions.checkNotNull(config, "config");
+        Check.notNull(config, "config");
         this.path = Path.of(config.path());
         var parent = path.getParent();
 

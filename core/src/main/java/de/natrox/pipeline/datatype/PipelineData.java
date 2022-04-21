@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.datatype;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.document.JsonDocument;
@@ -48,7 +48,7 @@ public abstract class PipelineData implements DataType {
     private UUID objectUUID;
 
     public PipelineData(@NotNull Pipeline pipeline) {
-        Preconditions.checkNotNull(pipeline, "pipeline");
+        Check.notNull(pipeline, "pipeline");
         this.pipeline = pipeline;
         this.dataUpdater = pipeline.dataUpdater();
         this.serializer = pipeline.serializerFactory().create(this);
@@ -136,7 +136,7 @@ public abstract class PipelineData implements DataType {
 
     @Override
     public @NotNull PipelineData deserialize(@NotNull JsonDocument data) {
-        Preconditions.checkNotNull(data, "jsonObject");
+        Check.notNull(data, "jsonObject");
         unMarkRemoval();
         return serializer.toPipelineData(data);
     }

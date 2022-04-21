@@ -16,10 +16,10 @@
 
 package de.natrox.pipeline.datatype.connection;
 
-import com.google.common.base.Preconditions;
 import de.natrox.common.batch.SimpleTaskBatchFactory;
 import de.natrox.common.batch.TaskBatch;
 import de.natrox.common.runnable.CatchingRunnable;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import org.jetbrains.annotations.NotNull;
@@ -33,13 +33,13 @@ public final class ConnectionDataLoader {
     private final TaskBatch.Factory taskBatchFactory;
 
     public ConnectionDataLoader(@NotNull Pipeline pipeline) {
-        Preconditions.checkNotNull(pipeline, "pipeline");
+        Check.notNull(pipeline, "pipeline");
         this.pipeline = pipeline;
         this.taskBatchFactory = new SimpleTaskBatchFactory();
     }
 
     public final void loadConnectionData(@NotNull UUID uuid, @Nullable Runnable callback) {
-        Preconditions.checkNotNull(uuid, "uuid");
+        Check.notNull(uuid, "uuid");
 
         taskBatchFactory
             .createTaskBatch()
@@ -63,7 +63,7 @@ public final class ConnectionDataLoader {
     }
 
     public final void removeConnectionData(@NotNull UUID uuid, Runnable callback) {
-        Preconditions.checkNotNull(uuid, "uuid");
+        Check.notNull(uuid, "uuid");
 
         taskBatchFactory
             .createTaskBatch()

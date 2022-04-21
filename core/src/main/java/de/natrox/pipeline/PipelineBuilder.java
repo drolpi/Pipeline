@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.config.PipelineRegistry;
 import de.natrox.pipeline.json.JsonProvider;
 import de.natrox.pipeline.part.cache.GlobalCacheProvider;
@@ -39,14 +39,14 @@ final class PipelineBuilder implements Pipeline.Builder {
 
     @Override
     public Pipeline.@NotNull Builder registry(@NotNull PipelineRegistry registry) {
-        Preconditions.checkNotNull(registry, "registry");
+        Check.notNull(registry, "registry");
         this.pipelineRegistry = registry;
         return this;
     }
 
     @Override
     public Pipeline.@NotNull Builder jsonProvider(@NotNull JsonProvider jsonProvider) {
-        Preconditions.checkNotNull(jsonProvider, "jsonProvider");
+        Check.notNull(jsonProvider, "jsonProvider");
         this.jsonProvider = jsonProvider;
         return this;
     }

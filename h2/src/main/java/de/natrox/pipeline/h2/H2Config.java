@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.h2;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public final class H2Config implements PartConfig<H2Provider> {
     private final String path;
 
     private H2Config(@NotNull Path path) {
-        Preconditions.checkNotNull(path, "path");
+        Check.notNull(path, "path");
         this.path = path.toAbsolutePath().toString();
     }
 
@@ -54,7 +54,7 @@ public final class H2Config implements PartConfig<H2Provider> {
         }
 
         public @NotNull Builder path(@NotNull Path path) {
-            Preconditions.checkNotNull(path, "path");
+            Check.notNull(path, "path");
             this.path = path;
             return this;
         }

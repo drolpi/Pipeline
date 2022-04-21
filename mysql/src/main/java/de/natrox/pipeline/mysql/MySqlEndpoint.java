@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.mysql;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +28,8 @@ public final class MySqlEndpoint {
     private final boolean useSsl;
 
     private MySqlEndpoint(@NotNull String host, int port, @NotNull String database, boolean useSsl) {
-        Preconditions.checkNotNull(host, "host");
-        Preconditions.checkNotNull(database, "database");
+        Check.notNull(host, "host");
+        Check.notNull(database, "database");
 
         this.host = host;
         this.port = port;
@@ -69,7 +69,7 @@ public final class MySqlEndpoint {
         }
 
         public Builder host(@NotNull String host) {
-            Preconditions.checkNotNull(host, "host");
+            Check.notNull(host, "host");
             this.host = host;
             return this;
         }
@@ -80,7 +80,7 @@ public final class MySqlEndpoint {
         }
 
         public @NotNull Builder database(@NotNull String database) {
-            Preconditions.checkNotNull(database, "database");
+            Check.notNull(database, "database");
             this.database = database;
             return this;
         }

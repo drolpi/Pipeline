@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ public final class RedisEndpoint {
     private final int database;
 
     private RedisEndpoint(@NotNull String host, int port, int database) {
-        Preconditions.checkNotNull(host, "host");
+        Check.notNull(host, "host");
         this.host = host;
         this.port = port;
         this.database = database;
@@ -60,7 +60,7 @@ public final class RedisEndpoint {
         }
 
         public @NotNull Builder host(@NotNull String host) {
-            Preconditions.checkNotNull(host, "host");
+            Check.notNull(host, "host");
             this.host = host;
             return this;
         }

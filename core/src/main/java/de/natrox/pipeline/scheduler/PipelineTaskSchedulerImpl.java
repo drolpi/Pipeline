@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.scheduler;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.datatype.PipelineData;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +39,8 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public synchronized <T extends PipelineData> @NotNull PipelineTask<T> schedule(@NotNull PipelineAction pipelineAction, @NotNull Pipeline.LoadingStrategy loadingStrategy, @NotNull Class<? extends T> type, @NotNull(exception = IllegalArgumentException.class) UUID uuid) {
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(uuid, "uuid");
+        Check.notNull(type, "type");
+        Check.notNull(uuid, "uuid");
         PipelineTask<T> existingTask = pipelineTask(type, uuid);
         if (existingTask != null) {
             return existingTask;
@@ -55,8 +55,8 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public synchronized <T extends PipelineData> PipelineTask<T> pipelineTask(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(uuid, "uuid");
+        Check.notNull(type, "type");
+        Check.notNull(uuid, "uuid");
         if (!pendingTasks.containsKey(uuid))
             return null;
         var map = pendingTasks.get(uuid);
@@ -68,8 +68,8 @@ public final class PipelineTaskSchedulerImpl implements PipelineTaskScheduler {
 
     @Override
     public synchronized <T extends PipelineData> void remove(@NotNull Class<? extends T> type, @NotNull UUID uuid) {
-        Preconditions.checkNotNull(type, "type");
-        Preconditions.checkNotNull(uuid, "uuid");
+        Check.notNull(type, "type");
+        Check.notNull(uuid, "uuid");
         if (!pendingTasks.containsKey(uuid))
             return;
         pendingTasks.get(uuid).remove(type);

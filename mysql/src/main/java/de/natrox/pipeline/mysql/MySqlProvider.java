@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.mysql;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;
@@ -30,7 +30,7 @@ public final class MySqlProvider implements GlobalStorageProvider {
     private final HikariDataSource hikariDataSource;
 
     protected MySqlProvider(@NotNull MySqlConfig config) throws Exception {
-        Preconditions.checkNotNull(config, "config");
+        Check.notNull(config, "config");
 
         var hikariConfig = new HikariConfig();
         var endpoint = config.randomEndpoint();

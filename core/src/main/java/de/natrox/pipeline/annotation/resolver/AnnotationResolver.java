@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.annotation.resolver;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.annotation.AutoSave;
 import de.natrox.pipeline.annotation.CleanUp;
 import de.natrox.pipeline.annotation.Preload;
@@ -33,7 +33,7 @@ public final class AnnotationResolver {
     }
 
     public static Properties properties(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         var properties = classType.getAnnotation(Properties.class);
         if (properties == null)
             throw new RuntimeException(classType.getName() + " does not have @Properties Annotation set");
@@ -41,27 +41,27 @@ public final class AnnotationResolver {
     }
 
     public static @NotNull String storageIdentifier(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         return properties(classType).identifier();
     }
 
     public static @NotNull Context context(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         return properties(classType).context();
     }
 
     public static @NotNull Optional<Preload> preload(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(Preload.class));
     }
 
     public static @NotNull Optional<AutoSave> autoSave(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(AutoSave.class));
     }
 
     public static @NotNull Optional<CleanUp> cleanUp(Class<?> classType) {
-        Preconditions.checkNotNull(classType, "classType");
+        Check.notNull(classType, "classType");
         return Optional.ofNullable(classType.getAnnotation(CleanUp.class));
     }
 }

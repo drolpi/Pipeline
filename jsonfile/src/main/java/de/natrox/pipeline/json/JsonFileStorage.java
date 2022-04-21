@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.json;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -59,8 +59,8 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         try {
             return loadFromFile(dataClass, objectUUID);
@@ -72,17 +72,17 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         return Files.exists(savedFile(dataClass, objectUUID));
     }
 
     @Override
     public void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
-        Preconditions.checkNotNull(data, "data");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
+        Check.notNull(data, "data");
 
         try {
             saveJsonToFile(dataClass, objectUUID, data);
@@ -93,8 +93,8 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         if (!exists(dataClass, objectUUID))
             return false;
@@ -109,7 +109,7 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
 
         var parentFolder = parent(dataClass);
         if (parentFolder.toFile().exists()) {
@@ -130,7 +130,7 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
 
         var parentFolder = parent(dataClass);
         if (parentFolder.toFile().exists()) {
@@ -158,14 +158,14 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return this.filter(dataClass, (key, value) -> true);
     }
 
     @Override
     public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(predicate, "predicate");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(predicate, "predicate");
 
         var parentFolder = parent(dataClass);
         if (parentFolder.toFile().exists()) {
@@ -196,15 +196,15 @@ final class JsonFileStorage implements GlobalStorage {
 
     @Override
     public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(consumer, "consumer");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(consumer, "consumer");
         this.entries(dataClass).forEach(consumer);
     }
 
     private void saveJsonToFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) throws IOException {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
-        Preconditions.checkNotNull(data, "data");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
+        Check.notNull(data, "data");
 
         var path = savedFile(dataClass, objectUUID);
 
@@ -218,8 +218,8 @@ final class JsonFileStorage implements GlobalStorage {
     }
 
     private JsonDocument loadFromFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) throws IOException {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         var path = savedFile(dataClass, objectUUID);
         var file = new File(path.toUri());
@@ -229,14 +229,14 @@ final class JsonFileStorage implements GlobalStorage {
     }
 
     private Path savedFile(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         return Paths.get(parent(dataClass).toString(), objectUUID + ".json");
     }
 
     private Path parent(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         var storageIdentifier = AnnotationResolver.storageIdentifier(dataClass);
 
         return Paths.get(directory.toString(), storageIdentifier);

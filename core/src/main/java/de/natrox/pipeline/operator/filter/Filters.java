@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.operator.filter;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 public final class Filters {
@@ -27,22 +27,22 @@ public final class Filters {
 
     @NotNull
     public static Filter or(@NotNull Filter first, @NotNull Filter second) {
-        Preconditions.checkNotNull(first, "first Filter");
-        Preconditions.checkNotNull(second, "second Filter");
+        Check.notNull(first, "first Filter");
+        Check.notNull(second, "second Filter");
         return new OrFilter(first, second);
     }
 
     @NotNull
     public static Filter and(@NotNull Filter first, @NotNull Filter second) {
-        Preconditions.checkNotNull(first, "first Filter");
-        Preconditions.checkNotNull(second, "second Filter");
+        Check.notNull(first, "first Filter");
+        Check.notNull(second, "second Filter");
         return new AndFilter(first, second);
     }
 
     @NotNull
     public static Filter field(@NotNull String fieldName, @NotNull Object value) {
-        Preconditions.checkNotNull(fieldName, "fieldName");
-        Preconditions.checkNotNull(value, "value");
+        Check.notNull(fieldName, "fieldName");
+        Check.notNull(value, "value");
         return new FieldFilter(fieldName, value);
     }
 }

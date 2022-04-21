@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.sql;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.pipeline.Pipeline;
@@ -66,8 +66,8 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public JsonDocument get(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_VAL, tableName(dataClass), TABLE_COLUMN_KEY),
@@ -79,8 +79,8 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public boolean exists(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         return executeQuery(
             String.format(SELECT_BY_UUID, TABLE_COLUMN_KEY, tableName(dataClass), TABLE_COLUMN_KEY),
@@ -92,9 +92,9 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public void save(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID, @NotNull JsonDocument data) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
-        Preconditions.checkNotNull(data, "data");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
+        Check.notNull(data, "data");
 
         if (!exists(dataClass, objectUUID)) {
             executeUpdate(
@@ -111,8 +111,8 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public boolean remove(@NotNull Class<? extends PipelineData> dataClass, @NotNull UUID objectUUID) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(objectUUID, "objectUUID");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(objectUUID, "objectUUID");
 
         return executeUpdate(
             String.format(DELETE_BY_UUID, tableName(dataClass), TABLE_COLUMN_KEY),
@@ -122,7 +122,7 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<UUID> keys(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return executeQuery(
             String.format(SELECT_ALL, TABLE_COLUMN_KEY, tableName(dataClass)),
             resultSet -> {
@@ -136,7 +136,7 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public @NotNull Collection<JsonDocument> documents(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return executeQuery(
             String.format(SELECT_ALL, TABLE_COLUMN_VAL, tableName(dataClass)),
             resultSet -> {
@@ -150,7 +150,7 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public @NotNull Map<UUID, JsonDocument> entries(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         return executeQuery(
             String.format(SELECT_ALL, tableName(dataClass)),
             resultSet -> {
@@ -167,8 +167,8 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public @NotNull Map<UUID, JsonDocument> filter(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiPredicate<UUID, JsonDocument> predicate) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(predicate, "predicate");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(predicate, "predicate");
         return executeQuery(
             String.format(SELECT_ALL, tableName(dataClass)),
             resultSet -> {
@@ -187,8 +187,8 @@ public abstract class SqlStorage implements GlobalStorage {
 
     @Override
     public void iterate(@NotNull Class<? extends PipelineData> dataClass, @NotNull BiConsumer<UUID, JsonDocument> consumer) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(consumer, "consumer");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(consumer, "consumer");
         executeQuery(
             String.format(SELECT_ALL, tableName(dataClass)),
             resultSet -> {
@@ -202,8 +202,8 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     private void createTableIfNotExists(@NotNull Class<? extends PipelineData> dataClass, @NotNull String name) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
-        Preconditions.checkNotNull(name, "name");
+        Check.notNull(dataClass, "dataClass");
+        Check.notNull(name, "name");
         executeUpdate(String.format(
             CREATE_TABLE,
             name,
@@ -213,7 +213,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     private String tableName(@NotNull Class<? extends PipelineData> dataClass) {
-        Preconditions.checkNotNull(dataClass, "dataClass");
+        Check.notNull(dataClass, "dataClass");
         var name = AnnotationResolver.storageIdentifier(dataClass);
         createTableIfNotExists(dataClass, name);
         return name;

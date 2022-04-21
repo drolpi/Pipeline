@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.operator;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.pipeline.PipelineImpl;
 import de.natrox.pipeline.datatype.PipelineData;
@@ -108,14 +108,14 @@ public final class PipelineStreamImpl<T extends PipelineData> implements Pipelin
 
     @Override
     public @NotNull PipelineStream<T> filter(@NotNull Filter filter) {
-        Preconditions.checkNotNull(filter, "filter");
+        Check.notNull(filter, "filter");
         findOptions.setFilter(filter);
         return this;
     }
 
     @Override
     public @NotNull PipelineStream<T> sort(@NotNull Object sorter) {
-        Preconditions.checkNotNull(sorter, "sorter");
+        Check.notNull(sorter, "sorter");
         findOptions.setSort(sorter);
         return this;
     }

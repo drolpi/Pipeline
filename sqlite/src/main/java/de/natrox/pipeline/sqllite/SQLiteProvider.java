@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.sqllite;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
@@ -34,7 +34,7 @@ public final class SQLiteProvider implements GlobalStorageProvider {
     private final HikariDataSource hikariDataSource;
 
     protected SQLiteProvider(@NotNull SQLiteConfig config) throws Exception {
-        Preconditions.checkNotNull(config, "config");
+        Check.notNull(config, "config");
         var path = Path.of(config.path());
         var parent = path.getParent();
 

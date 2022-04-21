@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.base.Preconditions;
+import de.natrox.common.validate.Check;
 import com.google.common.collect.ImmutableList;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.config.part.PartConfig;
@@ -33,7 +33,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
     private final List<RedisEndpoint> endpoints;
 
     private RedisConfig(String username, String password, @NotNull List<RedisEndpoint> endpoints) {
-        Preconditions.checkNotNull(endpoints, "endpoints");
+        Check.notNull(endpoints, "endpoints");
         this.username = username;
         this.password = password;
         this.endpoints = endpoints;
@@ -81,10 +81,10 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         }
 
         public @NotNull Builder endpoints(RedisEndpoint... endpoints) {
-            Preconditions.checkNotNull(endpoints, "endpoints");
+            Check.notNull(endpoints, "endpoints");
             for (int i = 0, length = endpoints.length; i < length; i++) {
                 var endpoint = endpoints[i];
-                Preconditions.checkNotNull(endpoint, "alias at index %s", i);
+                Check.notNull(endpoint, "alias at index %s", i);
                 this.endpoints.add(endpoint);
             }
             return this;
