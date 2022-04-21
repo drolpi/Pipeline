@@ -16,21 +16,19 @@
 
 package de.natrox.pipeline.test;
 
-import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.h2.H2Config;
+import de.natrox.pipeline.h2.H2Provider;
 
-public class MongoTest {
+import java.nio.file.Path;
+
+public class H2Test {
 
     public static void main(String[] args) throws Exception {
-        var mongoConfig = MongoConfig
+        H2Config h2Config = H2Config
             .builder()
-            .host("127.0.0.1")
-            .port(27017)
-            .database("test")
-            .authSource("admin") //optional
-            .username("username") //optional
-            .password("password") //optional
+            .path(Path.of("storage", "database"))
             .build();
-        var mongoProvider = mongoConfig.createProvider();
+        H2Provider h2Provider = h2Config.createProvider();
     }
 
 }

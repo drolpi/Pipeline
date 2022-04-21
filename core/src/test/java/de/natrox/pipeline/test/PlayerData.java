@@ -16,21 +16,26 @@
 
 package de.natrox.pipeline.test;
 
-import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.annotation.Properties;
+import de.natrox.pipeline.annotation.property.Context;
+import de.natrox.pipeline.datatype.connection.ConnectionData;
+import org.jetbrains.annotations.NotNull;
 
-public class MongoTest {
+@Properties(identifier = "PlayerData", context = Context.GLOBAL)
+public class PlayerData extends ConnectionData {
 
-    public static void main(String[] args) throws Exception {
-        var mongoConfig = MongoConfig
-            .builder()
-            .host("127.0.0.1")
-            .port(27017)
-            .database("test")
-            .authSource("admin") //optional
-            .username("username") //optional
-            .password("password") //optional
-            .build();
-        var mongoProvider = mongoConfig.createProvider();
+    public PlayerData(@NotNull Pipeline pipeline) {
+        super(pipeline);
     }
 
+    @Override
+    public void onConnect() {
+        //code here
+    }
+
+    @Override
+    public void onDisconnect() {
+        //code here
+    }
 }

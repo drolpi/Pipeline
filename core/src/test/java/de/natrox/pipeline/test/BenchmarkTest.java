@@ -36,8 +36,8 @@ import java.util.UUID;
 
 public class BenchmarkTest {
 
-    private final static UUID ID = UUID.nameUUIDFromBytes("test".getBytes(StandardCharsets.UTF_8));
-    private final static UUID ID_2 = UUID.nameUUIDFromBytes("test2".getBytes(StandardCharsets.UTF_8));
+    private final static UUID ID = UUID.nameUUIDFromBytes("test" .getBytes(StandardCharsets.UTF_8));
+    private final static UUID ID_2 = UUID.nameUUIDFromBytes("test2" .getBytes(StandardCharsets.UTF_8));
 
     public static void main(String[] args) throws Exception {
         var redisConfig = RedisConfig

@@ -16,21 +16,8 @@
 
 package de.natrox.pipeline.test;
 
-import de.natrox.pipeline.mongodb.MongoConfig;
+public class PlayerManager {
 
-public class MongoTest {
 
-    public static void main(String[] args) throws Exception {
-        var mongoConfig = MongoConfig
-            .builder()
-            .host("127.0.0.1")
-            .port(27017)
-            .database("test")
-            .authSource("admin") //optional
-            .username("username") //optional
-            .password("password") //optional
-            .build();
-        var mongoProvider = mongoConfig.createProvider();
-    }
 
 }

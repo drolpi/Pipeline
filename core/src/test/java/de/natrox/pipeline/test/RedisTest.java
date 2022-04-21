@@ -16,21 +16,33 @@
 
 package de.natrox.pipeline.test;
 
-import de.natrox.pipeline.mongodb.MongoConfig;
+import de.natrox.pipeline.redis.RedisConfig;
+import de.natrox.pipeline.redis.RedisEndpoint;
+import de.natrox.pipeline.redis.RedisProvider;
 
-public class MongoTest {
+public class RedisTest {
 
     public static void main(String[] args) throws Exception {
-        var mongoConfig = MongoConfig
+RedisConfig redisConfig = RedisConfig
+    .builder()
+    .endpoints(
+        RedisEndpoint
             .builder()
-            .host("127.0.0.1")
-            .port(27017)
-            .database("test")
-            .authSource("admin") //optional
-            .username("username") //optional
-            .password("password") //optional
-            .build();
-        var mongoProvider = mongoConfig.createProvider();
+            .host("0.0.0.0")
+            .port(6379)
+            .database(0) //optional
+            .build(),
+        RedisEndpoint
+            .builder()
+            .host("0.0.0.1")
+            .port(6379)
+            .database(5) //optional
+            .build()
+    )
+    .username("username") //optional
+    .password("password") //optional
+    .build();
+        RedisProvider redisProvider = redisConfig.createProvider();
     }
 
 }
