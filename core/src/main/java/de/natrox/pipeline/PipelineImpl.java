@@ -187,7 +187,6 @@ public final class PipelineImpl implements Pipeline {
                 if (callback != null)
                     callback.accept(data);
             }));
-            return Optional.empty();
         } else if (loadingStrategy.equals(LoadingStrategy.LOAD_PIPELINE)) {
             T data = loadFromPipeline(dataClass, objectUUID, instanceCreator, createIfNotExists);
             pipelineTask.completableFuture().complete(data);

@@ -178,12 +178,11 @@ public final class DataSynchronizerImpl implements DataSynchronizer {
         @NotNull JsonDocument document,
         @Nullable InstanceCreator<T> instanceCreator
     ) {
-        if (!localCache.exists(dataClass, objectUUID)) {
+        if (!localCache.exists(dataClass, objectUUID))
             localCache.save(
                 dataClass,
                 localCache.instantiateData(pipelineImpl, dataClass, objectUUID, instanceCreator)
             );
-        }
 
         var data = localCache.get(dataClass, objectUUID);
         if (data == null)
