@@ -60,6 +60,10 @@ public sealed interface Document extends Iterable<Pair<String, Object>> permits 
 
     int size();
 
+    default boolean isEmpty() {
+        return this.size() == 0;
+    }
+
     boolean containsKey(@NotNull String key);
 
 }
