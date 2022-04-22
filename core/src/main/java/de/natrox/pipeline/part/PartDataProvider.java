@@ -16,5 +16,25 @@
 
 package de.natrox.pipeline.part;
 
+import de.natrox.pipeline.document.Document;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
 public interface PartDataProvider {
+
+    Document get(@NotNull UUID uniqueId);
+
+    void insert(@NotNull UUID uniqueId, @NotNull Document document);
+
+    void update(@NotNull UUID uniqueId, @NotNull Document document);
+
+    boolean exists(@NotNull UUID uniqueId);
+
+    void remove(@NotNull UUID uniqueId);
+
+    void drop();
+
+    long size();
+
 }
