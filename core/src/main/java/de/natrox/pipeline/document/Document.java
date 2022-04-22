@@ -16,5 +16,50 @@
 
 package de.natrox.pipeline.document;
 
-public interface Document {
+import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@ApiStatus.Experimental
+public sealed interface Document extends Iterable<Pair<String, Object>> permits DocumentImpl {
+
+    static @NotNull Document create() {
+        return new DocumentImpl();
+    }
+
+    static @NotNull Document create(@NotNull String key, @NotNull Object value) {
+        Check.notNull(key, "key");
+        Check.notNull(value, "value");
+
+        LinkedHashMap<String, Object> document = new LinkedHashMap<>();
+        document.put(key, value);
+        return Document.create(document);
+    }
+
+    static @NotNull Document create(Map<String, Object> documentMap) {
+        Check.notNull(documentMap, "documentMap");
+        LinkedHashMap<String, Object> document = new LinkedHashMap<>(documentMap);
+        return new DocumentImpl(document);
+    }
+
+    @NotNull Document put(@NotNull String key, @NotNull Object value);
+
+    @Nullable Object get(@NotNull String key);
+
+    <T> @Nullable T get(@NotNull String key, @NotNull Class<T> type);
+
+    @NotNull UUID uniqueId();
+
+    void remove(@NotNull String key);
+
+    int size();
+
+    boolean containsKey(@NotNull String key);
+
 }
