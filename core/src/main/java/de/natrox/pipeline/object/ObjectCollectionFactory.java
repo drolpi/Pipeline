@@ -18,5 +18,5 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.collection.CollectionFactory;
 
-public class ObjectCollectionFactory implements CollectionFactory {
+public final class ObjectCollectionFactory implements CollectionFactory {
 }
