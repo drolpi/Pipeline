@@ -18,11 +18,28 @@ package de.natrox.pipeline;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PipelineTest {
 
     @Test
     public void testBuilder() {
         Pipeline pipeline = Pipeline
+            .builder()
+            .build();
+    }
+
+    @Test
+    public void shutdownTest() {
+        Pipeline pipeline = buildPipeline();
+
+        assertFalse(pipeline.isShutDowned(), "The pipeline has not yet been shut down");
+        pipeline.shutdown();
+        assertTrue(pipeline.isShutDowned(), "The pipeline has already been shut down");
+    }
+
+    private Pipeline buildPipeline() {
+        return Pipeline
             .builder()
             .build();
     }
