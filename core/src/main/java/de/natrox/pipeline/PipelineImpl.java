@@ -22,16 +22,73 @@ import de.natrox.pipeline.document.DocumentCollectionFactory;
 import de.natrox.pipeline.object.ObjectCollection;
 import de.natrox.pipeline.object.ObjectCollectionFactory;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.part.cache.DataUpdater;
+import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.cache.LocalCache;
+import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
+import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.storage.Storage;
+import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
+    private final Storage storage;
+    private final GlobalCache globalCache;
+    private final DataUpdater dataUpdater;
+    private final LocalCache localCache;
+
     private final DocumentCollectionFactory documentCollectionFactory;
     private final ObjectCollectionFactory objectCollectionFactory;
 
-    PipelineImpl() {
+    PipelineImpl(@NotNull PartBundle partBundle) {
+        Check.notNull(partBundle, "partBundle");
+
+        if (partBundle instanceof LocalBundle localBundle) {
+            LocalStorageProvider localStorageProvider = localBundle.localStorageProvider();
+            this.storage = localStorageProvider.constructLocalStorage();
+
+            LocalCacheProvider localCacheProvider = localBundle.localCacheProvider();
+            if (localCacheProvider != null) {
+                this.localCache = localCacheProvider.constructLocalCache();
+            } else {
+                this.localCache = null;
+            }
+
+            this.globalCache = null;
+            this.dataUpdater = null;
+        } else {
+            GlobalBundle globalBundle = (GlobalBundle) partBundle;
+
+            GlobalStorageProvider globalStorageProvider = globalBundle.globalStorageProvider();
+            this.storage = globalStorageProvider.constructGlobalStorage();
+
+            GlobalCacheProvider globalCacheProvider = globalBundle.globalCacheProvider();
+            if (globalCacheProvider != null) {
+                this.globalCache = globalCacheProvider.constructGlobalCache();
+            } else {
+                this.globalCache = null;
+            }
+
+            DataUpdaterProvider dataUpdaterProvider = globalBundle.dataUpdaterProvider();
+            if (dataUpdaterProvider != null) {
+                this.dataUpdater = dataUpdaterProvider.constructDataUpdater();
+            } else {
+                this.dataUpdater = null;
+            }
+
+            LocalCacheProvider localCacheProvider = globalBundle.localCacheProvider();
+            if (localCacheProvider != null) {
+                this.localCache = localCacheProvider.constructLocalCache();
+            } else {
+                this.localCache = null;
+            }
+        }
+
         this.documentCollectionFactory = new DocumentCollectionFactory();
         this.objectCollectionFactory = new ObjectCollectionFactory();
     }

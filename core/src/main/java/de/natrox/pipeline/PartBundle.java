@@ -16,36 +16,59 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public sealed interface PartBundle permits LocalBundleImpl, GlobalBundleImpl {
+public sealed interface PartBundle permits LocalBundle, GlobalBundle {
 
-    static PartBundle local(LocalCacheProvider localCache, LocalStorageProvider localStorage) {
-        return new LocalBundleImpl(localCache, localStorage);
+    static @NotNull PartBundle local(
+        @NotNull LocalStorageProvider localStorageProvider,
+        @NotNull LocalCacheProvider localCacheProvider
+    ) {
+        Check.notNull(localStorageProvider, "localStorageProvider");
+        Check.notNull(localCacheProvider, "localCacheProvider");
+        return new LocalBundle(localStorageProvider, localCacheProvider);
     }
 
-    static PartBundle local(LocalStorageProvider localStorage) {
-        return new LocalBundleImpl(localStorage);
+    static @NotNull PartBundle local(@NotNull LocalStorageProvider localStorageProvider) {
+        Check.notNull(localStorageProvider, "localStorageProvider");
+        return new LocalBundle(localStorageProvider);
     }
 
-    static PartBundle global(LocalCacheProvider localCache, DataUpdaterProvider dataUpdater, GlobalCacheProvider globalCache, GlobalStorageProvider globalStorage) {
-        return new GlobalBundleImpl(localCache, dataUpdater, globalCache, globalStorage);
+    static @NotNull PartBundle global(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull GlobalCacheProvider globalCacheProvider,
+        @NotNull DataUpdaterProvider dataUpdaterProvider,
+        @NotNull LocalCacheProvider localCacheProvider
+    ) {
+        return new GlobalBundle(globalStorageProvider, globalCacheProvider, dataUpdaterProvider, localCacheProvider);
     }
 
-    static PartBundle global(LocalCacheProvider localCache, DataUpdaterProvider dataUpdater, GlobalStorageProvider globalStorage) {
-        return new GlobalBundleImpl(localCache, dataUpdater, globalStorage);
+    static @NotNull PartBundle global(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull DataUpdaterProvider dataUpdaterProvider,
+        @NotNull LocalCacheProvider localCacheProvider
+    ) {
+        return new GlobalBundle(globalStorageProvider, dataUpdaterProvider, localCacheProvider);
     }
 
-    static PartBundle global(GlobalCacheProvider globalCache, GlobalStorageProvider globalStorage) {
-        return new GlobalBundleImpl(globalCache, globalStorage);
+    static @NotNull PartBundle global(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull GlobalCacheProvider globalCacheProvider
+    ) {
+        return new GlobalBundle(globalStorageProvider, globalCacheProvider);
     }
 
-    static PartBundle global(GlobalStorageProvider globalStorage) {
-        return new GlobalBundleImpl(globalStorage);
+    static @NotNull PartBundle global(@NotNull GlobalStorageProvider globalStorageProvider) {
+        return new GlobalBundle(globalStorageProvider);
     }
+
+    @Nullable LocalCacheProvider localCacheProvider();
 
 }

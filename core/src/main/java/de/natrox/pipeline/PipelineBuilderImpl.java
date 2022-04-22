@@ -16,7 +16,14 @@
 
 package de.natrox.pipeline;
 
-final class PipelineBuilderImpl implements Pipeline.Builder  {
+import org.jetbrains.annotations.NotNull;
+
+final class PipelineBuilderImpl implements Pipeline.Builder {
+
+    @Override
+    public Pipeline.@NotNull Builder bundle(@NotNull PartBundle bundle) {
+        return null;
+    }
 
     @Override
     public Pipeline build() {

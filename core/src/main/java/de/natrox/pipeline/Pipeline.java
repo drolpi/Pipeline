@@ -61,6 +61,8 @@ public interface Pipeline {
 
     interface Builder extends IBuilder<Pipeline> {
 
+        @NotNull Builder bundle(@NotNull PartBundle bundle);
+
     }
 
 }
