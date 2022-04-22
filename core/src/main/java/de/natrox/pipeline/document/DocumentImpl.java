@@ -170,7 +170,7 @@ public final class DocumentImpl extends LinkedHashMap<String, Object> implements
     }
 
     @Override
-    public Iterator<Pair<String, Object>> iterator() {
+    public @NotNull Iterator<Pair<String, Object>> iterator() {
         return new MapPairIterator(super.entrySet().iterator());
     }
 
@@ -200,7 +200,6 @@ public final class DocumentImpl extends LinkedHashMap<String, Object> implements
 
     private Object deepGet(String field) {
         if (isEmbedded(field)) {
-            // for embedded field, run a deep scan
             return getByEmbeddedKey(field);
         } else {
             return null;
