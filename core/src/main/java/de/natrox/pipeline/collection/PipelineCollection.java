@@ -18,16 +18,6 @@ package de.natrox.pipeline.collection;
 
 public interface PipelineCollection<T> {
 
-    void insert(T element);
-
-    void update(T element, boolean insertIfAbsent);
-
-    default void update(T element) {
-        this.update(element, false);
-    }
-
-    void remove(T element);
-
     void drop();
 
     boolean isDropped();
