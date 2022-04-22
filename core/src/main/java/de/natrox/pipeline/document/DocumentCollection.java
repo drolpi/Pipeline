@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.collection.Collection;
+import de.natrox.pipeline.collection.PipelineCollection;
 
-public sealed interface DocumentCollection extends Collection permits DocumentCollectionImpl {
+public sealed interface DocumentCollection extends PipelineCollection permits DocumentCollectionImpl {
 }

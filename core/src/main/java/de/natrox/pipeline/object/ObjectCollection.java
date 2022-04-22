@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.collection.Collection;
+import de.natrox.pipeline.collection.PipelineCollection;
 
-public sealed interface ObjectCollection extends Collection permits ObjectCollectionImpl {
+public sealed interface ObjectCollection extends PipelineCollection permits ObjectCollectionImpl {
 }

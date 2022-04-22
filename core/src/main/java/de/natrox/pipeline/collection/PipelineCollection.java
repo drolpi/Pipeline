@@ -16,5 +16,5 @@
 
 package de.natrox.pipeline.collection;
 
-public interface Collection {
+public interface PipelineCollection {
 }
