@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @ApiStatus.Experimental
@@ -56,9 +57,15 @@ public sealed interface Document extends Iterable<Pair<String, Object>> permits 
 
     @NotNull UUID uniqueId();
 
+    @NotNull Set<String> getFields();
+
     void remove(@NotNull String key);
 
+    @NotNull Document clone();
+
     int size();
+
+    @NotNull Document merge(@NotNull Document update);
 
     default boolean isEmpty() {
         return this.size() == 0;
