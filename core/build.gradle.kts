@@ -21,14 +21,11 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jodd:jodd-core:5.3.0")
 
-    testImplementation(project(":redis"))
-    testImplementation(project(":mongodb"))
-    testImplementation(project(":jsonfile"))
-    testImplementation(project(":h2"))
-    testImplementation(project(":mysql"))
-    testImplementation(project(":sqlite"))
-
-    testImplementation(project(":gson"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.8.2")
+    testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-suite-engine:junit-platform")
 }
 
 tasks.withType<Jar> {
