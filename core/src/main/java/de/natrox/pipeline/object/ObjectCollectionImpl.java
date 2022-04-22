@@ -16,5 +16,55 @@
 
 package de.natrox.pipeline.object;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
+import java.util.UUID;
+
 public final class ObjectCollectionImpl implements ObjectCollection {
+
+    @Override
+    public @NotNull Optional load(@NotNull UUID uniqueId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(@NotNull ObjectData objectData) {
+
+    }
+
+    @Override
+    public boolean exists(@NotNull UUID uniqueId) {
+        return false;
+    }
+
+    @Override
+    public void remove(@NotNull UUID uniqueId) {
+
+    }
+
+    @Override
+    public void drop() {
+
+    }
+
+    @Override
+    public boolean isDropped() {
+        return false;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return false;
+    }
+
+    @Override
+    public long size() {
+        return 0;
+    }
+
+    @Override
+    public void close() {
+
+    }
 }

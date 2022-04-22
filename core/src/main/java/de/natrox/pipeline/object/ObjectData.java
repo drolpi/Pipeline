@@ -16,20 +16,5 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.collection.PipelineCollection;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
-import java.util.UUID;
-
-public sealed interface ObjectCollection<T extends ObjectData> extends PipelineCollection<T> permits ObjectCollectionImpl {
-
-    @NotNull Optional<T> load(@NotNull UUID uniqueId);
-
-    void update(@NotNull ObjectData objectData);
-
-    boolean exists(@NotNull UUID uniqueId);
-
-    void remove(@NotNull UUID uniqueId);
-
+public abstract class ObjectData {
 }

@@ -21,6 +21,7 @@ import de.natrox.pipeline.document.DocumentCollection;
 import de.natrox.pipeline.document.DocumentCollectionFactory;
 import de.natrox.pipeline.object.ObjectCollection;
 import de.natrox.pipeline.object.ObjectCollectionFactory;
+import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -42,7 +43,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public <T> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type) {
+    public <T extends ObjectData> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type) {
         return null;
     }
 
@@ -52,7 +53,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public <T> void destroyCollection(@NotNull Class<T> type) {
+    public <T extends ObjectData> void destroyCollection(@NotNull Class<T> type) {
 
     }
 

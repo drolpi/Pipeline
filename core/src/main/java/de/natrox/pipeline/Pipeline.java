@@ -20,6 +20,7 @@ import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentCollection;
 import de.natrox.pipeline.object.ObjectCollection;
+import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,11 +35,11 @@ public interface Pipeline {
 
     @NotNull DocumentCollection collection(@NotNull String name);
 
-    <T> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type);
+    <T extends ObjectData> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type);
 
     void destroyCollection(@NotNull String name);
 
-    <T> void destroyCollection(@NotNull Class<T> type);
+    <T extends ObjectData> void destroyCollection(@NotNull Class<T> type);
 
     @NotNull Set<String> listDocumentCollections();
 
