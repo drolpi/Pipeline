@@ -16,5 +16,66 @@
 
 package de.natrox.pipeline.document;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
+import java.util.UUID;
+
 public final class DocumentCollectionImpl implements DocumentCollection {
+
+    private final String collectionName;
+
+    public DocumentCollectionImpl(String name) {
+        this.collectionName = name;
+    }
+
+    @Override
+    public @NotNull Optional<Document> get(@NotNull UUID uniqueId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void insert(@NotNull UUID uniqueId, @NotNull Document document) {
+
+    }
+
+    @Override
+    public void update(@NotNull UUID uniqueId, @NotNull Document document, boolean insertIfAbsent) {
+
+    }
+
+    @Override
+    public boolean exists(@NotNull UUID uniqueId) {
+        return false;
+    }
+
+    @Override
+    public void remove(@NotNull UUID uniqueId) {
+
+    }
+
+    @Override
+    public void drop() {
+
+    }
+
+    @Override
+    public boolean isDropped() {
+        return false;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return false;
+    }
+
+    @Override
+    public long size() {
+        return 0;
+    }
+
+    @Override
+    public void close() {
+
+    }
 }
