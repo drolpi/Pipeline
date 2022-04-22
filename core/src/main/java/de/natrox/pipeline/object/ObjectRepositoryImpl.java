@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class ObjectCollectionImpl implements ObjectCollection {
+public final class ObjectRepositoryImpl implements ObjectRepository {
 
     @Override
     public @NotNull Optional load(@NotNull UUID uniqueId) {

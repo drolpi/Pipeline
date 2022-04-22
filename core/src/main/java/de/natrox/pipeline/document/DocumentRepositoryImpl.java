@@ -21,11 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class DocumentCollectionImpl implements DocumentCollection {
+public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String collectionName;
 
-    public DocumentCollectionImpl(String name) {
+    public DocumentRepositoryImpl(String name) {
         this.collectionName = name;
     }
 

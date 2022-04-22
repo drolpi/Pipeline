@@ -18,8 +18,8 @@ package de.natrox.pipeline;
 
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentCollection;
-import de.natrox.pipeline.object.ObjectCollection;
+import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +33,9 @@ public interface Pipeline {
         return new PipelineBuilderImpl();
     }
 
-    @NotNull DocumentCollection collection(@NotNull String name);
+    @NotNull DocumentRepository collection(@NotNull String name);
 
-    <T extends ObjectData> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type);
+    <T extends ObjectData> @NotNull ObjectRepository<T> collection(@NotNull Class<T> type);
 
     void destroyCollection(@NotNull String name);
 

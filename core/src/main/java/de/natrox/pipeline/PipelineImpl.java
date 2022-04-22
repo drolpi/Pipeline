@@ -17,10 +17,10 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentCollection;
-import de.natrox.pipeline.document.DocumentCollectionFactory;
-import de.natrox.pipeline.object.ObjectCollection;
-import de.natrox.pipeline.object.ObjectCollectionFactory;
+import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.DocumentRepositoryFactory;
+import de.natrox.pipeline.object.ObjectRepository;
+import de.natrox.pipeline.object.ObjectRepositoryFactory;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
@@ -42,8 +42,8 @@ final class PipelineImpl implements Pipeline {
     private final DataUpdater dataUpdater;
     private final LocalCache localCache;
 
-    private final DocumentCollectionFactory documentCollectionFactory;
-    private final ObjectCollectionFactory objectCollectionFactory;
+    private final DocumentRepositoryFactory documentRepositoryFactory;
+    private final ObjectRepositoryFactory objectRepositoryFactory;
 
     PipelineImpl(@NotNull PartBundle partBundle) {
         Check.notNull(partBundle, "partBundle");
@@ -94,18 +94,18 @@ final class PipelineImpl implements Pipeline {
             }
         }
 
-        this.documentCollectionFactory = new DocumentCollectionFactory();
-        this.objectCollectionFactory = new ObjectCollectionFactory();
+        this.documentRepositoryFactory = new DocumentRepositoryFactory();
+        this.objectRepositoryFactory = new ObjectRepositoryFactory();
     }
 
     @Override
-    public @NotNull DocumentCollection collection(@NotNull String name) {
+    public @NotNull DocumentRepository collection(@NotNull String name) {
         Check.notNull(name, "name");
-        return documentCollectionFactory.collection(name);
+        return documentRepositoryFactory.collection(name);
     }
 
     @Override
-    public <T extends ObjectData> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type) {
+    public <T extends ObjectData> @NotNull ObjectRepository<T> collection(@NotNull Class<T> type) {
         return null;
     }
 

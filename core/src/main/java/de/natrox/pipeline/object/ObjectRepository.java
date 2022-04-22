@@ -16,13 +16,13 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.collection.PipelineCollection;
+import de.natrox.pipeline.collection.Repository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public sealed interface ObjectCollection<T extends ObjectData> extends PipelineCollection<T> permits ObjectCollectionImpl {
+public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {
 
     @NotNull Optional<T> load(@NotNull UUID uniqueId);
 

@@ -16,13 +16,13 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.collection.PipelineCollection;
+import de.natrox.pipeline.collection.Repository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public sealed interface DocumentCollection extends PipelineCollection<Document> permits DocumentCollectionImpl {
+public sealed interface DocumentRepository extends Repository<Document> permits DocumentRepositoryImpl {
 
     @NotNull Optional<Document> get(@NotNull UUID uniqueId);
 

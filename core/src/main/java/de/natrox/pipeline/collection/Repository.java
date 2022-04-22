@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.collection;
 
-public final class ObjectCollectionFactory {
+public interface Repository<T> {
+
+    void drop();
+
+    boolean isDropped();
+
+    boolean isOpen();
+
+    long size();
+
+    void close();
+
 }
