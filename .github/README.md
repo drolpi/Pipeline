@@ -2,10 +2,8 @@
 [![license](https://img.shields.io/github/license/NatroxMC/Pipeline?style=for-the-badge&color=b2204c)](../LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=for-the-badge)](https://github.com/RichardLitt/standard-readme)
 
-A Java data pipeline that synchronizes Java objects between databases, caches and pipeline nodes.
-
-# NOT READY FOR PRODUCTION
-We are currently working on a rewrite! [Click here](https://github.com/NatroxMC/Pipeline/tree/unstable/rewrite).
+# Note: NOT READY FOR PRODUCTION
+- We are currently working on a rewrite! [Click here](https://github.com/NatroxMC/Pipeline/tree/unstable/rewrite).
 
 # Table of contents
 - [Why use the Pipeline?](#why-use-the-pipeline)
