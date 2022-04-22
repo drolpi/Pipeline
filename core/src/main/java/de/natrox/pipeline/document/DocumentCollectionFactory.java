@@ -16,5 +16,29 @@
 
 package de.natrox.pipeline.document;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class DocumentCollectionFactory {
+
+    private final Map<String, DocumentCollection> collectionMap;
+
+    public DocumentCollectionFactory() {
+        this.collectionMap = new HashMap<>();
+    }
+
+    public DocumentCollection collection(String name) {
+        if (collectionMap.containsKey(name)) {
+            DocumentCollection collection = collectionMap.get(name);
+            //TODO: check if dropped or closed
+            return collectionMap.get(name);
+        } else {
+            return createCollection(name);
+        }
+    }
+
+    private DocumentCollection createCollection(String name) {
+        //TODO:
+        return null;
+    }
 }

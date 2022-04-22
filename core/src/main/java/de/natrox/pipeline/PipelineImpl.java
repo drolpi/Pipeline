@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentCollection;
 import de.natrox.pipeline.document.DocumentCollectionFactory;
 import de.natrox.pipeline.object.ObjectCollection;
@@ -36,7 +37,8 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public @NotNull DocumentCollection collection(@NotNull String name) {
-        return null;
+        Check.notNull(name, "name");
+        return documentCollectionFactory.collection(name);
     }
 
     @Override
