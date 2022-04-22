@@ -40,7 +40,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull ObjectCollection collection(@NotNull Class<?> type) {
+    public <T> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type) {
         return null;
     }
 
@@ -50,7 +50,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public void destroyCollection(@NotNull Class<?> type) {
+    public <T> void destroyCollection(@NotNull Class<T> type) {
 
     }
 

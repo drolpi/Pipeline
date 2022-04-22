@@ -34,11 +34,11 @@ public interface Pipeline {
 
     @NotNull DocumentCollection collection(@NotNull String name);
 
-    @NotNull ObjectCollection collection(@NotNull Class<?> type);
+    <T> @NotNull ObjectCollection<T> collection(@NotNull Class<T> type);
 
     void destroyCollection(@NotNull String name);
 
-    void destroyCollection(@NotNull Class<?> type);
+    <T> void destroyCollection(@NotNull Class<T> type);
 
     @NotNull Set<String> listDocumentCollections();
 
@@ -53,7 +53,7 @@ public interface Pipeline {
         return this.listDocumentCollections().contains(name);
     }
 
-    default boolean hasCollection(@NotNull Class<?> type) {
+    default <T> boolean hasCollection(@NotNull Class<T> type) {
         Check.notNull(type, "type");
         return this.listObjectCollections().contains(type.getName());
     }
