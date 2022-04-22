@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.local;
+package de.natrox.pipeline.part.cache;
 
 public interface LocalCache {
 }
