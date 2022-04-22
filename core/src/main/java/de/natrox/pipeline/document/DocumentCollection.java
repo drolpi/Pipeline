@@ -34,7 +34,7 @@ public sealed interface DocumentCollection extends PipelineCollection<Document> 
 
     void update(@NotNull UUID uniqueId, @NotNull Document document, boolean insertIfAbsent);
 
-    void exists(@NotNull UUID uniqueId);
+    boolean exists(@NotNull UUID uniqueId);
 
     void remove(@NotNull UUID uniqueId);
 
