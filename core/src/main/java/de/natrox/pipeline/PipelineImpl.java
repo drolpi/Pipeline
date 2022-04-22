@@ -16,6 +16,6 @@
 
 package de.natrox.pipeline;
 
-public class PipelineImpl implements Pipeline {
+public final class PipelineImpl implements Pipeline {
 
 }
