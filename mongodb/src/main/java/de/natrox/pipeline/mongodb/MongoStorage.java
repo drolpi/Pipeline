@@ -23,11 +23,11 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
-import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.old.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ final class MongoStorage implements GlobalStorage {
     private final JsonDocument.Factory documentFactory;
     private final MongoDatabase mongoDatabase;
 
-    protected MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
+    protected MongoStorage(PipelineOld pipeline, MongoDatabase mongoDatabase) {
         this.documentFactory = pipeline.documentFactory();
         this.mongoDatabase = mongoDatabase;
 

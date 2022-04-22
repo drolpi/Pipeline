@@ -17,12 +17,12 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
-import de.natrox.pipeline.part.local.LocalCache;
-import de.natrox.pipeline.part.updater.AbstractDataUpdater;
+import de.natrox.pipeline.old.part.local.LocalCache;
+import de.natrox.pipeline.old.part.updater.AbstractDataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
@@ -47,7 +47,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
     private final MessageListener<DataBlock> messageListener;
     private final UUID senderUUID = UUID.randomUUID();
 
-    protected RedisDataUpdater(@NotNull Pipeline pipeline, @NotNull RedissonClient redissonClient) {
+    protected RedisDataUpdater(@NotNull PipelineOld pipeline, @NotNull RedissonClient redissonClient) {
         this.localCache = pipeline.localCache();
         this.redissonClient = redissonClient;
         this.documentFactory = pipeline.documentFactory();
@@ -74,7 +74,7 @@ final class RedisDataUpdater extends AbstractDataUpdater {
                     return;
                 LOGGER.debug("Received Removal Instruction " + pipelineData.objectUUID() + " [" + pipelineData.getClass().getSimpleName() + "] " + System.currentTimeMillis());
                 pipelineData.markForRemoval();
-                pipeline.delete(pipelineData.getClass(), pipelineData.objectUUID(), false, Pipeline.QueryStrategy.LOCAL);
+                pipeline.delete(pipelineData.getClass(), pipelineData.objectUUID(), false, PipelineOld.QueryStrategy.LOCAL);
             }
         };
         dataTopic.addListener(DataBlock.class, messageListener);

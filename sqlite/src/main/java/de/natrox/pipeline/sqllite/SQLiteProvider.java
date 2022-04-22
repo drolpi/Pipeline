@@ -20,9 +20,9 @@ import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.storage.GlobalStorageProvider;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.part.storage.GlobalStorage;
+import de.natrox.pipeline.old.part.storage.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 import org.sqlite.SQLiteDataSource;
 
@@ -61,7 +61,7 @@ public final class SQLiteProvider implements GlobalStorageProvider {
     }
 
     @Override
-    public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
+    public GlobalStorage constructGlobalStorage(PipelineOld pipeline) {
         return new SQLiteStorage(pipeline, hikariDataSource);
     }
 }

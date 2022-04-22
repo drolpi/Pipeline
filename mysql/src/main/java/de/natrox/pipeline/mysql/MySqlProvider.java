@@ -19,9 +19,9 @@ package de.natrox.pipeline.mysql;
 import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.storage.GlobalStorageProvider;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.part.storage.GlobalStorage;
+import de.natrox.pipeline.old.part.storage.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 public final class MySqlProvider implements GlobalStorageProvider {
@@ -69,7 +69,7 @@ public final class MySqlProvider implements GlobalStorageProvider {
     }
 
     @Override
-    public GlobalStorage constructGlobalStorage(Pipeline pipeline) {
+    public GlobalStorage constructGlobalStorage(PipelineOld pipeline) {
         return new MySqlStorage(pipeline, hikariDataSource);
     }
 }

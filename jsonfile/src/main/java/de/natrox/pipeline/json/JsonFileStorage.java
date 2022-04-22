@@ -17,11 +17,11 @@
 package de.natrox.pipeline.json;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
-import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.old.part.storage.GlobalStorage;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ final class JsonFileStorage implements GlobalStorage {
     private final JsonDocument.Factory documentFactory;
     private final Path directory;
 
-    protected JsonFileStorage(Pipeline pipeline, Path path) {
+    protected JsonFileStorage(PipelineOld pipeline, Path path) {
         this.documentFactory = pipeline.documentFactory();
         this.directory = path;
 

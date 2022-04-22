@@ -19,7 +19,7 @@ package de.natrox.pipeline.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
 import de.natrox.pipeline.json.serializer.PipelineDataSerializer;
 import org.jetbrains.annotations.NotNull;

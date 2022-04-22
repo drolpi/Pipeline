@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.validate.Check;
 import com.google.common.collect.ImmutableList;
 import de.natrox.common.builder.IBuilder;
-import de.natrox.pipeline.config.part.PartConfig;
+import de.natrox.pipeline.old.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

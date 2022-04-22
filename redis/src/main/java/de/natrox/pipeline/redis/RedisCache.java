@@ -17,11 +17,11 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
-import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.old.part.cache.GlobalCache;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -48,7 +48,7 @@ final class RedisCache implements GlobalCache {
     private final JsonDocument.Factory documentFactory;
     private final RedissonClient redissonClient;
 
-    protected RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
+    protected RedisCache(PipelineOld pipeline, RedissonClient redissonClient) {
         this.documentFactory = pipeline.documentFactory();
         this.redissonClient = redissonClient;
 

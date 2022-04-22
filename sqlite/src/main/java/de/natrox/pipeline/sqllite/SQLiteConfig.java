@@ -18,7 +18,7 @@ package de.natrox.pipeline.sqllite;
 
 import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
-import de.natrox.pipeline.config.part.PartConfig;
+import de.natrox.pipeline.old.config.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;

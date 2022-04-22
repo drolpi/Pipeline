@@ -18,11 +18,11 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
 import com.google.common.base.Strings;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.cache.GlobalCacheProvider;
-import de.natrox.pipeline.part.updater.DataUpdater;
-import de.natrox.pipeline.part.updater.DataUpdaterProvider;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.part.cache.GlobalCache;
+import de.natrox.pipeline.old.part.cache.GlobalCacheProvider;
+import de.natrox.pipeline.old.part.updater.DataUpdater;
+import de.natrox.pipeline.old.part.updater.DataUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -83,12 +83,12 @@ public final class RedisProvider implements DataUpdaterProvider, GlobalCacheProv
     }
 
     @Override
-    public DataUpdater constructDataUpdater(Pipeline pipeline) {
+    public DataUpdater constructDataUpdater(PipelineOld pipeline) {
         return new RedisDataUpdater(pipeline, redissonClient);
     }
 
     @Override
-    public GlobalCache constructGlobalCache(Pipeline pipeline) {
+    public GlobalCache constructGlobalCache(PipelineOld pipeline) {
         return new RedisCache(pipeline, redissonClient);
     }
 }

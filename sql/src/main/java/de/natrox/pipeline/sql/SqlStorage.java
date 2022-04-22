@@ -19,11 +19,11 @@ package de.natrox.pipeline.sql;
 import de.natrox.common.validate.Check;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.annotation.resolver.AnnotationResolver;
-import de.natrox.pipeline.datatype.PipelineData;
+import de.natrox.pipeline.old.PipelineOld;
+import de.natrox.pipeline.old.annotation.resolver.AnnotationResolver;
+import de.natrox.pipeline.old.datatype.PipelineData;
 import de.natrox.pipeline.json.document.JsonDocument;
-import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.old.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public abstract class SqlStorage implements GlobalStorage {
     private final JsonDocument.Factory documentFactory;
     private final HikariDataSource hikariDataSource;
 
-    public SqlStorage(Pipeline pipeline, HikariDataSource hikariDataSource) {
+    public SqlStorage(PipelineOld pipeline, HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
         this.documentFactory = pipeline.documentFactory();
     }

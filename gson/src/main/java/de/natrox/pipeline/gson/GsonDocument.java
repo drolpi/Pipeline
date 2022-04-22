@@ -119,7 +119,7 @@ final class GsonDocument implements JsonDocument {
     @Override
     public @NotNull GsonDocument append(@NotNull String key, @Nullable JsonDocument value) {
         if (value instanceof GsonDocument gsonDocument)
-            this.object.add(key, value == null ? JsonNull.INSTANCE : gsonDocument.object);
+            this.object.add(key, gsonDocument.object);
         return this;
     }
 
