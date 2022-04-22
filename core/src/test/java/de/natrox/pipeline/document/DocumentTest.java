@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentTest {
 
-    private Document document;
+    private static Document document;
 
     @Test
     public void testCreateDocument() {
@@ -37,12 +37,12 @@ public class DocumentTest {
     }
 
     @BeforeAll
-    public void setup() {
-        this.document = Document
+    public static void setup() {
+        document = Document
             .create("name", "Eric")
             .put("level", 234685)
             .put("address.street", "montana-avenue")
-            .put("name.name", "Eric");
+            .put("test.name", "Eric");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DocumentTest {
         assertNull(document.get("address.number"));
 
         assertEquals(document.get("name"), document.get("name"));
-        assertEquals(document.get("name.name"), "name");
+        assertEquals(document.get("test.name"), document.get("name"));
 
         assertNotEquals(document.get("name"), "a");
         assertNull(document.get("."));
@@ -70,21 +70,21 @@ public class DocumentTest {
     @Test
     public void testRemove() {
         Iterator<Pair<String, Object>> iterator = document.iterator();
-        assertEquals(document.size(), 4);
+        assertEquals(document.size(), 5);
         if (iterator.hasNext()) {
             iterator.next();
             iterator.remove();
         }
-        assertEquals(document.size(), 3);
+        assertEquals(document.size(), 4);
     }
 
     @Test
     public void testPut() {
-        assertEquals(document.size(), 3);
+        assertEquals(document.size(), 4);
         document.put("age", 22);
 
         assertEquals(document.get("age"), 22);
-        assertEquals(document.size(), 4);
+        assertEquals(document.size(), 5);
     }
 
 }
