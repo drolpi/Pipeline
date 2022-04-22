@@ -48,11 +48,13 @@ final class PipelineImpl implements Pipeline {
     PipelineImpl(@NotNull PartBundle partBundle) {
         Check.notNull(partBundle, "partBundle");
 
+        // check if a LocalBundle or a GlobalBundle is used
         if (partBundle instanceof LocalBundle localBundle) {
             LocalStorageProvider localStorageProvider = localBundle.localStorageProvider();
             this.storage = localStorageProvider.constructLocalStorage();
 
             LocalCacheProvider localCacheProvider = localBundle.localCacheProvider();
+            // check if there is a local cache provider or initialize null
             if (localCacheProvider != null) {
                 this.localCache = localCacheProvider.constructLocalCache();
             } else {
@@ -68,6 +70,7 @@ final class PipelineImpl implements Pipeline {
             this.storage = globalStorageProvider.constructGlobalStorage();
 
             GlobalCacheProvider globalCacheProvider = globalBundle.globalCacheProvider();
+            // check if there is a global cache provider or initialize null
             if (globalCacheProvider != null) {
                 this.globalCache = globalCacheProvider.constructGlobalCache();
             } else {
@@ -75,6 +78,7 @@ final class PipelineImpl implements Pipeline {
             }
 
             DataUpdaterProvider dataUpdaterProvider = globalBundle.dataUpdaterProvider();
+            // check if there is a data updater provider or initialize null
             if (dataUpdaterProvider != null) {
                 this.dataUpdater = dataUpdaterProvider.constructDataUpdater();
             } else {
@@ -82,6 +86,7 @@ final class PipelineImpl implements Pipeline {
             }
 
             LocalCacheProvider localCacheProvider = globalBundle.localCacheProvider();
+            // check if there is a local cache provider or initialize null
             if (localCacheProvider != null) {
                 this.localCache = localCacheProvider.constructLocalCache();
             } else {
