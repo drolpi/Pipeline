@@ -20,6 +20,7 @@ import de.natrox.pipeline.document.DocumentCollection;
 import de.natrox.pipeline.document.DocumentCollectionFactory;
 import de.natrox.pipeline.object.ObjectCollection;
 import de.natrox.pipeline.object.ObjectCollectionFactory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -34,32 +35,32 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public DocumentCollection collection(String name) {
+    public @NotNull DocumentCollection collection(@NotNull String name) {
         return null;
     }
 
     @Override
-    public ObjectCollection collection(Class<?> type) {
+    public @NotNull ObjectCollection collection(@NotNull Class<?> type) {
         return null;
     }
 
     @Override
-    public void destroyCollection(String name) {
+    public void destroyCollection(@NotNull String name) {
 
     }
 
     @Override
-    public void destroyCollection(Class<?> type) {
+    public void destroyCollection(@NotNull Class<?> type) {
 
     }
 
     @Override
-    public Set<String> listDocumentCollections() {
+    public @NotNull Set<String> listDocumentCollections() {
         return null;
     }
 
     @Override
-    public Set<String> listObjectCollections() {
+    public @NotNull Set<String> listObjectCollections() {
         return null;
     }
 

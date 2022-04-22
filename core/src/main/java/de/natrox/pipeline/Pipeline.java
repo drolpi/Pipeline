@@ -17,38 +17,44 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.builder.IBuilder;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentCollection;
 import de.natrox.pipeline.object.ObjectCollection;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
+@ApiStatus.Experimental
 public interface Pipeline {
 
-    static Builder builder() {
+    static @NotNull Builder builder() {
         return new PipelineBuilderImpl();
     }
 
-    DocumentCollection collection(String name);
+    @NotNull DocumentCollection collection(@NotNull String name);
 
-    ObjectCollection collection(Class<?> type);
+    @NotNull ObjectCollection collection(@NotNull Class<?> type);
 
-    void destroyCollection(String name);
+    void destroyCollection(@NotNull String name);
 
-    void destroyCollection(Class<?> type);
+    void destroyCollection(@NotNull Class<?> type);
 
-    Set<String> listDocumentCollections();
+    @NotNull Set<String> listDocumentCollections();
 
-    Set<String> listObjectCollections();
+    @NotNull Set<String> listObjectCollections();
 
     boolean isShutDowned();
 
     void shutdown();
 
-    default boolean hasCollection(String name) {
+    default boolean hasCollection(@NotNull String name) {
+        Check.notNull(name, "name");
         return this.listDocumentCollections().contains(name);
     }
 
-    default boolean hasRepository(Class<?> type) {
+    default boolean hasCollection(@NotNull Class<?> type) {
+        Check.notNull(type, "type");
         return this.listObjectCollections().contains(type.getName());
     }
 
