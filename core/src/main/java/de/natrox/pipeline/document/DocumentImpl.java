@@ -38,16 +38,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public final class DocumentImpl extends LinkedHashMap<String, Object> implements Document {
+final class DocumentImpl extends LinkedHashMap<String, Object> implements Document {
 
     private final static String FIELD_SEPARATOR = ".";
     private final static String DOC_ID = "_id";
 
-    public DocumentImpl() {
+    DocumentImpl() {
         super();
     }
 
-    public DocumentImpl(Map<String, Object> objectMap) {
+    DocumentImpl(Map<String, Object> objectMap) {
         super(objectMap);
     }
 
