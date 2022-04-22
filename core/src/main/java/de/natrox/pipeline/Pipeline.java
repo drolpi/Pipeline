@@ -17,11 +17,39 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.builder.IBuilder;
+import de.natrox.pipeline.document.DocumentCollection;
+import de.natrox.pipeline.object.ObjectCollection;
+
+import java.util.Set;
 
 public interface Pipeline {
 
     static Builder builder() {
         return new PipelineBuilderImpl();
+    }
+
+    DocumentCollection collection(String name);
+
+    ObjectCollection collection(Class<?> type);
+
+    void destroyCollection(String name);
+
+    void destroyCollection(Class<?> type);
+
+    Set<String> listDocumentCollections();
+
+    Set<String> listObjectCollections();
+
+    boolean isShutDowned();
+
+    void shutdown();
+
+    default boolean hasCollection(String name) {
+        return this.listDocumentCollections().contains(name);
+    }
+
+    default boolean hasRepository(Class<?> type) {
+        return this.listObjectCollections().contains(type.getName());
     }
 
     interface Builder extends IBuilder<Pipeline> {

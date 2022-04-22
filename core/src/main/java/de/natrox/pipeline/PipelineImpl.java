@@ -16,6 +16,60 @@
 
 package de.natrox.pipeline;
 
-public final class PipelineImpl implements Pipeline {
+import de.natrox.pipeline.document.DocumentCollection;
+import de.natrox.pipeline.document.DocumentCollectionFactory;
+import de.natrox.pipeline.object.ObjectCollection;
+import de.natrox.pipeline.object.ObjectCollectionFactory;
 
+import java.util.Set;
+
+final class PipelineImpl implements Pipeline {
+
+    private final DocumentCollectionFactory documentCollectionFactory;
+    private final ObjectCollectionFactory objectCollectionFactory;
+
+    PipelineImpl() {
+        this.documentCollectionFactory = new DocumentCollectionFactory();
+        this.objectCollectionFactory = new ObjectCollectionFactory();
+    }
+
+    @Override
+    public DocumentCollection collection(String name) {
+        return null;
+    }
+
+    @Override
+    public ObjectCollection collection(Class<?> type) {
+        return null;
+    }
+
+    @Override
+    public void destroyCollection(String name) {
+
+    }
+
+    @Override
+    public void destroyCollection(Class<?> type) {
+
+    }
+
+    @Override
+    public Set<String> listDocumentCollections() {
+        return null;
+    }
+
+    @Override
+    public Set<String> listObjectCollections() {
+        return null;
+    }
+
+    @Override
+    public boolean isShutDowned() {
+        return false;
+    }
+
+    @Override
+    public void shutdown() {
+
+    }
 }
