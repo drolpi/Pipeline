@@ -4,6 +4,9 @@
 
 A Java data pipeline that synchronizes Java objects between databases, caches and pipeline nodes.
 
+# NOT READY FOR PRODUCTION
+We are currently working on a rewrite! [Click here](https://github.com/NatroxMC/Pipeline/tree/unstable/rewrite).
+
 # Table of contents
 - [Why use the Pipeline?](#why-use-the-pipeline)
 - [Advantages & Disadvantages](#advantages-and-disadvantages)
