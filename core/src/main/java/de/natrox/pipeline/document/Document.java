@@ -38,9 +38,9 @@ public sealed interface Document extends Iterable<Pair<String, Object>> permits 
         Check.notNull(key, "key");
         Check.notNull(value, "value");
 
-        LinkedHashMap<String, Object> document = new LinkedHashMap<>();
+        Document document = new DocumentImpl();
         document.put(key, value);
-        return Document.create(document);
+        return document;
     }
 
     static @NotNull Document create(Map<String, Object> documentMap) {
