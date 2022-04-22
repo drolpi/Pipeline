@@ -24,7 +24,7 @@ defaultTasks("build", "shadowJar")
 
 allprojects {
     group = "de.natrox"
-    version = "1.2.0-SNAPSHOT"
+    version = "2.0.0-SNAPSHOT"
     description = "A Java data pipeline that synchronizes Java objects between databases, caches and pipeline nodes"
 
     repositories {
