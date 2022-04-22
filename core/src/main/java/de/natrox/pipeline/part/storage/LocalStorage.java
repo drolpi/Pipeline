@@ -16,5 +16,5 @@
 
 package de.natrox.pipeline.part.storage;
 
-public interface GlobalStorage extends Storage {
+public interface LocalStorage extends Storage {
 }
