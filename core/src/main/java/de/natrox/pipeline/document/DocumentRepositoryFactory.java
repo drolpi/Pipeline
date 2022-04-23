@@ -16,9 +16,12 @@
 
 package de.natrox.pipeline.document;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@ApiStatus.Internal
 public final class DocumentRepositoryFactory {
 
     private final Map<String, DocumentRepository> repositoryMap;

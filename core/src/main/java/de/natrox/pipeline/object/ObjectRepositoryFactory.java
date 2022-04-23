@@ -16,5 +16,8 @@
 
 package de.natrox.pipeline.object;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public final class ObjectRepositoryFactory {
 }
