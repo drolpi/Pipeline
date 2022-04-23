@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.pipeline.part.memory.InMemoryProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,9 +25,16 @@ public class PipelineTest {
 
     @Test
     public void testBuilder() {
-        Pipeline pipeline = Pipeline
-            .builder()
-            .build();
+        InMemoryProvider provider = new InMemoryProvider();
+
+        Pipeline.Builder builder = Pipeline.builder();
+        assertNotNull(builder);
+        assertThrows(NullPointerException.class, builder::build);
+
+        PartBundle bundle = PartBundle.local(provider);
+        assertNotNull(bundle);
+        builder.bundle(bundle);
+        assertNotNull(builder.build());
     }
 
     @Test
