@@ -33,30 +33,30 @@ public interface Pipeline {
         return new PipelineBuilderImpl();
     }
 
-    @NotNull DocumentRepository collection(@NotNull String name);
+    @NotNull DocumentRepository repository(@NotNull String name);
 
-    <T extends ObjectData> @NotNull ObjectRepository<T> collection(@NotNull Class<T> type);
+    <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type);
 
-    void destroyCollection(@NotNull String name);
+    void destroyRepository(@NotNull String name);
 
-    <T extends ObjectData> void destroyCollection(@NotNull Class<T> type);
+    <T extends ObjectData> void destroyRepository(@NotNull Class<T> type);
 
-    @NotNull Set<String> listDocumentCollections();
+    @NotNull Set<String> listDocumentRepositories();
 
-    @NotNull Set<String> listObjectCollections();
+    @NotNull Set<String> listObjectRepositories();
 
     boolean isShutDowned();
 
     void shutdown();
 
-    default boolean hasCollection(@NotNull String name) {
+    default boolean hasRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        return this.listDocumentCollections().contains(name);
+        return this.listDocumentRepositories().contains(name);
     }
 
-    default <T> boolean hasCollection(@NotNull Class<T> type) {
+    default <T> boolean hasRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        return this.listObjectCollections().contains(type.getName());
+        return this.listObjectRepositories().contains(type.getName());
     }
 
     interface Builder extends IBuilder<Pipeline> {

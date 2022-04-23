@@ -99,33 +99,33 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull DocumentRepository collection(@NotNull String name) {
+    public @NotNull DocumentRepository repository(@NotNull String name) {
         Check.notNull(name, "name");
-        return documentRepositoryFactory.collection(name);
+        return documentRepositoryFactory.repository(name);
     }
 
     @Override
-    public <T extends ObjectData> @NotNull ObjectRepository<T> collection(@NotNull Class<T> type) {
+    public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type) {
         return null;
     }
 
     @Override
-    public void destroyCollection(@NotNull String name) {
+    public void destroyRepository(@NotNull String name) {
 
     }
 
     @Override
-    public <T extends ObjectData> void destroyCollection(@NotNull Class<T> type) {
+    public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
 
     }
 
     @Override
-    public @NotNull Set<String> listDocumentCollections() {
+    public @NotNull Set<String> listDocumentRepositories() {
         return null;
     }
 
     @Override
-    public @NotNull Set<String> listObjectCollections() {
+    public @NotNull Set<String> listObjectRepositories() {
         return null;
     }
 

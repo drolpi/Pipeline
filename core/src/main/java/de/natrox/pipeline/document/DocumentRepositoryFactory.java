@@ -21,23 +21,26 @@ import java.util.Map;
 
 public final class DocumentRepositoryFactory {
 
-    private final Map<String, DocumentRepository> collectionMap;
+    private final Map<String, DocumentRepository> repositoryMap;
 
     public DocumentRepositoryFactory() {
-        this.collectionMap = new HashMap<>();
+        this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository collection(String name) {
-        if (collectionMap.containsKey(name)) {
-            DocumentRepository collection = collectionMap.get(name);
-            //TODO: check if dropped or closed
-            return collectionMap.get(name);
+    public DocumentRepository repository(String name) {
+        if (repositoryMap.containsKey(name)) {
+            DocumentRepository repository = repositoryMap.get(name);
+            if (repository.isDropped() || !repository.isOpen()) {
+                repositoryMap.remove(name);
+                return createRepository(name);
+            }
+            return repositoryMap.get(name);
         } else {
-            return createCollection(name);
+            return createRepository(name);
         }
     }
 
-    private DocumentRepository createCollection(String name) {
+    private DocumentRepository createRepository(String name) {
         //TODO:
         return null;
     }

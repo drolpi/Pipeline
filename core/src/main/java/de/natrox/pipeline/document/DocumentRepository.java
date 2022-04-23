@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.collection.Repository;
+import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

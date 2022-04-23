@@ -23,10 +23,10 @@ import java.util.UUID;
 
 public final class DocumentRepositoryImpl implements DocumentRepository {
 
-    private final String collectionName;
+    private final String repositoryName;
 
     public DocumentRepositoryImpl(String name) {
-        this.collectionName = name;
+        this.repositoryName = name;
     }
 
     @Override

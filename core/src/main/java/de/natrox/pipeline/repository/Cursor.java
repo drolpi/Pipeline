@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.collection;
+package de.natrox.pipeline.repository;
 
-public interface Repository<T> {
-
-    void drop();
-
-    boolean isDropped();
-
-    boolean isOpen();
-
-    long size();
-
-    void close();
-
+public interface Cursor<T> {
 }

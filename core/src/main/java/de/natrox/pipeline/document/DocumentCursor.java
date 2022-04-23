@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.collection.Cursor;
+import de.natrox.pipeline.repository.Cursor;
 
 public interface DocumentCursor extends Cursor<Document> {
 }
