@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.storage.provider;
 
-import de.natrox.pipeline.part.provider.PartProvider;
+import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.storage.LocalStorage;
 
 public interface LocalStorageProvider extends PartProvider {
