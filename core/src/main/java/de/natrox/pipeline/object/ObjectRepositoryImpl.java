@@ -16,6 +16,9 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.document.FindOptions;
+import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -26,6 +29,11 @@ public final class ObjectRepositoryImpl implements ObjectRepository {
     @Override
     public @NotNull Optional load(@NotNull UUID uniqueId) {
         return Optional.empty();
+    }
+
+    @Override
+    public @NotNull Cursor find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
+        return null;
     }
 
     @Override

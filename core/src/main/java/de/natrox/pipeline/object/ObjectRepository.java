@@ -16,6 +16,9 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.document.FindOptions;
+import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +28,23 @@ import java.util.UUID;
 public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {
 
     @NotNull Optional<T> load(@NotNull UUID uniqueId);
+
+    @NotNull Cursor<T> find(@NotNull Filter filter, @NotNull FindOptions findOptions);
+
+    default Cursor<T> find() {
+        //TODO:
+        return this.find(null, null);
+    }
+
+    default Cursor<T> find(@NotNull Filter filter) {
+        //TODO:
+        return this.find(filter, null);
+    }
+
+    default Cursor<T> find(@NotNull FindOptions findOptions) {
+        //TODO:
+        return this.find(null, findOptions);
+    }
 
     void update(@NotNull ObjectData objectData);
 
