@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+dependencies {
 
-rootProject.name = "Pipeline"
+}
 
-include(
-    ":core",
-    ":config"
-)
+tasks.withType<Jar> {
+    archiveFileName.set("pipeline-config.jar")
+}
