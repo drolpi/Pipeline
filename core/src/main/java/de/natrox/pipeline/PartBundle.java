@@ -46,7 +46,7 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
 
     static @NotNull PartBundle local(@NotNull LocalStorageProvider localStorageProvider) {
         Check.notNull(localStorageProvider, "localStorageProvider");
-        return new Local(localStorageProvider);
+        return new Local(localStorageProvider, null);
     }
 
     static @NotNull PartBundle global(
@@ -63,38 +63,24 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
         @NotNull DataUpdaterProvider dataUpdaterProvider,
         @NotNull LocalCacheProvider localCacheProvider
     ) {
-        return new Global(globalStorageProvider, dataUpdaterProvider, localCacheProvider);
+        return new Global(globalStorageProvider, null, dataUpdaterProvider, localCacheProvider);
     }
 
     static @NotNull PartBundle global(
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider
     ) {
-        return new Global(globalStorageProvider, globalCacheProvider);
+        return new Global(globalStorageProvider, globalCacheProvider, null, null);
     }
 
     static @NotNull PartBundle global(@NotNull GlobalStorageProvider globalStorageProvider) {
-        return new Global(globalStorageProvider);
+        return new Global(globalStorageProvider, null, null, null);
     }
 
     @NotNull StoreManager createStoreManager();
 
-    final class Local implements PartBundle {
-
-        private final LocalStorageProvider localStorageProvider;
-        private final LocalCacheProvider localCacheProvider;
-
-        protected Local(
-            @NotNull LocalStorageProvider localStorageProvider,
-            @Nullable LocalCacheProvider localCacheProvider
-        ) {
-            this.localStorageProvider = localStorageProvider;
-            this.localCacheProvider = localCacheProvider;
-        }
-
-        Local(LocalStorageProvider localStorageProvider) {
-            this(localStorageProvider, null);
-        }
+    record Local(@NotNull LocalStorageProvider localStorageProvider,
+                 @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
         public @NotNull StoreManager createStoreManager() {
@@ -109,43 +95,10 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
 
     }
 
-    final class Global implements PartBundle {
-
-        private final GlobalStorageProvider globalStorageProvider;
-        private final GlobalCacheProvider globalCacheProvider;
-        private final DataUpdaterProvider dataUpdaterProvider;
-        private final LocalCacheProvider localCacheProvider;
-
-        Global(
-            @NotNull GlobalStorageProvider globalStorageProvider,
-            @Nullable GlobalCacheProvider globalCacheProvider,
-            @Nullable DataUpdaterProvider dataUpdaterProvider,
-            @Nullable LocalCacheProvider localCacheProvider
-        ) {
-            this.globalStorageProvider = globalStorageProvider;
-            this.globalCacheProvider = globalCacheProvider;
-            this.dataUpdaterProvider = dataUpdaterProvider;
-            this.localCacheProvider = localCacheProvider;
-        }
-
-        public Global(
-            @NotNull GlobalStorageProvider globalStorageProvider,
-            @Nullable DataUpdaterProvider dataUpdaterProvider,
-            @Nullable LocalCacheProvider localCacheProvider
-        ) {
-            this(globalStorageProvider, null, dataUpdaterProvider, localCacheProvider);
-        }
-
-        public Global(
-            @NotNull GlobalStorageProvider globalStorageProvider,
-            @Nullable GlobalCacheProvider globalCacheProvider
-        ) {
-            this(globalStorageProvider, globalCacheProvider, null, null);
-        }
-
-        public Global(@NotNull GlobalStorageProvider globalStorageProvider) {
-            this(globalStorageProvider, null);
-        }
+    record Global(@NotNull GlobalStorageProvider globalStorageProvider,
+                  @Nullable GlobalCacheProvider globalCacheProvider,
+                  @Nullable DataUpdaterProvider dataUpdaterProvider,
+                  @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
         public @NotNull StoreManager createStoreManager() {
