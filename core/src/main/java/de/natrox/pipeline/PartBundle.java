@@ -28,9 +28,11 @@ import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.LocalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Experimental
 public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
 
     static @NotNull PartBundle local(

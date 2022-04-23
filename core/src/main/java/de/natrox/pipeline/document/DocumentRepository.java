@@ -18,11 +18,13 @@ package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.filter.Filter;
 import de.natrox.pipeline.repository.Repository;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@ApiStatus.Experimental
 public sealed interface DocumentRepository extends Repository<Document> permits DocumentRepositoryImpl {
 
     @NotNull Optional<Document> get(@NotNull UUID uniqueId);

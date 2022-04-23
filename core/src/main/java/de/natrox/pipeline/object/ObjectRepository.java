@@ -21,11 +21,13 @@ import de.natrox.pipeline.document.FindOptions;
 import de.natrox.pipeline.filter.Filter;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@ApiStatus.Experimental
 public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {
 
     @NotNull Optional<T> load(@NotNull UUID uniqueId);

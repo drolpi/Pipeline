@@ -16,6 +16,9 @@
 
 package de.natrox.pipeline.repository;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Experimental
 public interface Repository<T> {
 
     void drop();
