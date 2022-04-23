@@ -61,6 +61,11 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
+    public String name() {
+        return null;
+    }
+
+    @Override
     public void drop() {
 
     }

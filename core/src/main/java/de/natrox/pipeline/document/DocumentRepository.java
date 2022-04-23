@@ -56,4 +56,6 @@ public sealed interface DocumentRepository extends Repository<Document> permits 
 
     void remove(@NotNull UUID uniqueId);
 
+    String name();
+
 }
