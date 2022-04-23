@@ -20,13 +20,20 @@ import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilderImpl implements Pipeline.Builder {
 
-    @Override
-    public Pipeline.@NotNull Builder bundle(@NotNull PartBundle bundle) {
-        return null;
+    private PartBundle bundle;
+
+    PipelineBuilderImpl() {
+
     }
 
     @Override
-    public Pipeline build() {
-        return null;
+    public Pipeline.@NotNull Builder bundle(@NotNull PartBundle bundle) {
+        this.bundle = bundle;
+        return this;
+    }
+
+    @Override
+    public @NotNull Pipeline build() {
+        return new PipelineImpl(bundle);
     }
 }
