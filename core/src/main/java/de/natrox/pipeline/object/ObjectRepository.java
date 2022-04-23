@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.FindOptions;
 import de.natrox.pipeline.filter.Filter;
 import de.natrox.pipeline.repository.Cursor;
@@ -51,5 +52,9 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
     boolean exists(@NotNull UUID uniqueId);
 
     void remove(@NotNull UUID uniqueId);
+
+    @NotNull Class<T> type();
+
+    @NotNull DocumentRepository documentRepository();
 
 }

@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.FindOptions;
 import de.natrox.pipeline.filter.Filter;
 import de.natrox.pipeline.repository.Cursor;
@@ -49,6 +50,16 @@ public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectR
     @Override
     public void remove(@NotNull UUID uniqueId) {
 
+    }
+
+    @Override
+    public @NotNull Class<T> type() {
+        return null;
+    }
+
+    @Override
+    public @NotNull DocumentRepository documentRepository() {
+        return null;
     }
 
     @Override
