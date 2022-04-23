@@ -27,6 +27,8 @@ import java.util.UUID;
 @ApiStatus.Experimental
 public sealed interface DocumentRepository extends Repository<Document> permits DocumentRepositoryImpl {
 
+    void insert(@NotNull UUID uniqueId, @NotNull Document document);
+
     @NotNull Optional<Document> get(@NotNull UUID uniqueId);
 
     @NotNull DocumentCursor find(@NotNull Filter filter, @NotNull FindOptions findOptions);
@@ -45,14 +47,6 @@ public sealed interface DocumentRepository extends Repository<Document> permits 
         //TODO:
         return this.find(null, findOptions);
     }
-
-    void insert(@NotNull UUID uniqueId, @NotNull Document document);
-
-    default void update(@NotNull UUID uniqueId, @NotNull Document document) {
-        this.update(uniqueId, document);
-    }
-
-    void update(@NotNull UUID uniqueId, @NotNull Document document, boolean insertIfAbsent);
 
     boolean exists(@NotNull UUID uniqueId);
 
