@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document;
+package de.natrox.pipeline.collection;
 
-import de.natrox.pipeline.collection.Cursor;
-
-public interface DocumentCursor extends Cursor<Document> {
+public interface Cursor<T> {
 }
