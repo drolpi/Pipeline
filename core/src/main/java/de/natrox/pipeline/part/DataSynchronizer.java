@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.cache.provider;
+package de.natrox.pipeline.part;
 
-import de.natrox.pipeline.part.provider.PartProvider;
-import de.natrox.pipeline.part.cache.GlobalCache;
+import java.util.UUID;
 
-public interface GlobalCacheProvider extends PartProvider {
+public final class DataSynchronizer {
 
-    GlobalCache constructGlobalCache();
+    public boolean fromTo(UUID uniqueId, DataSourceType source, DataSourceType... destination) {
+        return false;
+    }
+
+    enum DataSourceType {
+        LOCAL_CACHE,
+        GLOBAL_CACHE,
+        GLOBAL_STORAGE
+    }
 
 }

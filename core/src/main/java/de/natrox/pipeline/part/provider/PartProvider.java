@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.provider;
 
 public interface PartProvider {
 

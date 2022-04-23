@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.cache.provider;
 
-import de.natrox.pipeline.part.PartProvider;
+import de.natrox.pipeline.part.provider.PartProvider;
 import de.natrox.pipeline.part.cache.DataUpdater;
 
 public interface DataUpdaterProvider extends PartProvider {

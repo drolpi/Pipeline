@@ -83,4 +83,8 @@ final class PipelineImpl implements Pipeline {
     public void shutdown() {
 
     }
+
+    public StoreManager storeManager() {
+        return this.storeManager;
+    }
 }

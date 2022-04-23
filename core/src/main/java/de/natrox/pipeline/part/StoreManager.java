@@ -20,18 +20,42 @@ import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.storage.Storage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class StoreManager {
+public final class StoreManager implements Part {
 
     private final Storage storage;
-    private final GlobalCache globalCache;
-    private final DataUpdater dataUpdater;
-    private final LocalCache localCache;
+    private final @Nullable GlobalCache globalCache;
+    private final @Nullable DataUpdater dataUpdater;
+    private final @Nullable LocalCache localCache;
 
-    public StoreManager(Storage storage, GlobalCache globalCache, DataUpdater dataUpdater, LocalCache localCache) {
+    private final DataSynchronizer dataSynchronizer;
+
+    public StoreManager(@NotNull Storage storage, @Nullable GlobalCache globalCache, @Nullable DataUpdater dataUpdater, @Nullable LocalCache localCache) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.dataUpdater = dataUpdater;
         this.localCache = localCache;
+
+        this.dataSynchronizer = new DataSynchronizer();
+    }
+
+
+    @Override
+    public PartMap openMap(String mapName) {
+        PartMap localCacheMap = PartMap.EMPTY;
+        if (localCache != null) {
+            localCacheMap = localCache.openMap(mapName);
+        }
+
+        PartMap globalCacheMap = PartMap.EMPTY;
+        if(globalCache != null) {
+            globalCacheMap = globalCache.openMap(mapName);
+        }
+
+        PartMap storageMap = storage.openMap(mapName);
+
+        return new DelegatingMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
     }
 }

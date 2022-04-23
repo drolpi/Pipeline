@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.cache.provider;
+package de.natrox.pipeline.part;
 
-import de.natrox.pipeline.part.provider.PartProvider;
-import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.document.Document;
+import org.jetbrains.annotations.NotNull;
 
-public interface GlobalCacheProvider extends PartProvider {
+import java.util.UUID;
 
-    GlobalCache constructGlobalCache();
+public interface PartMap {
+
+    PartMap EMPTY = new EmptyPartMap();
+
+    Document get(@NotNull UUID uniqueId);
+
+    void put(@NotNull UUID uniqueId, @NotNull Document document);
+
+    boolean contains(@NotNull UUID uniqueId);
+
+    void remove(@NotNull UUID uniqueId);
+
+    void drop();
+
+    long size();
 
 }

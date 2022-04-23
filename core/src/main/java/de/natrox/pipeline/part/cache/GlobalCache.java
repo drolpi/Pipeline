@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.cache;
 
-import de.natrox.pipeline.part.PartDataProvider;
+import de.natrox.pipeline.part.Part;
 
-public interface GlobalCache extends PartDataProvider {
+public interface GlobalCache extends Part {
 }
