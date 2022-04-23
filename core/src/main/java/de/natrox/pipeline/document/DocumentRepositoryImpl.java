@@ -17,6 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.part.PartMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -25,14 +26,16 @@ import java.util.UUID;
 public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
+    private final PartMap partMap;
 
-    public DocumentRepositoryImpl(String name) {
-        this.repositoryName = name;
+    public DocumentRepositoryImpl(String repositoryName, PartMap partMap) {
+        this.repositoryName = repositoryName;
+        this.partMap = partMap;
     }
 
     @Override
     public @NotNull Optional<Document> get(@NotNull UUID uniqueId) {
-        return Optional.empty();
+        return Optional.ofNullable(partMap.get(uniqueId));
     }
 
     @Override
@@ -42,22 +45,22 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public void insert(@NotNull UUID uniqueId, @NotNull Document document) {
-
+        partMap.put(uniqueId, document);
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return false;
+        return partMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-
+        partMap.remove(uniqueId);
     }
 
     @Override
     public String name() {
-        return null;
+        return repositoryName;
     }
 
     @Override

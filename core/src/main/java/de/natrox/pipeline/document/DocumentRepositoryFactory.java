@@ -16,6 +16,8 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreManager;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -30,21 +32,23 @@ public final class DocumentRepositoryFactory {
         this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository repository(String name) {
+    public DocumentRepository repository(String name, StoreManager storeManager) {
         if (repositoryMap.containsKey(name)) {
             DocumentRepository repository = repositoryMap.get(name);
             if (repository.isDropped() || !repository.isOpen()) {
                 repositoryMap.remove(name);
-                return createRepository(name);
+                return createRepository(name, storeManager);
             }
             return repositoryMap.get(name);
         } else {
-            return createRepository(name);
+            return createRepository(name, storeManager);
         }
     }
 
-    private DocumentRepository createRepository(String name) {
-        //TODO:
-        return null;
+    private DocumentRepository createRepository(String name, StoreManager storeManager) {
+        PartMap partMap = storeManager.openMap(name);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, partMap);
+
+        return repository;
     }
 }

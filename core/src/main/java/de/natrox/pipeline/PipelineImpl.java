@@ -46,7 +46,7 @@ final class PipelineImpl implements Pipeline {
     @Override
     public @NotNull DocumentRepository repository(@NotNull String name) {
         Check.notNull(name, "name");
-        return documentRepositoryFactory.repository(name);
+        return documentRepositoryFactory.repository(name, storeManager);
     }
 
     @Override
