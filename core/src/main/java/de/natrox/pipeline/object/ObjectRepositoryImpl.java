@@ -38,7 +38,7 @@ public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectR
     }
 
     @Override
-    public void update(@NotNull ObjectData objectData) {
+    public void save(@NotNull ObjectData objectData) {
 
     }
 

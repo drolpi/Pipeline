@@ -27,8 +27,6 @@ public interface PartDataProvider {
 
     void insert(@NotNull UUID uniqueId, @NotNull Document document);
 
-    void update(@NotNull UUID uniqueId, @NotNull Document document);
-
     boolean exists(@NotNull UUID uniqueId);
 
     void remove(@NotNull UUID uniqueId);

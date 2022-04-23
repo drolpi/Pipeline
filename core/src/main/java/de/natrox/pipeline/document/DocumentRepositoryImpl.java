@@ -46,11 +46,6 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void update(@NotNull UUID uniqueId, @NotNull Document document, boolean insertIfAbsent) {
-
-    }
-
-    @Override
     public boolean exists(@NotNull UUID uniqueId) {
         return false;
     }

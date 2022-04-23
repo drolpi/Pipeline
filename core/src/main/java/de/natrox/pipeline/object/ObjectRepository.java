@@ -49,7 +49,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
         return this.find(null, findOptions);
     }
 
-    void update(@NotNull ObjectData objectData);
+    void save(@NotNull ObjectData objectData);
 
     boolean exists(@NotNull UUID uniqueId);
 
