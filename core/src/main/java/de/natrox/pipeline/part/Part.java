@@ -16,6 +16,8 @@
 
 package de.natrox.pipeline.part;
 
+import de.natrox.pipeline.part.map.PartMap;
+
 public interface Part {
 
     PartMap openMap(String mapName);

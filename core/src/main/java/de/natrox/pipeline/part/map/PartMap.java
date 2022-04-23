@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.map;
 
 import de.natrox.pipeline.document.Document;
 import org.jetbrains.annotations.NotNull;

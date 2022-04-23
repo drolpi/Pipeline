@@ -17,7 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.filter.Filter;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

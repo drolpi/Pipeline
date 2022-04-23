@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.map;
 
 import de.natrox.pipeline.document.Document;
+import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 

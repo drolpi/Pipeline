@@ -24,7 +24,7 @@ public final class DataSynchronizer {
         return false;
     }
 
-    enum DataSourceType {
+    public enum DataSourceType {
         LOCAL_CACHE,
         GLOBAL_CACHE,
         GLOBAL_STORAGE
