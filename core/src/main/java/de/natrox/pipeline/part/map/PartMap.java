@@ -16,7 +16,9 @@
 
 package de.natrox.pipeline.part.map;
 
+import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.Document;
+import de.natrox.pipeline.stream.PipelineStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -31,9 +33,15 @@ public interface PartMap {
 
     boolean contains(@NotNull UUID uniqueId);
 
+    @NotNull PipelineStream<UUID> keys();
+
+    @NotNull PipelineStream<Document> values();
+
+    @NotNull PipelineStream<Pair<UUID, Document>> entries();
+
     void remove(@NotNull UUID uniqueId);
 
-    void drop();
+    void clear();
 
     long size();
 
