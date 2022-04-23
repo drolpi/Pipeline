@@ -16,5 +16,7 @@
 
 package de.natrox.pipeline.part.cache;
 
-public interface LocalCache {
+import de.natrox.pipeline.part.PartDataProvider;
+
+public interface LocalCache extends PartDataProvider {
 }

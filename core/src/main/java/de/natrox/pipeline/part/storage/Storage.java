@@ -16,5 +16,7 @@
 
 package de.natrox.pipeline.part.storage;
 
-public interface Storage {
+import de.natrox.pipeline.part.PartDataProvider;
+
+public interface Storage extends PartDataProvider {
 }
