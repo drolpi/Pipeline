@@ -24,15 +24,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class ObjectRepositoryImpl implements ObjectRepository {
+public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     @Override
-    public @NotNull Optional load(@NotNull UUID uniqueId) {
+    public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
         return Optional.empty();
     }
 
     @Override
-    public @NotNull Cursor find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
+    public @NotNull Cursor<T> find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
         return null;
     }
 
