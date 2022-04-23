@@ -20,6 +20,7 @@ import de.natrox.pipeline.util.Iterables;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface PipelineStream<T> extends Iterable<T> {
@@ -52,7 +53,7 @@ public interface PipelineStream<T> extends Iterable<T> {
         return !iterator().hasNext();
     }
 
-    default T firstOrNull() {
-        return Iterables.firstOrNull(this);
+    default Optional<T> first() {
+        return Optional.ofNullable(Iterables.firstOrNull(this));
     }
 }
