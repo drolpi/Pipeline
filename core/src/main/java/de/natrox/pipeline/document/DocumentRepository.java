@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.filter.Filter;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +26,23 @@ import java.util.UUID;
 public sealed interface DocumentRepository extends Repository<Document> permits DocumentRepositoryImpl {
 
     @NotNull Optional<Document> get(@NotNull UUID uniqueId);
+
+    @NotNull DocumentCursor find(@NotNull Filter filter, @NotNull FindOptions findOptions);
+
+    default DocumentCursor find() {
+        //TODO:
+        return this.find(null, null);
+    }
+
+    default DocumentCursor find(@NotNull Filter filter) {
+        //TODO:
+        return this.find(filter, null);
+    }
+
+    default DocumentCursor find(@NotNull FindOptions findOptions) {
+        //TODO:
+        return this.find(null, findOptions);
+    }
 
     void insert(@NotNull UUID uniqueId, @NotNull Document document);
 

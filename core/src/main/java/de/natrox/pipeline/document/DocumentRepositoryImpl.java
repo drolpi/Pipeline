@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.filter.Filter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -32,6 +33,11 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public @NotNull Optional<Document> get(@NotNull UUID uniqueId) {
         return Optional.empty();
+    }
+
+    @Override
+    public @NotNull DocumentCursor find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
+        return null;
     }
 
     @Override
