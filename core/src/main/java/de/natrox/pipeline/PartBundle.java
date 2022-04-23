@@ -17,6 +17,7 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.StoreManager;
 import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
@@ -69,6 +70,6 @@ public sealed interface PartBundle permits LocalBundle, GlobalBundle {
         return new GlobalBundle(globalStorageProvider);
     }
 
-    @Nullable LocalCacheProvider localCacheProvider();
+    @NotNull StoreManager createStoreManager();
 
 }

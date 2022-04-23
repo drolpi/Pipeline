@@ -19,28 +19,17 @@ package de.natrox.pipeline;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
+import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
-import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.part.cache.DataUpdater;
-import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.cache.LocalCache;
-import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
-import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
-import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
-import de.natrox.pipeline.part.storage.Storage;
-import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
-import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.StoreManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
-    private final Storage storage;
-    private final GlobalCache globalCache;
-    private final DataUpdater dataUpdater;
-    private final LocalCache localCache;
+    private final StoreManager storeManager;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
@@ -48,51 +37,7 @@ final class PipelineImpl implements Pipeline {
     PipelineImpl(@NotNull PartBundle partBundle) {
         Check.notNull(partBundle, "partBundle");
 
-        // check if a LocalBundle or a GlobalBundle is used
-        if (partBundle instanceof LocalBundle localBundle) {
-            LocalStorageProvider localStorageProvider = localBundle.localStorageProvider();
-            this.storage = localStorageProvider.constructLocalStorage();
-
-            LocalCacheProvider localCacheProvider = localBundle.localCacheProvider();
-            // check if there is a local cache provider or initialize null
-            if (localCacheProvider != null) {
-                this.localCache = localCacheProvider.constructLocalCache();
-            } else {
-                this.localCache = null;
-            }
-
-            this.globalCache = null;
-            this.dataUpdater = null;
-        } else {
-            GlobalBundle globalBundle = (GlobalBundle) partBundle;
-
-            GlobalStorageProvider globalStorageProvider = globalBundle.globalStorageProvider();
-            this.storage = globalStorageProvider.constructGlobalStorage();
-
-            GlobalCacheProvider globalCacheProvider = globalBundle.globalCacheProvider();
-            // check if there is a global cache provider or initialize null
-            if (globalCacheProvider != null) {
-                this.globalCache = globalCacheProvider.constructGlobalCache();
-            } else {
-                this.globalCache = null;
-            }
-
-            DataUpdaterProvider dataUpdaterProvider = globalBundle.dataUpdaterProvider();
-            // check if there is a data updater provider or initialize null
-            if (dataUpdaterProvider != null) {
-                this.dataUpdater = dataUpdaterProvider.constructDataUpdater();
-            } else {
-                this.dataUpdater = null;
-            }
-
-            LocalCacheProvider localCacheProvider = globalBundle.localCacheProvider();
-            // check if there is a local cache provider or initialize null
-            if (localCacheProvider != null) {
-                this.localCache = localCacheProvider.constructLocalCache();
-            } else {
-                this.localCache = null;
-            }
-        }
+        this.storeManager = partBundle.createStoreManager();
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory();
         this.objectRepositoryFactory = new ObjectRepositoryFactory();

@@ -1,0 +1,37 @@
+/*
+ * Copyright 2020-2022 NatroxMC team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.natrox.pipeline.part;
+
+import de.natrox.pipeline.part.cache.DataUpdater;
+import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.cache.LocalCache;
+import de.natrox.pipeline.part.storage.Storage;
+
+public final class StoreManager {
+
+    private final Storage storage;
+    private final GlobalCache globalCache;
+    private final DataUpdater dataUpdater;
+    private final LocalCache localCache;
+
+    public StoreManager(Storage storage, GlobalCache globalCache, DataUpdater dataUpdater, LocalCache localCache) {
+        this.storage = storage;
+        this.globalCache = globalCache;
+        this.dataUpdater = dataUpdater;
+        this.localCache = localCache;
+    }
+}

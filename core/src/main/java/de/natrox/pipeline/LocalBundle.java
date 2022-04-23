@@ -16,7 +16,10 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.pipeline.part.StoreManager;
+import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.storage.LocalStorage;
 import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,12 +41,14 @@ final class LocalBundle implements PartBundle {
         this(localStorageProvider, null);
     }
 
-    public @NotNull LocalStorageProvider localStorageProvider() {
-        return this.localStorageProvider;
-    }
-
     @Override
-    public @Nullable LocalCacheProvider localCacheProvider() {
-        return this.localCacheProvider;
+    public @NotNull StoreManager createStoreManager() {
+        LocalStorage storage = this.localStorageProvider.constructLocalStorage();
+
+        LocalCache localCache = null;
+        if (this.localCacheProvider != null)
+            localCache = this.localCacheProvider.constructLocalCache();
+
+        return new StoreManager(storage, null, null, localCache);
     }
 }

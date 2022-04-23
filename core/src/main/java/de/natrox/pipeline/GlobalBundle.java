@@ -16,9 +16,14 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.pipeline.part.StoreManager;
+import de.natrox.pipeline.part.cache.DataUpdater;
+import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,20 +66,21 @@ final class GlobalBundle implements PartBundle {
         this(globalStorageProvider, null);
     }
 
-    public @NotNull GlobalStorageProvider globalStorageProvider() {
-        return this.globalStorageProvider;
-    }
-
-    public @Nullable GlobalCacheProvider globalCacheProvider() {
-        return this.globalCacheProvider;
-    }
-
-    public @Nullable DataUpdaterProvider dataUpdaterProvider() {
-        return this.dataUpdaterProvider;
-    }
-
     @Override
-    public @Nullable LocalCacheProvider localCacheProvider() {
-        return this.localCacheProvider;
+    public @NotNull StoreManager createStoreManager() {
+        GlobalStorage storage = globalStorageProvider.constructGlobalStorage();
+
+        GlobalCache globalCache = null;
+        if (globalCacheProvider != null)
+            globalCache = globalCacheProvider.constructGlobalCache();
+
+        DataUpdater dataUpdater = null;
+        LocalCache localCache = null;
+        if (dataUpdaterProvider != null && localCacheProvider != null) {
+            dataUpdater = dataUpdaterProvider.constructDataUpdater();
+            localCache = localCacheProvider.constructLocalCache();
+        }
+
+        return new StoreManager(storage, globalCache, dataUpdater, localCache);
     }
 }
