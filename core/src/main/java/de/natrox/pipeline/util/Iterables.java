@@ -17,6 +17,7 @@
 package de.natrox.pipeline.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,5 +57,17 @@ public final class Iterables {
             set.add(item);
         }
         return set;
+    }
+
+    public static long size(Iterable<?> iterable) {
+        if (iterable instanceof Collection) {
+            return ((Collection<?>) iterable).size();
+        }
+
+        long count = 0;
+        for (Object ignored : iterable) {
+            count++;
+        }
+        return count;
     }
 }

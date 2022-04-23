@@ -1,0 +1,58 @@
+/*
+ * Copyright 2020-2022 NatroxMC team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.natrox.pipeline.stream;
+
+import de.natrox.pipeline.util.Iterables;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+public interface PipelineStream<T> extends Iterable<T> {
+
+    static <T> PipelineStream<T> fromIterable(Iterable<T> iterable) {
+        return iterable::iterator;
+    }
+
+    static <V> PipelineStream<V> empty() {
+        return PipelineStream.fromIterable(Collections.emptySet());
+    }
+
+    static <V> PipelineStream<V> single(V v) {
+        return PipelineStream.fromIterable(Collections.singleton(v));
+    }
+
+    default long size() {
+        return Iterables.size(this);
+    }
+
+    default List<T> toList() {
+        return Collections.unmodifiableList(Iterables.toList(this));
+    }
+
+    default Set<T> toSet() {
+        return Collections.unmodifiableSet(Iterables.toSet(this));
+    }
+
+    default boolean isEmpty() {
+        return !iterator().hasNext();
+    }
+
+    default T firstOrNull() {
+        return Iterables.firstOrNull(this);
+    }
+}
