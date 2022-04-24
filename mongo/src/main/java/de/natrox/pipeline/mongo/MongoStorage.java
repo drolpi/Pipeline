@@ -18,6 +18,8 @@ package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
@@ -27,10 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 final class MongoStorage implements GlobalStorage {
 
+    private final JsonConverter jsonConverter;
     private final MongoDatabase mongoDatabase;
     private final Map<String, MongoMap> mongoMapRegistry;
 
-    MongoStorage(MongoDatabase mongoDatabase) {
+    MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
+        this.jsonConverter = pipeline.jsonConverter();
         this.mongoDatabase = mongoDatabase;
         this.mongoMapRegistry = new ConcurrentHashMap<>();
     }
@@ -40,7 +44,7 @@ final class MongoStorage implements GlobalStorage {
         if (mongoMapRegistry.containsKey(mapName)) {
             return mongoMapRegistry.get(mapName);
         }
-        MongoMap mongoMap = new MongoMap(collection(mapName));
+        MongoMap mongoMap = new MongoMap(collection(mapName), jsonConverter);
         mongoMapRegistry.put(mapName, mongoMap);
 
         return mongoMap;

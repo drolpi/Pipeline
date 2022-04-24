@@ -21,6 +21,9 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jodd:jodd-core:5.3.0")
 
+    testImplementation(project(":mongo"))
+    testImplementation(project(":gson-converter"))
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.8.2")

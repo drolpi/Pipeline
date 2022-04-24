@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.part.cache.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.cache.LocalCache;
+import org.jetbrains.annotations.NotNull;
 
 public interface LocalCacheProvider extends PartProvider {
 
-    LocalCache constructLocalCache();
+    @NotNull LocalCache constructLocalCache(@NotNull Pipeline pipeline);
 
 }

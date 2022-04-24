@@ -19,6 +19,7 @@ package de.natrox.pipeline;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
+import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
@@ -30,14 +31,17 @@ import java.util.Set;
 final class PipelineImpl implements Pipeline {
 
     private final StoreManager storeManager;
+    private final JsonConverter jsonConverter;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
-    PipelineImpl(@NotNull PartBundle partBundle) {
+    PipelineImpl(@NotNull PartBundle partBundle, @NotNull JsonConverter jsonConverter) {
         Check.notNull(partBundle, "partBundle");
+        Check.notNull(jsonConverter, "jsonConverter");
 
-        this.storeManager = partBundle.createStoreManager();
+        this.jsonConverter = jsonConverter;
+        this.storeManager = partBundle.createStoreManager(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory();
         this.objectRepositoryFactory = new ObjectRepositoryFactory();
@@ -72,6 +76,11 @@ final class PipelineImpl implements Pipeline {
     @Override
     public @NotNull Set<String> listObjectRepositories() {
         return null;
+    }
+
+    @Override
+    public @NotNull JsonConverter jsonConverter() {
+        return jsonConverter;
     }
 
     @Override

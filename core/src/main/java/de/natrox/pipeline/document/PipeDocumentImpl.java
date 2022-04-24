@@ -38,7 +38,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-final class PipeDocumentImpl extends LinkedHashMap<String, Object> implements PipeDocument {
+public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implements PipeDocument {
 
     private final static String FIELD_SEPARATOR = ".";
     private final static String DOC_ID = "_id";

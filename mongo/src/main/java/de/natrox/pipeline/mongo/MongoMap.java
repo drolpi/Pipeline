@@ -17,16 +17,27 @@
 package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.util.StreamUtil;
+import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class MongoMap implements PartMap {
 
     private static final String KEY_NAME = "Key";
@@ -34,45 +45,87 @@ final class MongoMap implements PartMap {
     private static final IndexOptions UNIQUE_KEY_OPTIONS = new IndexOptions().unique(true);
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
-    private final MongoCollection<org.bson.Document> collection;
+    private final MongoCollection<Document> collection;
+    private final JsonConverter jsonConverter;
 
-    public MongoMap(MongoCollection<org.bson.Document> collection) {
+    public MongoMap(MongoCollection<Document> collection, JsonConverter jsonConverter) {
         this.collection = collection;
+        this.jsonConverter = jsonConverter;
     }
 
     @Override
     public PipeDocument get(@NotNull UUID uniqueId) {
-        return null;
+        var document = collection
+            .find(Filters.eq(KEY_NAME, uniqueId))
+            .first();
+        if (document == null)
+            return null;
+
+        var valueDocument = document.get(VALUE_NAME, Document.class);
+        System.out.println(valueDocument.toJson());
+        return jsonConverter.fromJson(valueDocument.toJson(), PipeDocument.class);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-
+        collection.updateOne(
+            Filters.eq(KEY_NAME, uniqueId),
+            Updates.combine(
+                Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
+                Updates.set(VALUE_NAME, Document.parse(jsonConverter.toJson(document)))
+            ),
+            INSERT_OR_REPLACE_OPTIONS);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        return false;
+        var document = collection
+            .find(Filters.eq(KEY_NAME, uniqueId))
+            .first();
+
+        return document != null;
     }
 
     @Override
     public @NotNull PipelineStream<UUID> keys() {
-        return null;
+        List<UUID> keys = new ArrayList<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                keys.add(cursor.next().get(KEY_NAME, UUID.class));
+            }
+        }
+        return PipelineStream.fromIterable(keys);
     }
 
     @Override
     public @NotNull PipelineStream<PipeDocument> values() {
-        return null;
+        Collection<PipeDocument> documents = new ArrayList<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                documents.add(jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), PipeDocument.class));
+            }
+        }
+        return PipelineStream.fromIterable(documents);
     }
 
     @Override
     public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
-        return null;
+        Map<UUID, PipeDocument> entries = new HashMap<>();
+        try (var cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                var document = cursor.next();
+                var key = document.get(KEY_NAME, UUID.class);
+                var value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), PipeDocument.class);
+
+                entries.put(key, value);
+            }
+        }
+        return StreamUtil.streamForMap(entries);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-
+        collection.deleteOne(Filters.eq(KEY_NAME, uniqueId));
     }
 
     @Override
@@ -82,6 +135,6 @@ final class MongoMap implements PartMap {
 
     @Override
     public long size() {
-        return 0;
+        return collection.countDocuments();
     }
 }

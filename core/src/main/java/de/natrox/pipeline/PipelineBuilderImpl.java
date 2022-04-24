@@ -16,11 +16,14 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.common.validate.Check;
+import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilderImpl implements Pipeline.Builder {
 
     private PartBundle bundle;
+    private JsonConverter jsonConverter;
 
     PipelineBuilderImpl() {
 
@@ -28,12 +31,20 @@ final class PipelineBuilderImpl implements Pipeline.Builder {
 
     @Override
     public Pipeline.@NotNull Builder bundle(@NotNull PartBundle bundle) {
+        Check.notNull(bundle, "bundle");
         this.bundle = bundle;
         return this;
     }
 
     @Override
+    public Pipeline.@NotNull Builder jsonConverter(@NotNull JsonConverter jsonConverter) {
+        Check.notNull(jsonConverter, "jsonConverter");
+        this.jsonConverter = jsonConverter;
+        return this;
+    }
+
+    @Override
     public @NotNull Pipeline build() {
-        return new PipelineImpl(bundle);
+        return new PipelineImpl(bundle, jsonConverter);
     }
 }

@@ -19,6 +19,7 @@ package de.natrox.pipeline;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.ApiStatus;
@@ -45,6 +46,8 @@ public interface Pipeline {
 
     @NotNull Set<String> listObjectRepositories();
 
+    @NotNull JsonConverter jsonConverter();
+
     boolean isShutDowned();
 
     void shutdown();
@@ -62,6 +65,8 @@ public interface Pipeline {
     interface Builder extends IBuilder<Pipeline> {
 
         @NotNull Builder bundle(@NotNull PartBundle bundle);
+
+        @NotNull Builder jsonConverter(@NotNull JsonConverter jsonConverter);
 
     }
 

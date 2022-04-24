@@ -77,18 +77,18 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
         return new Global(globalStorageProvider, null, null, null);
     }
 
-    @NotNull StoreManager createStoreManager();
+    @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline);
 
     record Local(@NotNull LocalStorageProvider localStorageProvider,
                  @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull StoreManager createStoreManager() {
-            LocalStorage storage = this.localStorageProvider.constructLocalStorage();
+        public @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline) {
+            LocalStorage storage = this.localStorageProvider.constructLocalStorage(pipeline);
 
             LocalCache localCache = null;
             if (this.localCacheProvider != null)
-                localCache = this.localCacheProvider.constructLocalCache();
+                localCache = this.localCacheProvider.constructLocalCache(pipeline);
 
             return new StoreManager(storage, null, null, localCache);
         }
@@ -101,18 +101,18 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
                   @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull StoreManager createStoreManager() {
-            GlobalStorage storage = globalStorageProvider.constructGlobalStorage();
+        public @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline) {
+            GlobalStorage storage = globalStorageProvider.constructGlobalStorage(pipeline);
 
             GlobalCache globalCache = null;
             if (globalCacheProvider != null)
-                globalCache = globalCacheProvider.constructGlobalCache();
+                globalCache = globalCacheProvider.constructGlobalCache(pipeline);
 
             DataUpdater dataUpdater = null;
             LocalCache localCache = null;
             if (dataUpdaterProvider != null && localCacheProvider != null) {
-                dataUpdater = dataUpdaterProvider.constructDataUpdater();
-                localCache = localCacheProvider.constructLocalCache();
+                dataUpdater = dataUpdaterProvider.constructDataUpdater(pipeline);
+                localCache = localCacheProvider.constructLocalCache(pipeline);
             }
 
             return new StoreManager(storage, globalCache, dataUpdater, localCache);

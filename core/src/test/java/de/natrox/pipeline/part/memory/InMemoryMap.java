@@ -20,6 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class InMemoryMap implements PartMap {
 
     @Override
     public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
-        return null;
+        return StreamUtil.streamForMap(documentMap);
     }
 
     @Override

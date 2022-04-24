@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.part.cache.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.cache.DataUpdater;
+import org.jetbrains.annotations.NotNull;
 
 public interface DataUpdaterProvider extends PartProvider {
 
-    DataUpdater constructDataUpdater();
+    @NotNull DataUpdater constructDataUpdater(@NotNull Pipeline pipeline);
 
 }

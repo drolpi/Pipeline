@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.part.storage.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.storage.LocalStorage;
+import org.jetbrains.annotations.NotNull;
 
 public interface LocalStorageProvider extends PartProvider {
 
-    LocalStorage constructLocalStorage();
+    @NotNull LocalStorage constructLocalStorage(@NotNull Pipeline pipeline);
 
 }

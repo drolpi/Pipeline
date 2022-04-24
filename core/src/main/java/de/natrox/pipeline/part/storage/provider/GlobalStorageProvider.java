@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.part.storage.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.storage.GlobalStorage;
+import org.jetbrains.annotations.NotNull;
 
 public interface GlobalStorageProvider extends PartProvider {
 
-    GlobalStorage constructGlobalStorage();
+    @NotNull GlobalStorage constructGlobalStorage(@NotNull Pipeline pipeline);
 
 }

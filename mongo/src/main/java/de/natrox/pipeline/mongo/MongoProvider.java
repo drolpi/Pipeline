@@ -20,6 +20,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ public final class MongoProvider implements GlobalStorageProvider {
     }
 
     @Override
-    public GlobalStorage constructGlobalStorage() {
-        return new MongoStorage(mongoDatabase);
+    public GlobalStorage constructGlobalStorage(@NotNull Pipeline pipeline) {
+        return new MongoStorage(pipeline, mongoDatabase);
     }
 }

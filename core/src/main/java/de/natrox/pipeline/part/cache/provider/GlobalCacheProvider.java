@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.part.cache.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.PartProvider;
 import de.natrox.pipeline.part.cache.GlobalCache;
+import org.jetbrains.annotations.NotNull;
 
 public interface GlobalCacheProvider extends PartProvider {
 
-    GlobalCache constructGlobalCache();
+    @NotNull GlobalCache constructGlobalCache(@NotNull Pipeline pipeline);
 
 }
