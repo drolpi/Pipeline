@@ -55,13 +55,13 @@ final class MongoMap implements PartMap {
 
     @Override
     public PipeDocument get(@NotNull UUID uniqueId) {
-        var document = collection
+        Document document = collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
         if (document == null)
             return null;
 
-        var valueDocument = document.get(VALUE_NAME, Document.class);
+        Document valueDocument = document.get(VALUE_NAME, Document.class);
         System.out.println(valueDocument.toJson());
         return jsonConverter.fromJson(valueDocument.toJson(), PipeDocument.class);
     }
@@ -79,7 +79,7 @@ final class MongoMap implements PartMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        var document = collection
+        Document document = collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
 
@@ -113,9 +113,9 @@ final class MongoMap implements PartMap {
         Map<UUID, PipeDocument> entries = new HashMap<>();
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
-                var document = cursor.next();
-                var key = document.get(KEY_NAME, UUID.class);
-                var value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), PipeDocument.class);
+                Document document = cursor.next();
+                UUID key = document.get(KEY_NAME, UUID.class);
+                PipeDocument value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), PipeDocument.class);
 
                 entries.put(key, value);
             }
