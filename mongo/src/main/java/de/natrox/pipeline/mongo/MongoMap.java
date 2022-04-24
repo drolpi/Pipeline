@@ -17,12 +17,10 @@
 package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.Document;
+import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipelineStream;
 import org.jetbrains.annotations.NotNull;
@@ -37,17 +35,18 @@ final class MongoMap implements PartMap {
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final MongoCollection<org.bson.Document> collection;
+
     public MongoMap(MongoCollection<org.bson.Document> collection) {
         this.collection = collection;
     }
 
     @Override
-    public Document get(@NotNull UUID uniqueId) {
+    public PipeDocument get(@NotNull UUID uniqueId) {
         return null;
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull Document document) {
+    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
 
     }
 
@@ -62,12 +61,12 @@ final class MongoMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipelineStream<Document> values() {
+    public @NotNull PipelineStream<PipeDocument> values() {
         return null;
     }
 
     @Override
-    public @NotNull PipelineStream<Pair<UUID, Document>> entries() {
+    public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
         return null;
     }
 

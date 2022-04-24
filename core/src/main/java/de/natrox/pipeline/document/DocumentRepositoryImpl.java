@@ -34,7 +34,7 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull Optional<Document> get(@NotNull UUID uniqueId) {
+    public @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId) {
         return Optional.ofNullable(partMap.get(uniqueId));
     }
 
@@ -44,7 +44,7 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void insert(@NotNull UUID uniqueId, @NotNull Document document) {
+    public void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
         partMap.put(uniqueId, document);
     }
 

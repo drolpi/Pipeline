@@ -38,21 +38,21 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-final class DocumentImpl extends LinkedHashMap<String, Object> implements Document {
+final class PipeDocumentImpl extends LinkedHashMap<String, Object> implements PipeDocument {
 
     private final static String FIELD_SEPARATOR = ".";
     private final static String DOC_ID = "_id";
 
-    DocumentImpl() {
+    PipeDocumentImpl() {
         super();
     }
 
-    DocumentImpl(Map<String, Object> objectMap) {
+    PipeDocumentImpl(Map<String, Object> objectMap) {
         super(objectMap);
     }
 
     @Override
-    public Document put(@NotNull String field, @NotNull Object value) {
+    public PipeDocument put(@NotNull String field, @NotNull Object value) {
         Check.argCondition(Strings.isNullOrEmpty(field), "field is empty or null key");
 
         if (isEmbedded(field)) {
@@ -110,22 +110,22 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull Document clone() {
+    public @NotNull PipeDocument clone() {
         Map<String, Object> cloned = (Map<String, Object>) super.clone();
 
         for (Map.Entry<String, Object> entry : cloned.entrySet()) {
-            if (entry.getValue() instanceof Document value) {
-                Document clonedValue = value.clone();
+            if (entry.getValue() instanceof PipeDocument value) {
+                PipeDocument clonedValue = value.clone();
                 cloned.put(entry.getKey(), clonedValue);
             }
         }
-        return new DocumentImpl(cloned);
+        return new PipeDocumentImpl(cloned);
     }
 
     @Override
-    public @NotNull Document merge(@NotNull Document document) {
+    public @NotNull PipeDocument merge(@NotNull PipeDocument document) {
         Check.notNull(document, "document");
-        if (document instanceof DocumentImpl doc) {
+        if (document instanceof PipeDocumentImpl doc) {
             super.putAll(doc);
         }
         return this;
@@ -143,7 +143,7 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
         if (other == this)
             return true;
 
-        if (!(other instanceof DocumentImpl m))
+        if (!(other instanceof PipeDocumentImpl m))
             return false;
 
         if (m.size() != size())
@@ -180,7 +180,7 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
         for (Pair<String, Object> entry : this) {
 
             Object value = entry.second();
-            if (value instanceof DocumentImpl document) {
+            if (value instanceof PipeDocumentImpl document) {
                 if (Strings.isNullOrEmpty(prefix)) {
                     fields.addAll(document.getFieldsInternal(entry.first()));
                 } else {
@@ -218,10 +218,10 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
 
             String[] remaining = Arrays.copyOfRange(splits, 1, splits.length);
 
-            if (val instanceof DocumentImpl document) {
+            if (val instanceof PipeDocumentImpl document) {
                 document.deepPut(remaining, value);
             } else if (val == null) {
-                DocumentImpl subDoc = new DocumentImpl();
+                PipeDocumentImpl subDoc = new PipeDocumentImpl();
                 subDoc.deepPut(remaining, value);
 
                 put(key, subDoc);
@@ -241,7 +241,7 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
 
             String[] remaining = Arrays.copyOfRange(splits, 1, splits.length);
 
-            if (val instanceof DocumentImpl subDoc) {
+            if (val instanceof PipeDocumentImpl subDoc) {
                 subDoc.deepRemove(remaining);
                 if (subDoc.size() == 0) {
                     super.remove(key);
@@ -273,8 +273,8 @@ final class DocumentImpl extends LinkedHashMap<String, Object> implements Docume
             return object;
         }
 
-        if (object instanceof Document) {
-            return recursiveGet(((Document) object).get(remainingPath[0]),
+        if (object instanceof PipeDocument) {
+            return recursiveGet(((PipeDocument) object).get(remainingPath[0]),
                 Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
         }
 

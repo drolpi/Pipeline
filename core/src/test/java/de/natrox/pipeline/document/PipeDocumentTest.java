@@ -25,20 +25,20 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DocumentTest {
+public class PipeDocumentTest {
 
-    private static Document document;
+    private static PipeDocument document;
 
     @Test
     public void testCreateDocument() {
-        assertTrue(Document.create().isEmpty());
-        assertEquals(1, Document.create("Key", "Value").size());
-        assertTrue(Document.create(new HashMap<>()).isEmpty());
+        assertTrue(PipeDocument.create().isEmpty());
+        assertEquals(1, PipeDocument.create("Key", "Value").size());
+        assertTrue(PipeDocument.create(new HashMap<>()).isEmpty());
     }
 
     @BeforeAll
     public static void setup() {
-        document = Document
+        document = PipeDocument
             .create("name", "Eric")
             .put("level", 234685)
             .put("address.street", "montana-avenue")

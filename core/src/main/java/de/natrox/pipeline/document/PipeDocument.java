@@ -28,28 +28,28 @@ import java.util.Set;
 import java.util.UUID;
 
 @ApiStatus.Experimental
-public sealed interface Document extends Iterable<Pair<String, Object>> permits DocumentImpl {
+public sealed interface PipeDocument extends Iterable<Pair<String, Object>> permits PipeDocumentImpl {
 
-    static @NotNull Document create() {
-        return new DocumentImpl();
+    static @NotNull PipeDocument create() {
+        return new PipeDocumentImpl();
     }
 
-    static @NotNull Document create(@NotNull String key, @NotNull Object value) {
+    static @NotNull PipeDocument create(@NotNull String key, @NotNull Object value) {
         Check.notNull(key, "key");
         Check.notNull(value, "value");
 
-        Document document = new DocumentImpl();
+        PipeDocument document = new PipeDocumentImpl();
         document.put(key, value);
         return document;
     }
 
-    static @NotNull Document create(Map<String, Object> documentMap) {
+    static @NotNull PipeDocument create(Map<String, Object> documentMap) {
         Check.notNull(documentMap, "documentMap");
         LinkedHashMap<String, Object> document = new LinkedHashMap<>(documentMap);
-        return new DocumentImpl(document);
+        return new PipeDocumentImpl(document);
     }
 
-    @NotNull Document put(@NotNull String key, @NotNull Object value);
+    @NotNull PipeDocument put(@NotNull String key, @NotNull Object value);
 
     @Nullable Object get(@NotNull String key);
 
@@ -61,11 +61,11 @@ public sealed interface Document extends Iterable<Pair<String, Object>> permits 
 
     void remove(@NotNull String key);
 
-    @NotNull Document clone();
+    @NotNull PipeDocument clone();
 
     int size();
 
-    @NotNull Document merge(@NotNull Document update);
+    @NotNull PipeDocument merge(@NotNull PipeDocument update);
 
     default boolean isEmpty() {
         return this.size() == 0;

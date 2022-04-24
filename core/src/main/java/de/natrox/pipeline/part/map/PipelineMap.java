@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.map;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.Document;
+import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.stream.PipelineStream;
@@ -43,7 +43,7 @@ public final class PipelineMap implements PartMap {
     }
 
     @Override
-    public Document get(@NotNull UUID uniqueId) {
+    public PipeDocument get(@NotNull UUID uniqueId) {
         if (localCacheMap.contains(uniqueId)) {
             return localCacheMap.get(uniqueId);
         } else if (globalCacheMap.contains(uniqueId)) {
@@ -65,7 +65,7 @@ public final class PipelineMap implements PartMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull Document document) {
+    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
         localCacheMap.put(uniqueId, document);
         //TODO: Push data updater
         globalCacheMap.put(uniqueId, document);
@@ -90,12 +90,12 @@ public final class PipelineMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipelineStream<Document> values() {
+    public @NotNull PipelineStream<PipeDocument> values() {
         return storageMap.values();
     }
 
     @Override
-    public @NotNull PipelineStream<Pair<UUID, Document>> entries() {
+    public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
         return storageMap.entries();
     }
 
