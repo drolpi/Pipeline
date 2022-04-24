@@ -13,4 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+dependencies {
+    compileOnly(project(":core"))
+    implementation("org.redisson:redisson-all:3.17.0")
+}

@@ -22,6 +22,7 @@ dependencies {
     implementation("org.jodd:jodd-core:5.3.0")
 
     testImplementation(project(":mongo"))
+    testImplementation(project(":redis"))
     testImplementation(project(":gson-converter"))
     testImplementation(project(":jackson-converter"))
 

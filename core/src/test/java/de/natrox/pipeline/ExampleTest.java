@@ -22,11 +22,14 @@ import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
+import de.natrox.pipeline.redis.RedisConfig;
+import de.natrox.pipeline.redis.RedisEndpoint;
+import de.natrox.pipeline.redis.RedisProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-public class MongoTest {
+public class ExampleTest {
 
     @Test
     public void test() throws Exception {
@@ -38,7 +41,20 @@ public class MongoTest {
             .build();
         MongoProvider mongoProvider = mongoConfig.createProvider();
 
-        PartBundle bundle = PartBundle.global(mongoProvider);
+        RedisConfig redisConfig = RedisConfig
+            .builder()
+            .endpoints(
+                RedisEndpoint
+                    .builder()
+                    .host("127.0.0.1")
+                    .port(6379)
+                    .database(0)
+                    .build()
+            )
+            .build();
+        RedisProvider redisProvider = redisConfig.createProvider();
+
+        PartBundle bundle = PartBundle.global(mongoProvider, redisProvider);
         JsonConverter jsonConverter = JacksonConverter.create();
 
         Pipeline pipeline = Pipeline
