@@ -19,7 +19,6 @@ package de.natrox.pipeline.jackson;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -54,6 +53,14 @@ public final class JacksonConverter implements JsonConverter {
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(PipeDocument.class, new PipeDocumentDeserializer());
         OBJECT_MAPPER.registerModule(simpleModule);
+    }
+
+    public static @NotNull JacksonConverter create() {
+        return new JacksonConverter();
+    }
+
+    private JacksonConverter() {
+
     }
 
     @Override

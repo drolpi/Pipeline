@@ -39,7 +39,7 @@ public class MongoTest {
         MongoProvider mongoProvider = mongoConfig.createProvider();
 
         PartBundle bundle = PartBundle.global(mongoProvider);
-        JsonConverter jsonConverter = new JacksonConverter();
+        JsonConverter jsonConverter = JacksonConverter.create();
 
         Pipeline pipeline = Pipeline
             .builder()

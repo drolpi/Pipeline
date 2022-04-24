@@ -32,6 +32,14 @@ public final class GsonConverter implements JsonConverter {
         .registerTypeAdapter(PipeDocument.class, new PipeDocumentTypeAdapter())
         .create();
 
+    public static @NotNull GsonConverter create() {
+        return new GsonConverter();
+    }
+
+    private GsonConverter() {
+
+    }
+
     @Override
     public @NotNull String toJson(@NotNull Object object) {
         return GSON.toJson(object);
