@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class DelegatingMap implements PartMap {
+public final class PipelineMap implements PartMap {
 
     private final PartMap storageMap;
     private final PartMap globalCacheMap;
@@ -34,7 +34,7 @@ public final class DelegatingMap implements PartMap {
     private final DataUpdater dataUpdater;
     private final DataSynchronizer dataSynchronizer;
 
-    public DelegatingMap(PartMap storageMap, PartMap globalCacheMap, PartMap localCacheMap, DataUpdater dataUpdater) {
+    public PipelineMap(PartMap storageMap, PartMap globalCacheMap, PartMap localCacheMap, DataUpdater dataUpdater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
@@ -86,17 +86,17 @@ public final class DelegatingMap implements PartMap {
 
     @Override
     public @NotNull PipelineStream<UUID> keys() {
-        return null;
+        return storageMap.keys();
     }
 
     @Override
     public @NotNull PipelineStream<Document> values() {
-        return null;
+        return storageMap.values();
     }
 
     @Override
     public @NotNull PipelineStream<Pair<UUID, Document>> entries() {
-        return null;
+        return storageMap.entries();
     }
 
     @Override
@@ -114,6 +114,6 @@ public final class DelegatingMap implements PartMap {
 
     @Override
     public long size() {
-        return 0;
+        return storageMap.size();
     }
 }

@@ -19,7 +19,7 @@ package de.natrox.pipeline.part;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
-import de.natrox.pipeline.part.map.DelegatingMap;
+import de.natrox.pipeline.part.map.PipelineMap;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.storage.Storage;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +53,6 @@ public final class StoreManager implements Part {
 
         PartMap storageMap = storage.openMap(mapName);
 
-        return new DelegatingMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
+        return new PipelineMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
     }
 }
