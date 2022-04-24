@@ -18,7 +18,7 @@ package de.natrox.pipeline;
 
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.gson.GsonConverter;
+import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
@@ -39,7 +39,7 @@ public class MongoTest {
         MongoProvider mongoProvider = mongoConfig.createProvider();
 
         PartBundle bundle = PartBundle.global(mongoProvider);
-        JsonConverter jsonConverter = new GsonConverter();
+        JsonConverter jsonConverter = new JacksonConverter();
 
         Pipeline pipeline = Pipeline
             .builder()
@@ -70,7 +70,7 @@ public class MongoTest {
 
     static class TestObject {
 
-        private String name = "asd";
+        private final String name = "asd";
 
     }
 
