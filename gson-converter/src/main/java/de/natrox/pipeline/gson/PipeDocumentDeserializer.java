@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.reflect.Type;
 
 @ApiStatus.Internal
-final class PipeDocumentTypeAdapter implements JsonDeserializer<PipeDocument> {
+final class PipeDocumentDeserializer implements JsonDeserializer<PipeDocument> {
 
     @Override
     public PipeDocument deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

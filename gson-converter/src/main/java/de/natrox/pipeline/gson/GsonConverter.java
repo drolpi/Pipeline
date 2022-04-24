@@ -29,7 +29,7 @@ public final class GsonConverter implements JsonConverter {
         .setPrettyPrinting()
         .disableHtmlEscaping()
         .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .registerTypeAdapter(PipeDocument.class, new PipeDocumentTypeAdapter())
+        .registerTypeAdapter(PipeDocument.class, new PipeDocumentDeserializer())
         .create();
 
     public static @NotNull GsonConverter create() {
