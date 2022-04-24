@@ -20,8 +20,8 @@ import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.ObjectRepository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

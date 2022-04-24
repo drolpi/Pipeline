@@ -16,9 +16,9 @@
 
 package de.natrox.pipeline.mongo;
 
-import de.natrox.common.validate.Check;
 import com.google.common.base.Strings;
 import de.natrox.common.builder.IBuilder;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

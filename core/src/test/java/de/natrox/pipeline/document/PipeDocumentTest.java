@@ -29,13 +29,6 @@ public class PipeDocumentTest {
 
     private static PipeDocument document;
 
-    @Test
-    public void testCreateDocument() {
-        assertTrue(PipeDocument.create().isEmpty());
-        assertEquals(1, PipeDocument.create("Key", "Value").size());
-        assertTrue(PipeDocument.create(new HashMap<>()).isEmpty());
-    }
-
     @BeforeAll
     public static void setup() {
         document = PipeDocument
@@ -43,6 +36,13 @@ public class PipeDocumentTest {
             .put("level", 234685)
             .put("address.street", "montana-avenue")
             .put("test.name", "Eric");
+    }
+
+    @Test
+    public void testCreateDocument() {
+        assertTrue(PipeDocument.create().isEmpty());
+        assertEquals(1, PipeDocument.create("Key", "Value").size());
+        assertTrue(PipeDocument.create(new HashMap<>()).isEmpty());
     }
 
     @Test

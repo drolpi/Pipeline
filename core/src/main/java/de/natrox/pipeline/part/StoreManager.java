@@ -19,8 +19,8 @@ package de.natrox.pipeline.part;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
-import de.natrox.pipeline.part.map.PipelineMap;
 import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.map.PipelineMap;
 import de.natrox.pipeline.part.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ public final class StoreManager implements Part {
         }
 
         PartMap globalCacheMap = PartMap.EMPTY;
-        if(globalCache != null) {
+        if (globalCache != null) {
             globalCacheMap = globalCache.openMap(mapName);
         }
 

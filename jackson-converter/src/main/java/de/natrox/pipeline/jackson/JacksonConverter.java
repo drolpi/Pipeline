@@ -55,12 +55,12 @@ public final class JacksonConverter implements JsonConverter {
         OBJECT_MAPPER.registerModule(simpleModule);
     }
 
-    public static @NotNull JacksonConverter create() {
-        return new JacksonConverter();
-    }
-
     private JacksonConverter() {
 
+    }
+
+    public static @NotNull JacksonConverter create() {
+        return new JacksonConverter();
     }
 
     @Override

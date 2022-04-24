@@ -33,6 +33,7 @@ final class PipeDocumentDeserializer implements JsonDeserializer<PipeDocument> {
     @Override
     public PipeDocument deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         System.out.println(json.toString());
-        return context.deserialize(json, new TypeToken<PipeDocumentImpl>(){}.getType());
+        return context.deserialize(json, new TypeToken<PipeDocumentImpl>() {
+        }.getType());
     }
 }

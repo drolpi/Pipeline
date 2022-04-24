@@ -16,8 +16,8 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.StoreManager;
+import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
