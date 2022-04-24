@@ -23,18 +23,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface PipelineStream<T> extends Iterable<T> {
+public interface PipeStream<T> extends Iterable<T> {
 
-    static <T> PipelineStream<T> fromIterable(Iterable<T> iterable) {
+    static <T> PipeStream<T> fromIterable(Iterable<T> iterable) {
         return iterable::iterator;
     }
 
-    static <V> PipelineStream<V> empty() {
-        return PipelineStream.fromIterable(Collections.emptySet());
+    static <V> PipeStream<V> empty() {
+        return PipeStream.fromIterable(Collections.emptySet());
     }
 
-    static <V> PipelineStream<V> single(V v) {
-        return PipelineStream.fromIterable(Collections.singleton(v));
+    static <V> PipeStream<V> single(V v) {
+        return PipeStream.fromIterable(Collections.singleton(v));
     }
 
     default long size() {

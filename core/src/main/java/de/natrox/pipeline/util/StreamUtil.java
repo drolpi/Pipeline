@@ -17,7 +17,7 @@
 package de.natrox.pipeline.util;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.stream.PipeStream;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -28,8 +28,8 @@ public final class StreamUtil {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, U> PipelineStream<Pair<T, U>> streamForMap(Map<T, U> primaryMap) {
-        return PipelineStream.fromIterable(() -> new Iterator<Pair<T, U>>() {
+    public static <T, U> PipeStream<Pair<T, U>> streamForMap(Map<T, U> primaryMap) {
+        return PipeStream.fromIterable(() -> new Iterator<Pair<T, U>>() {
             private final Iterator<Map.Entry<T, U>> entryIterator =
                 primaryMap.entrySet().iterator();
 

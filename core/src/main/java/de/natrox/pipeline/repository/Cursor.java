@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.repository;
 
-import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.stream.PipeStream;
 
-public interface Cursor<T> extends PipelineStream<T> {
+public interface Cursor<T> extends PipeStream<T> {
 }

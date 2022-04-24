@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.memory;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.part.map.PartMap;
-import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,17 +47,17 @@ public class InMemoryMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipelineStream<UUID> keys() {
-        return PipelineStream.fromIterable(documentMap.keySet());
+    public @NotNull PipeStream<UUID> keys() {
+        return PipeStream.fromIterable(documentMap.keySet());
     }
 
     @Override
-    public @NotNull PipelineStream<PipeDocument> values() {
-        return PipelineStream.fromIterable(documentMap.values());
+    public @NotNull PipeStream<PipeDocument> values() {
+        return PipeStream.fromIterable(documentMap.values());
     }
 
     @Override
-    public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
         return StreamUtil.streamForMap(documentMap);
     }
 

@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.map;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -45,17 +45,17 @@ final class EmptyPartMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipelineStream<UUID> keys() {
+    public @NotNull PipeStream<UUID> keys() {
         return null;
     }
 
     @Override
-    public @NotNull PipelineStream<PipeDocument> values() {
+    public @NotNull PipeStream<PipeDocument> values() {
         return null;
     }
 
     @Override
-    public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
         return null;
     }
 

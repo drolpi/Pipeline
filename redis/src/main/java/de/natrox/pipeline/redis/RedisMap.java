@@ -20,7 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.map.PartMap;
-import de.natrox.pipeline.stream.PipelineStream;
+import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBucket;
@@ -73,16 +73,16 @@ final class RedisMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipelineStream<UUID> keys() {
+    public @NotNull PipeStream<UUID> keys() {
         List<UUID> keys = redisKeys()
             .stream()
             .map(s -> UUID.fromString(s.split(":")[2]))
             .collect(Collectors.toList());
-        return PipelineStream.fromIterable(keys);
+        return PipeStream.fromIterable(keys);
     }
 
     @Override
-    public @NotNull PipelineStream<PipeDocument> values() {
+    public @NotNull PipeStream<PipeDocument> values() {
         Set<String> keys = redisKeys();
         RBuckets redisBuckets = redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
@@ -96,11 +96,11 @@ final class RedisMap implements PartMap {
 
             documents.add(jsonConverter.fromJson(stringValue, PipeDocument.class));
         }
-        return PipelineStream.fromIterable(documents);
+        return PipeStream.fromIterable(documents);
     }
 
     @Override
-    public @NotNull PipelineStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
         Set<String> keys = redisKeys();
         RBuckets redisBuckets = redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
