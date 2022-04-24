@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-rootProject.name = "Pipeline"
-
-include(
-    ":core",
-    ":config",
-    ":redis",
-    ":mongo",
-    ":gson-converter"
-)
+dependencies {
+    compileOnly(project(":core"))
+    implementation("com.google.code.gson:gson:2.9.0")
+}
