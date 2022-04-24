@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-rootProject.name = "Pipeline"
-
-include(
-    ":core",
-    ":config",
-    ":redis",
-    ":mongo",
-    ":gson-converter",
-    ":jackson-converter"
-)
+dependencies {
+    compileOnly(project(":core"))
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
+}
