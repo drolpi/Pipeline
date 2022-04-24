@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-rootProject.name = "Pipeline"
-
-include(
-    ":core",
-    ":config",
-    ":redis",
-    ":mongo"
-)
+dependencies {
+    compileOnly(project(":core"))
+    implementation("org.mongodb:mongo-java-driver:3.12.10")
+}

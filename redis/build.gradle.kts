@@ -14,11 +14,3 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":core",
-    ":config",
-    ":redis",
-    ":mongo"
-)
