@@ -21,9 +21,18 @@ import de.natrox.pipeline.document.PipeDocument;
 
 import java.util.UUID;
 
-@FunctionalInterface
-public interface Condition {
+public final class AndCondition extends RedirectCondition {
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    AndCondition(Condition... conditions) {
+        super(conditions);
+    }
 
+    @Override
+    public boolean apply(Pair<UUID, PipeDocument> element) {
+        boolean result = true;
+        for (Condition condition : conditions()) {
+            result = result && condition.apply(element);
+        }
+        return result;
+    }
 }

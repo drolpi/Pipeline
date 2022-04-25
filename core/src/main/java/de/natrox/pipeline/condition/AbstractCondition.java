@@ -16,14 +16,23 @@
 
 package de.natrox.pipeline.condition;
 
-import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+public abstract class AbstractCondition implements Condition {
 
-import java.util.UUID;
+    private String collectionName;
+    private boolean objectCondition = false;
 
-@FunctionalInterface
-public interface Condition {
+    /*
+    public Condition and(Condition condition) {
+        return new AndFilter(this, filter);
+    }
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    public Condition or(Condition condition) {
+        return new OrFilter(this, filter);
+    }
 
+     */
+
+    public boolean isObjectCondition() {
+        return this.objectCondition;
+    }
 }

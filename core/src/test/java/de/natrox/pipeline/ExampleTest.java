@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.jackson.JacksonConverter;
@@ -27,6 +28,8 @@ import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 
 public class ExampleTest {
@@ -65,23 +68,13 @@ public class ExampleTest {
 
         DocumentRepository repository = pipeline.repository("Test");
 
-        UUID uuid = UUID.randomUUID();
-        PipeDocument document = PipeDocument
-            .create()
-            .put("firstName", "Tony")
-            .put("lastName", "Stark")
-            .put("age", 63)
-            .put("gender", "male")
-            .put("lol.asd.enis", "sex")
-            .put("test", new TestObject());
+        Instant instant = Instant.now();
 
-        repository.insert(uuid, document);
+        for (PipeDocument doc : repository.find(Conditions.equals("firstName", "Tony"))) {
+            System.out.println(doc.toString());
+        }
 
-        repository.get(uuid).ifPresent(get -> {
-            System.out.println(get.toString());
-        });
-
-        repository.find();
+        System.out.println(Duration.between(instant, Instant.now()).toMillis());
     }
 
     static class TestObject {

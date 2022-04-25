@@ -16,14 +16,17 @@
 
 package de.natrox.pipeline.condition;
 
-import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+public abstract class ComparableCondition extends FieldCondition {
 
-import java.util.UUID;
+    public ComparableCondition(String field, Object value) {
+        super(field, value);
+    }
 
-@FunctionalInterface
-public interface Condition {
-
-    boolean apply(Pair<UUID, PipeDocument> element);
-
+    @SuppressWarnings("rawtypes")
+    public Comparable getComparable() {
+        if (value() == null) {
+            throw new RuntimeException("value parameter must not be null");
+        }
+        return (Comparable) value();
+    }
 }

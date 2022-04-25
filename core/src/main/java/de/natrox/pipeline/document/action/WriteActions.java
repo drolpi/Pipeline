@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.condition;
+package de.natrox.pipeline.document.action;
 
-import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.part.map.PartMap;
 
 import java.util.UUID;
 
-@FunctionalInterface
-public interface Condition {
+public final class WriteActions {
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    private final PartMap partMap;
+
+    public WriteActions(PartMap partMap) {
+        this.partMap = partMap;
+    }
+
+    public void insert(UUID uniqueId, PipeDocument document) {
+        PipeDocument newDoc = document.clone();
+
+        //TODO:
+
+        partMap.put(uniqueId, newDoc);
+    }
+
+    public void remove(UUID uniqueId) {
+        partMap.remove(uniqueId);
+    }
 
 }

@@ -16,14 +16,26 @@
 
 package de.natrox.pipeline.condition;
 
-import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
+public final class Conditions {
 
-@FunctionalInterface
-public interface Condition {
+    public static Condition ALL = element -> true;
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    private Conditions() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Condition equals(@NotNull String field, @NotNull Object value) {
+        return new EqualsCondition(field, value);
+    }
+
+    public static Condition and(Condition @NotNull... conditions) {
+        return new AndCondition(conditions);
+    }
+
+    public static Condition or(Condition @NotNull... conditions) {
+        return new OrCondition(conditions);
+    }
 
 }

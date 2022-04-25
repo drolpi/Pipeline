@@ -17,6 +17,8 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.condition.Condition;
+import de.natrox.pipeline.document.action.ReadActions;
+import de.natrox.pipeline.document.action.WriteActions;
 import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,36 +28,39 @@ import java.util.UUID;
 public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
-    private final PartMap partMap;
+    private final ReadActions readActions;
+    private final WriteActions writeActions;
 
     public DocumentRepositoryImpl(String repositoryName, PartMap partMap) {
         this.repositoryName = repositoryName;
-        this.partMap = partMap;
+        this.readActions = new ReadActions(partMap);
+        this.writeActions = new WriteActions(partMap);
     }
 
     @Override
     public @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId) {
-        return Optional.ofNullable(partMap.get(uniqueId));
+        return Optional.ofNullable(readActions.findById(uniqueId));
     }
 
     @Override
     public @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOptions findOptions) {
-        return null;
+        //TODO: options
+        return readActions.find(condition);
     }
 
     @Override
     public void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-        partMap.put(uniqueId, document);
+        writeActions.insert(uniqueId, document);
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return partMap.contains(uniqueId);
+        return readActions.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        partMap.remove(uniqueId);
+        writeActions.remove(uniqueId);
     }
 
     @Override

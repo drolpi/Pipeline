@@ -21,9 +21,18 @@ import de.natrox.pipeline.document.PipeDocument;
 
 import java.util.UUID;
 
-@FunctionalInterface
-public interface Condition {
+import static java.util.Objects.deepEquals;
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+public final class EqualsCondition extends ComparableCondition {
 
+    EqualsCondition(String field, Object value) {
+        super(field, value);
+    }
+
+    @Override
+    public boolean apply(Pair<UUID, PipeDocument> element) {
+        PipeDocument document = element.second();
+        Object fieldValue = document.get(field());
+        return deepEquals(fieldValue, value());
+    }
 }

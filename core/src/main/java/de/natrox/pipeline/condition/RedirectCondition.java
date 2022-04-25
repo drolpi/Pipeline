@@ -16,14 +16,18 @@
 
 package de.natrox.pipeline.condition;
 
-import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import java.util.Arrays;
+import java.util.List;
 
-import java.util.UUID;
+public abstract class RedirectCondition extends AbstractCondition {
 
-@FunctionalInterface
-public interface Condition {
+    private final List<Condition> conditions;
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    public RedirectCondition(Condition... conditions) {
+        this.conditions = Arrays.asList(conditions);
+    }
 
+    public List<Condition> conditions() {
+        return this.conditions;
+    }
 }
