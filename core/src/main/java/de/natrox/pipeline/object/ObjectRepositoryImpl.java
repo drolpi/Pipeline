@@ -18,7 +18,7 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.FindOptions;
-import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectR
     }
 
     @Override
-    public @NotNull Cursor<T> find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
+    public @NotNull Cursor<T> find(@NotNull Condition condition, @NotNull FindOptions findOptions) {
         return null;
     }
 

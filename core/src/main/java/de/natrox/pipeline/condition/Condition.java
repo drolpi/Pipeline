@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.filter;
+package de.natrox.pipeline.condition;
 
-public interface Filter {
+public interface Condition {
 }

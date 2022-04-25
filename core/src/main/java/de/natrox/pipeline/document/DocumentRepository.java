@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -31,16 +31,16 @@ public sealed interface DocumentRepository extends Repository<PipeDocument> perm
 
     @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId);
 
-    @NotNull DocumentCursor find(@NotNull Filter filter, @NotNull FindOptions findOptions);
+    @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOptions findOptions);
 
     default DocumentCursor find() {
         //TODO:
         return this.find(null, null);
     }
 
-    default DocumentCursor find(@NotNull Filter filter) {
+    default DocumentCursor find(@NotNull Condition condition) {
         //TODO:
-        return this.find(filter, null);
+        return this.find(condition, null);
     }
 
     default DocumentCursor find(@NotNull FindOptions findOptions) {

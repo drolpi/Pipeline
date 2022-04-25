@@ -81,7 +81,7 @@ public class ExampleTest {
             System.out.println(get.toString());
         });
 
-
+        repository.find();
     }
 
     static class TestObject {

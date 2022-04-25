@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.filter.Filter;
+import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +39,7 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull DocumentCursor find(@NotNull Filter filter, @NotNull FindOptions findOptions) {
+    public @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOptions findOptions) {
         return null;
     }
 
