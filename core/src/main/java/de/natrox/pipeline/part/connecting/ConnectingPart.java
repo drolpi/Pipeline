@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.connecting;
 
+import de.natrox.pipeline.part.Part;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.map.PartMap;
-import de.natrox.pipeline.part.map.PipelineMap;
 import de.natrox.pipeline.part.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class StoreManager implements Part {
+public final class ConnectingPart implements Part {
 
     private final Storage storage;
     private final @Nullable GlobalCache globalCache;
     private final @Nullable DataUpdater dataUpdater;
     private final @Nullable LocalCache localCache;
 
-    public StoreManager(@NotNull Storage storage, @Nullable GlobalCache globalCache, @Nullable DataUpdater dataUpdater, @Nullable LocalCache localCache) {
+    public ConnectingPart(@NotNull Storage storage, @Nullable GlobalCache globalCache, @Nullable DataUpdater dataUpdater, @Nullable LocalCache localCache) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.dataUpdater = dataUpdater;
@@ -53,6 +53,6 @@ public final class StoreManager implements Part {
 
         PartMap storageMap = storage.openMap(mapName);
 
-        return new PipelineMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
+        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
     }
 }

@@ -17,7 +17,7 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.StoreManager;
+import de.natrox.pipeline.part.connecting.ConnectingPart;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
@@ -77,20 +77,20 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
         return new Global(globalStorageProvider, null, null, null);
     }
 
-    @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline);
+    @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline);
 
     record Local(@NotNull LocalStorageProvider localStorageProvider,
                  @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline) {
+        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
             LocalStorage storage = this.localStorageProvider.constructLocalStorage(pipeline);
 
             LocalCache localCache = null;
             if (this.localCacheProvider != null)
                 localCache = this.localCacheProvider.constructLocalCache(pipeline);
 
-            return new StoreManager(storage, null, null, localCache);
+            return new ConnectingPart(storage, null, null, localCache);
         }
 
     }
@@ -101,7 +101,7 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
                   @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull StoreManager createStoreManager(@NotNull Pipeline pipeline) {
+        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
             GlobalStorage storage = globalStorageProvider.constructGlobalStorage(pipeline);
 
             GlobalCache globalCache = null;
@@ -115,7 +115,7 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
                 localCache = localCacheProvider.constructLocalCache(pipeline);
             }
 
-            return new StoreManager(storage, globalCache, dataUpdater, localCache);
+            return new ConnectingPart(storage, globalCache, dataUpdater, localCache);
         }
 
     }

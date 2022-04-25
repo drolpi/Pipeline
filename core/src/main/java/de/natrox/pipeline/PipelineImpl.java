@@ -23,14 +23,14 @@ import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
-import de.natrox.pipeline.part.StoreManager;
+import de.natrox.pipeline.part.connecting.ConnectingPart;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
-    private final StoreManager storeManager;
+    private final ConnectingPart connectingPart;
     private final JsonConverter jsonConverter;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
@@ -41,7 +41,7 @@ final class PipelineImpl implements Pipeline {
         Check.notNull(jsonConverter, "jsonConverter");
 
         this.jsonConverter = jsonConverter;
-        this.storeManager = partBundle.createStoreManager(this);
+        this.connectingPart = partBundle.createConnectingPart(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory();
         this.objectRepositoryFactory = new ObjectRepositoryFactory();
@@ -50,7 +50,7 @@ final class PipelineImpl implements Pipeline {
     @Override
     public @NotNull DocumentRepository repository(@NotNull String name) {
         Check.notNull(name, "name");
-        return documentRepositoryFactory.repository(name, storeManager);
+        return documentRepositoryFactory.repository(name, connectingPart);
     }
 
     @Override
@@ -93,7 +93,7 @@ final class PipelineImpl implements Pipeline {
 
     }
 
-    public StoreManager storeManager() {
-        return this.storeManager;
+    public ConnectingPart storeManager() {
+        return this.connectingPart;
     }
 }

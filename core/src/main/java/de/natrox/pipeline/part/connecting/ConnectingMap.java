@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.map;
+package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.part.DataSynchronizer;
 import de.natrox.pipeline.part.cache.DataUpdater;
+import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class PipelineMap implements PartMap {
+public final class ConnectingMap implements PartMap {
 
     private final PartMap storageMap;
     private final PartMap globalCacheMap;
@@ -34,7 +34,7 @@ public final class PipelineMap implements PartMap {
     private final DataUpdater dataUpdater;
     private final DataSynchronizer dataSynchronizer;
 
-    public PipelineMap(PartMap storageMap, PartMap globalCacheMap, PartMap localCacheMap, DataUpdater dataUpdater) {
+    public ConnectingMap(PartMap storageMap, PartMap globalCacheMap, PartMap localCacheMap, DataUpdater dataUpdater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
