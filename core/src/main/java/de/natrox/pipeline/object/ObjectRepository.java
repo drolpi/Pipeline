@@ -16,10 +16,8 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.FindOptions;
+import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
@@ -33,20 +31,10 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
 
     @NotNull Optional<T> load(@NotNull UUID uniqueId);
 
-    @NotNull Cursor<T> find(@NotNull Condition condition, @NotNull FindOptions findOptions);
+    @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
     default Cursor<T> find() {
-        //TODO:
-        return this.find(Conditions.ALL, null);
-    }
-
-    default Cursor<T> find(@NotNull Condition condition) {
-        //TODO:
-        return this.find(condition, null);
-    }
-
-    default Cursor<T> find(@NotNull FindOptions findOptions) {
-        return this.find(Conditions.ALL, findOptions);
+        return this.find(FindOptions.builder().build());
     }
 
     void save(@NotNull ObjectData objectData);

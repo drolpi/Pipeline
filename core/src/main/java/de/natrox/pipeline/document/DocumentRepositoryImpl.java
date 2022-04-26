@@ -18,8 +18,10 @@ package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
+import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.sort.SortOrder;
+import de.natrox.pipeline.sort.SortableFields;
 import de.natrox.pipeline.stream.BoundedStream;
 import de.natrox.pipeline.stream.ConditionStream;
 import de.natrox.pipeline.stream.DocumentStream;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
@@ -47,20 +50,25 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOption findOption) {
-        //TODO: Maybe allow that condition is null and use PartMap#entries direct if condition is null
-        PipeStream<Pair<UUID, PipeDocument>> stream = new ConditionStream(partMap.entries(), condition);
+    public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
+        PipeStream<Pair<UUID, PipeDocument>> stream = partMap.entries();
 
-        if (findOption.orderBy() != null) {
-            List<Pair<String, SortOrder>> blockingSortOrder = findOption.orderBy().getSortingOrders();
+        Condition condition = findOptions.condition();
+        if(condition != null) {
+            stream = new ConditionStream(condition, stream);
+        }
+
+        SortableFields sortBy = findOptions.sortBy();
+        if (sortBy != null) {
+            List<Pair<String, SortOrder>> blockingSortOrder = sortBy.getSortingOrders();
             if (!blockingSortOrder.isEmpty()) {
                 stream = new SortedDocumentStream(blockingSortOrder, stream);
             }
         }
 
-        if (findOption.limit() != null || findOption.skip() != null) {
-            long limit = findOption.limit() == null ? Long.MAX_VALUE : findOption.limit();
-            long skip = findOption.skip() == null ? 0 : findOption.skip();
+        if (findOptions.limit() != -1 || findOptions.skip() != -1) {
+            long limit = findOptions.limit() == -1 ? Long.MAX_VALUE : findOptions.limit();
+            long skip = findOptions.skip() == -1 ? 0 : findOptions.skip();
             stream = new BoundedStream<>(skip, limit, stream);
         }
 
@@ -87,7 +95,7 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public String name() {
+    public @NotNull String name() {
         return repositoryName;
     }
 

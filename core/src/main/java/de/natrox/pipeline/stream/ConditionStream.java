@@ -30,12 +30,12 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument>> {
 
-    private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
     private final Condition condition;
+    private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
 
-    public ConditionStream(PipeStream<Pair<UUID, PipeDocument>> pipeStream, Condition condition) {
-        this.pipeStream = pipeStream;
+    public ConditionStream(Condition condition, PipeStream<Pair<UUID, PipeDocument>> pipeStream) {
         this.condition = condition;
+        this.pipeStream = pipeStream;
     }
 
     @Override
