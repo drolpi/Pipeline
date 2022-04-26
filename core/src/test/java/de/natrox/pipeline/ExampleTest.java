@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ExampleTest {
 
@@ -68,19 +70,22 @@ public class ExampleTest {
             .build();
 
         DocumentRepository repository = pipeline.repository("Test");
+        //ThreadLocalRandom random = ThreadLocalRandom.current();
+        //
+        //for (int i = 0; i < 3000; i++) {
+        //    PipeDocument document = PipeDocument
+        //        .create()
+        //        .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
+        //        .put("age", random.nextInt(0, 100))
+        //        .put("hobby", "test");
+        //    repository.insert(UUID.randomUUID(), document);
+        //}
 
         var instant = Instant.now();
 
-        var cursor = repository.find(FindOptions
-            .builder()
-            .condition(Conditions.eq("name", "Anna"))
-            .sort("age", SortOrder.Ascending)
-            .build()
-        );
-
-        for (PipeDocument doc : cursor) {
-            System.out.println(doc.toString());
-        }
+        repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442")).ifPresent(document -> {
+            System.out.println(document.toString());
+        });
 
         System.out.println(Duration.between(instant, Instant.now()).toMillis());
     }

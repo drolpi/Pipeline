@@ -24,6 +24,8 @@ import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 
 public final class ConnectingMap implements PartMap {
@@ -40,29 +42,34 @@ public final class ConnectingMap implements PartMap {
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
         this.dataUpdater = dataUpdater;
-        this.dataSynchronizer = new DataSynchronizer();
+        this.dataSynchronizer = new DataSynchronizer(this);
     }
 
     @Override
     public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
-        if (localCacheMap.contains(uniqueId)) {
-            return localCacheMap.get(uniqueId);
-        } else if (globalCacheMap.contains(uniqueId)) {
-            dataSynchronizer.fromTo(
-                uniqueId,
-                DataSynchronizer.DataSourceType.GLOBAL_CACHE,
-                DataSynchronizer.DataSourceType.LOCAL_CACHE
-            );
-            return globalCacheMap.get(uniqueId);
+        PipeDocument document = localCacheMap.get(uniqueId);
+        if(document != null) {
+            return document;
         }
 
-        dataSynchronizer.fromTo(
+        document = globalCacheMap.get(uniqueId);
+        if(document != null) {
+            dataSynchronizer.synchronizeTo(
+                uniqueId,
+                document,
+                DataSynchronizer.DataSourceType.LOCAL_CACHE
+            );
+            return document;
+        }
+
+        document = storageMap.get(uniqueId);
+        dataSynchronizer.synchronizeTo(
             uniqueId,
-            DataSynchronizer.DataSourceType.GLOBAL_STORAGE,
+            document,
             DataSynchronizer.DataSourceType.GLOBAL_CACHE,
             DataSynchronizer.DataSourceType.LOCAL_CACHE
         );
-        return storageMap.get(uniqueId);
+        return document;
     }
 
     @Override
@@ -116,5 +123,17 @@ public final class ConnectingMap implements PartMap {
     @Override
     public long size() {
         return storageMap.size();
+    }
+
+    public PartMap storageMap() {
+        return this.storageMap;
+    }
+
+    public PartMap globalCacheMap() {
+        return this.globalCacheMap;
+    }
+
+    public PartMap localCacheMap() {
+        return this.localCacheMap;
     }
 }

@@ -16,18 +16,88 @@
 
 package de.natrox.pipeline.part.connecting;
 
+import de.natrox.common.runnable.CatchingRunnable;
+import de.natrox.common.validate.Check;
+import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.part.map.PartMap;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class DataSynchronizer {
 
-    public boolean fromTo(UUID uniqueId, DataSourceType source, DataSourceType... destination) {
-        return false;
+    private final PartMap storage;
+    private final @Nullable PartMap globalCache;
+    private final @Nullable PartMap localCache;
+    private final ExecutorService executorService;
+
+    public DataSynchronizer(ConnectingMap connectingMap) {
+        this.storage = connectingMap.storageMap();
+        this.globalCache = connectingMap.globalCacheMap();
+        this.localCache = connectingMap.localCacheMap();
+        this.executorService = Executors.newCachedThreadPool();
+    }
+
+    public void synchronizeTo(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
+        executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, document, destinations)));
+    }
+
+    public boolean to(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
+        List<DataSourceType> destinationList = Arrays.asList(destinations);
+        if (localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
+            localCache.put(uniqueId, document);
+        }
+        if (globalCache != null && destinationList.contains(DataSourceType.GLOBAL_CACHE)) {
+            globalCache.put(uniqueId, document);
+        }
+        if (destinationList.contains(DataSourceType.STORAGE)) {
+            storage.put(uniqueId, document);
+        }
+        return true;
+    }
+
+    public CompletableFuture<PipeDocument> synchronizeFom(UUID uniqueId, DataSourceType source) {
+        CompletableFuture<PipeDocument> future = new CompletableFuture<>();
+        executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
+        return future;
+    }
+
+    public PipeDocument from(UUID uniqueId, DataSourceType source) {
+        if (localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
+            return localCache.get(uniqueId);
+        } else if (globalCache != null && source.equals(DataSourceType.GLOBAL_CACHE)) {
+            return globalCache.get(uniqueId);
+        } else if (source.equals(DataSourceType.STORAGE)) {
+            return storage.get(uniqueId);
+        }
+        return null;
+    }
+
+    public void synchronizeFromTo(UUID uniqueId, DataSourceType sourceType, DataSourceType... destinations) {
+        executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, sourceType, destinations)));
+    }
+
+    public boolean fromTo(UUID uniqueId, DataSourceType source, DataSourceType... destinations) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(source, "source");
+        Check.notNull(destinations, "destinations");
+        PipeDocument document = from(uniqueId, source);
+        // Error while loading from local cache
+        if (document == null)
+            return false;
+        to(uniqueId, document, destinations);
+        return true;
     }
 
     public enum DataSourceType {
         LOCAL_CACHE,
         GLOBAL_CACHE,
-        GLOBAL_STORAGE
+        STORAGE
     }
 
 }
