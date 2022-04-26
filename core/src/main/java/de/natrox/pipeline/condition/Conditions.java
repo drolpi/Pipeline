@@ -30,11 +30,11 @@ public final class Conditions {
         return new EqualsCondition(field, value);
     }
 
-    public static Condition and(Condition @NotNull... conditions) {
+    public static Condition and(Condition @NotNull ... conditions) {
         return new AndCondition(conditions);
     }
 
-    public static Condition or(Condition @NotNull... conditions) {
+    public static Condition or(Condition @NotNull ... conditions) {
         return new OrCondition(conditions);
     }
 

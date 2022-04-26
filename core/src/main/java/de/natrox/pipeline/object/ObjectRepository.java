@@ -16,10 +16,10 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.FindOptions;
-import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;

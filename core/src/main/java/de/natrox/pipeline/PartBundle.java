@@ -17,13 +17,13 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.connecting.ConnectingPart;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.connecting.ConnectingPart;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.LocalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;

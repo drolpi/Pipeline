@@ -16,8 +16,8 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 public final class RedisEndpoint {
