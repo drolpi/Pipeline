@@ -63,7 +63,6 @@ final class MongoMap implements PartMap {
             return null;
 
         Document valueDocument = document.get(VALUE_NAME, Document.class);
-        System.out.println(valueDocument.toJson());
         return jsonConverter.fromJson(valueDocument.toJson(), PipeDocument.class);
     }
 
