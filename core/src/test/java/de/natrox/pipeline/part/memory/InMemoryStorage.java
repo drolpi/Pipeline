@@ -18,11 +18,12 @@ package de.natrox.pipeline.part.memory;
 
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.storage.LocalStorage;
+import org.jetbrains.annotations.NotNull;
 
 public class InMemoryStorage implements LocalStorage {
 
     @Override
-    public PartMap openMap(String mapName) {
+    public @NotNull PartMap openMap(@NotNull String mapName) {
         return new InMemoryMap();
     }
 }

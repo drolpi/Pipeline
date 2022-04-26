@@ -33,7 +33,7 @@ public class InMemoryProvider implements LocalStorageProvider {
     }
 
     @Override
-    public LocalStorage constructLocalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull LocalStorage constructLocalStorage(@NotNull Pipeline pipeline) {
         return new InMemoryStorage();
     }
 }

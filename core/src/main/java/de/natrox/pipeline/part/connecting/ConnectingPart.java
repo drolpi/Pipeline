@@ -40,7 +40,7 @@ public final class ConnectingPart implements Part {
     }
 
     @Override
-    public PartMap openMap(String mapName) {
+    public @NotNull PartMap openMap(@NotNull String mapName) {
         PartMap localCacheMap = PartMap.EMPTY;
         if (localCache != null) {
             localCacheMap = localCache.openMap(mapName);

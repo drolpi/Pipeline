@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import static java.util.Objects.deepEquals;
 
-public final class EqualsCondition extends ComparableCondition {
+public final class EqualsCondition extends FieldCondition {
 
     EqualsCondition(String field, Object value) {
         super(field, value);

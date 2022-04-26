@@ -27,7 +27,7 @@ public final class ObjectUtil {
     }
 
     public static Object[] convertToObjectArray(Object array) {
-        Class ofArray = array.getClass().getComponentType();
+        Class<?> ofArray = array.getClass().getComponentType();
         if (ofArray.isPrimitive()) {
             List<Object> ar = new ArrayList<>();
             int length = Array.getLength(array);

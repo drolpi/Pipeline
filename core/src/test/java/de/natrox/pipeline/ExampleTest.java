@@ -16,8 +16,8 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.FindOptions;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.UUID;
 
 public class ExampleTest {
 
@@ -68,9 +67,11 @@ public class ExampleTest {
 
         DocumentRepository repository = pipeline.repository("Test");
 
-        Instant instant = Instant.now();
+        var instant = Instant.now();
 
-        for (PipeDocument doc : repository.find(Conditions.equals("firstName", "Tony"))) {
+        var cursor = repository.find(FindOptions.skip(2999));
+
+        for (PipeDocument doc : cursor) {
             System.out.println(doc.toString());
         }
 

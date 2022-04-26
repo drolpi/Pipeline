@@ -20,6 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ final class EmptyPartMap implements PartMap {
     }
 
     @Override
-    public PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         return null;
     }
 

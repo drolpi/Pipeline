@@ -23,6 +23,7 @@ import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +41,7 @@ final class MongoStorage implements GlobalStorage {
     }
 
     @Override
-    public PartMap openMap(String mapName) {
+    public @NotNull PartMap openMap(@NotNull String mapName) {
         if (mongoMapRegistry.containsKey(mapName)) {
             return mongoMapRegistry.get(mapName);
         }

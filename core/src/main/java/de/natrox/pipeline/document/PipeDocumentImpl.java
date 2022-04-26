@@ -22,6 +22,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.util.Iterables;
 import de.natrox.pipeline.util.ObjectUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -52,7 +53,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     }
 
     @Override
-    public PipeDocument put(@NotNull String field, @NotNull Object value) {
+    public @NotNull PipeDocument put(@NotNull String field, @NotNull Object value) {
         Check.argCondition(Strings.isNullOrEmpty(field), "field is empty or null key");
 
         if (isEmbedded(field)) {
@@ -66,7 +67,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     }
 
     @Override
-    public Object get(@NotNull String field) {
+    public @Nullable Object get(@NotNull String field) {
         Check.notNull(field, "field");
         if (isEmbedded(field) && !containsKey(field))
             return deepGet(field);
@@ -74,7 +75,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     }
 
     @Override
-    public <T> T get(@NotNull String field, @NotNull Class<T> type) {
+    public <T> @Nullable T get(@NotNull String field, @NotNull Class<T> type) {
         Check.notNull(type, "type");
         return type.cast(get(field));
     }
@@ -378,6 +379,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static class MapPairIterator implements Iterator<Pair<String, Object>> {
 
         private final Iterator<Map.Entry<String, Object>> iterator;

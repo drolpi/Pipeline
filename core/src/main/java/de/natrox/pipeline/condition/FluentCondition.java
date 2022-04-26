@@ -16,6 +16,10 @@
 
 package de.natrox.pipeline.condition;
 
+import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.NotNull;
+
+@SuppressWarnings("ClassCanBeRecord")
 public final class FluentCondition {
 
     private final String field;
@@ -24,11 +28,13 @@ public final class FluentCondition {
         this.field = field;
     }
 
-    public static FluentCondition where(String field) {
+    public static FluentCondition where(@NotNull String field) {
+        Check.notNull(field, "field");
         return new FluentCondition(field);
     }
 
-    public Condition eq(Object value) {
+    public Condition eq(@NotNull Object value) {
+        Check.notNull(value, "value");
         return new EqualsCondition(field, value);
     }
 

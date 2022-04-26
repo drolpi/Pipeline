@@ -29,6 +29,7 @@ import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +55,7 @@ final class MongoMap implements PartMap {
     }
 
     @Override
-    public PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         Document document = collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();

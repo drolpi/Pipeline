@@ -18,8 +18,8 @@ package de.natrox.pipeline.condition;
 
 public abstract class FieldCondition extends AbstractCondition {
 
-    private String field;
-    private Object value;
+    private final String field;
+    private final Object value;
     private boolean processed = false;
 
     protected FieldCondition(String field, Object value) {
@@ -32,13 +32,11 @@ public abstract class FieldCondition extends AbstractCondition {
     }
 
     public Object value() {
-        if (this.processed) return value;
+        if (this.processed)
+            return value;
 
-        if (value == null) return null;
-
-        if (isObjectCondition()) {
-            validateSearchTerm(value);
-        }
+        if (value == null)
+            return null;
 
         this.processed = true;
         return value;
@@ -46,13 +44,5 @@ public abstract class FieldCondition extends AbstractCondition {
 
     public boolean processed() {
         return this.processed;
-    }
-
-    protected void validateSearchTerm(Object value) {
-        if (value != null) {
-            if (!(value instanceof Comparable)) {
-                throw new IllegalStateException("search term is not comparable " + value);
-            }
-        }
     }
 }

@@ -18,46 +18,38 @@ package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.SortableFields;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 public final class FindOption {
 
     private SortableFields orderBy;
-    private Long skip;
-    private Long limit;
+    private int skip;
+    private int limit;
 
     FindOption() {
 
     }
 
-    public FindOption skip(Long skip) {
+    public @NotNull FindOption skip(@Range(from = 0, to = Integer.MAX_VALUE) int skip) {
         this.skip = skip;
         return this;
     }
 
-    public FindOption skip(Integer skip) {
-        this.skip = skip == null ? null : (long) skip;
-        return this;
-    }
-
-    public Long skip() {
+    public int skip() {
         return this.skip;
     }
 
-    public FindOption limit(Long limit) {
+    public @NotNull FindOption limit(@Range(from = 0, to = Integer.MAX_VALUE) int limit) {
         this.limit = limit;
         return this;
     }
 
-    public FindOption limit(Integer limit) {
-        this.limit = limit == null ? null : (long) limit;
-        return this;
-    }
-
-    public Long limit() {
+    public int limit() {
         return this.limit;
     }
 
-    public FindOption orderBy(String fieldName, SortOrder sortOrder) {
+    public @NotNull FindOption orderBy(@NotNull String fieldName, @NotNull SortOrder sortOrder) {
         if (orderBy != null) {
             orderBy.addField(fieldName, sortOrder);
         } else {
@@ -68,7 +60,7 @@ public final class FindOption {
         return this;
     }
 
-    public SortableFields orderBy() {
+    public @NotNull SortableFields orderBy() {
         return this.orderBy;
     }
 }

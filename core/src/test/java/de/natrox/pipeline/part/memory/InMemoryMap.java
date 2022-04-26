@@ -22,6 +22,7 @@ import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class InMemoryMap implements PartMap {
     private final Map<UUID, PipeDocument> documentMap = new HashMap<>();
 
     @Override
-    public PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         return documentMap.get(uniqueId);
     }
 

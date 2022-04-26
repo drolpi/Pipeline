@@ -23,6 +23,7 @@ import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RBucket;
 import org.redisson.api.RBuckets;
 import org.redisson.api.RedissonClient;
@@ -53,7 +54,7 @@ final class RedisMap implements PartMap {
     }
 
     @Override
-    public PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         RBucket<String> bucket = bucket(uniqueId);
         String json = bucket.get();
 

@@ -18,18 +18,11 @@ package de.natrox.pipeline.condition;
 
 public abstract class AbstractCondition implements Condition {
 
-    private String collectionName;
-    private boolean objectCondition = false;
-
     public Condition and(Condition condition) {
         return new AndCondition(this, condition);
     }
 
     public Condition or(Condition condition) {
         return new OrCondition(this, condition);
-    }
-
-    public boolean isObjectCondition() {
-        return this.objectCondition;
     }
 }

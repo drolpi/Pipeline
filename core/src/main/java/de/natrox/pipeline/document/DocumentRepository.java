@@ -34,15 +34,15 @@ public sealed interface DocumentRepository extends Repository<PipeDocument> perm
 
     @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOption findOption);
 
-    default DocumentCursor find() {
+    default @NotNull DocumentCursor find() {
         return this.find(Conditions.ALL, new FindOption());
     }
 
-    default DocumentCursor find(@NotNull Condition condition) {
+    default @NotNull DocumentCursor find(@NotNull Condition condition) {
         return this.find(condition, new FindOption());
     }
 
-    default DocumentCursor find(@NotNull FindOption findOption) {
+    default @NotNull DocumentCursor find(@NotNull FindOption findOption) {
         return this.find(Conditions.ALL, findOption);
     }
 
@@ -50,6 +50,6 @@ public sealed interface DocumentRepository extends Repository<PipeDocument> perm
 
     void remove(@NotNull UUID uniqueId);
 
-    String name();
+    @NotNull String name();
 
 }

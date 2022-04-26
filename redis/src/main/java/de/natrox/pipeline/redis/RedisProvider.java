@@ -81,7 +81,7 @@ public final class RedisProvider implements GlobalCacheProvider {
     }
 
     @Override
-    public GlobalCache constructGlobalCache(@NotNull Pipeline pipeline) {
+    public @NotNull GlobalCache constructGlobalCache(@NotNull Pipeline pipeline) {
         return new RedisCache(pipeline, redissonClient);
     }
 }

@@ -16,7 +16,10 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.sort.SortOrder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 public final class FindOptions {
 
@@ -24,19 +27,26 @@ public final class FindOptions {
         throw new UnsupportedOperationException();
     }
 
-    public static FindOption orderBy(String fieldName, SortOrder sortOrder) {
+    public static @NotNull FindOption orderBy(@NotNull String field, @NotNull SortOrder sortOrder) {
+        Check.notNull(field, "field");
+        Check.notNull(sortOrder, "sortOrder");
+
         FindOption findOption = new FindOption();
-        findOption.orderBy(fieldName, sortOrder);
+        findOption.orderBy(field, sortOrder);
         return findOption;
     }
 
-    public static FindOption skip(long skip) {
+    public static @NotNull FindOption skip(@Range(from = 0, to = Integer.MAX_VALUE) int skip) {
+        Check.argCondition(skip < 0, "skip");
+
         FindOption findOption = new FindOption();
         findOption.skip(skip);
         return findOption;
     }
 
-    public static FindOption limit(long limit) {
+    public static @NotNull FindOption limit(@Range(from = 0, to = Integer.MAX_VALUE) int limit) {
+        Check.argCondition(limit < 0, "limit");
+
         FindOption findOption = new FindOption();
         findOption.limit(limit);
         return findOption;

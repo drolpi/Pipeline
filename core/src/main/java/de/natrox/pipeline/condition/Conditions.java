@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.condition;
 
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 public final class Conditions {
@@ -27,14 +28,20 @@ public final class Conditions {
     }
 
     public static Condition eq(@NotNull String field, @NotNull Object value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
         return new EqualsCondition(field, value);
     }
 
     public static Condition and(Condition @NotNull ... conditions) {
+        Check.notNull(conditions, "conditions");
+        Check.argCondition(conditions.length <= 0, "conditions");
         return new AndCondition(conditions);
     }
 
     public static Condition or(Condition @NotNull ... conditions) {
+        Check.notNull(conditions, "conditions");
+        Check.argCondition(conditions.length <= 0, "conditions");
         return new OrCondition(conditions);
     }
 

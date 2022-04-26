@@ -17,9 +17,10 @@
 package de.natrox.pipeline.part;
 
 import de.natrox.pipeline.part.map.PartMap;
+import org.jetbrains.annotations.NotNull;
 
 public interface Part {
 
-    PartMap openMap(String mapName);
+    @NotNull PartMap openMap(@NotNull String mapName);
 
 }

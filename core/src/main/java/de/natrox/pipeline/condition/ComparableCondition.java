@@ -16,6 +16,8 @@
 
 package de.natrox.pipeline.condition;
 
+import de.natrox.common.validate.Check;
+
 public abstract class ComparableCondition extends FieldCondition {
 
     public ComparableCondition(String field, Object value) {
@@ -24,9 +26,7 @@ public abstract class ComparableCondition extends FieldCondition {
 
     @SuppressWarnings("rawtypes")
     public Comparable getComparable() {
-        if (value() == null) {
-            throw new RuntimeException("value parameter must not be null");
-        }
+        Check.notNull(value(), "value");
         return (Comparable) value();
     }
 }

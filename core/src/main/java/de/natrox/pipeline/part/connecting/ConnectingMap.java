@@ -22,6 +22,7 @@ import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public final class ConnectingMap implements PartMap {
     }
 
     @Override
-    public PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         if (localCacheMap.contains(uniqueId)) {
             return localCacheMap.get(uniqueId);
         } else if (globalCacheMap.contains(uniqueId)) {

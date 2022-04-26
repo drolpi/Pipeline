@@ -20,6 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.map.PartMap;
+import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ final class RedisCache implements GlobalCache {
     }
 
     @Override
-    public PartMap openMap(String mapName) {
+    public @NotNull PartMap openMap(@NotNull String mapName) {
         if (redisMapRegistry.containsKey(mapName)) {
             return redisMapRegistry.get(mapName);
         }
