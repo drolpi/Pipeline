@@ -69,12 +69,12 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull Set<String> listDocumentRepositories() {
+    public @NotNull Set<String> documentRepositories() {
         return null;
     }
 
     @Override
-    public @NotNull Set<String> listObjectRepositories() {
+    public @NotNull Set<String> objectRepositories() {
         return null;
     }
 

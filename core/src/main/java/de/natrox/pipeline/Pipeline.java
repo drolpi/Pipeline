@@ -42,9 +42,9 @@ public interface Pipeline {
 
     <T extends ObjectData> void destroyRepository(@NotNull Class<T> type);
 
-    @NotNull Set<String> listDocumentRepositories();
+    @NotNull Set<String> documentRepositories();
 
-    @NotNull Set<String> listObjectRepositories();
+    @NotNull Set<String> objectRepositories();
 
     @NotNull JsonConverter jsonConverter();
 
@@ -54,12 +54,12 @@ public interface Pipeline {
 
     default boolean hasRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        return this.listDocumentRepositories().contains(name);
+        return this.documentRepositories().contains(name);
     }
 
     default <T> boolean hasRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        return this.listObjectRepositories().contains(type.getName());
+        return this.objectRepositories().contains(type.getName());
     }
 
     interface Builder extends IBuilder<Pipeline> {
