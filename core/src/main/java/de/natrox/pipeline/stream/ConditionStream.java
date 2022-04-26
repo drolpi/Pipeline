@@ -20,12 +20,14 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.PipeDocument;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument>> {
 
     private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
@@ -37,7 +39,7 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
     }
 
     @Override
-    public Iterator<Pair<UUID, PipeDocument>> iterator() {
+    public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
         Iterator<Pair<UUID, PipeDocument>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
 
         if (condition == null || condition == Conditions.ALL) {

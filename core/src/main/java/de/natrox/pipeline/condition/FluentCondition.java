@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document.action;
+package de.natrox.pipeline.condition;
 
-import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.part.map.PartMap;
+public final class FluentCondition {
 
-import java.util.UUID;
+    private final String field;
 
-public final class WriteActions {
-
-    private final PartMap partMap;
-
-    public WriteActions(PartMap partMap) {
-        this.partMap = partMap;
+    private FluentCondition(String field) {
+        this.field = field;
     }
 
-    public void insert(UUID uniqueId, PipeDocument document) {
-        PipeDocument newDoc = document.clone();
-
-        //TODO:
-
-        partMap.put(uniqueId, newDoc);
+    public static FluentCondition where(String field) {
+        return new FluentCondition(field);
     }
 
-    public void remove(UUID uniqueId) {
-        partMap.remove(uniqueId);
+    public Condition eq(Object value) {
+        return new EqualsCondition(field, value);
     }
 
 }

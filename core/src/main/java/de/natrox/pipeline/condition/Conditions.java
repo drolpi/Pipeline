@@ -26,7 +26,7 @@ public final class Conditions {
         throw new UnsupportedOperationException();
     }
 
-    public static Condition equals(@NotNull String field, @NotNull Object value) {
+    public static Condition eq(@NotNull String field, @NotNull Object value) {
         return new EqualsCondition(field, value);
     }
 
