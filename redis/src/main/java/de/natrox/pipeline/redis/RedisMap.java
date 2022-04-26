@@ -57,6 +57,8 @@ final class RedisMap implements PartMap {
     public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
         RBucket<String> bucket = bucket(uniqueId);
         String json = bucket.get();
+        if (json == null)
+            return null;
 
         return jsonConverter.fromJson(json, PipeDocument.class);
     }
