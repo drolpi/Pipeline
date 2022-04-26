@@ -41,8 +41,8 @@ import java.util.UUID;
 
 public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implements PipeDocument {
 
+    public final static String DOC_ID = "_id";
     private final static String FIELD_SEPARATOR = ".";
-    private final static String DOC_ID = "_id";
 
     PipeDocumentImpl() {
         super();
