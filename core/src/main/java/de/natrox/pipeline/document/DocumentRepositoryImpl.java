@@ -79,7 +79,7 @@ public final class DocumentRepositoryImpl implements DocumentRepository {
     public void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
         PipeDocument newDoc = document.clone();
 
-        document.put(PipeDocumentImpl.DOC_ID, uniqueId);
+        newDoc.put(PipeDocumentImpl.DOC_ID, uniqueId);
 
         partMap.put(uniqueId, newDoc);
     }
