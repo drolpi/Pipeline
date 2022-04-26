@@ -16,5 +16,29 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.sort.SortOrder;
+
 public final class FindOptions {
+
+    private FindOptions() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static FindOption orderBy(String fieldName, SortOrder sortOrder) {
+        FindOption findOption = new FindOption();
+        findOption.orderBy(fieldName, sortOrder);
+        return findOption;
+    }
+
+    public static FindOption skip(long skip) {
+        FindOption findOption = new FindOption();
+        findOption.skip(skip);
+        return findOption;
+    }
+
+    public static FindOption limit(long limit) {
+        FindOption findOption = new FindOption();
+        findOption.limit(limit);
+        return findOption;
+    }
 }

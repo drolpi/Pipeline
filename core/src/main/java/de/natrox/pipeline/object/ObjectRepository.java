@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.FindOptions;
 import de.natrox.pipeline.condition.Condition;
@@ -36,7 +37,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
 
     default Cursor<T> find() {
         //TODO:
-        return this.find(null, null);
+        return this.find(Conditions.ALL, null);
     }
 
     default Cursor<T> find(@NotNull Condition condition) {
@@ -45,8 +46,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
     }
 
     default Cursor<T> find(@NotNull FindOptions findOptions) {
-        //TODO:
-        return this.find(null, findOptions);
+        return this.find(Conditions.ALL, findOptions);
     }
 
     void save(@NotNull ObjectData objectData);

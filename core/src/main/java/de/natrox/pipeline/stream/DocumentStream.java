@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class DocumentStream implements DocumentCursor {
 
     private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
@@ -59,7 +60,7 @@ public final class DocumentStream implements DocumentCursor {
 
         @Override
         public void remove() {
-            throw new RuntimeException("remove on cursor is not supported");
+            throw new RuntimeException("remove operation cannot be called here");
         }
     }
 

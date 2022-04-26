@@ -16,51 +16,74 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.document.action.ReadActions;
-import de.natrox.pipeline.document.action.WriteActions;
 import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.sort.SortOrder;
+import de.natrox.pipeline.stream.BoundedStream;
+import de.natrox.pipeline.stream.ConditionStream;
+import de.natrox.pipeline.stream.DocumentStream;
+import de.natrox.pipeline.stream.PipeStream;
+import de.natrox.pipeline.stream.SortedDocumentStream;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
-    private final ReadActions readActions;
-    private final WriteActions writeActions;
+    private final PartMap partMap;
 
     public DocumentRepositoryImpl(String repositoryName, PartMap partMap) {
         this.repositoryName = repositoryName;
-        this.readActions = new ReadActions(partMap);
-        this.writeActions = new WriteActions(partMap);
+        this.partMap = partMap;
     }
 
     @Override
     public @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId) {
-        return Optional.ofNullable(readActions.findById(uniqueId));
+        return Optional.ofNullable(partMap.get(uniqueId));
     }
 
     @Override
-    public @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOptions findOptions) {
-        //TODO: options
-        return readActions.find(condition);
+    public @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOption findOption) {
+        //TODO: Maybe allow that condition is null and use PartMap#entries direct if condition is null
+        PipeStream<Pair<UUID, PipeDocument>> stream = new ConditionStream(partMap.entries(), condition);
+
+        if (findOption.orderBy() != null) {
+            List<Pair<String, SortOrder>> blockingSortOrder = findOption.orderBy().getSortingOrders();
+            if (!blockingSortOrder.isEmpty()) {
+                stream = new SortedDocumentStream(blockingSortOrder, stream);
+            }
+        }
+
+        if (findOption.limit() != null || findOption.skip() != null) {
+            long limit = findOption.limit() == null ? Long.MAX_VALUE : findOption.limit();
+            long skip = findOption.skip() == null ? 0 : findOption.skip();
+            stream = new BoundedStream<>(skip, limit, stream);
+        }
+
+        return new DocumentStream(stream);
     }
 
     @Override
     public void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-        writeActions.insert(uniqueId, document);
+        PipeDocument newDoc = document.clone();
+
+        //TODO:
+
+        partMap.put(uniqueId, newDoc);
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return readActions.contains(uniqueId);
+        return partMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        writeActions.remove(uniqueId);
+        partMap.remove(uniqueId);
     }
 
     @Override

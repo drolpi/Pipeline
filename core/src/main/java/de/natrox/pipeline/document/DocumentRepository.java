@@ -17,6 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.condition.Condition;
+import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -31,21 +32,18 @@ public sealed interface DocumentRepository extends Repository<PipeDocument> perm
 
     @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId);
 
-    @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOptions findOptions);
+    @NotNull DocumentCursor find(@NotNull Condition condition, @NotNull FindOption findOption);
 
     default DocumentCursor find() {
-        //TODO:
-        return this.find(null, null);
+        return this.find(Conditions.ALL, new FindOption());
     }
 
     default DocumentCursor find(@NotNull Condition condition) {
-        //TODO:
-        return this.find(condition, null);
+        return this.find(condition, new FindOption());
     }
 
-    default DocumentCursor find(@NotNull FindOptions findOptions) {
-        //TODO:
-        return this.find(null, findOptions);
+    default DocumentCursor find(@NotNull FindOption findOption) {
+        return this.find(Conditions.ALL, findOption);
     }
 
     boolean exists(@NotNull UUID uniqueId);
