@@ -60,7 +60,7 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public void destroyRepository(@NotNull String name) {
-
+        connectingPart.removeMap(name);
     }
 
     @Override
@@ -90,7 +90,7 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public void shutdown() {
-
+        documentRepositoryFactory.clear();
     }
 
     public ConnectingPart storeManager() {

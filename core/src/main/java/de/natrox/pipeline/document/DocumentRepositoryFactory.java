@@ -53,4 +53,11 @@ public final class DocumentRepositoryFactory {
 
         return repository;
     }
+
+    public void clear() {
+        for (DocumentRepository collection : repositoryMap.values()) {
+            collection.close();
+        }
+        repositoryMap.clear();
+    }
 }

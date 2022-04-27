@@ -23,4 +23,9 @@ public interface Part {
 
     @NotNull PartMap openMap(@NotNull String mapName);
 
+    boolean hasMap(String mapName);
+
+    void closeMap(String mapName);
+
+    void removeMap(String mapName);
 }

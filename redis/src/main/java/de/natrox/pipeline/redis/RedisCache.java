@@ -21,10 +21,15 @@ import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.NotNull;
+import org.redisson.api.RBuckets;
 import org.redisson.api.RedissonClient;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 final class RedisCache implements GlobalCache {
 
@@ -47,5 +52,35 @@ final class RedisCache implements GlobalCache {
         redisMapRegistry.put(mapName, redisMap);
 
         return redisMap;
+    }
+
+    @Override
+    public boolean hasMap(String mapName) {
+        long keys = redissonClient
+            .getKeys()
+            .getKeysStream()
+            .filter(s -> s.split(":")[1].equals(mapName))
+            .count();
+
+        return keys > 0;
+    }
+
+    @Override
+    public void closeMap(String mapName) {
+        redisMapRegistry.remove(mapName);
+    }
+
+    @Override
+    public void removeMap(String mapName) {
+        redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
+        redisMapRegistry.remove(mapName);
+    }
+
+    private Set<String> keys(String mapName) {
+        return redissonClient
+            .getKeys()
+            .getKeysStream()
+            .filter(s -> s.split(":")[1].equals(mapName))
+            .collect(Collectors.toSet());
     }
 }

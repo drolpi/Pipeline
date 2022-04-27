@@ -51,6 +51,27 @@ final class MongoStorage implements GlobalStorage {
         return mongoMap;
     }
 
+    @Override
+    public boolean hasMap(String mapName) {
+        try {
+            mongoDatabase.getCollection(mapName);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void closeMap(String mapName) {
+        mongoMapRegistry.remove(mapName);
+    }
+
+    @Override
+    public void removeMap(String mapName) {
+        collection(mapName).drop();
+        mongoMapRegistry.remove(mapName);
+    }
+
     private MongoCollection<Document> collection(String name) {
         try {
             return mongoDatabase.getCollection(name);

@@ -55,4 +55,37 @@ public final class ConnectingPart implements Part {
 
         return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
     }
+
+    @Override
+    public boolean hasMap(String mapName) {
+        //TODO: Maybe check other parts too
+        return storage.hasMap(mapName);
+    }
+
+
+    @Override
+    public void closeMap(String mapName) {
+        if (localCache != null) {
+            localCache.closeMap(mapName);
+        }
+
+        if (globalCache != null) {
+            globalCache.closeMap(mapName);
+        }
+
+        storage.closeMap(mapName);
+    }
+
+    @Override
+    public void removeMap(String mapName) {
+        if (localCache != null) {
+            localCache.removeMap(mapName);
+        }
+
+        if (globalCache != null) {
+            globalCache.removeMap(mapName);
+        }
+
+        storage.removeMap(mapName);
+    }
 }

@@ -16,10 +16,7 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.mongo.MongoConfig;
@@ -27,13 +24,11 @@ import de.natrox.pipeline.mongo.MongoProvider;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
-import de.natrox.pipeline.sort.SortOrder;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ExampleTest {
 
