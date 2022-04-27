@@ -26,4 +26,19 @@ public class InMemoryStorage implements LocalStorage {
     public @NotNull PartMap openMap(@NotNull String mapName) {
         return new InMemoryMap();
     }
+
+    @Override
+    public boolean hasMap(String mapName) {
+        return false;
+    }
+
+    @Override
+    public void closeMap(String mapName) {
+
+    }
+
+    @Override
+    public void removeMap(String mapName) {
+
+    }
 }

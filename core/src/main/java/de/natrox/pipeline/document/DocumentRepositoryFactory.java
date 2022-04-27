@@ -49,7 +49,7 @@ public final class DocumentRepositoryFactory {
 
     private DocumentRepository createRepository(String name, ConnectingPart connectingPart) {
         PartMap partMap = connectingPart.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, partMap);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, connectingPart, partMap);
 
         return repository;
     }

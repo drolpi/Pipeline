@@ -21,6 +21,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Experimental
 public interface Repository<T> {
 
+    void close();
+
     void drop();
 
     boolean isDropped();
@@ -28,7 +30,5 @@ public interface Repository<T> {
     boolean isOpen();
 
     long size();
-
-    void close();
 
 }

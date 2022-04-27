@@ -65,6 +65,9 @@ public class ExampleTest {
             .build();
 
         DocumentRepository repository = pipeline.repository("Test");
+        repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442"));
+
+        repository.drop();
         //ThreadLocalRandom random = ThreadLocalRandom.current();
         //
         //for (int i = 0; i < 3000; i++) {
@@ -78,9 +81,11 @@ public class ExampleTest {
 
         var instant = Instant.now();
 
+        /*
         repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442")).ifPresent(document -> {
             System.out.println(document.toString());
         });
+         */
 
         System.out.println(Duration.between(instant, Instant.now()).toMillis());
     }
