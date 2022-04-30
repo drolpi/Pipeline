@@ -15,5 +15,5 @@
  */
 dependencies {
     compileOnly(project(":core"))
-    implementation("org.mongodb:mongo-java-driver:3.12.10")
+    implementation("org.mongodb:mongo-java-driver:3.12.11")
 }
