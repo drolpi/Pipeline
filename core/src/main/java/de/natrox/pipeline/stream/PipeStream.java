@@ -16,7 +16,9 @@
 
 package de.natrox.pipeline.stream;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.util.Iterables;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,35 +27,37 @@ import java.util.Set;
 
 public interface PipeStream<T> extends Iterable<T> {
 
-    static <T> PipeStream<T> fromIterable(Iterable<T> iterable) {
+    static <T> PipeStream<T> fromIterable(@NotNull Iterable<T> iterable) {
+        Check.notNull(iterable, "iterable");
         return iterable::iterator;
+    }
+
+    static <V> PipeStream<V> single(@NotNull V v) {
+        Check.notNull(v, "value");
+        return PipeStream.fromIterable(Collections.singleton(v));
     }
 
     static <V> PipeStream<V> empty() {
         return PipeStream.fromIterable(Collections.emptySet());
     }
 
-    static <V> PipeStream<V> single(V v) {
-        return PipeStream.fromIterable(Collections.singleton(v));
+    default @NotNull List<T> toList() {
+        return Collections.unmodifiableList(Iterables.toList(this));
+    }
+
+    default @NotNull Set<T> toSet() {
+        return Collections.unmodifiableSet(Iterables.toSet(this));
+    }
+
+    default @NotNull Optional<T> first() {
+        return Optional.ofNullable(Iterables.firstOrNull(this));
     }
 
     default long size() {
         return Iterables.size(this);
     }
 
-    default List<T> toList() {
-        return Collections.unmodifiableList(Iterables.toList(this));
-    }
-
-    default Set<T> toSet() {
-        return Collections.unmodifiableSet(Iterables.toSet(this));
-    }
-
     default boolean isEmpty() {
         return !iterator().hasNext();
-    }
-
-    default Optional<T> first() {
-        return Optional.ofNullable(Iterables.firstOrNull(this));
     }
 }

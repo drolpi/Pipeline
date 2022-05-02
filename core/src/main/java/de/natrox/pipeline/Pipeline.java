@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 @ApiStatus.Experimental
-public interface Pipeline {
+public sealed interface Pipeline permits PipelineImpl {
 
     static @NotNull Builder builder() {
         return new PipelineBuilderImpl();
@@ -62,7 +62,7 @@ public interface Pipeline {
         return this.objectRepositories().contains(type.getName());
     }
 
-    interface Builder extends IBuilder<Pipeline> {
+    sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
         @NotNull Builder bundle(@NotNull PartBundle bundle);
 

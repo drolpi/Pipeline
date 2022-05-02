@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
-public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
+public sealed interface PartBundle permits PartBundleImpl.Local, PartBundleImpl.Global {
 
     static @NotNull PartBundle local(
         @NotNull LocalStorageProvider localStorageProvider,
@@ -41,12 +41,12 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
     ) {
         Check.notNull(localStorageProvider, "localStorageProvider");
         Check.notNull(localCacheProvider, "localCacheProvider");
-        return new Local(localStorageProvider, localCacheProvider);
+        return new PartBundleImpl.Local(localStorageProvider, localCacheProvider);
     }
 
     static @NotNull PartBundle local(@NotNull LocalStorageProvider localStorageProvider) {
         Check.notNull(localStorageProvider, "localStorageProvider");
-        return new Local(localStorageProvider, null);
+        return new PartBundleImpl.Local(localStorageProvider, null);
     }
 
     static @NotNull PartBundle global(
@@ -55,7 +55,7 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
         @NotNull DataUpdaterProvider dataUpdaterProvider,
         @NotNull LocalCacheProvider localCacheProvider
     ) {
-        return new Global(globalStorageProvider, globalCacheProvider, dataUpdaterProvider, localCacheProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, dataUpdaterProvider, localCacheProvider);
     }
 
     static @NotNull PartBundle global(
@@ -63,61 +63,20 @@ public sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
         @NotNull DataUpdaterProvider dataUpdaterProvider,
         @NotNull LocalCacheProvider localCacheProvider
     ) {
-        return new Global(globalStorageProvider, null, dataUpdaterProvider, localCacheProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, null, dataUpdaterProvider, localCacheProvider);
     }
 
     static @NotNull PartBundle global(
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider
     ) {
-        return new Global(globalStorageProvider, globalCacheProvider, null, null);
+        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, null, null);
     }
 
     static @NotNull PartBundle global(@NotNull GlobalStorageProvider globalStorageProvider) {
-        return new Global(globalStorageProvider, null, null, null);
+        return new PartBundleImpl.Global(globalStorageProvider, null, null, null);
     }
 
     @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline);
-
-    record Local(@NotNull LocalStorageProvider localStorageProvider,
-                 @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
-
-        @Override
-        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
-            LocalStorage storage = this.localStorageProvider.constructLocalStorage(pipeline);
-
-            LocalCache localCache = null;
-            if (this.localCacheProvider != null)
-                localCache = this.localCacheProvider.constructLocalCache(pipeline);
-
-            return new ConnectingPart(storage, null, null, localCache);
-        }
-
-    }
-
-    record Global(@NotNull GlobalStorageProvider globalStorageProvider,
-                  @Nullable GlobalCacheProvider globalCacheProvider,
-                  @Nullable DataUpdaterProvider dataUpdaterProvider,
-                  @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
-
-        @Override
-        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
-            GlobalStorage storage = globalStorageProvider.constructGlobalStorage(pipeline);
-
-            GlobalCache globalCache = null;
-            if (globalCacheProvider != null)
-                globalCache = globalCacheProvider.constructGlobalCache(pipeline);
-
-            DataUpdater dataUpdater = null;
-            LocalCache localCache = null;
-            if (dataUpdaterProvider != null && localCacheProvider != null) {
-                dataUpdater = dataUpdaterProvider.constructDataUpdater(pipeline);
-                localCache = localCacheProvider.constructLocalCache(pipeline);
-            }
-
-            return new ConnectingPart(storage, globalCache, dataUpdater, localCache);
-        }
-
-    }
 
 }
