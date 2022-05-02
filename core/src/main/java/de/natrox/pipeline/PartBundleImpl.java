@@ -42,10 +42,7 @@ final class PartBundleImpl {
         @Override
         public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
             LocalStorage storage = this.localStorageProvider.constructLocalStorage(pipeline);
-
-            LocalCache localCache = null;
-            if (this.localCacheProvider != null)
-                localCache = this.localCacheProvider.constructLocalCache(pipeline);
+            LocalCache localCache = localCacheProvider != null ? localCacheProvider.constructLocalCache(pipeline) : null;
 
             return new ConnectingPart(storage, null, null, localCache);
         }
@@ -60,17 +57,11 @@ final class PartBundleImpl {
         @Override
         public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
             GlobalStorage storage = globalStorageProvider.constructGlobalStorage(pipeline);
+            GlobalCache globalCache = globalCacheProvider != null ? globalCacheProvider.constructGlobalCache(pipeline) : null;
 
-            GlobalCache globalCache = null;
-            if (globalCacheProvider != null)
-                globalCache = globalCacheProvider.constructGlobalCache(pipeline);
-
-            DataUpdater dataUpdater = null;
-            LocalCache localCache = null;
-            if (dataUpdaterProvider != null && localCacheProvider != null) {
-                dataUpdater = dataUpdaterProvider.constructDataUpdater(pipeline);
-                localCache = localCacheProvider.constructLocalCache(pipeline);
-            }
+            boolean local = dataUpdaterProvider != null && localCacheProvider != null;
+            DataUpdater dataUpdater = local ? dataUpdaterProvider.constructDataUpdater(pipeline) : null;
+            LocalCache localCache = local ? localCacheProvider.constructLocalCache(pipeline) : null;
 
             return new ConnectingPart(storage, globalCache, dataUpdater, localCache);
         }
