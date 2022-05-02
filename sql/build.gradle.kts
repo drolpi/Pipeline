@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":gson-converter",
-    ":jackson-converter",
-    ":mongo",
-    ":redis",
-    ":sql"
-)
+dependencies {
+    compileOnly(project(":core"))
+    implementation("com.zaxxer:HikariCP:5.0.1")
+}
