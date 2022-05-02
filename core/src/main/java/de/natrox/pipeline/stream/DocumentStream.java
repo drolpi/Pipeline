@@ -19,6 +19,7 @@ package de.natrox.pipeline.stream;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.PipeDocument;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,7 +35,7 @@ public final class DocumentStream implements DocumentCursor {
     }
 
     @Override
-    public Iterator<PipeDocument> iterator() {
+    public @NotNull Iterator<PipeDocument> iterator() {
         Iterator<Pair<UUID, PipeDocument>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
         return new DocumentCursorIterator(iterator);
     }

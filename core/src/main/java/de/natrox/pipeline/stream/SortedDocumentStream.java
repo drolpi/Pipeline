@@ -21,6 +21,7 @@ import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.sort.DocumentSorter;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.util.Iterables;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public final class SortedDocumentStream implements PipeStream<Pair<UUID, PipeDoc
     }
 
     @Override
-    public Iterator<Pair<UUID, PipeDocument>> iterator() {
+    public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
         if (pipeStream == null)
             return Collections.emptyIterator();
 
