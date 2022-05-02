@@ -62,7 +62,7 @@ public sealed interface Pipeline permits PipelineImpl {
         return this.objectRepositories().contains(type.getName());
     }
 
-    interface Builder extends IBuilder<Pipeline> {
+    sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
         @NotNull Builder bundle(@NotNull PartBundle bundle);
 
