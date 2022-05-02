@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
+dependencies {
+    compileOnly(project(":core"))
+    implementation(project(":sql"))
 
-include(
-    ":config",
-    ":core",
-    ":gson-converter",
-    ":jackson-converter",
-    ":mongo",
-    ":mysql",
-    ":redis",
-    ":sql",
-    ":sqlite"
-)
+    implementation("org.xerial:sqlite-jdbc:3.36.0.3")
+}
