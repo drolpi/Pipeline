@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.memory;
 
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.storage.LocalStorage;
 import org.jetbrains.annotations.NotNull;
 

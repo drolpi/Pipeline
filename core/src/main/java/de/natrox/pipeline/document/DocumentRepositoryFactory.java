@@ -16,10 +16,8 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.DocumentRepositoryImpl;
 import de.natrox.pipeline.part.connecting.ConnectingPart;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;

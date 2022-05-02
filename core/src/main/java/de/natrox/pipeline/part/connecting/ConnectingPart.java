@@ -17,10 +17,10 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.pipeline.part.Part;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.cache.LocalCache;
-import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.part.storage.Storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +41,12 @@ public final class ConnectingPart implements Part {
 
     @Override
     public @NotNull PartMap openMap(@NotNull String mapName) {
-        PartMap localCacheMap = PartMap.EMPTY;
+        PartMap localCacheMap = null;
         if (localCache != null) {
             localCacheMap = localCache.openMap(mapName);
         }
 
-        PartMap globalCacheMap = PartMap.EMPTY;
+        PartMap globalCacheMap = null;
         if (globalCache != null) {
             globalCacheMap = globalCache.openMap(mapName);
         }

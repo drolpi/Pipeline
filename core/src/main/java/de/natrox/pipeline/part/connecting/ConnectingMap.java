@@ -18,26 +18,24 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.cache.DataUpdater;
-import de.natrox.pipeline.part.map.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.UUID;
 
 public final class ConnectingMap implements PartMap {
 
     private final PartMap storageMap;
-    private final PartMap globalCacheMap;
-    private final PartMap localCacheMap;
+    private final @Nullable PartMap globalCacheMap;
+    private final @Nullable PartMap localCacheMap;
+    private final @Nullable DataUpdater dataUpdater;
 
-    private final DataUpdater dataUpdater;
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(PartMap storageMap, PartMap globalCacheMap, PartMap localCacheMap, DataUpdater dataUpdater) {
+    public ConnectingMap(PartMap storageMap, @Nullable PartMap globalCacheMap, @Nullable PartMap localCacheMap, @Nullable DataUpdater dataUpdater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
@@ -47,47 +45,54 @@ public final class ConnectingMap implements PartMap {
 
     @Override
     public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
-        PipeDocument document = localCacheMap.get(uniqueId);
-        if(document != null) {
-            return document;
+        if(localCacheMap != null) {
+            PipeDocument document = this.getFromPart(uniqueId, localCacheMap);
+            if (document != null) {
+                return document;
+            }
         }
 
-        document = globalCacheMap.get(uniqueId);
-        if(document != null) {
-            dataSynchronizer.synchronizeTo(
-                uniqueId,
-                document,
-                DataSynchronizer.DataSourceType.LOCAL_CACHE
-            );
-            return document;
+        if(globalCacheMap != null) {
+            PipeDocument document = this.getFromPart(uniqueId, globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            if (document != null) {
+                return document;
+            }
         }
 
-        document = storageMap.get(uniqueId);
-        dataSynchronizer.synchronizeTo(
-            uniqueId,
-            document,
-            DataSynchronizer.DataSourceType.GLOBAL_CACHE,
-            DataSynchronizer.DataSourceType.LOCAL_CACHE
-        );
+        return this.getFromPart(uniqueId, storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
+    }
+
+    private PipeDocument getFromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
+        PipeDocument document = partMap.get(uniqueId);
+        dataSynchronizer.synchronizeTo(uniqueId, document, destinations);
         return document;
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-        localCacheMap.put(uniqueId, document);
+        if (localCacheMap != null) {
+            localCacheMap.put(uniqueId, document);
+        }
         //TODO: Push data updater
-        globalCacheMap.put(uniqueId, document);
+        if (globalCacheMap != null) {
+            globalCacheMap.put(uniqueId, document);
+        }
         storageMap.put(uniqueId, document);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        boolean localExists = localCacheMap.contains(uniqueId);
-        if (localExists)
-            return true;
-        boolean globalExists = globalCacheMap.contains(uniqueId);
-        if (globalExists)
-            return true;
+        if (localCacheMap != null) {
+            boolean localExists = localCacheMap.contains(uniqueId);
+            if (localExists)
+                return true;
+        }
+
+        if (globalCacheMap != null) {
+            boolean globalExists = globalCacheMap.contains(uniqueId);
+            if (globalExists)
+                return true;
+        }
 
         return storageMap.contains(uniqueId);
     }
@@ -109,9 +114,13 @@ public final class ConnectingMap implements PartMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        localCacheMap.remove(uniqueId);
+        if (localCacheMap != null) {
+            localCacheMap.remove(uniqueId);
+        }
         //TODO: Push data Updater
-        globalCacheMap.remove(uniqueId);
+        if (globalCacheMap != null) {
+            globalCacheMap.remove(uniqueId);
+        }
         storageMap.remove(uniqueId);
     }
 

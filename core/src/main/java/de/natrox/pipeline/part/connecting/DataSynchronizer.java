@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

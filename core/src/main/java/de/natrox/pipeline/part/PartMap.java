@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.map;
+package de.natrox.pipeline.part;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
@@ -25,8 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public interface PartMap {
-
-    PartMap EMPTY = new EmptyPartMap();
 
     @Nullable PipeDocument get(@NotNull UUID uniqueId);
 

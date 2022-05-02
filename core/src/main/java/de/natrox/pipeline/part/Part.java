@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.part;
 
-import de.natrox.pipeline.part.map.PartMap;
 import org.jetbrains.annotations.NotNull;
 
 public interface Part {

@@ -20,7 +20,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;

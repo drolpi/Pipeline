@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;

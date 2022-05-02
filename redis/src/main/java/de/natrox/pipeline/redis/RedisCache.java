@@ -19,15 +19,12 @@ package de.natrox.pipeline.redis;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import org.jetbrains.annotations.NotNull;
-import org.redisson.api.RBuckets;
 import org.redisson.api.RedissonClient;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 

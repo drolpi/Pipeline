@@ -20,7 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.Part;
-import de.natrox.pipeline.part.map.PartMap;
+import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.SortableFields;
 import de.natrox.pipeline.stream.BoundedStream;
