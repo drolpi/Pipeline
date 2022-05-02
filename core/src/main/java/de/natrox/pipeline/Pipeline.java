@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 @ApiStatus.Experimental
-public interface Pipeline {
+public sealed interface Pipeline permits PipelineImpl {
 
     static @NotNull Builder builder() {
         return new PipelineBuilderImpl();
