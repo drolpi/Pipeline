@@ -49,4 +49,14 @@ public final class GsonConverter implements JsonConverter {
     public <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type) {
         return GSON.fromJson(json, type);
     }
+
+    @Override
+    public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public <T> @NotNull T injectMembers(@NotNull Object object, @NotNull T t) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

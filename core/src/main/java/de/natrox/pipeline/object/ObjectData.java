@@ -16,5 +16,31 @@
 
 package de.natrox.pipeline.object;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.UUID;
+
 public abstract class ObjectData {
+
+    private UUID uniqueId;
+
+    public @NotNull UUID uniqueId() {
+        return this.uniqueId;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (!(other instanceof ObjectData pipelineData))
+            return false;
+
+        return Objects.equals(uniqueId(), pipelineData.uniqueId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uniqueId());
+    }
 }

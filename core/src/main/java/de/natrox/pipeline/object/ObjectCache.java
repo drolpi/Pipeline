@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.object;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public interface JsonConverter {
+public final class ObjectCache<T extends ObjectData> {
 
-    @NotNull String toJson(@NotNull Object object);
+    private final Map<UUID, T> cache;
 
-    <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type);
+    ObjectCache() {
+        this.cache = new ConcurrentHashMap<>();
+    }
 
-    <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
-
-    <T> @NotNull T injectMembers(@NotNull Object object, @NotNull T t);
+    public T get(UUID uniqueId) {
+        if(!cache.containsKey(uniqueId)) {
+            cache.put(uniqueId, null);
+        }
+        T objectData = cache.get(uniqueId);
+        return objectData;
+    }
 
 }

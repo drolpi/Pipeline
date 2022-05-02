@@ -16,14 +16,20 @@
 
 package de.natrox.pipeline;
 
+import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
+import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
+import de.natrox.pipeline.sort.SortOrder;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -65,7 +71,7 @@ public class ExampleTest {
             .build();
 
         DocumentRepository repository = pipeline.repository("Test");
-        repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442"));
+        PipeDocument document = repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442")).orElse(null);
 
         repository.drop();
         //ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -81,18 +87,20 @@ public class ExampleTest {
 
         var instant = Instant.now();
 
-        /*
-        repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442")).ifPresent(document -> {
-            System.out.println(document.toString());
-        });
-         */
+        repository.find(
+            FindOptions
+                .builder()
+                .condition(Conditions.eq("name", "Robert"))
+                .sort("age", SortOrder.Ascending)
+                .build()
+        );
 
         System.out.println(Duration.between(instant, Instant.now()).toMillis());
     }
 
-    static class TestObject {
+    @Properties(identifier = "ExampleData")
+    static class ExampleData extends ObjectData {
 
-        private final String name = "asd";
 
     }
 

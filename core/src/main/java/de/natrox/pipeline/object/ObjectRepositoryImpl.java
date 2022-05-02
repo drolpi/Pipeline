@@ -16,9 +16,10 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,9 +28,22 @@ import java.util.UUID;
 
 public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
+    private final Class<T> type;
+    private final DocumentRepository documentRepository;
+    private final JsonConverter converter;
+    private final ObjectCache<T> objectCache;
+
+    public ObjectRepositoryImpl(Class<T> type, DocumentRepository documentRepository, JsonConverter converter) {
+        this.type = type;
+        this.documentRepository = documentRepository;
+        this.converter = converter;
+        this.objectCache = new ObjectCache<>();
+    }
+
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
-        return Optional.empty();
+        T data = objectCache.get(uniqueId);
+        return documentRepository.get(uniqueId).map(document -> convertToObject(document, data));
     }
 
     @Override
@@ -39,27 +53,27 @@ public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectR
 
     @Override
     public void save(@NotNull ObjectData objectData) {
-
+        documentRepository.insert(objectData.uniqueId(), convertToDocument(objectData));
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return false;
+        return documentRepository.exists(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-
+        documentRepository.remove(uniqueId);
     }
 
     @Override
     public @NotNull Class<T> type() {
-        return null;
+        return type;
     }
 
     @Override
     public @NotNull DocumentRepository documentRepository() {
-        return null;
+        return documentRepository;
     }
 
     @Override
@@ -85,5 +99,13 @@ public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectR
     @Override
     public void close() {
 
+    }
+
+    private T convertToObject(PipeDocument document, T objectData) {
+        return converter.injectMembers(document, objectData);
+    }
+
+    private PipeDocument convertToDocument(Object object) {
+        return converter.convert(object, PipeDocument.class);
     }
 }
