@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":gson-converter",
-    ":jackson-converter",
-    ":mongo",
-    ":mysql",
-    ":redis",
-    ":sql"
-)
+dependencies {
+    compileOnly(project(":core"))
+    implementation(project(":sql"))
+    
+    implementation("mysql:mysql-connector-java:8.0.28")
+}
