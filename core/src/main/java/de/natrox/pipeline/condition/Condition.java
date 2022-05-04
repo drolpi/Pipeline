@@ -18,12 +18,16 @@ package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.PipeDocument;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-@FunctionalInterface
 public interface Condition {
 
     boolean apply(Pair<UUID, PipeDocument> element);
+
+    Condition and(@NotNull Condition condition);
+
+    Condition or(@NotNull Condition condition);
 
 }

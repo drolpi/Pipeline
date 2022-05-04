@@ -16,13 +16,19 @@
 
 package de.natrox.pipeline.condition;
 
+import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.NotNull;
+
 public abstract class AbstractCondition implements Condition {
 
-    public Condition and(Condition condition) {
+    @Override
+    public Condition and(@NotNull Condition condition) {
+        Check.notNull(condition, "condition");
         return new AndCondition(this, condition);
     }
 
-    public Condition or(Condition condition) {
+    public Condition or(@NotNull Condition condition) {
+        Check.notNull(condition, "condition");
         return new OrCondition(this, condition);
     }
 }
