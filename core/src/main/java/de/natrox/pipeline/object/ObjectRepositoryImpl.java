@@ -26,14 +26,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
+final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     private final Class<T> type;
     private final DocumentRepository documentRepository;
     private final JsonConverter converter;
     private final ObjectCache<T> objectCache;
 
-    public ObjectRepositoryImpl(Class<T> type, DocumentRepository documentRepository, JsonConverter converter) {
+    ObjectRepositoryImpl(Class<T> type, DocumentRepository documentRepository, JsonConverter converter) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.converter = converter;
