@@ -83,7 +83,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         public @NotNull Builder endpoints(RedisEndpoint... endpoints) {
             Check.notNull(endpoints, "endpoints");
             for (int i = 0, length = endpoints.length; i < length; i++) {
-                var endpoint = endpoints[i];
+                RedisEndpoint endpoint = endpoints[i];
                 Check.notNull(endpoint, "alias at index %s", i);
                 this.endpoints.add(endpoint);
             }

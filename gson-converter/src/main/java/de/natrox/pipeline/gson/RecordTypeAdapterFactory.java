@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +45,7 @@ final class RecordTypeAdapterFactory implements TypeAdapterFactory {
             return null;
         }
 
-        var delegate = gson.getDelegateAdapter(this, type);
+        TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
         return new RecordTypeAdapter<>(gson, delegate, type.getRawType());
     }
 
@@ -68,7 +69,7 @@ final class RecordTypeAdapterFactory implements TypeAdapterFactory {
             this.delegate = delegate;
             this.originalType = originalType;
 
-            var components = originalType.getRecordComponents();
+            RecordComponent[] components = originalType.getRecordComponents();
             this.recordComponentTypes = new Class[components.length];
             this.componentTypes = new ConcurrentHashMap<>(components.length);
             for (int i = 0; i < components.length; i++) {
@@ -102,7 +103,7 @@ final class RecordTypeAdapterFactory implements TypeAdapterFactory {
                 in.nextNull();
                 return null;
             } else {
-                var arguments = new Object[this.componentTypes.size()];
+                Object[] arguments = new Object[this.componentTypes.size()];
 
                 in.beginObject();
                 while (in.hasNext()) {
@@ -116,7 +117,7 @@ final class RecordTypeAdapterFactory implements TypeAdapterFactory {
                 in.endObject();
 
                 for (int i = 0; i < arguments.length; i++) {
-                    var argumentType = this.recordComponentTypes[i];
+                    Class<?> argumentType = this.recordComponentTypes[i];
                     if (argumentType.isPrimitive() && arguments[i] == null) {
                         arguments[i] = Defaults.defaultValue(argumentType);
                     }

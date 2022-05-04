@@ -92,7 +92,7 @@ final class RedisMap implements PartMap {
 
         List<PipeDocument> documents = new ArrayList<>();
         for (var entry : buckets.entrySet()) {
-            var objectValue = entry.getValue();
+            Object objectValue = entry.getValue();
 
             if (!(objectValue instanceof String stringValue))
                 continue;
@@ -125,7 +125,7 @@ final class RedisMap implements PartMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        var bucket = bucket(uniqueId);
+        RBucket<String> bucket = bucket(uniqueId);
         bucket.delete();
     }
 

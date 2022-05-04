@@ -86,7 +86,7 @@ public class ExampleTest {
         //    repository.insert(UUID.randomUUID(), document);
         //}
 
-        var instant = Instant.now();
+        Instant instant = Instant.now();
 
         repository.find(
             FindOptions

@@ -98,10 +98,10 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
         if (!Strings.isNullOrEmpty(this.overridingConnectionUri))
             return this.overridingConnectionUri;
 
-        var authParams = Strings.isNullOrEmpty(this.username) && Strings.isNullOrEmpty(this.password)
+        String authParams = Strings.isNullOrEmpty(this.username) && Strings.isNullOrEmpty(this.password)
             ? ""
             : String.format("%s:%s@", this.encodeUrl(this.username), this.encodeUrl(this.password));
-        var authSource = Strings.isNullOrEmpty(this.authSource) ? "" : String.format("/?authSource=%s", this.authSource);
+        String authSource = Strings.isNullOrEmpty(this.authSource) ? "" : String.format("/?authSource=%s", this.authSource);
 
         return String.format("mongodb://%s%s:%d%s", authParams, this.host, this.port, authSource);
     }
