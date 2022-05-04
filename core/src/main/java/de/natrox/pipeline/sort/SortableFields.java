@@ -18,37 +18,60 @@ package de.natrox.pipeline.sort;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class SortableFields extends Fields {
+public final class SortableFields implements Comparable<SortableFields>, Serializable {
 
+    private final List<String> fieldNames;
     private final List<Pair<String, SortOrder>> sortingOrders;
 
-    public SortableFields() {
-        super();
-        sortingOrders = new ArrayList<>();
+    public SortableFields(String field, SortOrder sortOrder) {
+        this.sortingOrders = new ArrayList<>();
+        this.fieldNames = new ArrayList<>();
+        this.and(field, sortOrder);
     }
 
-    public static SortableFields withNames(String... fields) {
-        Check.notNull(fields, "fields cannot be null");
-
-        SortableFields sortableFields = new SortableFields();
-        for (String field : fields) {
-            sortableFields.addField(field, SortOrder.Ascending);
-        }
-        return sortableFields;
-    }
-
-    public SortableFields addField(String field, SortOrder sortOrder) {
-        super.fieldNames.add(field);
+    public SortableFields and(@NotNull String field, @NotNull SortOrder sortOrder) {
+        this.fieldNames.add(field);
         this.sortingOrders.add(Pair.of(field, sortOrder));
         return this;
     }
 
     public List<Pair<String, SortOrder>> getSortingOrders() {
         return Collections.unmodifiableList(sortingOrders);
+    }
+
+    public List<String> fieldNames() {
+        return Collections.unmodifiableList(fieldNames);
+    }
+
+    @Override
+    public String toString() {
+        return fieldNames.toString();
+    }
+
+    @Override
+    public int compareTo(@NotNull SortableFields other) {
+        Check.notNull(other, "other");
+        int fieldsSize = fieldNames().size();
+        int otherFieldsSize = other.fieldNames().size();
+        int result = Integer.compare(fieldsSize, otherFieldsSize);
+        if (result == 0) {
+            String[] keys = fieldNames().toArray(new String[0]);
+            String[] otherKeys = other.fieldNames().toArray(new String[0]);
+            for (int i = 0; i < keys.length; i++) {
+                int cmp = keys[i].compareTo(otherKeys[i]);
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
+        }
+
+        return result;
     }
 }

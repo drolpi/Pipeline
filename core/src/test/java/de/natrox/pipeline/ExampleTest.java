@@ -30,6 +30,7 @@ import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
 import de.natrox.pipeline.sort.SortOrder;
+import de.natrox.pipeline.sort.Sorts;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -90,8 +91,8 @@ public class ExampleTest {
         repository.find(
             FindOptions
                 .builder()
-                .condition(Conditions.eq("name", "Robert"))
-                .sort("age", SortOrder.Ascending)
+                .condition(Conditions.eq("name", "Robert").and(Conditions.eq("level", 100)))
+                .sort(Sorts.by("age", SortOrder.Ascending).and("level", SortOrder.Descending))
                 .build()
         );
 

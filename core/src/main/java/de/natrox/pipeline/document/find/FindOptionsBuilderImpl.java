@@ -18,7 +18,6 @@ package de.natrox.pipeline.document.find;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.SortableFields;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -59,16 +58,9 @@ final class FindOptionsBuilderImpl implements FindOptions.Builder {
     }
 
     @Override
-    public @NotNull FindOptions.Builder sort(@NotNull String field, @NotNull SortOrder sortOrder) {
-        Check.notNull(field, "field");
-        Check.notNull(sortOrder, "sortOrder");
-        if (sortBy != null) {
-            sortBy.addField(field, sortOrder);
-        } else {
-            SortableFields fields = new SortableFields();
-            fields.addField(field, sortOrder);
-            sortBy = fields;
-        }
+    public @NotNull FindOptions.Builder sort(@NotNull SortableFields sortableFields) {
+        Check.notNull(sortableFields, "sortableFields");
+        this.sortBy = sortableFields;
         return this;
     }
 

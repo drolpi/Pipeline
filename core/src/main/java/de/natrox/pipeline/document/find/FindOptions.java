@@ -46,7 +46,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
 
         @NotNull Builder condition(@NotNull Condition condition);
 
-        @NotNull Builder sort(@NotNull String fieldName, @NotNull SortOrder sortOrder);
+        @NotNull Builder sort(@NotNull SortableFields sortableFields);
 
     }
 
