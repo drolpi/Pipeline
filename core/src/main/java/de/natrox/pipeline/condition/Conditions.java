@@ -16,12 +16,21 @@
 
 package de.natrox.pipeline.condition;
 
+import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.document.PipeDocument;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public final class Conditions {
 
-    public static Condition ALL = element -> true;
+    public static Condition ALL = new AbstractCondition() {
+        @Override
+        public boolean apply(Pair<UUID, PipeDocument> element) {
+            return true;
+        }
+    };
 
     private Conditions() {
         throw new UnsupportedOperationException();
