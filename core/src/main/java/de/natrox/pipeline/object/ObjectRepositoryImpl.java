@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.document.find.FindOptions;
@@ -48,7 +49,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
-        return null;
+        DocumentCursor documentCursor = documentRepository.find(findOptions);
+        return new ObjectCursor<>(documentCursor);
     }
 
     @Override
