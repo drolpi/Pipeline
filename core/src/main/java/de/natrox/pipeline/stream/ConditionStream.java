@@ -42,7 +42,7 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
     public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
         Iterator<Pair<UUID, PipeDocument>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
 
-        if (condition == null || condition == Conditions.ALL) {
+        if (condition == null) {
             return iterator;
         }
         return new ConditionIterator(iterator, condition);
