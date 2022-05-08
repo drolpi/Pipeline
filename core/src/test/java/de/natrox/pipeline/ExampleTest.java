@@ -17,6 +17,7 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.condition.Conditions;
+import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.document.find.FindOptions;
@@ -25,10 +26,12 @@ import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
+import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.Sorts;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ExampleTest {
 
@@ -71,38 +75,119 @@ public class ExampleTest {
             .jsonConverter(jsonConverter)
             .build();
 
-        DocumentRepository repository = pipeline.repository("Test");
-        PipeDocument document = repository.get(UUID.fromString("5c4c6e43-422e-4a2f-9b98-2786faa53442")).orElse(null);
+        // Document repository
+        {
+            DocumentRepository repository = pipeline.repository("DAccount");
+            UUID uniqueId = UUID.randomUUID();
 
-        repository.drop();
-        //ThreadLocalRandom random = ThreadLocalRandom.current();
-        //
-        //for (int i = 0; i < 3000; i++) {
-        //    PipeDocument document = PipeDocument
-        //        .create()
-        //        .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
-        //        .put("age", random.nextInt(0, 100))
-        //        .put("hobby", "test");
-        //    repository.insert(UUID.randomUUID(), document);
-        //}
+            // Insert
+            {
+                ThreadLocalRandom random = ThreadLocalRandom.current();
 
-        Instant instant = Instant.now();
+                PipeDocument document = PipeDocument
+                    .create()
+                    .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
+                    .put("age", random.nextInt(0, 100))
+                    .put("european", random.nextBoolean());
 
-        repository.find(
-            FindOptions
-                .builder()
-                .condition(Conditions.eq("name", "Robert").and(Conditions.eq("level", 100)))
-                .sort(Sorts.by("age", SortOrder.Ascending).and("level", SortOrder.Descending))
-                .build()
-        );
+                repository.insert(uniqueId, document);
+            }
 
-        System.out.println(Duration.between(instant, Instant.now()).toMillis());
+            // Get
+            {
+                PipeDocument document = repository.get(uniqueId).orElse(null);
+            }
+
+            // Remove
+            {
+                repository.remove(uniqueId);
+            }
+
+            // Find
+            {
+                DocumentCursor cursor = repository.find(
+                    FindOptions
+                        .builder()
+                        .condition(Conditions.eq("european", true))
+                        .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
+                        .build()
+                );
+
+                for (PipeDocument document : cursor) {
+
+                }
+
+                PipeDocument document = cursor.first().orElse(null);
+            }
+        }
+
+        // Object repository
+        {
+            ObjectRepository<AccountData> repository = pipeline.repository(AccountData.class);
+            UUID uniqueId = UUID.randomUUID();
+
+            // Load
+            {
+                AccountData accountData = repository.load(uniqueId).orElse(null);
+            }
+
+            // Remove
+            {
+                repository.remove(uniqueId);
+            }
+
+            // Find
+            {
+                Cursor<AccountData> cursor = repository.find(
+                    FindOptions
+                        .builder()
+                        .condition(Conditions.eq("european", true))
+                        .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
+                        .build()
+                );
+
+                for (AccountData accountData : cursor) {
+
+                }
+
+                AccountData accountData = cursor.first().orElse(null);
+            }
+        }
     }
 
-    @Properties(identifier = "ExampleData")
-    static class ExampleData extends ObjectData {
+    @Properties(identifier = "OAccount")
+    static class AccountData extends ObjectData {
 
+        private String name;
+        private int age;
+        private boolean european;
 
+        public String name() {
+            return this.name;
+        }
+
+        public AccountData setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public int age() {
+            return this.age;
+        }
+
+        public AccountData setAge(int age) {
+            this.age = age;
+            return this;
+        }
+
+        public boolean european() {
+            return this.european;
+        }
+
+        public AccountData setEuropean(boolean european) {
+            this.european = european;
+            return this;
+        }
     }
 
 }
