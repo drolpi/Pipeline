@@ -29,7 +29,7 @@ public final class ObjectCache<T extends ObjectData> {
     }
 
     public T get(UUID uniqueId) {
-        if(!cache.containsKey(uniqueId)) {
+        if (!cache.containsKey(uniqueId)) {
             cache.put(uniqueId, null);
         }
         T objectData = cache.get(uniqueId);

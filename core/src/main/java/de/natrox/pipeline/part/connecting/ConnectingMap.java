@@ -45,14 +45,14 @@ public final class ConnectingMap implements PartMap {
 
     @Override
     public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
-        if(localCacheMap != null) {
+        if (localCacheMap != null) {
             PipeDocument document = this.getFromPart(uniqueId, localCacheMap);
             if (document != null) {
                 return document;
             }
         }
 
-        if(globalCacheMap != null) {
+        if (globalCacheMap != null) {
             PipeDocument document = this.getFromPart(uniqueId, globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
             if (document != null) {
                 return document;

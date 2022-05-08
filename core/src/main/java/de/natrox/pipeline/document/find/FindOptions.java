@@ -18,7 +18,6 @@ package de.natrox.pipeline.document.find;
 
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.SortableFields;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

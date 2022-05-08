@@ -21,7 +21,6 @@ import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 final class ObjectCursor<T> implements Cursor<T> {

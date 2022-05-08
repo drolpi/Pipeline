@@ -18,7 +18,6 @@ package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.PipeDocument;
 import org.jetbrains.annotations.NotNull;
 

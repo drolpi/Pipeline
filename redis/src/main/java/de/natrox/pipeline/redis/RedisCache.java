@@ -18,8 +18,8 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.cache.GlobalCache;
 import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.cache.GlobalCache;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
