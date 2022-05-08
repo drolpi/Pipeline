@@ -36,12 +36,6 @@ public final class Conditions {
         throw new UnsupportedOperationException();
     }
 
-    public static Condition eq(@NotNull String field, @NotNull Object value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new EqualsCondition(field, value);
-    }
-
     public static Condition and(Condition @NotNull ... conditions) {
         Check.notNull(conditions, "conditions");
         Check.argCondition(conditions.length <= 0, "conditions");
@@ -52,6 +46,36 @@ public final class Conditions {
         Check.notNull(conditions, "conditions");
         Check.argCondition(conditions.length <= 0, "conditions");
         return new OrCondition(conditions);
+    }
+
+    public static Condition eq(@NotNull String field, @NotNull Object value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new EqualsCondition(field, value);
+    }
+
+    public static Condition gt(@NotNull String field, Comparable<?> value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new GreaterThanCondition(field, value);
+    }
+
+    public static Condition gte(@NotNull String field, @NotNull Comparable<?> value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new GreaterEqualCondition(field, value);
+    }
+
+    public static Condition lt(@NotNull String field, @NotNull Comparable<?> value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new LesserThanCondition(field, value);
+    }
+
+    public static Condition lte(@NotNull String field, @NotNull Comparable<?> value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new LesserEqualCondition(field, value);
     }
 
 }

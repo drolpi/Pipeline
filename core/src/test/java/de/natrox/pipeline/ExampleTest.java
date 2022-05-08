@@ -36,8 +36,6 @@ import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.Sorts;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -108,7 +106,7 @@ public class ExampleTest {
                 DocumentCursor cursor = repository.find(
                     FindOptions
                         .builder()
-                        .condition(Conditions.eq("european", true))
+                        .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))
                         .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
                         .build()
                 );
@@ -141,7 +139,7 @@ public class ExampleTest {
                 Cursor<AccountData> cursor = repository.find(
                     FindOptions
                         .builder()
-                        .condition(Conditions.eq("european", true))
+                        .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))
                         .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
                         .build()
                 );
