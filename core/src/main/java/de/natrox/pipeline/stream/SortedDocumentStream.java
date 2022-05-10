@@ -41,12 +41,12 @@ public final class SortedDocumentStream implements PipeStream<Pair<UUID, PipeDoc
 
     @Override
     public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
-        if (pipeStream == null)
+        if (this.pipeStream == null)
             return Collections.emptyIterator();
 
-        DocumentSorter documentSorter = new DocumentSorter(sortOrder);
+        DocumentSorter documentSorter = new DocumentSorter(this.sortOrder);
 
-        List<Pair<UUID, PipeDocument>> recordList = Iterables.toList(pipeStream);
+        List<Pair<UUID, PipeDocument>> recordList = Iterables.toList(this.pipeStream);
         recordList.sort(documentSorter);
 
         return recordList.iterator();

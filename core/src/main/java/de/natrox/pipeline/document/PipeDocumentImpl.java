@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +60,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         if (isEmbedded(field)) {
             String regex = MessageFormat.format("\\{0}", FIELD_SEPARATOR);
             String[] splits = field.split(regex);
-            deepPut(splits, value);
+            this.deepPut(splits, value);
         } else {
             super.put(field, value);
         }
@@ -69,8 +70,8 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     @Override
     public @Nullable Object get(@NotNull String field) {
         Check.notNull(field, "field");
-        if (isEmbedded(field) && !containsKey(field))
-            return deepGet(field);
+        if (this.isEmbedded(field) && !this.containsKey(field))
+            return this.deepGet(field);
         return super.get(field);
     }
 
@@ -83,10 +84,11 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     @Override
     public @NotNull UUID uniqueId() {
         try {
-            if (!containsKey(DOC_ID)) {
+            if (!this.containsKey(DOC_ID)) {
                 super.put(DOC_ID, UUID.randomUUID());
             }
-            return get(DOC_ID, UUID.class);
+            //FIXME:
+            return this.get(DOC_ID, UUID.class);
         } catch (ClassCastException cce) {
             throw new RuntimeException("invalid _id found " + get(DOC_ID));
         }
@@ -94,16 +96,16 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
     @Override
     public @NotNull Set<String> getFields() {
-        return getFieldsInternal("");
+        return this.getFieldsInternal("");
     }
 
     @Override
     public void remove(@NotNull String field) {
         Check.notNull(field, "field");
-        if (isEmbedded(field)) {
+        if (this.isEmbedded(field)) {
             String regex = MessageFormat.format("\\{0}", FIELD_SEPARATOR);
             String[] splits = field.split(regex);
-            deepRemove(splits);
+            this.deepRemove(splits);
         } else {
             super.remove(field);
         }
@@ -151,7 +153,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
             return false;
 
         try {
-            for (Map.Entry<String, Object> e : entrySet()) {
+            for (Map.Entry<String, Object> e : this.entrySet()) {
                 String key = e.getKey();
                 Object value = e.getValue();
                 if (value == null) {
@@ -179,7 +181,6 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         Set<String> fields = new HashSet<>();
 
         for (Pair<String, Object> entry : this) {
-
             Object value = entry.second();
             if (value instanceof PipeDocumentImpl document) {
                 if (Strings.isNullOrEmpty(prefix)) {
@@ -200,8 +201,8 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
     }
 
     private Object deepGet(String field) {
-        if (isEmbedded(field)) {
-            return getByEmbeddedKey(field);
+        if (this.isEmbedded(field)) {
+            return this.getByEmbeddedKey(field);
         } else {
             return null;
         }
@@ -213,7 +214,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         }
         String key = splits[0];
         if (splits.length == 1) {
-            put(key, value);
+            this.put(key, value);
         } else {
             Object val = get(key);
 
@@ -225,7 +226,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
                 PipeDocumentImpl subDoc = new PipeDocumentImpl();
                 subDoc.deepPut(remaining, value);
 
-                put(key, subDoc);
+                this.put(key, subDoc);
             }
         }
     }
@@ -236,9 +237,9 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         }
         String key = splits[0];
         if (splits.length == 1) {
-            remove(key);
+            this.remove(key);
         } else {
-            Object val = get(key);
+            Object val = this.get(key);
 
             String[] remaining = Arrays.copyOfRange(splits, 1, splits.length);
 
@@ -261,7 +262,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
             return null;
         }
 
-        return recursiveGet(get(path[0]), Arrays.copyOfRange(path, 1, path.length));
+        return this.recursiveGet(get(path[0]), Arrays.copyOfRange(path, 1, path.length));
     }
 
     @SuppressWarnings("unchecked")
@@ -275,7 +276,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         }
 
         if (object instanceof PipeDocument) {
-            return recursiveGet(((PipeDocument) object).get(remainingPath[0]),
+            return this.recursiveGet(((PipeDocument) object).get(remainingPath[0]),
                 Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
         }
 
@@ -283,8 +284,8 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
             String accessor = remainingPath[0];
             Object[] array = ObjectUtil.convertToObjectArray(object);
 
-            if (isInteger(accessor)) {
-                int index = asInteger(accessor);
+            if (this.isInteger(accessor)) {
+                int index = this.asInteger(accessor);
                 if (index < 0) {
                     throw new RuntimeException("invalid array index " + index + " to access item inside a document");
                 }
@@ -292,9 +293,9 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
                 if (index >= array.length)
                     throw new RuntimeException("index " + index +
                         " is not less than the size of the array " + array.length);
-                return recursiveGet(array[index], Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
+                return this.recursiveGet(array[index], Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
             } else {
-                return decompose(Arrays.asList(array), remainingPath);
+                return this.decompose(Arrays.asList(array), remainingPath);
             }
         }
 
@@ -303,8 +304,8 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
             Iterable<Object> iterable = (Iterable<Object>) object;
             List<Object> collection = Iterables.toList(iterable);
 
-            if (isInteger(accessor)) {
-                int index = asInteger(accessor);
+            if (this.isInteger(accessor)) {
+                int index = this.asInteger(accessor);
                 if (index < 0)
                     throw new RuntimeException("invalid collection index " + index + " to access item inside a document");
 
@@ -312,9 +313,9 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
                     throw new RuntimeException("index " + accessor +
                         " is not less than the size of the list " + collection.size());
 
-                return recursiveGet(collection.get(index), Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
+                return this.recursiveGet(collection.get(index), Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
             } else {
-                return decompose(collection, remainingPath);
+                return this.decompose(collection, remainingPath);
             }
         }
         return null;
@@ -325,7 +326,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         Set<Object> items = new HashSet<>();
 
         for (Object item : collection) {
-            Object result = recursiveGet(item, remainingPath);
+            Object result = this.recursiveGet(item, remainingPath);
 
             if (result != null) {
                 if (result instanceof Iterable) {
@@ -363,6 +364,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         return field.contains(FIELD_SEPARATOR);
     }
 
+    @Serial
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.writeInt(size());
         for (Pair<String, Object> pair : this) {
@@ -370,6 +372,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         }
     }
 
+    @Serial
     @SuppressWarnings("unchecked")
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         int size = stream.readInt();
@@ -390,18 +393,18 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
         @Override
         public boolean hasNext() {
-            return iterator.hasNext();
+            return this.iterator.hasNext();
         }
 
         @Override
         public Pair<String, Object> next() {
-            Map.Entry<String, Object> next = iterator.next();
+            Map.Entry<String, Object> next = this.iterator.next();
             return new Pair<>(next.getKey(), next.getValue());
         }
 
         @Override
         public void remove() {
-            iterator.remove();
+            this.iterator.remove();
         }
     }
 

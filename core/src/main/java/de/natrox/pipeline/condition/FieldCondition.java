@@ -35,11 +35,11 @@ public abstract class FieldCondition extends AbstractCondition {
         if (this.processed)
             return value;
 
-        if (value == null)
+        if (this.value == null)
             return null;
 
         this.processed = true;
-        return value;
+        return this.value;
     }
 
     public boolean processed() {

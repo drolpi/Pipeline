@@ -41,8 +41,8 @@ public final class BoundedStream<T, U> implements PipeStream<Pair<T, U>> {
 
     @Override
     public @NotNull Iterator<Pair<T, U>> iterator() {
-        Iterator<Pair<T, U>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
-        return new BoundedIterator<>(iterator, skip, limit);
+        Iterator<Pair<T, U>> iterator = this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator();
+        return new BoundedIterator<>(iterator, this.skip, this.limit);
     }
 
     private static class BoundedIterator<T> implements Iterator<T> {
@@ -60,26 +60,26 @@ public final class BoundedStream<T, U> implements PipeStream<Pair<T, U>> {
             this.skip = skip;
             this.limit = limit;
             this.pos = 0;
-            initialize();
+            this.initialize();
         }
 
         private void initialize() {
-            while (pos < skip && iterator.hasNext()) {
-                iterator.next();
-                pos++;
+            while (this.pos < this.skip && this.iterator.hasNext()) {
+                this.iterator.next();
+                this.pos++;
             }
         }
 
         @Override
         public boolean hasNext() {
-            if (checkBounds()) {
+            if (this.checkBounds()) {
                 return false;
             }
-            return iterator.hasNext();
+            return this.iterator.hasNext();
         }
 
         private boolean checkBounds() {
-            return pos - skip + 1 > limit;
+            return this.pos - this.skip + 1 > this.limit;
         }
 
         @Override
@@ -87,17 +87,17 @@ public final class BoundedStream<T, U> implements PipeStream<Pair<T, U>> {
             if (checkBounds()) {
                 throw new NoSuchElementException();
             }
-            final T next = iterator.next();
-            pos++;
+            final T next = this.iterator.next();
+            this.pos++;
             return next;
         }
 
         @Override
         public void remove() {
-            if (pos <= skip) {
+            if (this.pos <= this.skip) {
                 throw new IllegalStateException();
             }
-            iterator.remove();
+            this.iterator.remove();
         }
     }
 

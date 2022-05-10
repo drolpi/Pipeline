@@ -44,42 +44,42 @@ public final class DataSynchronizer {
     }
 
     public void synchronizeTo(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
-        executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, document, destinations)));
+        this.executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, document, destinations)));
     }
 
     public boolean to(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
         List<DataSourceType> destinationList = Arrays.asList(destinations);
-        if (localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
-            localCache.put(uniqueId, document);
+        if (this.localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
+            this.localCache.put(uniqueId, document);
         }
-        if (globalCache != null && destinationList.contains(DataSourceType.GLOBAL_CACHE)) {
-            globalCache.put(uniqueId, document);
+        if (this.globalCache != null && destinationList.contains(DataSourceType.GLOBAL_CACHE)) {
+            this.globalCache.put(uniqueId, document);
         }
         if (destinationList.contains(DataSourceType.STORAGE)) {
-            storage.put(uniqueId, document);
+            this.storage.put(uniqueId, document);
         }
         return true;
     }
 
     public CompletableFuture<PipeDocument> synchronizeFom(UUID uniqueId, DataSourceType source) {
         CompletableFuture<PipeDocument> future = new CompletableFuture<>();
-        executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
+        this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
         return future;
     }
 
     public PipeDocument from(UUID uniqueId, DataSourceType source) {
-        if (localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
-            return localCache.get(uniqueId);
-        } else if (globalCache != null && source.equals(DataSourceType.GLOBAL_CACHE)) {
-            return globalCache.get(uniqueId);
+        if (this.localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
+            return this.localCache.get(uniqueId);
+        } else if (this.globalCache != null && source.equals(DataSourceType.GLOBAL_CACHE)) {
+            return this.globalCache.get(uniqueId);
         } else if (source.equals(DataSourceType.STORAGE)) {
-            return storage.get(uniqueId);
+            return this.storage.get(uniqueId);
         }
         return null;
     }
 
     public void synchronizeFromTo(UUID uniqueId, DataSourceType sourceType, DataSourceType... destinations) {
-        executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, sourceType, destinations)));
+        this.executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, sourceType, destinations)));
     }
 
     public boolean fromTo(UUID uniqueId, DataSourceType source, DataSourceType... destinations) {

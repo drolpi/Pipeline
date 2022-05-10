@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class ObjectCursor<T> implements Cursor<T> {
 
     private final DocumentCursor cursor;
@@ -33,7 +34,7 @@ final class ObjectCursor<T> implements Cursor<T> {
 
     @Override
     public long size() {
-        return cursor.size();
+        return this.cursor.size();
     }
 
     @Override
@@ -51,7 +52,7 @@ final class ObjectCursor<T> implements Cursor<T> {
 
         @Override
         public boolean hasNext() {
-            return documentIterator.hasNext();
+            return this.documentIterator.hasNext();
         }
 
         @Override

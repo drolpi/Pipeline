@@ -42,50 +42,50 @@ public final class ConnectingPart implements Part {
     @Override
     public @NotNull PartMap openMap(@NotNull String mapName) {
         PartMap localCacheMap = null;
-        if (localCache != null) {
-            localCacheMap = localCache.openMap(mapName);
+        if (this.localCache != null) {
+            localCacheMap = this.localCache.openMap(mapName);
         }
 
         PartMap globalCacheMap = null;
-        if (globalCache != null) {
-            globalCacheMap = globalCache.openMap(mapName);
+        if (this.globalCache != null) {
+            globalCacheMap = this.globalCache.openMap(mapName);
         }
 
-        PartMap storageMap = storage.openMap(mapName);
+        PartMap storageMap = this.storage.openMap(mapName);
 
-        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, dataUpdater);
+        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.dataUpdater);
     }
 
     @Override
     public boolean hasMap(String mapName) {
         //TODO: Maybe check other parts too
-        return storage.hasMap(mapName);
+        return this.storage.hasMap(mapName);
     }
 
 
     @Override
     public void closeMap(String mapName) {
-        if (localCache != null) {
-            localCache.closeMap(mapName);
+        if (this.localCache != null) {
+            this.localCache.closeMap(mapName);
         }
 
-        if (globalCache != null) {
-            globalCache.closeMap(mapName);
+        if (this.globalCache != null) {
+            this.globalCache.closeMap(mapName);
         }
 
-        storage.closeMap(mapName);
+        this.storage.closeMap(mapName);
     }
 
     @Override
     public void removeMap(String mapName) {
-        if (localCache != null) {
-            localCache.removeMap(mapName);
+        if (this.localCache != null) {
+            this.localCache.removeMap(mapName);
         }
 
-        if (globalCache != null) {
-            globalCache.removeMap(mapName);
+        if (this.globalCache != null) {
+            this.globalCache.removeMap(mapName);
         }
 
-        storage.removeMap(mapName);
+        this.storage.removeMap(mapName);
     }
 }

@@ -43,26 +43,26 @@ public final class SortableFields implements Comparable<SortableFields>, Seriali
     }
 
     public List<Pair<String, SortOrder>> getSortingOrders() {
-        return Collections.unmodifiableList(sortingOrders);
+        return Collections.unmodifiableList(this.sortingOrders);
     }
 
     public List<String> fieldNames() {
-        return Collections.unmodifiableList(fieldNames);
+        return Collections.unmodifiableList(this.fieldNames);
     }
 
     @Override
     public String toString() {
-        return fieldNames.toString();
+        return this.fieldNames.toString();
     }
 
     @Override
     public int compareTo(@NotNull SortableFields other) {
         Check.notNull(other, "other");
-        int fieldsSize = fieldNames().size();
+        int fieldsSize = this.fieldNames().size();
         int otherFieldsSize = other.fieldNames().size();
         int result = Integer.compare(fieldsSize, otherFieldsSize);
         if (result == 0) {
-            String[] keys = fieldNames().toArray(new String[0]);
+            String[] keys = this.fieldNames().toArray(new String[0]);
             String[] otherKeys = other.fieldNames().toArray(new String[0]);
             for (int i = 0; i < keys.length; i++) {
                 int cmp = keys[i].compareTo(otherKeys[i]);

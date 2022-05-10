@@ -43,31 +43,28 @@ public final class ObjectRepositoryFactory {
         //FIXME:
         String name = null;
 
-        if (repositoryMap.containsKey(name)) {
-            ObjectRepository<T> repository = (ObjectRepository<T>) repositoryMap.get(name);
-            if (repository.isDropped() || !repository.isOpen()) {
-                repositoryMap.remove(name);
-                return createRepository(name, type);
-            } else {
+        if (this.repositoryMap.containsKey(name)) {
+            ObjectRepository<T> repository = (ObjectRepository<T>) this.repositoryMap.get(name);
+            if (!repository.isDropped() && repository.isOpen()) {
                 return repository;
             }
-        } else {
-            return createRepository(name, type);
+            this.repositoryMap.remove(name);
         }
+        return this.createRepository(name, type);
     }
 
     private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type) {
-        DocumentRepository documentRepository = documentRepositoryFactory.repository(name);
-        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(type, documentRepository, jsonConverter);
-        repositoryMap.put(name, repository);
+        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name);
+        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(type, documentRepository, this.jsonConverter);
+        this.repositoryMap.put(name, repository);
 
         return repository;
     }
 
     public void clear() {
-        for (ObjectRepository<?> repository : repositoryMap.values()) {
+        for (ObjectRepository<?> repository : this.repositoryMap.values()) {
             repository.close();
         }
-        repositoryMap.clear();
+        this.repositoryMap.clear();
     }
 }

@@ -42,38 +42,38 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
-        return documentRepository.get(uniqueId).map(this::convertToObject);
+        return this.documentRepository.get(uniqueId).map(this::convertToObject);
     }
 
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
-        DocumentCursor documentCursor = documentRepository.find(findOptions);
+        DocumentCursor documentCursor = this.documentRepository.find(findOptions);
         return new ObjectCursor<>(documentCursor);
     }
 
     @Override
     public void save(@NotNull ObjectData objectData) {
-        documentRepository.insert(objectData.uniqueId(), convertToDocument(objectData));
+        this.documentRepository.insert(objectData.uniqueId(), convertToDocument(objectData));
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return documentRepository.exists(uniqueId);
+        return this.documentRepository.exists(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        documentRepository.remove(uniqueId);
+        this.documentRepository.remove(uniqueId);
     }
 
     @Override
     public @NotNull Class<T> type() {
-        return type;
+        return this.type;
     }
 
     @Override
     public @NotNull DocumentRepository documentRepository() {
-        return documentRepository;
+        return this.documentRepository;
     }
 
     @Override
@@ -102,10 +102,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     private T convertToObject(PipeDocument document) {
-        return converter.convert(document, type);
+        return this.converter.convert(document, this.type);
     }
 
     private PipeDocument convertToDocument(Object object) {
-        return converter.convert(object, PipeDocument.class);
+        return this.converter.convert(object, PipeDocument.class);
     }
 }

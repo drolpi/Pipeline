@@ -50,38 +50,42 @@ final class PipelineImpl implements Pipeline {
     @Override
     public @NotNull DocumentRepository repository(@NotNull String name) {
         Check.notNull(name, "name");
-        return documentRepositoryFactory.repository(name);
+        return this.documentRepositoryFactory.repository(name);
     }
 
     @Override
     public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        return objectRepositoryFactory.repository(type);
+        return this.objectRepositoryFactory.repository(type);
     }
 
     @Override
     public void destroyRepository(@NotNull String name) {
+        Check.notNull(name, "name");
         connectingPart.removeMap(name);
     }
 
     @Override
     public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
-        connectingPart.removeMap(null);
+        Check.notNull(type, "type");
+        this.connectingPart.removeMap(null);
     }
 
     @Override
     public @NotNull Set<String> documentRepositories() {
+        //TODO:
         return null;
     }
 
     @Override
     public @NotNull Set<String> objectRepositories() {
+        //TODO:
         return null;
     }
 
     @Override
     public @NotNull JsonConverter jsonConverter() {
-        return jsonConverter;
+        return this.jsonConverter;
     }
 
     @Override
@@ -91,7 +95,7 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public void shutdown() {
-        documentRepositoryFactory.clear();
+        this.documentRepositoryFactory.clear();
     }
 
     public ConnectingPart storeManager() {

@@ -39,12 +39,11 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
 
     @Override
     public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
-        Iterator<Pair<UUID, PipeDocument>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
+        Iterator<Pair<UUID, PipeDocument>> iterator = this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator();
 
-        if (condition == null) {
+        if (this.condition == null)
             return iterator;
-        }
-        return new ConditionIterator(iterator, condition);
+        return new ConditionIterator(iterator, this.condition);
     }
 
     private static class ConditionIterator implements Iterator<Pair<UUID, PipeDocument>> {
@@ -60,32 +59,32 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
 
         @Override
         public boolean hasNext() {
-            return nextPairSet || setNextId();
+            return this.nextPairSet || this.setNextId();
         }
 
         @Override
         public Pair<UUID, PipeDocument> next() {
-            if (!nextPairSet && !setNextId()) {
+            if (!this.nextPairSet && !this.setNextId()) {
                 throw new NoSuchElementException();
             }
-            nextPairSet = false;
-            return nextPair;
+            this.nextPairSet = false;
+            return this.nextPair;
         }
 
         @Override
         public void remove() {
-            if (nextPairSet) {
+            if (this.nextPairSet) {
                 throw new RuntimeException("remove operation cannot be called here");
             }
-            iterator.remove();
+            this.iterator.remove();
         }
 
         private boolean setNextId() {
-            while (iterator.hasNext()) {
-                final Pair<UUID, PipeDocument> pair = iterator.next();
-                if (condition.apply(pair)) {
-                    nextPair = pair;
-                    nextPairSet = true;
+            while (this.iterator.hasNext()) {
+                final Pair<UUID, PipeDocument> pair = this.iterator.next();
+                if (this.condition.apply(pair)) {
+                    this.nextPair = pair;
+                    this.nextPairSet = true;
                     return true;
                 }
             }

@@ -50,12 +50,12 @@ public final class DocumentStream implements DocumentCursor {
 
         @Override
         public boolean hasNext() {
-            return iterator.hasNext();
+            return this.iterator.hasNext();
         }
 
         @Override
         public PipeDocument next() {
-            Pair<UUID, PipeDocument> next = iterator.next();
+            Pair<UUID, PipeDocument> next = this.iterator.next();
             return next.second();
         }
 

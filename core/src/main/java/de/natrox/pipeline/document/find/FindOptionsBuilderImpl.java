@@ -66,6 +66,6 @@ final class FindOptionsBuilderImpl implements FindOptions.Builder {
 
     @Override
     public FindOptions build() {
-        return new FindOptionsImpl(skip, limit, condition, sortBy);
+        return new FindOptionsImpl(this.skip, this.limit, this.condition, this.sortBy);
     }
 }

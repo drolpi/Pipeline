@@ -35,30 +35,28 @@ public final class DocumentRepositoryFactory {
     }
 
     public DocumentRepository repository(String name) {
-        if (repositoryMap.containsKey(name)) {
-            DocumentRepository repository = repositoryMap.get(name);
-            if (repository.isDropped() || !repository.isOpen()) {
-                repositoryMap.remove(name);
-                return createRepository(name);
+        if (this.repositoryMap.containsKey(name)) {
+            DocumentRepository repository = this.repositoryMap.get(name);
+            if (!repository.isDropped() && repository.isOpen()) {
+                return this.repositoryMap.get(name);
             }
-            return repositoryMap.get(name);
-        } else {
-            return createRepository(name);
+            this.repositoryMap.remove(name);
         }
+        return this.createRepository(name);
     }
 
     private DocumentRepository createRepository(String name) {
-        PartMap partMap = connectingPart.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, connectingPart, partMap);
-        repositoryMap.put(name, repository);
+        PartMap partMap = this.connectingPart.openMap(name);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingPart, partMap);
+        this.repositoryMap.put(name, repository);
 
         return repository;
     }
 
     public void clear() {
-        for (DocumentRepository collection : repositoryMap.values()) {
+        for (DocumentRepository collection : this.repositoryMap.values()) {
             collection.close();
         }
-        repositoryMap.clear();
+        this.repositoryMap.clear();
     }
 }

@@ -49,12 +49,12 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId) {
-        return Optional.ofNullable(partMap.get(uniqueId));
+        return Optional.ofNullable(this.partMap.get(uniqueId));
     }
 
     @Override
     public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
-        PipeStream<Pair<UUID, PipeDocument>> stream = partMap.entries();
+        PipeStream<Pair<UUID, PipeDocument>> stream = this.partMap.entries();
 
         Condition condition = findOptions.condition();
         if (condition != null) {
@@ -84,33 +84,33 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
         newDoc.put(PipeDocumentImpl.DOC_ID, uniqueId);
 
-        partMap.put(uniqueId, newDoc);
+        this.partMap.put(uniqueId, newDoc);
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
-        return partMap.contains(uniqueId);
+        return this.partMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        partMap.remove(uniqueId);
+        this.partMap.remove(uniqueId);
     }
 
     @Override
     public @NotNull String name() {
-        return repositoryName;
+        return this.repositoryName;
     }
 
     @Override
     public void close() {
-        part.removeMap(repositoryName);
+        part.removeMap(this.repositoryName);
     }
 
     @Override
     public void drop() {
-        part.closeMap(repositoryName);
-        part.removeMap(repositoryName);
+        this.part.closeMap(this.repositoryName);
+        this.part.removeMap(this.repositoryName);
     }
 
     @Override
