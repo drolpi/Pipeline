@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.object;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface JsonConverter {
+@FunctionalInterface
+public interface InstanceCreator<T extends ObjectData> {
 
-    @NotNull String toJson(@NotNull Object object);
-
-    <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type);
-
-    <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
-
-    @Deprecated(forRemoval = true)
-    <T> @NotNull T injectMembers(@NotNull Object object, @NotNull T t);
+    @NotNull T get(Class<? extends T> dataClass);
 
 }
