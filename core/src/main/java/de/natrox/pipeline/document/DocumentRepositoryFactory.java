@@ -26,28 +26,31 @@ import java.util.Map;
 @ApiStatus.Internal
 public final class DocumentRepositoryFactory {
 
+    private final ConnectingPart connectingPart;
     private final Map<String, DocumentRepository> repositoryMap;
 
-    public DocumentRepositoryFactory() {
+    public DocumentRepositoryFactory(ConnectingPart connectingPart) {
+        this.connectingPart = connectingPart;
         this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository repository(String name, ConnectingPart connectingPart) {
+    public DocumentRepository repository(String name) {
         if (repositoryMap.containsKey(name)) {
             DocumentRepository repository = repositoryMap.get(name);
             if (repository.isDropped() || !repository.isOpen()) {
                 repositoryMap.remove(name);
-                return createRepository(name, connectingPart);
+                return createRepository(name);
             }
             return repositoryMap.get(name);
         } else {
-            return createRepository(name, connectingPart);
+            return createRepository(name);
         }
     }
 
-    private DocumentRepository createRepository(String name, ConnectingPart connectingPart) {
+    private DocumentRepository createRepository(String name) {
         PartMap partMap = connectingPart.openMap(name);
         DocumentRepository repository = new DocumentRepositoryImpl(name, connectingPart, partMap);
+        repositoryMap.put(name, repository);
 
         return repository;
     }

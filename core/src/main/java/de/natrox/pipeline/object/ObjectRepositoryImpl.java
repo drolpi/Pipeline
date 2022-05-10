@@ -27,24 +27,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     private final Class<T> type;
     private final DocumentRepository documentRepository;
     private final JsonConverter converter;
-    private final ObjectCache<T> objectCache;
 
     ObjectRepositoryImpl(Class<T> type, DocumentRepository documentRepository, JsonConverter converter) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.converter = converter;
-        this.objectCache = new ObjectCache<>();
     }
 
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
-        T data = objectCache.get(uniqueId);
-        return documentRepository.get(uniqueId).map(document -> convertToObject(document, data));
+        return documentRepository.get(uniqueId).map(this::convertToObject);
     }
 
     @Override
@@ -103,8 +101,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     }
 
-    private T convertToObject(PipeDocument document, T objectData) {
-        return converter.injectMembers(document, objectData);
+    private T convertToObject(PipeDocument document) {
+        return converter.convert(document, type);
     }
 
     private PipeDocument convertToDocument(Object object) {
