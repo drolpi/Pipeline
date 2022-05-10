@@ -20,43 +20,42 @@ import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public final class SortableFields implements Comparable<SortableFields>, Serializable {
+final class SortEntryImpl implements SortEntry {
 
     private final List<String> fieldNames;
     private final List<Pair<String, SortOrder>> sortingOrders;
 
-    public SortableFields(String field, SortOrder sortOrder) {
-        this.sortingOrders = new ArrayList<>();
-        this.fieldNames = new ArrayList<>();
-        this.and(field, sortOrder);
+    SortEntryImpl(List<Pair<String, SortOrder>> orders) {
+        this.sortingOrders = orders;
+        this.fieldNames = orders.stream().map(Pair::first).collect(Collectors.toList());
     }
 
-    public SortableFields and(@NotNull String field, @NotNull SortOrder sortOrder) {
-        this.fieldNames.add(field);
-        this.sortingOrders.add(Pair.of(field, sortOrder));
-        return this;
+    @SafeVarargs
+    SortEntryImpl(Pair<String, SortOrder>... orders) {
+        this(Arrays.asList(orders));
     }
 
-    public List<Pair<String, SortOrder>> getSortingOrders() {
-        return Collections.unmodifiableList(this.sortingOrders);
-    }
-
+    @Override
     public List<String> fieldNames() {
-        return Collections.unmodifiableList(this.fieldNames);
+        return this.fieldNames;
+    }
+
+    @Override
+    public List<Pair<String, SortOrder>> sortingOrders() {
+        return this.sortingOrders;
     }
 
     @Override
     public String toString() {
-        return this.fieldNames.toString();
+        return fieldNames().toString();
     }
 
     @Override
-    public int compareTo(@NotNull SortableFields other) {
+    public int compareTo(@NotNull SortEntry other) {
         Check.notNull(other, "other");
         int fieldsSize = this.fieldNames().size();
         int otherFieldsSize = other.fieldNames().size();
@@ -74,4 +73,5 @@ public final class SortableFields implements Comparable<SortableFields>, Seriali
 
         return result;
     }
+
 }

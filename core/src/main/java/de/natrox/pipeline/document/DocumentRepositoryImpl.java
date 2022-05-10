@@ -21,8 +21,8 @@ import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.Part;
 import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
-import de.natrox.pipeline.sort.SortableFields;
 import de.natrox.pipeline.stream.BoundedStream;
 import de.natrox.pipeline.stream.ConditionStream;
 import de.natrox.pipeline.stream.DocumentStream;
@@ -61,9 +61,9 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             stream = new ConditionStream(condition, stream);
         }
 
-        SortableFields sortBy = findOptions.sortBy();
+        SortEntry sortBy = findOptions.sortBy();
         if (sortBy != null) {
-            List<Pair<String, SortOrder>> blockingSortOrder = sortBy.getSortingOrders();
+            List<Pair<String, SortOrder>> blockingSortOrder = sortBy.sortingOrders();
             if (!blockingSortOrder.isEmpty()) {
                 stream = new SortedDocumentStream(blockingSortOrder, stream);
             }

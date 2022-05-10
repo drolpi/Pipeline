@@ -18,7 +18,7 @@ package de.natrox.pipeline.document.find;
 
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.sort.SortableFields;
+import de.natrox.pipeline.sort.SortEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -35,7 +35,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
 
     @Nullable Condition condition();
 
-    @Nullable SortableFields sortBy();
+    @Nullable SortEntry sortBy();
 
     interface Builder extends IBuilder<FindOptions> {
 
@@ -45,7 +45,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
 
         @NotNull Builder condition(@NotNull Condition condition);
 
-        @NotNull Builder sort(@NotNull SortableFields sortableFields);
+        @NotNull Builder sort(@NotNull SortEntry sortableFields);
 
     }
 

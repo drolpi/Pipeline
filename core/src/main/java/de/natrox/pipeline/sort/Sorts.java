@@ -16,7 +16,11 @@
 
 package de.natrox.pipeline.sort;
 
+import de.natrox.common.container.Pair;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public final class Sorts {
 
@@ -24,8 +28,16 @@ public final class Sorts {
         throw new UnsupportedOperationException();
     }
 
-    public static SortableFields by(@NotNull String field, @NotNull SortOrder sortOrder) {
-        return new SortableFields(field, sortOrder);
+    public static SortEntry and(@NotNull SortEntry... sortEntries) {
+        return new SortEntryImpl(Arrays.stream(sortEntries).flatMap(sortEntry -> sortEntry.sortingOrders().stream()).collect(Collectors.toList()));
+    }
+
+    public static SortEntry ascending(@NotNull String field) {
+        return new SortEntryImpl(new Pair<>(field, SortOrder.Ascending));
+    }
+
+    public static SortEntry descending(@NotNull String field) {
+        return new SortEntryImpl(new Pair<>(field, SortOrder.Descending));
     }
 
 }

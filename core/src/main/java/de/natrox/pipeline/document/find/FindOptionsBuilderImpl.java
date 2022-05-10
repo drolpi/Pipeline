@@ -18,13 +18,13 @@ package de.natrox.pipeline.document.find;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.sort.SortableFields;
+import de.natrox.pipeline.sort.SortEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 final class FindOptionsBuilderImpl implements FindOptions.Builder {
 
-    private SortableFields sortBy;
+    private SortEntry sortBy;
     private Condition condition;
     private int skip;
     private int limit;
@@ -58,9 +58,9 @@ final class FindOptionsBuilderImpl implements FindOptions.Builder {
     }
 
     @Override
-    public @NotNull FindOptions.Builder sort(@NotNull SortableFields sortableFields) {
-        Check.notNull(sortableFields, "sortableFields");
-        this.sortBy = sortableFields;
+    public FindOptions.@NotNull Builder sort(@NotNull SortEntry sortBy) {
+        Check.notNull(sortBy, "sortBy");
+        this.sortBy = sortBy;
         return this;
     }
 

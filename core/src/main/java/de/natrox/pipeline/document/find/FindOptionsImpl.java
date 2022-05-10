@@ -17,7 +17,7 @@
 package de.natrox.pipeline.document.find;
 
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.sort.SortableFields;
+import de.natrox.pipeline.sort.SortEntry;
 
 @SuppressWarnings("ClassCanBeRecord")
 final class FindOptionsImpl implements FindOptions {
@@ -25,9 +25,9 @@ final class FindOptionsImpl implements FindOptions {
     private final int skip;
     private final int limit;
     private final Condition condition;
-    private final SortableFields sortBy;
+    private final SortEntry sortBy;
 
-    FindOptionsImpl(int skip, int limit, Condition condition, SortableFields sortBy) {
+    FindOptionsImpl(int skip, int limit, Condition condition, SortEntry sortBy) {
         this.skip = skip;
         this.limit = limit;
         this.condition = condition;
@@ -46,7 +46,7 @@ final class FindOptionsImpl implements FindOptions {
         return this.condition;
     }
 
-    public SortableFields sortBy() {
+    public SortEntry sortBy() {
         return this.sortBy;
     }
 }

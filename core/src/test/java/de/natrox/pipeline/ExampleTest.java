@@ -107,7 +107,7 @@ public class ExampleTest {
                     FindOptions
                         .builder()
                         .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))
-                        .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
+                        .sort(Sorts.and(Sorts.ascending("name"), Sorts.descending("age")))
                         .build()
                 );
 
@@ -140,7 +140,7 @@ public class ExampleTest {
                     FindOptions
                         .builder()
                         .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))
-                        .sort(Sorts.by("name", SortOrder.Ascending).and("age", SortOrder.Descending))
+                        .sort(Sorts.and(Sorts.ascending("name"), Sorts.descending("age")))
                         .build()
                 );
 

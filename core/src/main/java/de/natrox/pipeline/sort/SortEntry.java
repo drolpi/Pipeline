@@ -16,11 +16,18 @@
 
 package de.natrox.pipeline.sort;
 
+import de.natrox.common.container.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Internal
-public enum SortOrder {
+import java.io.Serializable;
+import java.util.List;
 
-    Ascending,
-    Descending
+@ApiStatus.Experimental
+@ApiStatus.Internal
+public interface SortEntry extends Comparable<SortEntry>, Serializable {
+
+    List<String> fieldNames();
+
+    List<Pair<String, SortOrder>> sortingOrders();
+
 }
