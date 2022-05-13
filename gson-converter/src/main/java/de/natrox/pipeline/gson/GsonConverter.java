@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class GsonConverter implements JsonConverter {
 
-    public static final Gson GSON = new GsonBuilder()
+    public final Gson gson = new GsonBuilder()
         .serializeNulls()
         .setPrettyPrinting()
         .disableHtmlEscaping()
@@ -42,16 +42,16 @@ public final class GsonConverter implements JsonConverter {
 
     @Override
     public @NotNull String toJson(@NotNull Object object) {
-        return GSON.toJson(object);
+        return gson.toJson(object);
     }
 
     @Override
     public <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type) {
-        return GSON.fromJson(json, type);
+        return gson.fromJson(json, type);
     }
 
     @Override
     public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return this.fromJson(this.toJson(object), type);
     }
 }
