@@ -35,7 +35,7 @@ public final class DocumentSorter implements Comparator<Pair<UUID, DocumentData>
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public int compare(Pair<UUID, DocumentData> pair1, Pair<UUID, DocumentData> pair2) {
-        if(this.sortOrder == null || this.sortOrder.isEmpty())
+        if (this.sortOrder == null || this.sortOrder.isEmpty())
             return 0;
 
         for (Pair<String, SortOrder> pair : this.sortOrder) {

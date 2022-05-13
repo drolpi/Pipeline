@@ -37,7 +37,6 @@ final class FindOptionsBuilderImpl implements FindOptions.Builder {
     @Override
     public @NotNull FindOptions.Builder skip(@Range(from = 0, to = Integer.MAX_VALUE) int skip) {
         Check.argCondition(skip < 0, "skip");
-
         this.skip = skip;
         return this;
     }
@@ -45,7 +44,6 @@ final class FindOptionsBuilderImpl implements FindOptions.Builder {
     @Override
     public @NotNull FindOptions.Builder limit(@Range(from = 0, to = Integer.MAX_VALUE) int limit) {
         Check.argCondition(limit < 0, "limit");
-
         this.limit = limit;
         return this;
     }

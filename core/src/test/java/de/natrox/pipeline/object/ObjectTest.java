@@ -18,7 +18,6 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.PartBundle;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.gson.GsonConverter;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.object.annotation.Named;
 import de.natrox.pipeline.object.annotation.Properties;

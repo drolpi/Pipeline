@@ -52,9 +52,9 @@ public class JsonTest {
         DocumentRepository repository = pipeline.repository("JsonTest");
         UUID uniqueId = UUID.nameUUIDFromBytes("Test".getBytes(StandardCharsets.UTF_8));
         DocumentData documentData = DocumentData
-        .create()
-        .append("name", "Peter")
-        .append("age", 23);
+            .create()
+            .append("name", "Peter")
+            .append("age", 23);
 
         repository.insert(uniqueId, documentData);
 

@@ -18,8 +18,8 @@ package de.natrox.pipeline;
 
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentCursor;
-import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
