@@ -17,7 +17,7 @@
 package de.natrox.pipeline.sql;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -28,12 +28,12 @@ import java.util.UUID;
 public class SqlMap implements PartMap {
 
     @Override
-    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         return null;
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData document) {
 
     }
 
@@ -48,12 +48,12 @@ public class SqlMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipeStream<PipeDocument> values() {
+    public @NotNull PipeStream<DocumentData> values() {
         return null;
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         return null;
     }
 
