@@ -16,11 +16,12 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.pipeline.Pipeline;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface InstanceCreator<T extends ObjectData> {
 
-    @NotNull T get(Class<? extends T> dataClass);
+    @NotNull T get(Class<? extends T> dataClass, Pipeline pipeline);
 
 }
