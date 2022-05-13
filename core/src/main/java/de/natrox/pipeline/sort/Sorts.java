@@ -17,11 +17,13 @@
 package de.natrox.pipeline.sort;
 
 import de.natrox.common.container.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@ApiStatus.Experimental
 public final class Sorts {
 
     private Sorts() {

@@ -18,10 +18,12 @@ package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+@ApiStatus.Experimental
 public interface Condition {
 
     boolean apply(Pair<UUID, DocumentData> element);

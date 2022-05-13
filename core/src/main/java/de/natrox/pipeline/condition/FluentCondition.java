@@ -17,8 +17,10 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+@ApiStatus.Experimental
 @SuppressWarnings("ClassCanBeRecord")
 public final class FluentCondition {
 

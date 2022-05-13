@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
 
     private final ObjectRepositoryImpl<T> repository;

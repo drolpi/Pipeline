@@ -18,6 +18,7 @@ package de.natrox.pipeline.stream;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.util.Iterables;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@ApiStatus.Experimental
 public interface PipeStream<T> extends Iterable<T> {
 
     static <T> PipeStream<T> fromIterable(@NotNull Iterable<T> iterable) {

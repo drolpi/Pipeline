@@ -19,10 +19,12 @@ package de.natrox.pipeline.document.find;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.sort.SortEntry;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+@ApiStatus.Experimental
 public sealed interface FindOptions permits FindOptionsImpl {
 
     @NotNull FindOptions DEFAULT = FindOptions.builder().build();
@@ -39,6 +41,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
 
     @Nullable SortEntry sortBy();
 
+    @ApiStatus.Experimental
     interface Builder extends IBuilder<FindOptions> {
 
         @NotNull Builder skip(@Range(from = 0, to = Integer.MAX_VALUE) int skip);
