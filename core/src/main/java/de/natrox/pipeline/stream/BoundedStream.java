@@ -41,8 +41,7 @@ public final class BoundedStream<T, U> implements PipeStream<Pair<T, U>> {
 
     @Override
     public @NotNull Iterator<Pair<T, U>> iterator() {
-        Iterator<Pair<T, U>> iterator = this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator();
-        return new BoundedIterator<>(iterator, this.skip, this.limit);
+        return new BoundedIterator<>(this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator(), this.skip, this.limit);
     }
 
     private static class BoundedIterator<T> implements Iterator<T> {

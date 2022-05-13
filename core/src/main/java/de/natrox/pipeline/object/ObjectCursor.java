@@ -16,37 +16,40 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.document.DocumentCursor;
+import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.repository.Cursor;
+import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
+import java.util.UUID;
 
-@SuppressWarnings("ClassCanBeRecord")
-final class ObjectCursor<T> implements Cursor<T> {
+final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
 
-    private final DocumentCursor cursor;
+    private final ObjectRepositoryImpl<T> repository;
+    private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
-    public ObjectCursor(DocumentCursor cursor) {
-        this.cursor = cursor;
+    public ObjectCursor(ObjectRepositoryImpl<T> repository, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
+        this.repository = repository;
+        this.pipeStream = pipeStream;
     }
 
     @Override
     public long size() {
-        return this.cursor.size();
+        return this.pipeStream.size();
     }
 
     @Override
     public @NotNull Iterator<T> iterator() {
-        return new ObjectCursorIterator(cursor.iterator());
+        return new ObjectCursorIterator(this.pipeStream.iterator());
     }
 
     private class ObjectCursorIterator implements Iterator<T> {
 
-        private final Iterator<DocumentData> documentIterator;
+        private final Iterator<Pair<UUID, DocumentData>> documentIterator;
 
-        ObjectCursorIterator(Iterator<DocumentData> documentIterator) {
+        ObjectCursorIterator(Iterator<Pair<UUID, DocumentData>> documentIterator) {
             this.documentIterator = documentIterator;
         }
 
@@ -57,8 +60,8 @@ final class ObjectCursor<T> implements Cursor<T> {
 
         @Override
         public T next() {
-            //TODO: Convert document to object
-            return null;
+            Pair<UUID, DocumentData> next = documentIterator.next();
+            return repository.convertToData(next.first(), next.second());
         }
 
         @Override

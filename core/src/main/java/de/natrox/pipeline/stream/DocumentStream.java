@@ -36,8 +36,12 @@ public final class DocumentStream implements DocumentCursor {
 
     @Override
     public @NotNull Iterator<DocumentData> iterator() {
-        Iterator<Pair<UUID, DocumentData>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
-        return new DocumentCursorIterator(iterator);
+        return new DocumentCursorIterator(this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator());
+    }
+
+    //TODO: Maybe devise a better solution
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> asPairStream() {
+        return this.pipeStream;
     }
 
     private static class DocumentCursorIterator implements Iterator<DocumentData> {

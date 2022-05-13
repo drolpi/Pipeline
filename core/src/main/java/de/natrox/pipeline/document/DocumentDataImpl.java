@@ -86,11 +86,11 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
         // FIXME: 13.05.2022
         try {
             if (!this.containsKey(DOC_ID)) {
-                super.put(DOC_ID, UUID.randomUUID());
+                this.append(DOC_ID, UUID.randomUUID());
             }
             return this.get(DOC_ID, UUID.class);
         } catch (ClassCastException cce) {
-            throw new RuntimeException("invalid _id found " + get(DOC_ID));
+            throw new RuntimeException("invalid _id found " + this.get(DOC_ID));
         }
     }
 

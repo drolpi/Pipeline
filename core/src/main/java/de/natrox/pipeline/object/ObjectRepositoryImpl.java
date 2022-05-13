@@ -17,10 +17,12 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.repository.Cursor;
+import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -57,7 +59,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
-        return new ObjectCursor<>(this.documentRepository.find(findOptions));
+        DocumentCursor documentCursor = this.documentRepository.find(findOptions);
+        return new ObjectCursor<>(this, ((DocumentStream) documentCursor).asPairStream());
     }
 
     @Override
@@ -110,7 +113,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     }
 
-    private T convertToData(UUID uniqueId, DocumentData document) {
+    public T convertToData(UUID uniqueId, DocumentData document) {
         T data = this.objectCache.get(uniqueId);
         data.deserialize(document);
         return data;

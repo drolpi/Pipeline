@@ -45,13 +45,17 @@ public class ObjectTest {
         UUID uuid = UUID.nameUUIDFromBytes("Test".getBytes(StandardCharsets.UTF_8));
         TestObjectData data = repository.loadOrCreate(uuid);
         data.name = "Herbert";
-
         repository.save(data);
 
-        repository.load(uuid).ifPresent(testObjectData -> {
-            System.out.println(testObjectData.name);
-        });
+        for (int i = 0; i < 100; i++) {
+            TestObjectData testData = repository.loadOrCreate(UUID.randomUUID());
+            testData.name = "Peter";
+            repository.save(testData);
+        }
 
+        for (TestObjectData testObjectData : repository.find()) {
+            System.out.println(testObjectData.name);
+        }
     }
 
     @Properties(identifier = "TestObjectData")
