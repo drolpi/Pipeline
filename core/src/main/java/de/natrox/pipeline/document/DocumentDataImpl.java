@@ -83,12 +83,11 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
 
     @Override
     public @NotNull UUID uniqueId() {
-        // FIXME: 13.05.2022
         try {
             if (!this.containsKey(DOC_ID)) {
                 this.append(DOC_ID, UUID.randomUUID());
             }
-            return this.get(DOC_ID, UUID.class);
+            return Objects.requireNonNull(this.get(DOC_ID, UUID.class));
         } catch (ClassCastException cce) {
             throw new RuntimeException("invalid _id found " + this.get(DOC_ID));
         }
