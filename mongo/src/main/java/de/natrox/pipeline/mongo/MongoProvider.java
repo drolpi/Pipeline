@@ -44,6 +44,6 @@ public final class MongoProvider implements GlobalStorageProvider {
 
     @Override
     public @NotNull GlobalStorage constructGlobalStorage(@NotNull Pipeline pipeline) {
-        return new MongoStorage(pipeline, mongoDatabase);
+        return new MongoStorage(pipeline, this.mongoDatabase);
     }
 }

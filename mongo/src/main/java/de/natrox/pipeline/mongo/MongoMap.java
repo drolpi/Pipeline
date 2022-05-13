@@ -43,7 +43,6 @@ final class MongoMap implements PartMap {
 
     private static final String KEY_NAME = "Key";
     private static final String VALUE_NAME = "Value";
-    private static final IndexOptions UNIQUE_KEY_OPTIONS = new IndexOptions().unique(true);
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final MongoCollection<Document> collection;
@@ -63,23 +62,23 @@ final class MongoMap implements PartMap {
             return null;
 
         Document valueDocument = document.get(VALUE_NAME, Document.class);
-        return jsonConverter.fromJson(valueDocument.toJson(), DocumentData.class);
+        return this.jsonConverter.fromJson(valueDocument.toJson(), DocumentData.class);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
-        collection.updateOne(
+        this.collection.updateOne(
             Filters.eq(KEY_NAME, uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
-                Updates.set(VALUE_NAME, Document.parse(jsonConverter.toJson(documentData)))
+                Updates.set(VALUE_NAME, Document.parse(this.jsonConverter.toJson(documentData)))
             ),
             INSERT_OR_REPLACE_OPTIONS);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        Document document = collection
+        Document document = this.collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
 
@@ -89,7 +88,7 @@ final class MongoMap implements PartMap {
     @Override
     public @NotNull PipeStream<UUID> keys() {
         List<UUID> keys = new ArrayList<>();
-        try (var cursor = collection.find().iterator()) {
+        try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 keys.add(cursor.next().get(KEY_NAME, UUID.class));
             }
@@ -100,9 +99,9 @@ final class MongoMap implements PartMap {
     @Override
     public @NotNull PipeStream<DocumentData> values() {
         Collection<DocumentData> documents = new ArrayList<>();
-        try (var cursor = collection.find().iterator()) {
+        try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
+                documents.add(this.jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
             }
         }
         return PipeStream.fromIterable(documents);
@@ -111,11 +110,11 @@ final class MongoMap implements PartMap {
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         Map<UUID, DocumentData> entries = new HashMap<>();
-        try (var cursor = collection.find().iterator()) {
+        try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get(KEY_NAME, UUID.class);
-                DocumentData value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
+                DocumentData value = this.jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
 
                 entries.put(key, value);
             }
@@ -125,7 +124,7 @@ final class MongoMap implements PartMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        collection.deleteOne(Filters.eq(KEY_NAME, uniqueId));
+        this.collection.deleteOne(Filters.eq(KEY_NAME, uniqueId));
     }
 
     @Override
@@ -135,6 +134,6 @@ final class MongoMap implements PartMap {
 
     @Override
     public long size() {
-        return collection.countDocuments();
+        return this.collection.countDocuments();
     }
 }

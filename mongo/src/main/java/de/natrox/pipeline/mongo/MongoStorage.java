@@ -42,11 +42,11 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public @NotNull PartMap openMap(@NotNull String mapName) {
-        if (mongoMapRegistry.containsKey(mapName)) {
-            return mongoMapRegistry.get(mapName);
+        if (this.mongoMapRegistry.containsKey(mapName)) {
+            return this.mongoMapRegistry.get(mapName);
         }
-        MongoMap mongoMap = new MongoMap(collection(mapName), jsonConverter);
-        mongoMapRegistry.put(mapName, mongoMap);
+        MongoMap mongoMap = new MongoMap(collection(mapName), this.jsonConverter);
+        this.mongoMapRegistry.put(mapName, mongoMap);
 
         return mongoMap;
     }
@@ -54,7 +54,7 @@ final class MongoStorage implements GlobalStorage {
     @Override
     public boolean hasMap(String mapName) {
         try {
-            mongoDatabase.getCollection(mapName);
+            this.mongoDatabase.getCollection(mapName);
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -63,21 +63,21 @@ final class MongoStorage implements GlobalStorage {
 
     @Override
     public void closeMap(String mapName) {
-        mongoMapRegistry.remove(mapName);
+        this.mongoMapRegistry.remove(mapName);
     }
 
     @Override
     public void removeMap(String mapName) {
-        collection(mapName).drop();
-        mongoMapRegistry.remove(mapName);
+        this.collection(mapName).drop();
+        this.mongoMapRegistry.remove(mapName);
     }
 
     private MongoCollection<Document> collection(String name) {
         try {
-            return mongoDatabase.getCollection(name);
+            return this.mongoDatabase.getCollection(name);
         } catch (IllegalArgumentException e) {
-            mongoDatabase.createCollection(name);
-            return mongoDatabase.getCollection(name);
+            this.mongoDatabase.createCollection(name);
+            return this.mongoDatabase.getCollection(name);
         }
     }
 
