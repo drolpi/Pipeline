@@ -27,8 +27,14 @@ public abstract class AbstractCondition implements Condition {
         return new AndCondition(this, condition);
     }
 
+    @Override
     public Condition or(@NotNull Condition condition) {
         Check.notNull(condition, "condition");
         return new OrCondition(this, condition);
+    }
+
+    @Override
+    public Condition not() {
+        return new NotCondition(this);
     }
 }

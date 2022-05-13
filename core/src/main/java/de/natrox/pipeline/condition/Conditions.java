@@ -43,6 +43,12 @@ public final class Conditions {
         return new EqualsCondition(field, value);
     }
 
+    public static Condition notEq(@NotNull String field, @NotNull Object value) {
+        Check.notNull(field, "field");
+        Check.notNull(value, "value");
+        return new NotEqualsCondition(field, value);
+    }
+
     public static Condition gt(@NotNull String field, Comparable<?> value) {
         Check.notNull(field, "field");
         Check.notNull(value, "value");
@@ -65,6 +71,11 @@ public final class Conditions {
         Check.notNull(field, "field");
         Check.notNull(value, "value");
         return new LesserEqualCondition(field, value);
+    }
+
+    public static Condition not(@NotNull Condition condition) {
+        Check.notNull(condition, "condition");
+        return new NotCondition(condition);
     }
 
 }

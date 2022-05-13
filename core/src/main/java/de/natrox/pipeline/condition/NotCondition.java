@@ -19,19 +19,18 @@ package de.natrox.pipeline.condition;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public final class EqualsCondition extends FieldCondition {
+final class NotCondition extends AbstractCondition {
 
-    EqualsCondition(String field, Object value) {
-        super(field, value);
+    private final Condition condition;
+
+    NotCondition(Condition condition) {
+        this.condition = condition;
     }
 
     @Override
     public boolean apply(Pair<UUID, DocumentData> element) {
-        DocumentData documentData = element.second();
-        Object fieldValue = documentData.get(field());
-        return Objects.deepEquals(fieldValue, value());
+        return !this.condition.apply(element);
     }
 }

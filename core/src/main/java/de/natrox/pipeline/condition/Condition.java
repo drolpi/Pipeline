@@ -30,4 +30,6 @@ public interface Condition {
 
     Condition or(@NotNull Condition condition);
 
+    Condition not();
+
 }

@@ -38,6 +38,11 @@ public final class FluentCondition {
         return new EqualsCondition(field, value);
     }
 
+    public Condition notEq(@NotNull Object value) {
+        Check.notNull(value, "value");
+        return new NotEqualsCondition(field, value);
+    }
+
     public Condition gt(@NotNull Comparable<?> value) {
         Check.notNull(value, "value");
         return new GreaterThanCondition(field, value);
