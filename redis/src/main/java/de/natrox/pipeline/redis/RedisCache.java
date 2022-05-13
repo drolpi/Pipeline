@@ -18,6 +18,7 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.cache.GlobalCache;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-final class RedisCache implements GlobalCache {
+final class RedisCache extends AbstractStore implements GlobalCache {
 
     private final JsonConverter jsonConverter;
     private final RedissonClient redissonClient;

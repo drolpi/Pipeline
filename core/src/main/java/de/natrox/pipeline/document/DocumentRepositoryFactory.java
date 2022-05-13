@@ -17,7 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.connecting.ConnectingPart;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -26,10 +26,10 @@ import java.util.Map;
 @ApiStatus.Internal
 public final class DocumentRepositoryFactory {
 
-    private final ConnectingPart connectingPart;
+    private final ConnectingStore connectingPart;
     private final Map<String, DocumentRepository> repositoryMap;
 
-    public DocumentRepositoryFactory(ConnectingPart connectingPart) {
+    public DocumentRepositoryFactory(ConnectingStore connectingPart) {
         this.connectingPart = connectingPart;
         this.repositoryMap = new HashMap<>();
     }

@@ -24,14 +24,14 @@ import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.part.connecting.ConnectingPart;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
-    private final ConnectingPart connectingPart;
+    private final ConnectingStore connectingPart;
     private final JsonConverter jsonConverter;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
@@ -99,7 +99,7 @@ final class PipelineImpl implements Pipeline {
         this.documentRepositoryFactory.clear();
     }
 
-    public ConnectingPart storeManager() {
+    public ConnectingStore storeManager() {
         return this.connectingPart;
     }
 }

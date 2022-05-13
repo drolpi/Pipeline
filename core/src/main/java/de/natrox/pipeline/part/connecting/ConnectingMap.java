@@ -46,23 +46,23 @@ public final class ConnectingMap implements PartMap {
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         if (this.localCacheMap != null) {
-            DocumentData documentData = this.getFromPart(uniqueId, this.localCacheMap);
+            DocumentData documentData = this.fromPart(uniqueId, this.localCacheMap);
             if (documentData != null) {
                 return documentData;
             }
         }
 
         if (this.globalCacheMap != null) {
-            DocumentData documentData = this.getFromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            DocumentData documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
             if (documentData != null) {
                 return documentData;
             }
         }
 
-        return this.getFromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
+        return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
     }
 
-    private DocumentData getFromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
+    private DocumentData fromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
         DocumentData documentData = partMap.get(uniqueId);
         this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
         return documentData;

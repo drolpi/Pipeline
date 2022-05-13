@@ -20,7 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
-import de.natrox.pipeline.part.Part;
+import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
@@ -39,12 +39,12 @@ import java.util.UUID;
 final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
-    private final Part part;
+    private final Store store;
     private final PartMap partMap;
 
-    DocumentRepositoryImpl(String repositoryName, Part part, PartMap partMap) {
+    DocumentRepositoryImpl(String repositoryName, Store store, PartMap partMap) {
         this.repositoryName = repositoryName;
-        this.part = part;
+        this.store = store;
         this.partMap = partMap;
     }
 
@@ -111,13 +111,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public void close() {
-        part.removeMap(this.repositoryName);
+        store.removeMap(this.repositoryName);
     }
 
     @Override
     public void drop() {
-        this.part.closeMap(this.repositoryName);
-        this.part.removeMap(this.repositoryName);
+        this.store.closeMap(this.repositoryName);
+        this.store.removeMap(this.repositoryName);
     }
 
     @Override

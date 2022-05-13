@@ -22,7 +22,7 @@ import de.natrox.pipeline.part.cache.LocalCache;
 import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
 import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
-import de.natrox.pipeline.part.connecting.ConnectingPart;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.LocalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
@@ -40,11 +40,11 @@ final class PartBundleImpl {
                  @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
+        public @NotNull ConnectingStore createConnectingPart(@NotNull Pipeline pipeline) {
             LocalStorage storage = this.localStorageProvider.constructLocalStorage(pipeline);
             LocalCache localCache = this.localCacheProvider != null ? this.localCacheProvider.constructLocalCache(pipeline) : null;
 
-            return new ConnectingPart(storage, null, null, localCache);
+            return new ConnectingStore(storage, null, null, localCache);
         }
 
     }
@@ -55,7 +55,7 @@ final class PartBundleImpl {
                   @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
 
         @Override
-        public @NotNull ConnectingPart createConnectingPart(@NotNull Pipeline pipeline) {
+        public @NotNull ConnectingStore createConnectingPart(@NotNull Pipeline pipeline) {
             GlobalStorage storage = this.globalStorageProvider.constructGlobalStorage(pipeline);
             GlobalCache globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.constructGlobalCache(pipeline) : null;
 
@@ -63,7 +63,7 @@ final class PartBundleImpl {
             DataUpdater dataUpdater = local ? this.dataUpdaterProvider.constructDataUpdater(pipeline) : null;
             LocalCache localCache = local ? this.localCacheProvider.constructLocalCache(pipeline) : null;
 
-            return new ConnectingPart(storage, globalCache, dataUpdater, localCache);
+            return new ConnectingStore(storage, globalCache, dataUpdater, localCache);
         }
 
     }

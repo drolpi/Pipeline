@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.storage;
 
-import de.natrox.pipeline.part.Part;
+import de.natrox.pipeline.part.Store;
 
-public interface Storage extends Part {
+public interface Storage extends Store {
 }

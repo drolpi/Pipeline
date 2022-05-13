@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.cache;
+package de.natrox.pipeline.part;
 
-import de.natrox.pipeline.part.Store;
+import org.jetbrains.annotations.NotNull;
 
-public interface GlobalCache extends Store {
+public interface Store {
+
+    @NotNull PartMap openMap(@NotNull String mapName);
+
+    boolean hasMap(String mapName);
+
+    void closeMap(String mapName);
+
+    void removeMap(String mapName);
 }

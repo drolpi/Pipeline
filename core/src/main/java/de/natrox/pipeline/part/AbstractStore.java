@@ -16,15 +16,5 @@
 
 package de.natrox.pipeline.part;
 
-import org.jetbrains.annotations.NotNull;
-
-public interface Part {
-
-    @NotNull PartMap openMap(@NotNull String mapName);
-
-    boolean hasMap(String mapName);
-
-    void closeMap(String mapName);
-
-    void removeMap(String mapName);
+public abstract class AbstractStore implements Store {
 }

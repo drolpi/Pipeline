@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.cache;
 
-import de.natrox.pipeline.part.Part;
+import de.natrox.pipeline.part.Store;
 
-public interface LocalCache extends Part {
+public interface LocalCache extends Store {
 }

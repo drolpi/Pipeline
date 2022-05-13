@@ -20,6 +20,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.bson.Document;
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class MongoStorage implements GlobalStorage {
+final class MongoStorage extends AbstractStore implements GlobalStorage {
 
     private final JsonConverter jsonConverter;
     private final MongoDatabase mongoDatabase;
