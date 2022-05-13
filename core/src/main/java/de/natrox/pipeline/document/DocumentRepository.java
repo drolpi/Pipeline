@@ -34,7 +34,7 @@ public sealed interface DocumentRepository extends Repository<DocumentData> perm
     @NotNull DocumentCursor find(@NotNull FindOptions findOptions);
 
     default @NotNull DocumentCursor find() {
-        return this.find(FindOptions.builder().build());
+        return this.find(FindOptions.DEFAULT);
     }
 
     boolean exists(@NotNull UUID uniqueId);

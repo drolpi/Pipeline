@@ -36,7 +36,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
     default Cursor<T> find() {
-        return this.find(FindOptions.builder().build());
+        return this.find(FindOptions.DEFAULT);
     }
 
     void save(@NotNull T objectData);
