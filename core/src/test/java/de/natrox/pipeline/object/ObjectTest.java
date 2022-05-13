@@ -41,14 +41,25 @@ public class ObjectTest {
         ObjectRepository<TestObjectData> repository = pipeline.repository(TestObjectData.class);
 
         UUID uuid = UUID.nameUUIDFromBytes("Test".getBytes(StandardCharsets.UTF_8));
-        TestObjectData data = repository.load(uuid).orElse(null);
+        TestObjectData data = repository.loadOrCreate(uuid);
+        data.name = "Herbert";
+
+        repository.save(data);
+
+        repository.load(uuid).ifPresent(testObjectData -> {
+            System.out.println(testObjectData.name);
+        });
+
     }
 
     @Properties(identifier = "TestObjectData")
     static class TestObjectData extends ObjectData {
 
+        private String name;
 
-
+        public TestObjectData(Pipeline pipeline) {
+            super(pipeline);
+        }
     }
 
 }
