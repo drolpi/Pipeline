@@ -17,7 +17,7 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.document.DocumentCursor;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,9 +44,9 @@ final class ObjectCursor<T> implements Cursor<T> {
 
     private class ObjectCursorIterator implements Iterator<T> {
 
-        private final Iterator<PipeDocument> documentIterator;
+        private final Iterator<DocumentData> documentIterator;
 
-        ObjectCursorIterator(Iterator<PipeDocument> documentIterator) {
+        ObjectCursorIterator(Iterator<DocumentData> documentIterator) {
             this.documentIterator = documentIterator;
         }
 

@@ -17,7 +17,7 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
@@ -54,19 +54,19 @@ final class RedisMap implements PartMap {
     }
 
     @Override
-    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         RBucket<String> bucket = bucket(uniqueId);
         String json = bucket.get();
         if (json == null)
             return null;
 
-        return jsonConverter.fromJson(json, PipeDocument.class);
+        return jsonConverter.fromJson(json, DocumentData.class);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         RBucket<String> bucket = bucket(uniqueId);
-        bucket.set(jsonConverter.toJson(document));
+        bucket.set(jsonConverter.toJson(documentData));
     }
 
     @Override
@@ -85,30 +85,30 @@ final class RedisMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipeStream<PipeDocument> values() {
+    public @NotNull PipeStream<DocumentData> values() {
         Set<String> keys = redisKeys();
         RBuckets redisBuckets = redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
-        List<PipeDocument> documents = new ArrayList<>();
+        List<DocumentData> documents = new ArrayList<>();
         for (var entry : buckets.entrySet()) {
             Object objectValue = entry.getValue();
 
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(jsonConverter.fromJson(stringValue, PipeDocument.class));
+            documents.add(jsonConverter.fromJson(stringValue, DocumentData.class));
         }
         return PipeStream.fromIterable(documents);
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         Set<String> keys = redisKeys();
         RBuckets redisBuckets = redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
-        Map<UUID, PipeDocument> entries = new HashMap<>();
+        Map<UUID, DocumentData> entries = new HashMap<>();
         for (var entry : buckets.entrySet()) {
             UUID key = UUID.fromString(entry.getKey().split(":")[2]);
             Object objectValue = entry.getValue();
@@ -116,7 +116,7 @@ final class RedisMap implements PartMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            PipeDocument value = jsonConverter.fromJson(stringValue, PipeDocument.class);
+            DocumentData value = jsonConverter.fromJson(stringValue, DocumentData.class);
 
             entries.put(key, value);
         }

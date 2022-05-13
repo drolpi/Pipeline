@@ -17,7 +17,7 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.util.Numbers;
 
 import java.util.UUID;
@@ -30,10 +30,10 @@ final class GreaterThanCondition extends ComparableCondition {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public boolean apply(Pair<UUID, PipeDocument> element) {
+    public boolean apply(Pair<UUID, DocumentData> element) {
         Comparable comparable = getComparable();
-        PipeDocument document = element.second();
-        Object fieldValue = document.get(field());
+        DocumentData documentData = element.second();
+        Object fieldValue = documentData.get(field());
         if (fieldValue != null) {
             if (fieldValue instanceof Number && comparable instanceof Number) {
                 return Numbers.compare((Number) fieldValue, (Number) comparable) > 0;

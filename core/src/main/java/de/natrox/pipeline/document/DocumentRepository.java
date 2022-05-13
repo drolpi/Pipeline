@@ -25,11 +25,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ApiStatus.Experimental
-public sealed interface DocumentRepository extends Repository<PipeDocument> permits DocumentRepositoryImpl {
+public sealed interface DocumentRepository extends Repository<DocumentData> permits DocumentRepositoryImpl {
 
-    void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document);
+    void insert(@NotNull UUID uniqueId, @NotNull DocumentData document);
 
-    @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId);
+    @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId);
 
     @NotNull DocumentCursor find(@NotNull FindOptions findOptions);
 

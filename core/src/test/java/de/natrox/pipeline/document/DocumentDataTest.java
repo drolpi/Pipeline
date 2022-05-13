@@ -25,13 +25,13 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PipeDocumentTest {
+public class DocumentDataTest {
 
-    private static PipeDocument document;
+    private static DocumentData documentData;
 
     @BeforeAll
     public static void setup() {
-        document = PipeDocument
+        documentData = DocumentData
             .create("name", "Eric")
             .put("level", 234685)
             .put("address.street", "montana-avenue")
@@ -40,51 +40,51 @@ public class PipeDocumentTest {
 
     @Test
     public void testCreateDocument() {
-        assertTrue(PipeDocument.create().isEmpty());
-        assertEquals(1, PipeDocument.create("Key", "Value").size());
-        assertTrue(PipeDocument.create(new HashMap<>()).isEmpty());
+        assertTrue(DocumentData.create().isEmpty());
+        assertEquals(1, DocumentData.create("Key", "Value").size());
+        assertTrue(DocumentData.create(new HashMap<>()).isEmpty());
     }
 
     @Test
     public void testGet() {
-        assertNull(document.get(""));
-        assertEquals(document.get("level"), 234685);
-        assertEquals(document.get("name"), "Eric");
-        assertEquals(document.get("address.street"), "montana-avenue");
-        assertNull(document.get("address.number"));
+        assertNull(documentData.get(""));
+        assertEquals(documentData.get("level"), 234685);
+        assertEquals(documentData.get("name"), "Eric");
+        assertEquals(documentData.get("address.street"), "montana-avenue");
+        assertNull(documentData.get("address.number"));
 
-        assertEquals(document.get("name"), document.get("name"));
-        assertEquals(document.get("test.name"), document.get("name"));
+        assertEquals(documentData.get("name"), documentData.get("name"));
+        assertEquals(documentData.get("test.name"), documentData.get("name"));
 
-        assertNotEquals(document.get("name"), "a");
-        assertNull(document.get("."));
-        assertNull(document.get("level.test"));
+        assertNotEquals(documentData.get("name"), "a");
+        assertNull(documentData.get("."));
+        assertNull(documentData.get("level.test"));
     }
 
     @Test
     public void testPutNull() {
-        assertNotNull(document.put("test", null));
-        assertNull(document.get("test"));
+        assertNotNull(documentData.put("test", null));
+        assertNull(documentData.get("test"));
     }
 
     @Test
     public void testRemove() {
-        Iterator<Pair<String, Object>> iterator = document.iterator();
-        assertEquals(document.size(), 5);
+        Iterator<Pair<String, Object>> iterator = documentData.iterator();
+        assertEquals(documentData.size(), 5);
         if (iterator.hasNext()) {
             iterator.next();
             iterator.remove();
         }
-        assertEquals(document.size(), 4);
+        assertEquals(documentData.size(), 4);
     }
 
     @Test
     public void testPut() {
-        assertEquals(document.size(), 4);
-        document.put("age", 22);
+        assertEquals(documentData.size(), 4);
+        documentData.put("age", 22);
 
-        assertEquals(document.get("age"), 22);
-        assertEquals(document.size(), 5);
+        assertEquals(documentData.get("age"), 22);
+        assertEquals(documentData.size(), 5);
     }
 
 }

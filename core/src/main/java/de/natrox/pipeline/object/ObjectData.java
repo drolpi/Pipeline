@@ -17,7 +17,7 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.annotation.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,8 +43,8 @@ public abstract class ObjectData {
         return this.uniqueId;
     }
 
-    public PipeDocument serialize() {
-        PipeDocument document = PipeDocument.create();
+    public DocumentData serialize() {
+        DocumentData documentData = DocumentData.create();
         for (Field field : persistentFields()) {
             try {
                 String key = fieldName(field);
@@ -54,16 +54,16 @@ public abstract class ObjectData {
                 if (value == null)
                     continue;
 
-                document.put(key, value);
+                documentData.put(key, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
 
-        return document;
+        return documentData;
     }
 
-    public void deserialize(PipeDocument document) {
+    public void deserialize(DocumentData document) {
         for (Field field : persistentFields()) {
             try {
                 String key = fieldName(field);

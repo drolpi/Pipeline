@@ -40,21 +40,21 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implements PipeDocument {
+public final class DocumentDataImpl extends LinkedHashMap<String, Object> implements DocumentData {
 
     public final static String DOC_ID = "_id";
     private final static String FIELD_SEPARATOR = ".";
 
-    PipeDocumentImpl() {
+    DocumentDataImpl() {
         super();
     }
 
-    PipeDocumentImpl(Map<String, Object> objectMap) {
+    DocumentDataImpl(Map<String, Object> objectMap) {
         super(objectMap);
     }
 
     @Override
-    public @NotNull PipeDocument put(@NotNull String field, @NotNull Object value) {
+    public @NotNull DocumentData put(@NotNull String field, @NotNull Object value) {
         Check.argCondition(Strings.isNullOrEmpty(field), "field is empty or null key");
 
         if (isEmbedded(field)) {
@@ -83,11 +83,11 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
     @Override
     public @NotNull UUID uniqueId() {
+        // FIXME: 13.05.2022
         try {
             if (!this.containsKey(DOC_ID)) {
                 super.put(DOC_ID, UUID.randomUUID());
             }
-            //FIXME:
             return this.get(DOC_ID, UUID.class);
         } catch (ClassCastException cce) {
             throw new RuntimeException("invalid _id found " + get(DOC_ID));
@@ -113,22 +113,22 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NotNull PipeDocument clone() {
+    public @NotNull DocumentData clone() {
         Map<String, Object> cloned = (Map<String, Object>) super.clone();
 
         for (Map.Entry<String, Object> entry : cloned.entrySet()) {
-            if (entry.getValue() instanceof PipeDocument value) {
-                PipeDocument clonedValue = value.clone();
+            if (entry.getValue() instanceof DocumentData value) {
+                DocumentData clonedValue = value.clone();
                 cloned.put(entry.getKey(), clonedValue);
             }
         }
-        return new PipeDocumentImpl(cloned);
+        return new DocumentDataImpl(cloned);
     }
 
     @Override
-    public @NotNull PipeDocument merge(@NotNull PipeDocument document) {
+    public @NotNull DocumentData merge(@NotNull DocumentData document) {
         Check.notNull(document, "document");
-        if (document instanceof PipeDocumentImpl doc) {
+        if (document instanceof DocumentDataImpl doc) {
             super.putAll(doc);
         }
         return this;
@@ -146,7 +146,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
         if (other == this)
             return true;
 
-        if (!(other instanceof PipeDocumentImpl m))
+        if (!(other instanceof DocumentDataImpl m))
             return false;
 
         if (m.size() != size())
@@ -182,7 +182,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
         for (Pair<String, Object> entry : this) {
             Object value = entry.second();
-            if (value instanceof PipeDocumentImpl document) {
+            if (value instanceof DocumentDataImpl document) {
                 if (Strings.isNullOrEmpty(prefix)) {
                     fields.addAll(document.getFieldsInternal(entry.first()));
                 } else {
@@ -220,10 +220,10 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
             String[] remaining = Arrays.copyOfRange(splits, 1, splits.length);
 
-            if (val instanceof PipeDocumentImpl document) {
+            if (val instanceof DocumentDataImpl document) {
                 document.deepPut(remaining, value);
             } else if (val == null) {
-                PipeDocumentImpl subDoc = new PipeDocumentImpl();
+                DocumentDataImpl subDoc = new DocumentDataImpl();
                 subDoc.deepPut(remaining, value);
 
                 this.put(key, subDoc);
@@ -243,7 +243,7 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
 
             String[] remaining = Arrays.copyOfRange(splits, 1, splits.length);
 
-            if (val instanceof PipeDocumentImpl subDoc) {
+            if (val instanceof DocumentDataImpl subDoc) {
                 subDoc.deepRemove(remaining);
                 if (subDoc.size() == 0) {
                     super.remove(key);
@@ -275,8 +275,8 @@ public final class PipeDocumentImpl extends LinkedHashMap<String, Object> implem
             return object;
         }
 
-        if (object instanceof PipeDocument) {
-            return this.recursiveGet(((PipeDocument) object).get(remainingPath[0]),
+        if (object instanceof DocumentData) {
+            return this.recursiveGet(((DocumentData) object).get(remainingPath[0]),
                 Arrays.copyOfRange(remainingPath, 1, remainingPath.length));
         }
 

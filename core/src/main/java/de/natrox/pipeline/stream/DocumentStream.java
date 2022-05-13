@@ -18,7 +18,7 @@ package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentCursor;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -28,23 +28,23 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 public final class DocumentStream implements DocumentCursor {
 
-    private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
+    private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
-    public DocumentStream(PipeStream<Pair<UUID, PipeDocument>> pipeStream) {
+    public DocumentStream(PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.pipeStream = pipeStream;
     }
 
     @Override
-    public @NotNull Iterator<PipeDocument> iterator() {
-        Iterator<Pair<UUID, PipeDocument>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
+    public @NotNull Iterator<DocumentData> iterator() {
+        Iterator<Pair<UUID, DocumentData>> iterator = pipeStream == null ? Collections.emptyIterator() : pipeStream.iterator();
         return new DocumentCursorIterator(iterator);
     }
 
-    private static class DocumentCursorIterator implements Iterator<PipeDocument> {
+    private static class DocumentCursorIterator implements Iterator<DocumentData> {
 
-        private final Iterator<Pair<UUID, PipeDocument>> iterator;
+        private final Iterator<Pair<UUID, DocumentData>> iterator;
 
-        DocumentCursorIterator(Iterator<Pair<UUID, PipeDocument>> iterator) {
+        DocumentCursorIterator(Iterator<Pair<UUID, DocumentData>> iterator) {
             this.iterator = iterator;
         }
 
@@ -54,8 +54,8 @@ public final class DocumentStream implements DocumentCursor {
         }
 
         @Override
-        public PipeDocument next() {
-            Pair<UUID, PipeDocument> next = this.iterator.next();
+        public DocumentData next() {
+            Pair<UUID, DocumentData> next = this.iterator.next();
             return next.second();
         }
 

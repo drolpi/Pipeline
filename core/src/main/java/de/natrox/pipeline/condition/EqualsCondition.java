@@ -17,7 +17,7 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 
 import java.util.UUID;
 
@@ -30,9 +30,9 @@ public final class EqualsCondition extends FieldCondition {
     }
 
     @Override
-    public boolean apply(Pair<UUID, PipeDocument> element) {
-        PipeDocument document = element.second();
-        Object fieldValue = document.get(field());
+    public boolean apply(Pair<UUID, DocumentData> element) {
+        DocumentData documentData = element.second();
+        Object fieldValue = documentData.get(field());
         return deepEquals(fieldValue, value());
     }
 }

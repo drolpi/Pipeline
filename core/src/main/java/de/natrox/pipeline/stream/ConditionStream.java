@@ -18,7 +18,7 @@ package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -27,32 +27,32 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument>> {
+public final class ConditionStream implements PipeStream<Pair<UUID, DocumentData>> {
 
     private final Condition condition;
-    private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
+    private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
-    public ConditionStream(Condition condition, PipeStream<Pair<UUID, PipeDocument>> pipeStream) {
+    public ConditionStream(Condition condition, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.condition = condition;
         this.pipeStream = pipeStream;
     }
 
     @Override
-    public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
-        Iterator<Pair<UUID, PipeDocument>> iterator = this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator();
+    public @NotNull Iterator<Pair<UUID, DocumentData>> iterator() {
+        Iterator<Pair<UUID, DocumentData>> iterator = this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator();
 
         if (this.condition == null)
             return iterator;
         return new ConditionIterator(iterator, this.condition);
     }
 
-    private static class ConditionIterator implements Iterator<Pair<UUID, PipeDocument>> {
-        private final Iterator<Pair<UUID, PipeDocument>> iterator;
+    private static class ConditionIterator implements Iterator<Pair<UUID, DocumentData>> {
+        private final Iterator<Pair<UUID, DocumentData>> iterator;
         private final Condition condition;
-        private Pair<UUID, PipeDocument> nextPair;
+        private Pair<UUID, DocumentData> nextPair;
         private boolean nextPairSet = false;
 
-        public ConditionIterator(Iterator<Pair<UUID, PipeDocument>> iterator, Condition condition) {
+        public ConditionIterator(Iterator<Pair<UUID, DocumentData>> iterator, Condition condition) {
             this.iterator = iterator;
             this.condition = condition;
         }
@@ -63,7 +63,7 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
         }
 
         @Override
-        public Pair<UUID, PipeDocument> next() {
+        public Pair<UUID, DocumentData> next() {
             if (!this.nextPairSet && !this.setNextId()) {
                 throw new NoSuchElementException();
             }
@@ -81,7 +81,7 @@ public final class ConditionStream implements PipeStream<Pair<UUID, PipeDocument
 
         private boolean setNextId() {
             while (this.iterator.hasNext()) {
-                final Pair<UUID, PipeDocument> pair = this.iterator.next();
+                final Pair<UUID, DocumentData> pair = this.iterator.next();
                 if (this.condition.apply(pair)) {
                     this.nextPair = pair;
                     this.nextPairSet = true;

@@ -17,7 +17,7 @@
 package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.sort.DocumentSorter;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.util.Iterables;
@@ -29,24 +29,24 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class SortedDocumentStream implements PipeStream<Pair<UUID, PipeDocument>> {
+public final class SortedDocumentStream implements PipeStream<Pair<UUID, DocumentData>> {
 
     private final List<Pair<String, SortOrder>> sortOrder;
-    private final PipeStream<Pair<UUID, PipeDocument>> pipeStream;
+    private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
-    public SortedDocumentStream(List<Pair<String, SortOrder>> sortOrder, PipeStream<Pair<UUID, PipeDocument>> pipeStream) {
+    public SortedDocumentStream(List<Pair<String, SortOrder>> sortOrder, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.sortOrder = sortOrder;
         this.pipeStream = pipeStream;
     }
 
     @Override
-    public @NotNull Iterator<Pair<UUID, PipeDocument>> iterator() {
+    public @NotNull Iterator<Pair<UUID, DocumentData>> iterator() {
         if (this.pipeStream == null)
             return Collections.emptyIterator();
 
         DocumentSorter documentSorter = new DocumentSorter(this.sortOrder);
 
-        List<Pair<UUID, PipeDocument>> recordList = Iterables.toList(this.pipeStream);
+        List<Pair<UUID, DocumentData>> recordList = Iterables.toList(this.pipeStream);
         recordList.sort(documentSorter);
 
         return recordList.iterator();

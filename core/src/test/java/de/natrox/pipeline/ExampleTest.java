@@ -19,7 +19,7 @@ package de.natrox.pipeline;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.json.JsonConverter;
@@ -32,7 +32,6 @@ import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
 import de.natrox.pipeline.repository.Cursor;
-import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.sort.Sorts;
 import org.junit.jupiter.api.Test;
 
@@ -82,18 +81,18 @@ public class ExampleTest {
             {
                 ThreadLocalRandom random = ThreadLocalRandom.current();
 
-                PipeDocument document = PipeDocument
+                DocumentData documentData = DocumentData
                     .create()
                     .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
                     .put("age", random.nextInt(0, 100))
                     .put("european", random.nextBoolean());
 
-                repository.insert(uniqueId, document);
+                repository.insert(uniqueId, documentData);
             }
 
             // Get
             {
-                PipeDocument document = repository.get(uniqueId).orElse(null);
+                DocumentData documentData = repository.get(uniqueId).orElse(null);
             }
 
             // Remove
@@ -111,11 +110,11 @@ public class ExampleTest {
                         .build()
                 );
 
-                for (PipeDocument document : cursor) {
+                for (DocumentData documentData : cursor) {
 
                 }
 
-                PipeDocument document = cursor.first().orElse(null);
+                DocumentData documentData = cursor.first().orElse(null);
             }
         }
 

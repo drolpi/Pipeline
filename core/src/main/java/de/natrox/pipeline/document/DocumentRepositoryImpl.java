@@ -48,13 +48,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull Optional<PipeDocument> get(@NotNull UUID uniqueId) {
+    public @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId) {
         return Optional.ofNullable(this.partMap.get(uniqueId));
     }
 
     @Override
     public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
-        PipeStream<Pair<UUID, PipeDocument>> stream = this.partMap.entries();
+        PipeStream<Pair<UUID, DocumentData>> stream = this.partMap.entries();
 
         Condition condition = findOptions.condition();
         if (condition != null) {
@@ -79,10 +79,10 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void insert(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-        PipeDocument newDoc = document.clone();
+    public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document) {
+        DocumentData newDoc = document.clone();
 
-        newDoc.put(PipeDocumentImpl.DOC_ID, uniqueId);
+        newDoc.put(DocumentDataImpl.DOC_ID, uniqueId);
 
         this.partMap.put(uniqueId, newDoc);
     }

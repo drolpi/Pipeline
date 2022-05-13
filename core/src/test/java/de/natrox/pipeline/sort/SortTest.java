@@ -21,7 +21,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.part.memory.InMemoryProvider;
@@ -47,13 +47,13 @@ public class SortTest {
 
         for (int i = 0; i < 3000; i++) {
             UUID uniqueId = UUID.randomUUID();
-            PipeDocument document = PipeDocument
+            DocumentData documentData = DocumentData
                 .create()
                 .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
                 .put("age", random.nextInt(0, 100))
                 .put("european", random.nextBoolean());
 
-            repository.insert(uniqueId, document);
+            repository.insert(uniqueId, documentData);
         }
 
         DocumentCursor cursor = repository.find(
@@ -64,8 +64,8 @@ public class SortTest {
                 .build()
         );
 
-        for (PipeDocument document : cursor) {
-            System.out.println(document);
+        for (DocumentData documentData : cursor) {
+            System.out.println(documentData);
         }
 
     }

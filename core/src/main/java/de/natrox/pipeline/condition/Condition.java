@@ -17,14 +17,14 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public interface Condition {
 
-    boolean apply(Pair<UUID, PipeDocument> element);
+    boolean apply(Pair<UUID, DocumentData> element);
 
     Condition and(@NotNull Condition condition);
 

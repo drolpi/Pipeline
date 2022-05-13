@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.cache.DataUpdater;
 import de.natrox.pipeline.stream.PipeStream;
@@ -44,40 +44,40 @@ public final class ConnectingMap implements PartMap {
     }
 
     @Override
-    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         if (this.localCacheMap != null) {
-            PipeDocument document = this.getFromPart(uniqueId, this.localCacheMap);
-            if (document != null) {
-                return document;
+            DocumentData documentData = this.getFromPart(uniqueId, this.localCacheMap);
+            if (documentData != null) {
+                return documentData;
             }
         }
 
         if (this.globalCacheMap != null) {
-            PipeDocument document = this.getFromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
-            if (document != null) {
-                return document;
+            DocumentData documentData = this.getFromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            if (documentData != null) {
+                return documentData;
             }
         }
 
         return this.getFromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
     }
 
-    private PipeDocument getFromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
-        PipeDocument document = partMap.get(uniqueId);
-        this.dataSynchronizer.synchronizeTo(uniqueId, document, destinations);
-        return document;
+    private DocumentData getFromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
+        DocumentData documentData = partMap.get(uniqueId);
+        this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
+        return documentData;
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         if (this.localCacheMap != null) {
-            this.localCacheMap.put(uniqueId, document);
+            this.localCacheMap.put(uniqueId, documentData);
         }
         //TODO: Push data updater
         if (this.globalCacheMap != null) {
-            this.globalCacheMap.put(uniqueId, document);
+            this.globalCacheMap.put(uniqueId, documentData);
         }
-        this.storageMap.put(uniqueId, document);
+        this.storageMap.put(uniqueId, documentData);
     }
 
     @Override
@@ -103,12 +103,12 @@ public final class ConnectingMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipeStream<PipeDocument> values() {
+    public @NotNull PipeStream<DocumentData> values() {
         return this.storageMap.values();
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         return this.storageMap.entries();
     }
 

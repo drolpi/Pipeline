@@ -21,19 +21,19 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.document.PipeDocumentImpl;
+import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.document.DocumentDataImpl;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Type;
 
 @ApiStatus.Internal
-final class PipeDocumentDeserializer implements JsonDeserializer<PipeDocument> {
+final class DocumentDataDeserializer implements JsonDeserializer<DocumentData> {
 
     @Override
-    public PipeDocument deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public DocumentData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         System.out.println(json.toString());
-        return context.deserialize(json, new TypeToken<PipeDocumentImpl>() {
+        return context.deserialize(json, new TypeToken<DocumentDataImpl>() {
         }.getType());
     }
 }

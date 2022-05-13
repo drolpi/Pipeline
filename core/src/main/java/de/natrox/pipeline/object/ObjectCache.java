@@ -17,7 +17,7 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -53,9 +53,9 @@ public final class ObjectCache<T extends ObjectData> {
             throw new RuntimeException("Error while creating instance of class " + this.type.getSimpleName(), throwable);
         }
 
-        PipeDocument document = PipeDocument.create();
-        document.put("uniqueId", uniqueId);
-        instance.deserialize(document);
+        DocumentData documentData = DocumentData.create();
+        documentData.put("uniqueId", uniqueId);
+        instance.deserialize(documentData);
 
         return instance;
     }

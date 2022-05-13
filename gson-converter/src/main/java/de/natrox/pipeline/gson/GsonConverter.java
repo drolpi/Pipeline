@@ -18,7 +18,7 @@ package de.natrox.pipeline.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public final class GsonConverter implements JsonConverter {
         .setPrettyPrinting()
         .disableHtmlEscaping()
         .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .registerTypeAdapter(PipeDocument.class, new PipeDocumentDeserializer())
+        .registerTypeAdapter(DocumentData.class, new DocumentDataDeserializer())
         .create();
 
     private GsonConverter() {

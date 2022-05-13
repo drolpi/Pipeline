@@ -17,14 +17,14 @@
 package de.natrox.pipeline.sort;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class DocumentSorter implements Comparator<Pair<UUID, PipeDocument>> {
+public final class DocumentSorter implements Comparator<Pair<UUID, DocumentData>> {
 
     private final List<Pair<String, SortOrder>> sortOrder;
 
@@ -34,13 +34,13 @@ public final class DocumentSorter implements Comparator<Pair<UUID, PipeDocument>
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public int compare(Pair<UUID, PipeDocument> pair1, Pair<UUID, PipeDocument> pair2) {
+    public int compare(Pair<UUID, DocumentData> pair1, Pair<UUID, DocumentData> pair2) {
         if(this.sortOrder == null || this.sortOrder.isEmpty())
             return 0;
 
         for (Pair<String, SortOrder> pair : this.sortOrder) {
-            PipeDocument doc1 = pair1.second();
-            PipeDocument doc2 = pair2.second();
+            DocumentData doc1 = pair1.second();
+            DocumentData doc2 = pair2.second();
 
             Object value1 = doc1.get(pair.first());
             Object value2 = doc2.get(pair.first());

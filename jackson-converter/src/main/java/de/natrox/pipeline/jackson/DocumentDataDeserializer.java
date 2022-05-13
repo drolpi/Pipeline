@@ -19,19 +19,19 @@ package de.natrox.pipeline.jackson;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.natrox.pipeline.document.PipeDocument;
-import de.natrox.pipeline.document.PipeDocumentImpl;
+import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.document.DocumentDataImpl;
 
 import java.io.IOException;
 
-final class PipeDocumentDeserializer extends StdDeserializer<PipeDocument> {
+final class DocumentDataDeserializer extends StdDeserializer<DocumentData> {
 
-    protected PipeDocumentDeserializer() {
-        super(PipeDocument.class);
+    protected DocumentDataDeserializer() {
+        super(DocumentData.class);
     }
 
     @Override
-    public PipeDocument deserialize(JsonParser p, DeserializationContext context) throws IOException {
-        return context.readValue(p, PipeDocumentImpl.class);
+    public DocumentData deserialize(JsonParser p, DeserializationContext context) throws IOException {
+        return context.readValue(p, DocumentDataImpl.class);
     }
 }

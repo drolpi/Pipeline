@@ -19,11 +19,10 @@ package de.natrox.pipeline.mongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
@@ -56,7 +55,7 @@ final class MongoMap implements PartMap {
     }
 
     @Override
-    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         Document document = collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
@@ -64,16 +63,16 @@ final class MongoMap implements PartMap {
             return null;
 
         Document valueDocument = document.get(VALUE_NAME, Document.class);
-        return jsonConverter.fromJson(valueDocument.toJson(), PipeDocument.class);
+        return jsonConverter.fromJson(valueDocument.toJson(), DocumentData.class);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         collection.updateOne(
             Filters.eq(KEY_NAME, uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
-                Updates.set(VALUE_NAME, Document.parse(jsonConverter.toJson(document)))
+                Updates.set(VALUE_NAME, Document.parse(jsonConverter.toJson(documentData)))
             ),
             INSERT_OR_REPLACE_OPTIONS);
     }
@@ -99,24 +98,24 @@ final class MongoMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipeStream<PipeDocument> values() {
-        Collection<PipeDocument> documents = new ArrayList<>();
+    public @NotNull PipeStream<DocumentData> values() {
+        Collection<DocumentData> documents = new ArrayList<>();
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), PipeDocument.class));
+                documents.add(jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
             }
         }
         return PipeStream.fromIterable(documents);
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
-        Map<UUID, PipeDocument> entries = new HashMap<>();
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
+        Map<UUID, DocumentData> entries = new HashMap<>();
         try (var cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get(KEY_NAME, UUID.class);
-                PipeDocument value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), PipeDocument.class);
+                DocumentData value = jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
 
                 entries.put(key, value);
             }

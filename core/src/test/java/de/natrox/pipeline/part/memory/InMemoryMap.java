@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.util.StreamUtil;
@@ -30,16 +30,16 @@ import java.util.UUID;
 
 public class InMemoryMap implements PartMap {
 
-    private final Map<UUID, PipeDocument> documentMap = new HashMap<>();
+    private final Map<UUID, DocumentData> documentMap = new HashMap<>();
 
     @Override
-    public @Nullable PipeDocument get(@NotNull UUID uniqueId) {
+    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         return documentMap.get(uniqueId);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull PipeDocument document) {
-        documentMap.put(uniqueId, document);
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        documentMap.put(uniqueId, documentData);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class InMemoryMap implements PartMap {
     }
 
     @Override
-    public @NotNull PipeStream<PipeDocument> values() {
+    public @NotNull PipeStream<DocumentData> values() {
         return PipeStream.fromIterable(documentMap.values());
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, PipeDocument>> entries() {
+    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         return StreamUtil.streamForMap(documentMap);
     }
 

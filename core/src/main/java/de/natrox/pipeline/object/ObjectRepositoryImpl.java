@@ -18,7 +18,7 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
@@ -50,8 +50,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     private T create(UUID uniqueId) {
         T data = this.objectCache.get(uniqueId);
-        PipeDocument document = this.convertToDocument(data);
-        this.documentRepository.insert(uniqueId, document);
+        DocumentData documentData = this.convertToDocument(data);
+        this.documentRepository.insert(uniqueId, documentData);
         return data;
     }
 
@@ -110,13 +110,13 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     }
 
-    private T convertToData(UUID uniqueId, PipeDocument document) {
+    private T convertToData(UUID uniqueId, DocumentData document) {
         T data = this.objectCache.get(uniqueId);
         data.deserialize(document);
         return data;
     }
 
-    private PipeDocument convertToDocument(T data) {
+    private DocumentData convertToDocument(T data) {
         return data.serialize();
     }
 }

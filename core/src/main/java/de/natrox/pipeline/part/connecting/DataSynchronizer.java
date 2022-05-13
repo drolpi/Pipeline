@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.PartMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +43,11 @@ public final class DataSynchronizer {
         this.executorService = Executors.newCachedThreadPool();
     }
 
-    public void synchronizeTo(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
+    public void synchronizeTo(UUID uniqueId, DocumentData document, DataSourceType... destinations) {
         this.executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, document, destinations)));
     }
 
-    public boolean to(UUID uniqueId, PipeDocument document, DataSourceType... destinations) {
+    public boolean to(UUID uniqueId, DocumentData document, DataSourceType... destinations) {
         List<DataSourceType> destinationList = Arrays.asList(destinations);
         if (this.localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
             this.localCache.put(uniqueId, document);
@@ -61,13 +61,13 @@ public final class DataSynchronizer {
         return true;
     }
 
-    public CompletableFuture<PipeDocument> synchronizeFom(UUID uniqueId, DataSourceType source) {
-        CompletableFuture<PipeDocument> future = new CompletableFuture<>();
+    public CompletableFuture<DocumentData> synchronizeFom(UUID uniqueId, DataSourceType source) {
+        CompletableFuture<DocumentData> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
         return future;
     }
 
-    public PipeDocument from(UUID uniqueId, DataSourceType source) {
+    public DocumentData from(UUID uniqueId, DataSourceType source) {
         if (this.localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
             return this.localCache.get(uniqueId);
         } else if (this.globalCache != null && source.equals(DataSourceType.GLOBAL_CACHE)) {
@@ -86,11 +86,11 @@ public final class DataSynchronizer {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
-        PipeDocument document = from(uniqueId, source);
+        DocumentData documentData = from(uniqueId, source);
         // Error while loading from local cache
-        if (document == null)
+        if (documentData == null)
             return false;
-        to(uniqueId, document, destinations);
+        to(uniqueId, documentData, destinations);
         return true;
     }
 

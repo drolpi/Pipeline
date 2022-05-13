@@ -17,7 +17,7 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public final class OrCondition extends RedirectCondition {
     }
 
     @Override
-    public boolean apply(Pair<UUID, PipeDocument> element) {
+    public boolean apply(Pair<UUID, DocumentData> element) {
         boolean result = false;
         for (Condition condition : conditions()) {
             result = result || condition.apply(element);

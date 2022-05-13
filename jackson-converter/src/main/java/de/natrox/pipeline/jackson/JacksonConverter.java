@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +37,7 @@ public final class JacksonConverter implements JsonConverter {
 
     private JacksonConverter() {
         SimpleModule simpleModule = new SimpleModule()
-            .addDeserializer(PipeDocument.class, new PipeDocumentDeserializer());
+            .addDeserializer(DocumentData.class, new DocumentDataDeserializer());
 
         this.objectMapper = JsonMapper.builder()
             .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN)
