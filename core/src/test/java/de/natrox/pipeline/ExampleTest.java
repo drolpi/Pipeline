@@ -160,6 +160,10 @@ public class ExampleTest {
         private int age;
         private boolean european;
 
+        public AccountData(Pipeline pipeline) {
+            super(pipeline);
+        }
+
         public String name() {
             return this.name;
         }
