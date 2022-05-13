@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;
@@ -42,15 +43,18 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.documentRepository.get(uniqueId).map(document -> this.convertToData(uniqueId, document));
     }
 
     @Override
     public @NotNull T loadOrCreate(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.load(uniqueId).orElseGet(() -> this.create(uniqueId));
     }
 
     private T create(UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         T data = this.objectCache.get(uniqueId);
         DocumentData documentData = this.convertToDocument(data);
         this.documentRepository.insert(uniqueId, documentData);
@@ -59,22 +63,26 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
+        Check.notNull(findOptions, "findOptions");
         DocumentCursor documentCursor = this.documentRepository.find(findOptions);
         return new ObjectCursor<>(this, ((DocumentStream) documentCursor).asPairStream());
     }
 
     @Override
     public void save(@NotNull T objectData) {
+        Check.notNull(objectData, "objectData");
         this.documentRepository.insert(objectData.uniqueId(), this.convertToDocument(objectData));
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.documentRepository.exists(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         this.documentRepository.remove(uniqueId);
     }
 

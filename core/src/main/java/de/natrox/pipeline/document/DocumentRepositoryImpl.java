@@ -17,6 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.Part;
@@ -49,11 +50,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return Optional.ofNullable(this.partMap.get(uniqueId));
     }
 
     @Override
     public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
+        Check.notNull(findOptions, "findOptions");
         PipeStream<Pair<UUID, DocumentData>> stream = this.partMap.entries();
 
         Condition condition = findOptions.condition();
@@ -80,8 +83,10 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document) {
-        DocumentData newDoc = document.clone();
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(document, "document");
 
+        DocumentData newDoc = document.clone();
         newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
 
         this.partMap.put(uniqueId, newDoc);
@@ -89,11 +94,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.partMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         this.partMap.remove(uniqueId);
     }
 
