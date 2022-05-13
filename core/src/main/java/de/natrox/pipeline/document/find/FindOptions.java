@@ -25,9 +25,9 @@ import org.jetbrains.annotations.Range;
 
 public sealed interface FindOptions permits FindOptionsImpl {
 
-    FindOptions DEFAULT = FindOptions.builder().build();
+    @NotNull FindOptions DEFAULT = FindOptions.builder().build();
 
-    static Builder builder() {
+    static @NotNull Builder builder() {
         return new FindOptionsBuilderImpl();
     }
 
