@@ -21,7 +21,6 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
-import de.natrox.pipeline.util.StreamUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RBucket;
@@ -121,7 +120,7 @@ final class RedisMap implements PartMap {
 
             entries.put(key, value);
         }
-        return StreamUtil.streamForMap(entries);
+        return PipeStream.fromMap(entries);
     }
 
     @Override

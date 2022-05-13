@@ -16,13 +16,16 @@
 
 package de.natrox.pipeline.stream;
 
+import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.util.Iterables;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,6 +35,24 @@ public interface PipeStream<T> extends Iterable<T> {
     static <T> PipeStream<T> fromIterable(@NotNull Iterable<T> iterable) {
         Check.notNull(iterable, "iterable");
         return iterable::iterator;
+    }
+
+    static <T, U> PipeStream<Pair<T, U>> fromMap(Map<T, U> primaryMap) {
+        return PipeStream.fromIterable(() -> new Iterator<>() {
+            private final Iterator<Map.Entry<T, U>> entryIterator =
+                primaryMap.entrySet().iterator();
+
+            @Override
+            public boolean hasNext() {
+                return entryIterator.hasNext();
+            }
+
+            @Override
+            public Pair<T, U> next() {
+                Map.Entry<T, U> entry = entryIterator.next();
+                return new Pair<>(entry.getKey(), entry.getValue());
+            }
+        });
     }
 
     static <V> PipeStream<V> single(@NotNull V v) {

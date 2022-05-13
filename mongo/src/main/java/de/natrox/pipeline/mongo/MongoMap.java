@@ -18,7 +18,6 @@ package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
@@ -26,7 +25,6 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.stream.PipeStream;
-import de.natrox.pipeline.util.StreamUtil;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,7 +117,7 @@ final class MongoMap implements PartMap {
                 entries.put(key, value);
             }
         }
-        return StreamUtil.streamForMap(entries);
+        return PipeStream.fromMap(entries);
     }
 
     @Override
