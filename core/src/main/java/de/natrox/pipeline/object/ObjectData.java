@@ -18,13 +18,13 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.PipeDocument;
+import de.natrox.pipeline.object.annotation.Named;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -47,11 +47,11 @@ public abstract class ObjectData {
         PipeDocument document = PipeDocument.create();
         for (Field field : persistentFields()) {
             try {
-                String key = field.getName();
+                String key = fieldName(field);
                 field.setAccessible(true);
                 Object value = field.get(this);
 
-                if(value == null)
+                if (value == null)
                     continue;
 
                 document.put(key, value);
@@ -66,10 +66,10 @@ public abstract class ObjectData {
     public void deserialize(PipeDocument document) {
         for (Field field : persistentFields()) {
             try {
-                String key = field.getName();
+                String key = fieldName(field);
                 Object value = document.get(key);
 
-                if(value == null)
+                if (value == null)
                     continue;
 
                 field.setAccessible(true);
@@ -89,7 +89,15 @@ public abstract class ObjectData {
             type = type.getSuperclass();
         }
 
-        return fields.stream().filter(field -> !Modifier.isTransient(field.getModifiers())).collect(Collectors.toSet());
+        return fields
+            .stream()
+            .filter(field -> !Modifier.isTransient(field.getModifiers()))
+            .collect(Collectors.toSet());
+    }
+
+    private String fieldName(Field field) {
+        Named named = field.getAnnotation(Named.class);
+        return named != null ? named.name() : field.getName();
     }
 
     @Override

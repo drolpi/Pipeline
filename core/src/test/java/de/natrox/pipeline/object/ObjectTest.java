@@ -19,6 +19,7 @@ package de.natrox.pipeline.object;
 import de.natrox.pipeline.PartBundle;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.jackson.JacksonConverter;
+import de.natrox.pipeline.object.annotation.Named;
 import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.part.memory.InMemoryProvider;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,7 @@ public class ObjectTest {
     @Properties(identifier = "TestObjectData")
     static class TestObjectData extends ObjectData {
 
+        @Named(name = "realName")
         private String name;
 
         public TestObjectData(Pipeline pipeline) {
