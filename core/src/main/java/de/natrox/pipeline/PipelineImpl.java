@@ -23,6 +23,7 @@ import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
+import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.connecting.ConnectingPart;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,7 +69,7 @@ final class PipelineImpl implements Pipeline {
     @Override
     public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        this.connectingPart.removeMap(null);
+        this.connectingPart.removeMap(AnnotationResolver.identifier(type));
     }
 
     @Override

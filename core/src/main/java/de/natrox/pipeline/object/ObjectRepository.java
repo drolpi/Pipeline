@@ -31,13 +31,15 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
 
     @NotNull Optional<T> load(@NotNull UUID uniqueId);
 
+    @NotNull T loadOrCreate(@NotNull UUID uniqueId);
+
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
     default Cursor<T> find() {
         return this.find(FindOptions.builder().build());
     }
 
-    void save(@NotNull ObjectData objectData);
+    void save(@NotNull T objectData);
 
     boolean exists(@NotNull UUID uniqueId);
 

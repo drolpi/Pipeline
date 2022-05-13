@@ -19,7 +19,7 @@ package de.natrox.pipeline.object;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -28,20 +28,19 @@ import java.util.Map;
 @ApiStatus.Internal
 public final class ObjectRepositoryFactory {
 
-    private final JsonConverter jsonConverter;
+    private final Pipeline pipeline;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final Map<String, ObjectRepository<? extends ObjectData>> repositoryMap;
 
     public ObjectRepositoryFactory(Pipeline pipeline, DocumentRepositoryFactory documentRepositoryFactory) {
-        this.jsonConverter = pipeline.jsonConverter();
+        this.pipeline = pipeline;
         this.documentRepositoryFactory = documentRepositoryFactory;
         this.repositoryMap = new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type) {
-        //FIXME:
-        String name = null;
+        String name = AnnotationResolver.identifier(type);
 
         if (this.repositoryMap.containsKey(name)) {
             ObjectRepository<T> repository = (ObjectRepository<T>) this.repositoryMap.get(name);
@@ -55,7 +54,7 @@ public final class ObjectRepositoryFactory {
 
     private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type) {
         DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name);
-        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(type, documentRepository, this.jsonConverter);
+        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(pipeline, type, documentRepository);
         this.repositoryMap.put(name, repository);
 
         return repository;

@@ -16,44 +16,53 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.document.DocumentCursor;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.PipeDocument;
 import de.natrox.pipeline.document.find.FindOptions;
-import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@SuppressWarnings("ClassCanBeRecord")
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     private final Class<T> type;
     private final DocumentRepository documentRepository;
-    private final JsonConverter converter;
+    private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Class<T> type, DocumentRepository documentRepository, JsonConverter converter) {
+    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository) {
         this.type = type;
         this.documentRepository = documentRepository;
-        this.converter = converter;
+        this.objectCache = new ObjectCache<>(pipeline, type);
     }
 
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
-        return this.documentRepository.get(uniqueId).map(this::convertToObject);
+        return this.documentRepository.get(uniqueId).map(document -> this.convertToData(uniqueId, document));
+    }
+
+    @Override
+    public @NotNull T loadOrCreate(@NotNull UUID uniqueId) {
+        return this.load(uniqueId).orElseGet(() -> this.create(uniqueId));
+    }
+
+    private T create(UUID uniqueId) {
+        T data = this.objectCache.get(uniqueId);
+        PipeDocument document = this.convertToDocument(data);
+        this.documentRepository.insert(uniqueId, document);
+        return data;
     }
 
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
-        DocumentCursor documentCursor = this.documentRepository.find(findOptions);
-        return new ObjectCursor<>(documentCursor);
+        return new ObjectCursor<>(this.documentRepository.find(findOptions));
     }
 
     @Override
-    public void save(@NotNull ObjectData objectData) {
-        this.documentRepository.insert(objectData.uniqueId(), convertToDocument(objectData));
+    public void save(@NotNull T objectData) {
+        this.documentRepository.insert(objectData.uniqueId(), this.convertToDocument(objectData));
     }
 
     @Override
@@ -101,11 +110,13 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     }
 
-    private T convertToObject(PipeDocument document) {
-        return this.converter.convert(document, this.type);
+    private T convertToData(UUID uniqueId, PipeDocument document) {
+        T data = this.objectCache.get(uniqueId);
+        data.deserialize(document);
+        return data;
     }
 
-    private PipeDocument convertToDocument(Object object) {
-        return this.converter.convert(object, PipeDocument.class);
+    private PipeDocument convertToDocument(T data) {
+        return data.serialize();
     }
 }
