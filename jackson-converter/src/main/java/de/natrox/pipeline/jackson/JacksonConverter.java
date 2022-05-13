@@ -81,9 +81,4 @@ public final class JacksonConverter implements JsonConverter {
     public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
         return objectMapper.convertValue(object, type);
     }
-
-    @Override
-    public <T> @NotNull T injectMembers(@NotNull Object object, @NotNull T t) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
 }

@@ -26,7 +26,4 @@ public interface JsonConverter {
 
     <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
 
-    @Deprecated(forRemoval = true)
-    <T> @NotNull T injectMembers(@NotNull Object object, @NotNull T t);
-
 }
