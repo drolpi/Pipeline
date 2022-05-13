@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class RedisMap implements PartMap {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RedisMap.class);
@@ -55,23 +56,23 @@ final class RedisMap implements PartMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
-        RBucket<String> bucket = bucket(uniqueId);
+        RBucket<String> bucket = this.bucket(uniqueId);
         String json = bucket.get();
         if (json == null)
             return null;
 
-        return jsonConverter.fromJson(json, DocumentData.class);
+        return this.jsonConverter.fromJson(json, DocumentData.class);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
-        RBucket<String> bucket = bucket(uniqueId);
-        bucket.set(jsonConverter.toJson(documentData));
+        RBucket<String> bucket = this.bucket(uniqueId);
+        bucket.set(this.jsonConverter.toJson(documentData));
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        RBucket<String> bucket = bucket(uniqueId);
+        RBucket<String> bucket = this.bucket(uniqueId);
         return bucket.isExists();
     }
 
@@ -86,8 +87,8 @@ final class RedisMap implements PartMap {
 
     @Override
     public @NotNull PipeStream<DocumentData> values() {
-        Set<String> keys = redisKeys();
-        RBuckets redisBuckets = redissonClient.getBuckets();
+        Set<String> keys = this.redisKeys();
+        RBuckets redisBuckets = this.redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
         List<DocumentData> documents = new ArrayList<>();
@@ -97,15 +98,15 @@ final class RedisMap implements PartMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(jsonConverter.fromJson(stringValue, DocumentData.class));
+            documents.add(this.jsonConverter.fromJson(stringValue, DocumentData.class));
         }
         return PipeStream.fromIterable(documents);
     }
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        Set<String> keys = redisKeys();
-        RBuckets redisBuckets = redissonClient.getBuckets();
+        Set<String> keys = this.redisKeys();
+        RBuckets redisBuckets = this.redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
         Map<UUID, DocumentData> entries = new HashMap<>();
@@ -116,7 +117,7 @@ final class RedisMap implements PartMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            DocumentData value = jsonConverter.fromJson(stringValue, DocumentData.class);
+            DocumentData value = this.jsonConverter.fromJson(stringValue, DocumentData.class);
 
             entries.put(key, value);
         }
@@ -125,7 +126,7 @@ final class RedisMap implements PartMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        RBucket<String> bucket = bucket(uniqueId);
+        RBucket<String> bucket = this.bucket(uniqueId);
         bucket.delete();
     }
 
@@ -140,14 +141,14 @@ final class RedisMap implements PartMap {
     }
 
     private RBucket<String> bucket(UUID uniqueId) {
-        return redissonClient.getBucket("Cache:" + this.mapName + ":" + uniqueId, StringCodec.INSTANCE);
+        return this.redissonClient.getBucket("Cache:" + this.mapName + ":" + uniqueId, StringCodec.INSTANCE);
     }
 
     public synchronized Set<String> redisKeys() {
-        return redissonClient
+        return this.redissonClient
             .getKeys()
             .getKeysStream()
-            .filter(s -> s.split(":")[1].equals(mapName))
+            .filter(s -> s.split(":")[1].equals(this.mapName))
             .collect(Collectors.toSet());
     }
 }

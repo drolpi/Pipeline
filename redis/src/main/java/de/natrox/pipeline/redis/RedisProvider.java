@@ -80,11 +80,11 @@ public final class RedisProvider implements GlobalCacheProvider {
 
     @Override
     public void close() {
-        redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
+        this.redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
     }
 
     @Override
     public @NotNull GlobalCache constructGlobalCache(@NotNull Pipeline pipeline) {
-        return new RedisCache(pipeline, redissonClient);
+        return new RedisCache(pipeline, this.redissonClient);
     }
 }

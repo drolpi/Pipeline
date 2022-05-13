@@ -42,18 +42,18 @@ final class RedisCache implements GlobalCache {
 
     @Override
     public @NotNull PartMap openMap(@NotNull String mapName) {
-        if (redisMapRegistry.containsKey(mapName)) {
-            return redisMapRegistry.get(mapName);
+        if (this.redisMapRegistry.containsKey(mapName)) {
+            return this.redisMapRegistry.get(mapName);
         }
-        RedisMap redisMap = new RedisMap(redissonClient, mapName, jsonConverter);
-        redisMapRegistry.put(mapName, redisMap);
+        RedisMap redisMap = new RedisMap(this.redissonClient, mapName, this.jsonConverter);
+        this.redisMapRegistry.put(mapName, redisMap);
 
         return redisMap;
     }
 
     @Override
     public boolean hasMap(String mapName) {
-        long keys = redissonClient
+        long keys = this.redissonClient
             .getKeys()
             .getKeysStream()
             .filter(s -> s.split(":")[1].equals(mapName))
@@ -64,17 +64,17 @@ final class RedisCache implements GlobalCache {
 
     @Override
     public void closeMap(String mapName) {
-        redisMapRegistry.remove(mapName);
+        this.redisMapRegistry.remove(mapName);
     }
 
     @Override
     public void removeMap(String mapName) {
-        redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
-        redisMapRegistry.remove(mapName);
+        this.redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
+        this.redisMapRegistry.remove(mapName);
     }
 
     private Set<String> keys(String mapName) {
-        return redissonClient
+        return this.redissonClient
             .getKeys()
             .getKeysStream()
             .filter(s -> s.split(":")[1].equals(mapName))
