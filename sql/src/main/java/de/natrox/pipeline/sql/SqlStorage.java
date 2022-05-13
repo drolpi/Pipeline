@@ -17,13 +17,21 @@
 package de.natrox.pipeline.sql;
 
 import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.function.ThrowableFunction;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.PartMap;
 import de.natrox.pipeline.part.storage.GlobalStorage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SqlStorage implements GlobalStorage {
@@ -43,7 +51,7 @@ public abstract class SqlStorage implements GlobalStorage {
         if (sqlMapRegistry.containsKey(mapName)) {
             return sqlMapRegistry.get(mapName);
         }
-        SqlMap sqlMap = new SqlMap();
+        SqlMap sqlMap = new SqlMap(this, mapName, jsonConverter);
         sqlMapRegistry.put(mapName, sqlMap);
 
         return sqlMap;
@@ -62,5 +70,59 @@ public abstract class SqlStorage implements GlobalStorage {
     @Override
     public void removeMap(String mapName) {
 
+    }
+
+    private void createTableIfNotExists(@NotNull String name) {
+        Check.notNull(name, "name");
+        executeUpdate(String.format(
+            SQLConstants.CREATE_TABLE,
+            name,
+            SQLConstants.TABLE_COLUMN_KEY,
+            SQLConstants.TABLE_COLUMN_VAL
+        ));
+    }
+
+    @NotNull
+    public Connection connection() {
+        try {
+            return this.dataSource.getConnection();
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Unable to retrieve connection from pool", exception);
+        }
+    }
+
+    public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
+        try (Connection con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+            // write all parameters
+            for (int i = 0; i < objects.length; i++) {
+                statement.setString(i + 1, Objects.toString(objects[i]));
+            }
+
+            // execute the statement
+            return statement.executeUpdate();
+        } catch (SQLException exception) {
+            //LOGGER.error("Exception while executing database update");
+            exception.printStackTrace();
+            return -1;
+        }
+    }
+
+    public <T> T executeQuery(@NotNull String query, @NotNull ThrowableFunction<ResultSet, T, SQLException> callback, @Nullable T def, @NotNull Object... objects) {
+        try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+            // write all parameters
+            for (int i = 0; i < objects.length; i++) {
+                statement.setString(i + 1, Objects.toString(objects[i]));
+            }
+
+            // execute the statement, apply to the result handler
+            try (var resultSet = statement.executeQuery()) {
+                return callback.apply(resultSet);
+            }
+        } catch (Throwable throwable) {
+            //LOGGER.error("Exception while executing database query");
+            throwable.printStackTrace();
+        }
+
+        return def;
     }
 }
