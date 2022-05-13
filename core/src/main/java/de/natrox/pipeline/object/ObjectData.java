@@ -54,7 +54,7 @@ public abstract class ObjectData {
                 if (value == null)
                     continue;
 
-                documentData.put(key, value);
+                documentData.append(key, value);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

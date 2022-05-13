@@ -54,7 +54,7 @@ public final class ObjectCache<T extends ObjectData> {
         }
 
         DocumentData documentData = DocumentData.create();
-        documentData.put("uniqueId", uniqueId);
+        documentData.append("uniqueId", uniqueId);
         instance.deserialize(documentData);
 
         return instance;

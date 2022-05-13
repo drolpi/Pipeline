@@ -33,9 +33,9 @@ public class DocumentDataTest {
     public static void setup() {
         documentData = DocumentData
             .create("name", "Eric")
-            .put("level", 234685)
-            .put("address.street", "montana-avenue")
-            .put("test.name", "Eric");
+            .append("level", 234685)
+            .append("address.street", "montana-avenue")
+            .append("test.name", "Eric");
     }
 
     @Test
@@ -63,7 +63,7 @@ public class DocumentDataTest {
 
     @Test
     public void testPutNull() {
-        assertNotNull(documentData.put("test", null));
+        assertNotNull(documentData.append("test", null));
         assertNull(documentData.get("test"));
     }
 
@@ -81,7 +81,7 @@ public class DocumentDataTest {
     @Test
     public void testPut() {
         assertEquals(documentData.size(), 4);
-        documentData.put("age", 22);
+        documentData.append("age", 22);
 
         assertEquals(documentData.get("age"), 22);
         assertEquals(documentData.size(), 5);

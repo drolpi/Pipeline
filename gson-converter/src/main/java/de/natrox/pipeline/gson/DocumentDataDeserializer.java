@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.gson;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -32,8 +31,6 @@ final class DocumentDataDeserializer implements JsonDeserializer<DocumentData> {
 
     @Override
     public DocumentData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        System.out.println(json.toString());
-        return context.deserialize(json, new TypeToken<DocumentDataImpl>() {
-        }.getType());
+        return context.deserialize(json, DocumentDataImpl.class);
     }
 }

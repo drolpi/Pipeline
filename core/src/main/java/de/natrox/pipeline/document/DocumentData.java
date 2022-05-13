@@ -39,7 +39,7 @@ public sealed interface DocumentData extends Iterable<Pair<String, Object>> perm
         Check.notNull(value, "value");
 
         DocumentData documentData = new DocumentDataImpl();
-        documentData.put(key, value);
+        documentData.append(key, value);
         return documentData;
     }
 
@@ -49,7 +49,7 @@ public sealed interface DocumentData extends Iterable<Pair<String, Object>> perm
         return new DocumentDataImpl(document);
     }
 
-    @NotNull DocumentData put(@NotNull String key, @NotNull Object value);
+    @NotNull DocumentData append(@NotNull String key, @NotNull Object value);
 
     @Nullable Object get(@NotNull String key);
 

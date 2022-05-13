@@ -83,9 +83,9 @@ public class ExampleTest {
 
                 DocumentData documentData = DocumentData
                     .create()
-                    .put("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
-                    .put("age", random.nextInt(0, 100))
-                    .put("european", random.nextBoolean());
+                    .append("name", random.nextInt(0, 2) == 0 ? "Aaron" : "Zaher")
+                    .append("age", random.nextInt(0, 100))
+                    .append("european", random.nextBoolean());
 
                 repository.insert(uniqueId, documentData);
             }
