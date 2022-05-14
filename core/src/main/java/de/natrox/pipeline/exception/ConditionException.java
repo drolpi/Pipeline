@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.condition;
+package de.natrox.pipeline.exception;
 
-import de.natrox.pipeline.exception.ConditionException;
-import org.jetbrains.annotations.NotNull;
+public class ConditionException extends PipelineException {
 
-public abstract class ComparableCondition extends FieldCondition {
-
-    public ComparableCondition(String field, Object value) {
-        super(field, value);
+    public ConditionException(String message) {
+        super(message);
     }
 
-    @SuppressWarnings("rawtypes")
-    public @NotNull Comparable getComparable() {
-        Object value = value();
-
-        if (!(value instanceof Comparable comparable))
-            throw new ConditionException("value parameter must not be null");
-
-        return comparable;
+    public ConditionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

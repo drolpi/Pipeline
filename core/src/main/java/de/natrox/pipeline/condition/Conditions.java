@@ -17,6 +17,7 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.exception.ConditionException;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,13 +30,17 @@ public final class Conditions {
 
     public static Condition and(Condition @NotNull ... conditions) {
         Check.notNull(conditions, "conditions");
-        Check.argCondition(conditions.length <= 0, "conditions");
+        if (conditions.length < 2) {
+            throw new ConditionException("At least two conditions must be specified");
+        }
         return new AndCondition(conditions);
     }
 
     public static Condition or(Condition @NotNull ... conditions) {
         Check.notNull(conditions, "conditions");
-        Check.argCondition(conditions.length <= 0, "conditions");
+        if (conditions.length < 2) {
+            throw new ConditionException("At least two conditions must be specified");
+        }
         return new OrCondition(conditions);
     }
 

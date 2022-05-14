@@ -18,6 +18,7 @@ package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.exception.ConditionException;
 import de.natrox.pipeline.util.Numbers;
 
 import java.util.UUID;
@@ -40,7 +41,7 @@ final class LesserEqualCondition extends ComparableCondition {
             } else if (fieldValue instanceof Comparable arg) {
                 return arg.compareTo(comparable) <= 0;
             } else {
-                throw new RuntimeException(fieldValue + " is not comparable");
+                throw new ConditionException(fieldValue + " is not comparable");
             }
         }
 
