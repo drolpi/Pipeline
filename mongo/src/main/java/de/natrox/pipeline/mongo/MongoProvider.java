@@ -30,7 +30,7 @@ public final class MongoProvider implements GlobalStorageProvider {
     private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
 
-    protected MongoProvider(@NotNull MongoConfig config) throws Exception {
+    MongoProvider(@NotNull MongoConfig config) throws Exception {
         Check.notNull(config, "config");
 
         this.mongoClient = MongoClients.create(config.buildConnectionUri());

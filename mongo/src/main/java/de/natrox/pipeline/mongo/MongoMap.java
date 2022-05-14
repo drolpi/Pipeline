@@ -46,7 +46,7 @@ final class MongoMap implements PartMap {
     private final MongoCollection<Document> collection;
     private final JsonConverter jsonConverter;
 
-    public MongoMap(MongoCollection<Document> collection, JsonConverter jsonConverter) {
+    MongoMap(MongoCollection<Document> collection, JsonConverter jsonConverter) {
         this.collection = collection;
         this.jsonConverter = jsonConverter;
     }
