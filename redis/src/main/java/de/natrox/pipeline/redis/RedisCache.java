@@ -53,7 +53,7 @@ final class RedisCache extends AbstractStore implements GlobalCache {
     }
 
     @Override
-    public boolean hasMap(String mapName) {
+    public boolean hasMap(@NotNull String mapName) {
         long keys = this.redissonClient
             .getKeys()
             .getKeysStream()
@@ -64,12 +64,12 @@ final class RedisCache extends AbstractStore implements GlobalCache {
     }
 
     @Override
-    public void closeMap(String mapName) {
+    public void closeMap(@NotNull String mapName) {
         this.redisMapRegistry.remove(mapName);
     }
 
     @Override
-    public void removeMap(String mapName) {
+    public void removeMap(@NotNull String mapName) {
         this.redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
         this.redisMapRegistry.remove(mapName);
     }

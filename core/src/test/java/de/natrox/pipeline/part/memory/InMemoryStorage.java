@@ -28,17 +28,17 @@ public class InMemoryStorage implements LocalStorage {
     }
 
     @Override
-    public boolean hasMap(String mapName) {
+    public boolean hasMap(@NotNull String mapName) {
         return false;
     }
 
     @Override
-    public void closeMap(String mapName) {
+    public void closeMap(@NotNull String mapName) {
 
     }
 
     @Override
-    public void removeMap(String mapName) {
+    public void removeMap(@NotNull String mapName) {
 
     }
 }

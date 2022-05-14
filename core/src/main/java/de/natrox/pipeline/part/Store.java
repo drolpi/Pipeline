@@ -22,9 +22,9 @@ public interface Store {
 
     @NotNull PartMap openMap(@NotNull String mapName);
 
-    boolean hasMap(String mapName);
+    boolean hasMap(@NotNull String mapName);
 
-    void closeMap(String mapName);
+    void closeMap(@NotNull String mapName);
 
-    void removeMap(String mapName);
+    void removeMap(@NotNull String mapName);
 }

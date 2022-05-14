@@ -53,7 +53,7 @@ final class MongoStorage extends AbstractStore implements GlobalStorage {
     }
 
     @Override
-    public boolean hasMap(String mapName) {
+    public boolean hasMap(@NotNull String mapName) {
         try {
             this.mongoDatabase.getCollection(mapName);
             return true;
@@ -63,12 +63,12 @@ final class MongoStorage extends AbstractStore implements GlobalStorage {
     }
 
     @Override
-    public void closeMap(String mapName) {
+    public void closeMap(@NotNull String mapName) {
         this.mongoMapRegistry.remove(mapName);
     }
 
     @Override
-    public void removeMap(String mapName) {
+    public void removeMap(@NotNull String mapName) {
         this.collection(mapName).drop();
         this.mongoMapRegistry.remove(mapName);
     }

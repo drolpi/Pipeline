@@ -58,14 +58,14 @@ public final class ConnectingStore implements Store {
     }
 
     @Override
-    public boolean hasMap(String mapName) {
+    public boolean hasMap(@NotNull String mapName) {
         //TODO: Maybe check other parts too
         return this.storage.hasMap(mapName);
     }
 
 
     @Override
-    public void closeMap(String mapName) {
+    public void closeMap(@NotNull String mapName) {
         if (this.localCache != null) {
             this.localCache.closeMap(mapName);
         }
@@ -78,7 +78,7 @@ public final class ConnectingStore implements Store {
     }
 
     @Override
-    public void removeMap(String mapName) {
+    public void removeMap(@NotNull String mapName) {
         if (this.localCache != null) {
             this.localCache.removeMap(mapName);
         }
