@@ -38,7 +38,7 @@ public final class RedisProvider implements GlobalCacheProvider {
 
     private final RedissonClient redissonClient;
 
-    RedisProvider(@NotNull RedisConfig config) throws Exception {
+    RedisProvider(@NotNull RedisConfig config) {
         Check.notNull(config, "config");
 
         List<RedisEndpoint> endpoints = config.endpoints();

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.exception;
 
-import org.jetbrains.annotations.NotNull;
+public class PartException extends PipelineException {
 
-public interface PartConfig<T extends PartProvider> {
+    public PartException(String errorMessage) {
+        super(errorMessage);
+    }
 
-    @NotNull T createProvider();
-
+    public PartException(String errorMessage, Throwable cause) {
+        super(errorMessage, cause);
+    }
 }

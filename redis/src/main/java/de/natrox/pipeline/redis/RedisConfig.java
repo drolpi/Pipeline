@@ -19,6 +19,7 @@ package de.natrox.pipeline.redis;
 import com.google.common.collect.ImmutableList;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,8 +57,12 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
     }
 
     @Override
-    public @NotNull RedisProvider createProvider() throws Exception {
-        return new RedisProvider(this);
+    public @NotNull RedisProvider createProvider() {
+        try {
+            return new RedisProvider(this);
+        } catch (Exception exception) {
+            throw new PartException("Failed to create RedisProvider", exception);
+        }
     }
 
     public static class Builder implements IBuilder<RedisConfig> {

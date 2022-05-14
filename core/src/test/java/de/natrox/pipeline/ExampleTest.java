@@ -41,7 +41,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ExampleTest {
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         MongoConfig mongoConfig = MongoConfig
             .builder()
             .host("127.0.0.1")

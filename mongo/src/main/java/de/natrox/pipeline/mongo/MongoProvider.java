@@ -25,12 +25,14 @@ import de.natrox.pipeline.part.storage.GlobalStorage;
 import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.UnsupportedEncodingException;
+
 public final class MongoProvider implements GlobalStorageProvider {
 
     private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
 
-    MongoProvider(@NotNull MongoConfig config) throws Exception {
+    MongoProvider(@NotNull MongoConfig config) throws UnsupportedEncodingException {
         Check.notNull(config, "config");
 
         this.mongoClient = MongoClients.create(config.buildConnectionUri());

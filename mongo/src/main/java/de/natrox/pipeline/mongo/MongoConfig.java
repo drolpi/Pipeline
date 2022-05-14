@@ -19,6 +19,7 @@ package de.natrox.pipeline.mongo;
 import com.google.common.base.Strings;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -111,8 +112,12 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
     }
 
     @Override
-    public @NotNull MongoProvider createProvider() throws Exception {
-        return new MongoProvider(this);
+    public @NotNull MongoProvider createProvider() {
+        try {
+            return new MongoProvider(this);
+        } catch (Exception exception) {
+            throw new PartException("Failed to create MongoProvider", exception);
+        }
     }
 
     public static class Builder implements IBuilder<MongoConfig> {
