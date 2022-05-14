@@ -17,4 +17,7 @@
 package de.natrox.pipeline.part;
 
 public abstract class AbstractStore implements Store {
+
+    //TODO:
+
 }

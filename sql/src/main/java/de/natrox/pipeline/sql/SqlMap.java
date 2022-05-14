@@ -32,7 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class SqlMap implements PartMap {
+
+    //TODO: Add null checks
 
     private final SqlStorage sqlStorage;
     private final String mapName;

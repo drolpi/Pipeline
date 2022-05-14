@@ -39,6 +39,8 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 final class MongoMap implements PartMap {
 
+    //TODO: Add null checks
+
     private static final String KEY_NAME = "Key";
     private static final String VALUE_NAME = "Value";
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);

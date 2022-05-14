@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ClassCanBeRecord")
 final class RedisMap implements PartMap {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RedisMap.class);
+    //TODO: Add null checks
 
     private final RedissonClient redissonClient;
     private final String mapName;
