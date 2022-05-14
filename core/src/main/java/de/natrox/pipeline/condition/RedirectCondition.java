@@ -19,7 +19,7 @@ package de.natrox.pipeline.condition;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class RedirectCondition extends AbstractCondition {
+public abstract class RedirectCondition implements Condition {
 
     private final List<Condition> conditions;
 

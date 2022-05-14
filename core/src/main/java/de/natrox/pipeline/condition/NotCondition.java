@@ -21,7 +21,8 @@ import de.natrox.pipeline.document.DocumentData;
 
 import java.util.UUID;
 
-final class NotCondition extends AbstractCondition {
+@SuppressWarnings("ClassCanBeRecord")
+final class NotCondition implements Condition {
 
     private final Condition condition;
 

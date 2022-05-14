@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.condition;
 
-public abstract class FieldCondition extends AbstractCondition {
+public abstract class FieldCondition implements Condition {
 
     private final String field;
     private final Object value;
