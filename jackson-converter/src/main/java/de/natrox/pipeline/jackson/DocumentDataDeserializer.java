@@ -21,9 +21,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentDataImpl;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 
+@ApiStatus.Internal
 final class DocumentDataDeserializer extends StdDeserializer<DocumentData> {
 
     protected DocumentDataDeserializer() {
