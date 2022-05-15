@@ -70,10 +70,10 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
-        if (this.localCacheMap != null) {
+        if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.put(uniqueId, documentData);
+            this.localUpdater.pushUpdate(uniqueId, documentData, () -> {});
         }
-        //TODO: Push data updater
         if (this.globalCacheMap != null) {
             this.globalCacheMap.put(uniqueId, documentData);
         }
@@ -114,10 +114,10 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        if (this.localCacheMap != null) {
+        if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.remove(uniqueId);
+            this.localUpdater.pushRemoval(uniqueId, () -> {});
         }
-        //TODO: Push data Updater
         if (this.globalCacheMap != null) {
             this.globalCacheMap.remove(uniqueId);
         }
