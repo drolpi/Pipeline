@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.storage.provider;
+package de.natrox.pipeline.part.provider;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.PartProvider;
-import de.natrox.pipeline.part.storage.LocalStorage;
+import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public interface LocalStorageProvider extends PartProvider {
+public interface LocalCacheProvider extends PartProvider {
 
-    @NotNull LocalStorage constructLocalStorage(@NotNull Pipeline pipeline);
+    @NotNull Store createLocalCache(@NotNull Pipeline pipeline);
 
 }

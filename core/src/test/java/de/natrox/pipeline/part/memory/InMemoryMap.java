@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class InMemoryMap implements PartMap {
+public class InMemoryMap implements StoreMap {
 
     private final Map<UUID, DocumentData> documentMap = new HashMap<>();
 

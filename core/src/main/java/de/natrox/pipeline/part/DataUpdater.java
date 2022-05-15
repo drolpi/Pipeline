@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.storage.provider;
+package de.natrox.pipeline.part;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.PartProvider;
-import de.natrox.pipeline.part.storage.GlobalStorage;
-import org.jetbrains.annotations.NotNull;
-
-public interface GlobalStorageProvider extends PartProvider {
-
-    @NotNull GlobalStorage constructGlobalStorage(@NotNull Pipeline pipeline);
-
+public interface DataUpdater {
 }

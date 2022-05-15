@@ -18,24 +18,24 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.cache.DataUpdater;
+import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.DataUpdater;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public final class ConnectingMap implements PartMap {
+public final class ConnectingMap implements StoreMap {
 
-    private final PartMap storageMap;
-    private final @Nullable PartMap globalCacheMap;
-    private final @Nullable PartMap localCacheMap;
+    private final StoreMap storageMap;
+    private final @Nullable StoreMap globalCacheMap;
+    private final @Nullable StoreMap localCacheMap;
     private final @Nullable DataUpdater dataUpdater;
 
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(PartMap storageMap, @Nullable PartMap globalCacheMap, @Nullable PartMap localCacheMap, @Nullable DataUpdater dataUpdater) {
+    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable DataUpdater dataUpdater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
@@ -62,8 +62,8 @@ public final class ConnectingMap implements PartMap {
         return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
     }
 
-    private DocumentData fromPart(UUID uniqueId, PartMap partMap, DataSynchronizer.DataSourceType... destinations) {
-        DocumentData documentData = partMap.get(uniqueId);
+    private DocumentData fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
+        DocumentData documentData = storeMap.get(uniqueId);
         this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
         return documentData;
     }
@@ -134,15 +134,15 @@ public final class ConnectingMap implements PartMap {
         return this.storageMap.size();
     }
 
-    public PartMap storageMap() {
+    public StoreMap storageMap() {
         return this.storageMap;
     }
 
-    public PartMap globalCacheMap() {
+    public StoreMap globalCacheMap() {
         return this.globalCacheMap;
     }
 
-    public PartMap localCacheMap() {
+    public StoreMap localCacheMap() {
         return this.localCacheMap;
     }
 }

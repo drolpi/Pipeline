@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.document;
 
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -46,8 +46,8 @@ public final class DocumentRepositoryFactory {
     }
 
     private DocumentRepository createRepository(String name) {
-        PartMap partMap = this.connectingPart.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingPart, partMap);
+        StoreMap storeMap = this.connectingPart.openMap(name);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingPart, storeMap);
         this.repositoryMap.put(name, repository);
 
         return repository;

@@ -20,11 +20,15 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Store {
 
-    @NotNull PartMap openMap(@NotNull String mapName);
+    @NotNull StoreMap openMap(@NotNull String mapName);
 
     boolean hasMap(@NotNull String mapName);
 
     void closeMap(@NotNull String mapName);
 
     void removeMap(@NotNull String mapName);
+
+    boolean isClosed();
+
+    void close();
 }

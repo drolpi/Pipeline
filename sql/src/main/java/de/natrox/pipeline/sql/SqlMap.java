@@ -19,7 +19,7 @@ package de.natrox.pipeline.sql;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class SqlMap implements PartMap {
+public class SqlMap implements StoreMap {
 
     //TODO: Add null checks
 

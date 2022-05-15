@@ -23,7 +23,7 @@ import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-final class MongoMap implements PartMap {
+final class MongoMap implements StoreMap {
 
     //TODO: Add null checks
 

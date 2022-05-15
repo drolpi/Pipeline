@@ -31,7 +31,7 @@ import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
-    private final ConnectingStore connectingPart;
+    private final ConnectingStore connectingStore;
     private final JsonConverter jsonConverter;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
@@ -42,9 +42,9 @@ final class PipelineImpl implements Pipeline {
         Check.notNull(jsonConverter, "jsonConverter");
 
         this.jsonConverter = jsonConverter;
-        this.connectingPart = partBundle.createConnectingPart(this);
+        this.connectingStore = partBundle.createConnectingPart(this);
 
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingPart);
+        this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.documentRepositoryFactory);
     }
 
@@ -63,13 +63,13 @@ final class PipelineImpl implements Pipeline {
     @Override
     public void destroyRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        connectingPart.removeMap(name);
+        connectingStore.removeMap(name);
     }
 
     @Override
     public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        this.connectingPart.removeMap(AnnotationResolver.identifier(type));
+        this.connectingStore.removeMap(AnnotationResolver.identifier(type));
     }
 
     @Override
@@ -91,15 +91,16 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public boolean isShutDowned() {
-        return false;
+        return this.connectingStore == null || this.connectingStore.isClosed();
     }
 
     @Override
     public void shutdown() {
+        this.connectingStore.close();
         this.documentRepositoryFactory.clear();
     }
 
-    public ConnectingStore storeManager() {
-        return this.connectingPart;
+    public ConnectingStore store() {
+        return this.connectingStore;
     }
 }

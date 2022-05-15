@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.junit.jupiter.api.Test;
 
 public class BundleTest {

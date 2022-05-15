@@ -21,15 +21,14 @@ import com.mongodb.client.MongoDatabase;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.AbstractStore;
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.part.StoreMap;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class MongoStorage extends AbstractStore implements GlobalStorage {
+final class MongoStorage extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final MongoDatabase mongoDatabase;
@@ -42,7 +41,7 @@ final class MongoStorage extends AbstractStore implements GlobalStorage {
     }
 
     @Override
-    public @NotNull PartMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
         if (this.mongoMapRegistry.containsKey(mapName)) {
             return this.mongoMapRegistry.get(mapName);
         }
@@ -71,6 +70,17 @@ final class MongoStorage extends AbstractStore implements GlobalStorage {
     public void removeMap(@NotNull String mapName) {
         this.collection(mapName).drop();
         this.mongoMapRegistry.remove(mapName);
+    }
+
+    @Override
+    public boolean isClosed() {
+        //TODO:
+        return false;
+    }
+
+    @Override
+    public void close() {
+        //TODO:
     }
 
     private MongoCollection<Document> collection(String name) {

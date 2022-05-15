@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.cache.provider;
+package de.natrox.pipeline.part.provider;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.PartProvider;
-import de.natrox.pipeline.part.cache.GlobalCache;
-import org.jetbrains.annotations.NotNull;
+public interface PartProvider {
 
-public interface GlobalCacheProvider extends PartProvider {
-
-    @NotNull GlobalCache constructGlobalCache(@NotNull Pipeline pipeline);
+    void close();
 
 }

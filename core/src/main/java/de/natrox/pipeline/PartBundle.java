@@ -17,12 +17,12 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.cache.provider.DataUpdaterProvider;
-import de.natrox.pipeline.part.cache.provider.GlobalCacheProvider;
-import de.natrox.pipeline.part.cache.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
-import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.DataUpdaterProvider;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,18 +46,18 @@ public sealed interface PartBundle permits PartBundleImpl.Local, PartBundleImpl.
     static @NotNull PartBundle global(
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider,
-        @NotNull DataUpdaterProvider dataUpdaterProvider,
-        @NotNull LocalCacheProvider localCacheProvider
+        @NotNull LocalCacheProvider localCacheProvider,
+        @NotNull DataUpdaterProvider dataUpdaterProvider
     ) {
-        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, dataUpdaterProvider, localCacheProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, localCacheProvider, dataUpdaterProvider);
     }
 
     static @NotNull PartBundle global(
         @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull DataUpdaterProvider dataUpdaterProvider,
-        @NotNull LocalCacheProvider localCacheProvider
+        @NotNull LocalCacheProvider localCacheProvider,
+        @NotNull DataUpdaterProvider dataUpdaterProvider
     ) {
-        return new PartBundleImpl.Global(globalStorageProvider, null, dataUpdaterProvider, localCacheProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, null, localCacheProvider, dataUpdaterProvider);
     }
 
     static @NotNull PartBundle global(

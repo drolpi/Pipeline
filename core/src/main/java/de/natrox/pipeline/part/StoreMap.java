@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface PartMap {
+public interface StoreMap {
 
     @Nullable DocumentData get(@NotNull UUID uniqueId);
 

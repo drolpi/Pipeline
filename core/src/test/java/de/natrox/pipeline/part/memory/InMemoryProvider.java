@@ -17,8 +17,8 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.storage.LocalStorage;
-import de.natrox.pipeline.part.storage.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
 public class InMemoryProvider implements LocalStorageProvider {
@@ -33,7 +33,7 @@ public class InMemoryProvider implements LocalStorageProvider {
     }
 
     @Override
-    public @NotNull LocalStorage constructLocalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
         return new InMemoryStorage();
     }
 }

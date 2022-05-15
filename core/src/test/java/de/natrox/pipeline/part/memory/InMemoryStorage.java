@@ -16,14 +16,14 @@
 
 package de.natrox.pipeline.part.memory;
 
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.storage.LocalStorage;
+import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public class InMemoryStorage implements LocalStorage {
+public class InMemoryStorage implements Store {
 
     @Override
-    public @NotNull PartMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
         return new InMemoryMap();
     }
 
@@ -39,6 +39,16 @@ public class InMemoryStorage implements LocalStorage {
 
     @Override
     public void removeMap(@NotNull String mapName) {
+
+    }
+
+    @Override
+    public boolean isClosed() {
+        return false;
+    }
+
+    @Override
+    public void close() {
 
     }
 }

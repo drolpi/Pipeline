@@ -21,8 +21,8 @@ import de.natrox.common.function.ThrowableFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.storage.GlobalStorage;
+import de.natrox.pipeline.part.AbstractStore;
+import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class SqlStorage implements GlobalStorage {
+public abstract class SqlStorage extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final HikariDataSource dataSource;
@@ -47,7 +47,7 @@ public abstract class SqlStorage implements GlobalStorage {
     }
 
     @Override
-    public @NotNull PartMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
         if (sqlMapRegistry.containsKey(mapName)) {
             return sqlMapRegistry.get(mapName);
         }
@@ -70,6 +70,17 @@ public abstract class SqlStorage implements GlobalStorage {
     @Override
     public void removeMap(@NotNull String mapName) {
 
+    }
+
+    @Override
+    public boolean isClosed() {
+        //TODO:
+        return false;
+    }
+
+    @Override
+    public void close() {
+        //TODO:
     }
 
     private void createTableIfNotExists(@NotNull String name) {

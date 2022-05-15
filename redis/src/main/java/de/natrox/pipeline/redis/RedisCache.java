@@ -19,8 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.AbstractStore;
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.cache.GlobalCache;
+import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
@@ -29,7 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-final class RedisCache extends AbstractStore implements GlobalCache {
+final class RedisCache extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final RedissonClient redissonClient;
@@ -42,7 +41,7 @@ final class RedisCache extends AbstractStore implements GlobalCache {
     }
 
     @Override
-    public @NotNull PartMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
         if (this.redisMapRegistry.containsKey(mapName)) {
             return this.redisMapRegistry.get(mapName);
         }
@@ -72,6 +71,17 @@ final class RedisCache extends AbstractStore implements GlobalCache {
     public void removeMap(@NotNull String mapName) {
         this.redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
         this.redisMapRegistry.remove(mapName);
+    }
+
+    @Override
+    public boolean isClosed() {
+        //TODO:
+        return false;
+    }
+
+    @Override
+    public void close() {
+        //TODO:
     }
 
     private Set<String> keys(String mapName) {

@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +27,6 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RBuckets;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("ClassCanBeRecord")
-final class RedisMap implements PartMap {
+final class RedisMap implements StoreMap {
 
     //TODO: Add null checks
 

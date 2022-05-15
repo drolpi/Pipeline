@@ -21,8 +21,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.storage.GlobalStorage;
-import de.natrox.pipeline.part.storage.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
@@ -45,7 +45,7 @@ public final class MongoProvider implements GlobalStorageProvider {
     }
 
     @Override
-    public @NotNull GlobalStorage constructGlobalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
         return new MongoStorage(pipeline, this.mongoDatabase);
     }
 }

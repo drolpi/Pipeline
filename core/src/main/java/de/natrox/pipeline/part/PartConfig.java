@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part;
 
+import de.natrox.pipeline.part.provider.PartProvider;
 import org.jetbrains.annotations.NotNull;
 
 public interface PartConfig<T extends PartProvider> {

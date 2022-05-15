@@ -21,7 +21,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.Store;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.stream.BoundedStream;
@@ -40,24 +40,24 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
     private final Store store;
-    private final PartMap partMap;
+    private final StoreMap storeMap;
 
-    DocumentRepositoryImpl(String repositoryName, Store store, PartMap partMap) {
+    DocumentRepositoryImpl(String repositoryName, Store store, StoreMap storeMap) {
         this.repositoryName = repositoryName;
         this.store = store;
-        this.partMap = partMap;
+        this.storeMap = storeMap;
     }
 
     @Override
     public @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        return Optional.ofNullable(this.partMap.get(uniqueId));
+        return Optional.ofNullable(this.storeMap.get(uniqueId));
     }
 
     @Override
     public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
-        PipeStream<Pair<UUID, DocumentData>> stream = this.partMap.entries();
+        PipeStream<Pair<UUID, DocumentData>> stream = this.storeMap.entries();
 
         Condition condition = findOptions.condition();
         if (condition != null) {
@@ -89,19 +89,19 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         DocumentData newDoc = document.clone();
         newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
 
-        this.partMap.put(uniqueId, newDoc);
+        this.storeMap.put(uniqueId, newDoc);
     }
 
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.partMap.contains(uniqueId);
+        return this.storeMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        this.partMap.remove(uniqueId);
+        this.storeMap.remove(uniqueId);
     }
 
     @Override

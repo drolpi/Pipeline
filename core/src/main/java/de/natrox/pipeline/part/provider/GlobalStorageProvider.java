@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.cache;
+package de.natrox.pipeline.part.provider;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import org.jetbrains.annotations.NotNull;
 
-public interface GlobalCache extends Store {
+public interface GlobalStorageProvider extends PartProvider {
+
+    @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline);
+
 }

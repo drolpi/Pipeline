@@ -17,42 +17,39 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.pipeline.part.Store;
-import de.natrox.pipeline.part.PartMap;
-import de.natrox.pipeline.part.cache.DataUpdater;
-import de.natrox.pipeline.part.cache.GlobalCache;
-import de.natrox.pipeline.part.cache.LocalCache;
-import de.natrox.pipeline.part.storage.Storage;
+import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class ConnectingStore implements Store {
 
-    private final Storage storage;
-    private final @Nullable GlobalCache globalCache;
+    private final Store storage;
+    private final @Nullable Store globalCache;
+    private final @Nullable Store localCache;
     private final @Nullable DataUpdater dataUpdater;
-    private final @Nullable LocalCache localCache;
 
-    public ConnectingStore(@NotNull Storage storage, @Nullable GlobalCache globalCache, @Nullable DataUpdater dataUpdater, @Nullable LocalCache localCache) {
+    public ConnectingStore(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable DataUpdater dataUpdater) {
         this.storage = storage;
         this.globalCache = globalCache;
-        this.dataUpdater = dataUpdater;
         this.localCache = localCache;
+        this.dataUpdater = dataUpdater;
     }
 
     @Override
-    public @NotNull PartMap openMap(@NotNull String mapName) {
-        PartMap localCacheMap = null;
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
+        StoreMap localCacheMap = null;
         if (this.localCache != null) {
             localCacheMap = this.localCache.openMap(mapName);
         }
 
-        PartMap globalCacheMap = null;
+        StoreMap globalCacheMap = null;
         if (this.globalCache != null) {
             globalCacheMap = this.globalCache.openMap(mapName);
         }
 
-        PartMap storageMap = this.storage.openMap(mapName);
+        StoreMap storageMap = this.storage.openMap(mapName);
 
         return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.dataUpdater);
     }
@@ -88,5 +85,22 @@ public final class ConnectingStore implements Store {
         }
 
         this.storage.removeMap(mapName);
+    }
+
+    @Override
+    public boolean isClosed() {
+        //TODO: Maybe check other parts too
+        return this.storage.isClosed();
+    }
+
+    @Override
+    public void close() {
+        if (this.localCache != null) {
+            this.localCache.close();
+        }
+        if (this.globalCache != null) {
+            this.globalCache.close();
+        }
+        this.storage.close();
     }
 }

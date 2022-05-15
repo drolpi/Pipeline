@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.PartMap;
+import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -31,9 +31,9 @@ import java.util.concurrent.Executors;
 
 public final class DataSynchronizer {
 
-    private final PartMap storage;
-    private final @Nullable PartMap globalCache;
-    private final @Nullable PartMap localCache;
+    private final StoreMap storage;
+    private final @Nullable StoreMap globalCache;
+    private final @Nullable StoreMap localCache;
     private final ExecutorService executorService;
 
     public DataSynchronizer(ConnectingMap connectingMap) {
