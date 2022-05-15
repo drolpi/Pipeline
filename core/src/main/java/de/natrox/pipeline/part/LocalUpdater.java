@@ -16,5 +16,16 @@
 
 package de.natrox.pipeline.part;
 
+import de.natrox.pipeline.document.DocumentData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
+
 public interface LocalUpdater {
+
+    void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData pipelineData, @Nullable Runnable callback);
+
+    void pushRemoval(@NotNull UUID uniqueId, @Nullable Runnable callback);
+
 }
