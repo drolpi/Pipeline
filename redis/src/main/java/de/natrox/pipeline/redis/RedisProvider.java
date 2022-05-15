@@ -19,8 +19,10 @@ package de.natrox.pipeline.redis;
 import com.google.common.base.Strings;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.LocalUpdater;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -32,7 +34,7 @@ import org.redisson.misc.RedisURI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class RedisProvider implements GlobalCacheProvider {
+public final class RedisProvider implements LocalUpdaterProvider, GlobalCacheProvider {
 
     private final RedissonClient redissonClient;
 
@@ -86,5 +88,10 @@ public final class RedisProvider implements GlobalCacheProvider {
     @Override
     public @NotNull Store createGlobalCache(@NotNull Pipeline pipeline) {
         return new RedisStore(pipeline, this.redissonClient);
+    }
+
+    @Override
+    public @NotNull LocalUpdater createDataUpdater(@NotNull Pipeline pipeline) {
+        return new RedisLocalUpdater(pipeline, this.redissonClient);
     }
 }

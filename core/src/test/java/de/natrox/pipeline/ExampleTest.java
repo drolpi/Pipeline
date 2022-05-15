@@ -28,6 +28,7 @@ import de.natrox.pipeline.mongo.MongoProvider;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Properties;
+import de.natrox.pipeline.part.memory.InMemoryProvider;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
@@ -62,8 +63,9 @@ public class ExampleTest {
             )
             .build();
         RedisProvider redisProvider = redisConfig.createProvider();
+        InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
-        PartBundle bundle = PartBundle.global(mongoProvider, redisProvider);
+        PartBundle bundle = PartBundle.global(mongoProvider, redisProvider, inMemoryProvider, redisProvider);
         JsonConverter jsonConverter = JacksonConverter.create();
 
         Pipeline pipeline = Pipeline
