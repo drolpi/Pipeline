@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":gson-converter",
-    ":h2",
-    ":jackson-converter",
-    ":json",
-    ":mongo",
-    ":mysql",
-    ":redis",
-    ":sql",
-    ":sqlite"
-)
+dependencies {
+    compileOnly(project(":core"))
+}
