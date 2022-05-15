@@ -16,5 +16,5 @@
 
 package de.natrox.pipeline.part;
 
-public interface DataUpdater {
+public interface LocalCacheUpdater {
 }

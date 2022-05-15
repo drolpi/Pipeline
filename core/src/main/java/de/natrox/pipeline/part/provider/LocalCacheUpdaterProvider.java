@@ -17,11 +17,11 @@
 package de.natrox.pipeline.part.provider;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.DataUpdater;
+import de.natrox.pipeline.part.LocalCacheUpdater;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface DataUpdaterProvider extends PartProvider {
+public non-sealed interface LocalCacheUpdaterProvider extends PartProvider {
 
-    @NotNull DataUpdater createDataUpdater(@NotNull Pipeline pipeline);
+    @NotNull LocalCacheUpdater createLocalCacheUpdater(@NotNull Pipeline pipeline);
 
 }

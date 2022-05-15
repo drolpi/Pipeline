@@ -18,7 +18,7 @@ package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.provider.DataUpdaterProvider;
+import de.natrox.pipeline.part.provider.LocalCacheUpdaterProvider;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
@@ -47,17 +47,17 @@ public sealed interface PartBundle permits PartBundleImpl.Local, PartBundleImpl.
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider,
         @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull DataUpdaterProvider dataUpdaterProvider
+        @NotNull LocalCacheUpdaterProvider localCacheUpdaterProvider
     ) {
-        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, localCacheProvider, dataUpdaterProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, localCacheProvider, localCacheUpdaterProvider);
     }
 
     static @NotNull PartBundle global(
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull DataUpdaterProvider dataUpdaterProvider
+        @NotNull LocalCacheUpdaterProvider localCacheUpdaterProvider
     ) {
-        return new PartBundleImpl.Global(globalStorageProvider, null, localCacheProvider, dataUpdaterProvider);
+        return new PartBundleImpl.Global(globalStorageProvider, null, localCacheProvider, localCacheUpdaterProvider);
     }
 
     static @NotNull PartBundle global(

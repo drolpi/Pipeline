@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.part.DataUpdater;
+import de.natrox.pipeline.part.LocalCacheUpdater;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,15 +31,15 @@ public final class ConnectingMap implements StoreMap {
     private final StoreMap storageMap;
     private final @Nullable StoreMap globalCacheMap;
     private final @Nullable StoreMap localCacheMap;
-    private final @Nullable DataUpdater dataUpdater;
+    private final @Nullable LocalCacheUpdater localCacheUpdater;
 
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable DataUpdater dataUpdater) {
+    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable LocalCacheUpdater localCacheUpdater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
-        this.dataUpdater = dataUpdater;
+        this.localCacheUpdater = localCacheUpdater;
         this.dataSynchronizer = new DataSynchronizer(this);
     }
 
