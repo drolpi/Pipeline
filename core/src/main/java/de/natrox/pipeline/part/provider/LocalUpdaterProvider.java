@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.provider;
 
-public interface DataUpdater {
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.LocalUpdater;
+import org.jetbrains.annotations.NotNull;
+
+public non-sealed interface LocalUpdaterProvider extends PartProvider {
+
+    @NotNull LocalUpdater createDataUpdater(@NotNull Pipeline pipeline);
+
 }

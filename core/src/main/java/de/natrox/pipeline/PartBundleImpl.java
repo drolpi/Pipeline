@@ -17,13 +17,13 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.provider.DataUpdaterProvider;
+import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.Store;
-import de.natrox.pipeline.part.DataUpdater;
+import de.natrox.pipeline.part.LocalUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,18 +49,18 @@ final class PartBundleImpl {
     record Global(@NotNull GlobalStorageProvider globalStorageProvider,
                   @Nullable GlobalCacheProvider globalCacheProvider,
                   @Nullable LocalCacheProvider localCacheProvider,
-                  @Nullable DataUpdaterProvider dataUpdaterProvider) implements PartBundle {
+                  @Nullable LocalUpdaterProvider localUpdaterProvider) implements PartBundle {
 
         @Override
         public @NotNull ConnectingStore createConnectingPart(@NotNull Pipeline pipeline) {
             Store storage = this.globalStorageProvider.createGlobalStorage(pipeline);
             Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(pipeline) : null;
 
-            boolean local = this.dataUpdaterProvider != null && this.localCacheProvider != null;
+            boolean local = this.localUpdaterProvider != null && this.localCacheProvider != null;
             Store localCache = local ? this.localCacheProvider.createLocalCache(pipeline) : null;
-            DataUpdater dataUpdater = local ? this.dataUpdaterProvider.createDataUpdater(pipeline) : null;
+            LocalUpdater localUpdater = local ? this.localUpdaterProvider.createDataUpdater(pipeline) : null;
 
-            return new ConnectingStore(storage, globalCache, localCache, dataUpdater);
+            return new ConnectingStore(storage, globalCache, localCache, localUpdater);
         }
 
     }
