@@ -71,12 +71,12 @@ public class DocumentDataTest {
     @Test
     public void testRemove() {
         Iterator<Pair<String, Object>> iterator = documentData.iterator();
-        assertEquals(documentData.size(), 5);
+        assertEquals(documentData.size(), 4);
         if (iterator.hasNext()) {
             iterator.next();
             iterator.remove();
         }
-        assertEquals(documentData.size(), 4);
+        assertEquals(documentData.size(), 3);
     }
 
     @Test
