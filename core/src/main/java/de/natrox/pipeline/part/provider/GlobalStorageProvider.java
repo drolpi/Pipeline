@@ -20,7 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public interface GlobalStorageProvider extends PartProvider {
+public non-sealed interface GlobalStorageProvider extends PartProvider {
 
     @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline);
 

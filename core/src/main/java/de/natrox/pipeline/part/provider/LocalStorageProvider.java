@@ -20,7 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public interface LocalStorageProvider extends PartProvider {
+public non-sealed interface LocalStorageProvider extends PartProvider {
 
     @NotNull Store createLocalStorage(@NotNull Pipeline pipeline);
 

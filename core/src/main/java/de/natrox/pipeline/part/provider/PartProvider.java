@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.provider;
 
-public interface PartProvider {
+public sealed interface PartProvider permits GlobalStorageProvider, LocalStorageProvider, GlobalCacheProvider, LocalCacheProvider, DataUpdaterProvider {
 
     void close();
 

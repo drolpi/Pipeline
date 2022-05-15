@@ -20,7 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public interface GlobalCacheProvider extends PartProvider {
+public non-sealed interface GlobalCacheProvider extends PartProvider {
 
     @NotNull Store createGlobalCache(@NotNull Pipeline pipeline);
 

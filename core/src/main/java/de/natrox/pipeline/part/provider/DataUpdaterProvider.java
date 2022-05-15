@@ -20,7 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.DataUpdater;
 import org.jetbrains.annotations.NotNull;
 
-public interface DataUpdaterProvider extends PartProvider {
+public non-sealed interface DataUpdaterProvider extends PartProvider {
 
     @NotNull DataUpdater createDataUpdater(@NotNull Pipeline pipeline);
 
