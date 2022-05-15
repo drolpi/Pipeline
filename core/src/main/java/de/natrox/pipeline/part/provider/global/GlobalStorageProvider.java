@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.provider.global;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.provider.PartProvider;
 import org.jetbrains.annotations.NotNull;
 
 public non-sealed interface GlobalStorageProvider extends PartProvider {

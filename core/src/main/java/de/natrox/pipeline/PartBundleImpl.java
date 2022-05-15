@@ -17,11 +17,11 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.provider.LocalCacheUpdaterProvider;
-import de.natrox.pipeline.part.provider.GlobalCacheProvider;
-import de.natrox.pipeline.part.provider.GlobalStorageProvider;
-import de.natrox.pipeline.part.provider.LocalCacheProvider;
-import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.local.LocalCacheUpdaterProvider;
+import de.natrox.pipeline.part.provider.global.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.global.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.local.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.local.LocalStorageProvider;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.LocalCacheUpdater;
 import org.jetbrains.annotations.NotNull;

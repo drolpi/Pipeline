@@ -16,6 +16,12 @@
 
 package de.natrox.pipeline.part.provider;
 
+import de.natrox.pipeline.part.provider.global.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.global.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.local.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.local.LocalCacheUpdaterProvider;
+import de.natrox.pipeline.part.provider.local.LocalStorageProvider;
+
 public sealed interface PartProvider permits GlobalStorageProvider, LocalStorageProvider, GlobalCacheProvider, LocalCacheProvider, LocalCacheUpdaterProvider {
 
     void close();

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.provider.local;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.provider.PartProvider;
 import org.jetbrains.annotations.NotNull;
 
 public non-sealed interface LocalCacheProvider extends PartProvider {

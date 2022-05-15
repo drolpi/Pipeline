@@ -18,8 +18,8 @@ package de.natrox.pipeline.part.memory;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
-import de.natrox.pipeline.part.provider.LocalCacheProvider;
-import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.local.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.local.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 public final class InMemoryProvider implements LocalCacheProvider, LocalStorageProvider {

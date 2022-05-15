@@ -21,7 +21,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.global.GlobalStorageProvider;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
