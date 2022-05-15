@@ -44,7 +44,7 @@ final class MongoStore extends AbstractStore {
     public boolean hasMap(@NotNull String mapName) {
         try {
             this.mongoDatabase.getCollection(mapName);
-            return super.hasMap(mapName);
+            return true;
         } catch (IllegalArgumentException e) {
             return false;
         }
