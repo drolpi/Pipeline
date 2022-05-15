@@ -28,13 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class MongoStorage extends AbstractStore {
+final class MongoStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final MongoDatabase mongoDatabase;
     private final Map<String, MongoMap> mongoMapRegistry;
 
-    MongoStorage(Pipeline pipeline, MongoDatabase mongoDatabase) {
+    MongoStore(Pipeline pipeline, MongoDatabase mongoDatabase) {
         this.jsonConverter = pipeline.jsonConverter();
         this.mongoDatabase = mongoDatabase;
         this.mongoMapRegistry = new ConcurrentHashMap<>();

@@ -28,13 +28,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-final class RedisCache extends AbstractStore {
+final class RedisStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final RedissonClient redissonClient;
     private final Map<String, RedisMap> redisMapRegistry;
 
-    RedisCache(Pipeline pipeline, RedissonClient redissonClient) {
+    RedisStore(Pipeline pipeline, RedissonClient redissonClient) {
         this.jsonConverter = pipeline.jsonConverter();
         this.redissonClient = redissonClient;
         this.redisMapRegistry = new ConcurrentHashMap<>();

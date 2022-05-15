@@ -34,13 +34,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class SqlStorage extends AbstractStore {
+public abstract class SqlStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final HikariDataSource dataSource;
     private final Map<String, SqlMap> sqlMapRegistry;
 
-    public SqlStorage(Pipeline pipeline, HikariDataSource dataSource) {
+    public SqlStore(Pipeline pipeline, HikariDataSource dataSource) {
         this.jsonConverter = pipeline.jsonConverter();
         this.dataSource = dataSource;
         this.sqlMapRegistry = new ConcurrentHashMap<>();

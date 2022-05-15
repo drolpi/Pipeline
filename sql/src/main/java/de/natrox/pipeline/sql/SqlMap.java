@@ -37,19 +37,19 @@ public class SqlMap implements StoreMap {
 
     //TODO: Add null checks
 
-    private final SqlStorage sqlStorage;
+    private final SqlStore sqlStore;
     private final String mapName;
     private final JsonConverter jsonConverter;
 
-    SqlMap(SqlStorage sqlStorage, String mapName, JsonConverter jsonConverter) {
-        this.sqlStorage = sqlStorage;
+    SqlMap(SqlStore sqlStore, String mapName, JsonConverter jsonConverter) {
+        this.sqlStore = sqlStore;
         this.mapName = mapName;
         this.jsonConverter = jsonConverter;
     }
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
-        return sqlStorage.executeQuery(
+        return sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.TABLE_COLUMN_VAL, mapName, SQLConstants.TABLE_COLUMN_KEY),
             resultSet -> resultSet.next() ? this.jsonConverter.fromJson(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class) : null,
             null,
@@ -61,12 +61,12 @@ public class SqlMap implements StoreMap {
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData document) {
         String jsonDocument = this.jsonConverter.toJson(document);
         if (!contains(uniqueId)) {
-            sqlStorage.executeUpdate(
+            sqlStore.executeUpdate(
                 String.format(SQLConstants.INSERT_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_KEY, SQLConstants.TABLE_COLUMN_VAL),
                 uniqueId.toString(), jsonDocument
             );
         } else {
-            sqlStorage.executeUpdate(
+            sqlStore.executeUpdate(
                 String.format(SQLConstants.UPDATE_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_VAL, SQLConstants.TABLE_COLUMN_KEY),
                 jsonDocument, uniqueId.toString()
             );
@@ -75,7 +75,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        return sqlStorage.executeQuery(
+        return sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.TABLE_COLUMN_KEY, mapName, SQLConstants.TABLE_COLUMN_KEY),
             ResultSet::next,
             false,
@@ -85,7 +85,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<UUID> keys() {
-        return PipeStream.fromIterable(sqlStorage.executeQuery(
+        return PipeStream.fromIterable(sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_ALL, SQLConstants.TABLE_COLUMN_KEY, mapName),
             resultSet -> {
                 Collection<UUID> keys = new ArrayList<>();
@@ -98,7 +98,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<DocumentData> values() {
-        return PipeStream.fromIterable(sqlStorage.executeQuery(
+        return PipeStream.fromIterable(sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_ALL, SQLConstants.TABLE_COLUMN_VAL, mapName),
             resultSet -> {
                 Collection<DocumentData> documents = new ArrayList<>();
@@ -111,7 +111,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        return PipeStream.fromMap(sqlStorage.executeQuery(
+        return PipeStream.fromMap(sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_ALL, mapName),
             resultSet -> {
                 Map<UUID, DocumentData> map = new HashMap<>();
@@ -127,7 +127,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        sqlStorage.executeUpdate(
+        sqlStore.executeUpdate(
             String.format(SQLConstants.DELETE_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_KEY),
             uniqueId.toString()
         );
