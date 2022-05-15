@@ -25,7 +25,7 @@ defaultTasks("build", "shadowJar")
 allprojects {
     group = "de.natrox"
     version = "2.0.0-SNAPSHOT"
-    description = "A fast, lightweight store written in Java that synchronizes records between databases and caches"
+    description = "A fast and lightweight store written in Java that synchronizes records between databases and caches"
 
     repositories {
         mavenCentral()
