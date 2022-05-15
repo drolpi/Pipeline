@@ -32,7 +32,7 @@ final class LesserEqualCondition extends ComparableCondition {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public boolean apply(Pair<UUID, DocumentData> element) {
-        Comparable comparable = getComparable();
+        Comparable comparable = comparable();
         DocumentData documentData = element.second();
         Object fieldValue = documentData.get(field());
         if (fieldValue != null) {

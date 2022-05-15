@@ -94,7 +94,7 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     }
 
     @Override
-    public @NotNull Set<String> getFields() {
+    public @NotNull Set<String> fields() {
         return this.getFieldsInternal("");
     }
 

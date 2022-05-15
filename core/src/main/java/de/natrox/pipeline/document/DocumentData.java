@@ -57,7 +57,7 @@ public sealed interface DocumentData extends Iterable<Pair<String, Object>> perm
 
     @NotNull UUID uniqueId();
 
-    @NotNull Set<String> getFields();
+    @NotNull Set<String> fields();
 
     void remove(@NotNull String key);
 

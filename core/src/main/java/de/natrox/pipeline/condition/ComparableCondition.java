@@ -26,7 +26,7 @@ public abstract class ComparableCondition extends FieldCondition {
     }
 
     @SuppressWarnings("rawtypes")
-    public @NotNull Comparable getComparable() {
+    public @NotNull Comparable comparable() {
         Object value = value();
 
         if (!(value instanceof Comparable comparable))
