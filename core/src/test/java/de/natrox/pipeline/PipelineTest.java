@@ -25,7 +25,7 @@ public class PipelineTest {
 
     @Test
     public void testBuilder() {
-        InMemoryProvider provider = new InMemoryProvider();
+        InMemoryProvider provider = InMemoryProvider.create();
 
         Pipeline.Builder builder = Pipeline.builder();
         assertNotNull(builder);

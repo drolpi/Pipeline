@@ -23,56 +23,60 @@ import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryMap implements StoreMap {
+final class InMemoryMap implements StoreMap {
 
-    private final Map<UUID, DocumentData> documentMap = new HashMap<>();
+    private final Map<UUID, DocumentData> map;
+
+    InMemoryMap() {
+        this.map = new ConcurrentHashMap<>();
+    }
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
-        return documentMap.get(uniqueId);
+        return this.map.get(uniqueId);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
-        documentMap.put(uniqueId, documentData);
+        this.map.put(uniqueId, documentData);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        return documentMap.containsKey(uniqueId);
+        return this.map.containsKey(uniqueId);
     }
 
     @Override
     public @NotNull PipeStream<UUID> keys() {
-        return PipeStream.fromIterable(documentMap.keySet());
+        return PipeStream.fromIterable(this.map.keySet());
     }
 
     @Override
     public @NotNull PipeStream<DocumentData> values() {
-        return PipeStream.fromIterable(documentMap.values());
+        return PipeStream.fromIterable(this.map.values());
     }
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        return PipeStream.fromMap(documentMap);
+        return PipeStream.fromMap(this.map);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        documentMap.remove(uniqueId);
+        this.map.remove(uniqueId);
     }
 
     @Override
     public void clear() {
-        documentMap.clear();
+        this.map.clear();
     }
 
     @Override
     public long size() {
-        return documentMap.size();
+        return this.map.size();
     }
 }

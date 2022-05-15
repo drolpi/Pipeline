@@ -16,39 +16,34 @@
 
 package de.natrox.pipeline.part.memory;
 
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class InMemoryStorage implements Store {
+public final class InMemoryProvider implements LocalCacheProvider, LocalStorageProvider {
 
-    @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
-        return new InMemoryMap();
-    }
-
-    @Override
-    public boolean hasMap(@NotNull String mapName) {
-        return false;
-    }
-
-    @Override
-    public void closeMap(@NotNull String mapName) {
+    private InMemoryProvider() {
 
     }
 
-    @Override
-    public void removeMap(@NotNull String mapName) {
-
-    }
-
-    @Override
-    public boolean isClosed() {
-        return false;
+    public static @NotNull InMemoryProvider create() {
+        return new InMemoryProvider();
     }
 
     @Override
     public void close() {
 
+    }
+
+    @Override
+    public @NotNull Store createLocalCache(@NotNull Pipeline pipeline) {
+        return new InMemoryStore();
+    }
+
+    @Override
+    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
+        return new InMemoryStore();
     }
 }

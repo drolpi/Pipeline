@@ -31,7 +31,7 @@ public class ObjectTest {
 
     @Test
     public void test() {
-        PartBundle bundle = PartBundle.local(new InMemoryProvider());
+        PartBundle bundle = PartBundle.local(InMemoryProvider.create());
 
         Pipeline pipeline = Pipeline
             .builder()
