@@ -18,6 +18,7 @@ package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -27,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DocumentDataTest {
 
-    private static DocumentData documentData;
+    private DocumentData documentData;
 
-    @BeforeAll
-    public static void setup() {
-        documentData = DocumentData
+    @BeforeEach
+    public void setup() {
+        this.documentData = DocumentData
             .create("name", "Eric")
             .append("level", 234685)
             .append("address.street", "montana-avenue")

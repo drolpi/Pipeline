@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.testing;
 
+import de.natrox.pipeline.PartBundle;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;

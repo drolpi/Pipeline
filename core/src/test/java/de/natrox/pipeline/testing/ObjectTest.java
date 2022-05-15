@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.testing;
 
 import de.natrox.pipeline.PartBundle;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.jackson.JacksonConverter;
+import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Named;
 import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.part.memory.InMemoryProvider;
