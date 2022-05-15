@@ -16,8 +16,44 @@
 
 package de.natrox.pipeline.part;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public abstract class AbstractStore implements Store {
 
-    //TODO:
+    protected final Map<String, StoreMap> storeMapRegistry = new ConcurrentHashMap<>();
+    protected volatile boolean closed;
+
+    protected abstract StoreMap createMap(@NotNull String mapName);
+
+    @Override
+    public @NotNull StoreMap openMap(@NotNull String mapName) {
+        if (this.storeMapRegistry.containsKey(mapName)) {
+            return this.storeMapRegistry.get(mapName);
+        }
+        StoreMap storeMap = this.createMap(mapName);
+        this.storeMapRegistry.put(mapName, storeMap);
+
+        return storeMap;
+    }
+
+    @Override
+    public void closeMap(@NotNull String mapName) {
+        this.storeMapRegistry.remove(mapName);
+    }
+
+    @Override
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+    @Override
+    public void close() {
+        this.closed = true;
+
+        this.storeMapRegistry.clear();
+    }
 
 }

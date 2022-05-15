@@ -47,14 +47,8 @@ public abstract class SqlStore extends AbstractStore {
     }
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
-        if (sqlMapRegistry.containsKey(mapName)) {
-            return sqlMapRegistry.get(mapName);
-        }
-        SqlMap sqlMap = new SqlMap(this, mapName, jsonConverter);
-        sqlMapRegistry.put(mapName, sqlMap);
-
-        return sqlMap;
+    protected StoreMap createMap(@NotNull String mapName) {
+        return new SqlMap(this, mapName, this.jsonConverter);
     }
 
     @Override

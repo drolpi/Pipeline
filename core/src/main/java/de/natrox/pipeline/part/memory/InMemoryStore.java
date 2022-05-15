@@ -25,27 +25,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 final class InMemoryStore extends AbstractStore {
 
-    private final Map<String, InMemoryMap> inMemoryMapRegistry;
-    private volatile boolean closed = false;
-
     InMemoryStore() {
-        this.inMemoryMapRegistry = new ConcurrentHashMap<>();
+
     }
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
-        if (this.inMemoryMapRegistry.containsKey(mapName)) {
-            return this.inMemoryMapRegistry.get(mapName);
-        }
-        InMemoryMap inMemoryMap = new InMemoryMap();
-        this.inMemoryMapRegistry.put(mapName, inMemoryMap);
-
-        return inMemoryMap;
+    protected StoreMap createMap(@NotNull String mapName) {
+        return new InMemoryMap();
     }
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
-        return this.inMemoryMapRegistry.containsKey(mapName);
+        return storeMapRegistry.containsKey(mapName);
     }
 
     @Override
@@ -55,22 +46,10 @@ final class InMemoryStore extends AbstractStore {
 
     @Override
     public void removeMap(@NotNull String mapName) {
-        if (this.inMemoryMapRegistry.containsKey(mapName)) {
-            InMemoryMap inMemoryMap = this.inMemoryMapRegistry.get(mapName);
-            inMemoryMap.clear();
-            this.inMemoryMapRegistry.remove(mapName);
+        if (this.storeMapRegistry.containsKey(mapName)) {
+            StoreMap storeMap = this.storeMapRegistry.get(mapName);
+            storeMap.clear();
+            this.storeMapRegistry.remove(mapName);
         }
-    }
-
-    @Override
-    public boolean isClosed() {
-        return this.closed;
-    }
-
-    @Override
-    public void close() {
-        this.closed = true;
-
-        this.inMemoryMapRegistry.clear();
     }
 }

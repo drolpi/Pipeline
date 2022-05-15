@@ -32,56 +32,26 @@ final class RedisStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final RedissonClient redissonClient;
-    private final Map<String, RedisMap> redisMapRegistry;
 
     RedisStore(Pipeline pipeline, RedissonClient redissonClient) {
         this.jsonConverter = pipeline.jsonConverter();
         this.redissonClient = redissonClient;
-        this.redisMapRegistry = new ConcurrentHashMap<>();
     }
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
-        if (this.redisMapRegistry.containsKey(mapName)) {
-            return this.redisMapRegistry.get(mapName);
-        }
-        RedisMap redisMap = new RedisMap(this.redissonClient, mapName, this.jsonConverter);
-        this.redisMapRegistry.put(mapName, redisMap);
-
-        return redisMap;
+    protected StoreMap createMap(@NotNull String mapName) {
+        return new RedisMap(this.redissonClient, mapName, this.jsonConverter);
     }
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
-        long keys = this.redissonClient
-            .getKeys()
-            .getKeysStream()
-            .filter(s -> s.split(":")[1].equals(mapName))
-            .count();
-
-        return keys > 0;
-    }
-
-    @Override
-    public void closeMap(@NotNull String mapName) {
-        this.redisMapRegistry.remove(mapName);
+        return true;
     }
 
     @Override
     public void removeMap(@NotNull String mapName) {
-        this.redissonClient.getKeys().delete(keys(mapName).toArray(new String[0]));
-        this.redisMapRegistry.remove(mapName);
-    }
-
-    @Override
-    public boolean isClosed() {
-        //TODO:
-        return false;
-    }
-
-    @Override
-    public void close() {
-        //TODO:
+        this.redissonClient.getKeys().delete(this.keys(mapName).toArray(new String[0]));
+        this.storeMapRegistry.remove(mapName);
     }
 
     private Set<String> keys(String mapName) {
