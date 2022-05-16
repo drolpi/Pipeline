@@ -19,7 +19,7 @@ package de.natrox.pipeline.mongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.bson.Document;
@@ -30,17 +30,17 @@ import java.util.Set;
 
 final class MongoStore extends AbstractStore {
 
-    private final JsonConverter jsonConverter;
+    private final Mapper mapper;
     private final MongoDatabase mongoDatabase;
 
     MongoStore(Pipeline pipeline, MongoDatabase mongoDatabase) {
-        this.jsonConverter = pipeline.jsonConverter();
+        this.mapper = pipeline.mapper();
         this.mongoDatabase = mongoDatabase;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
-        return new MongoMap(this.collection(mapName), this.jsonConverter);
+        return new MongoMap(this.collection(mapName), this.mapper);
     }
 
     @Override

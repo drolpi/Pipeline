@@ -28,18 +28,18 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-public final class JacksonConverter implements JsonConverter {
+public final class JacksonMapper implements Mapper {
 
     private final ObjectMapper objectMapper;
 
-    private JacksonConverter() {
+    private JacksonMapper() {
         SimpleModule simpleModule = new SimpleModule()
             .addDeserializer(DocumentData.class, new DocumentDataDeserializer());
 
@@ -59,8 +59,8 @@ public final class JacksonConverter implements JsonConverter {
             .build();
     }
 
-    public static @NotNull JacksonConverter create() {
-        return new JacksonConverter();
+    public static @NotNull JacksonMapper create() {
+        return new JacksonMapper();
     }
 
     @Override

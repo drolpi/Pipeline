@@ -20,7 +20,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -36,17 +36,17 @@ import java.util.Set;
 
 public abstract class SqlStore extends AbstractStore {
 
-    private final JsonConverter jsonConverter;
+    private final Mapper mapper;
     private final HikariDataSource dataSource;
 
     public SqlStore(Pipeline pipeline, HikariDataSource dataSource) {
-        this.jsonConverter = pipeline.jsonConverter();
+        this.mapper = pipeline.mapper();
         this.dataSource = dataSource;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
-        return new SqlMap(this, mapName, this.jsonConverter);
+        return new SqlMap(this, mapName, this.mapper);
     }
 
     @Override

@@ -23,8 +23,8 @@ dependencies {
 
     testImplementation(project(":mongo"))
     testImplementation(project(":redis"))
-    testImplementation(project(":gson-converter"))
-    testImplementation(project(":jackson-converter"))
+    testImplementation(project(":gson-mapper"))
+    testImplementation(project(":jackson-mapper"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")

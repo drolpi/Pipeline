@@ -28,7 +28,7 @@ import java.io.IOException;
 @ApiStatus.Internal
 final class DocumentDataDeserializer extends StdDeserializer<DocumentData> {
 
-    protected DocumentDataDeserializer() {
+    DocumentDataDeserializer() {
         super(DocumentData.class);
     }
 

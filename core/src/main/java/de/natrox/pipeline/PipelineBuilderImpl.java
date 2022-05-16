@@ -17,27 +17,27 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilderImpl implements Pipeline.Builder {
 
     private final PartBundle bundle;
-    private JsonConverter jsonConverter;
+    private Mapper mapper;
 
     PipelineBuilderImpl(PartBundle bundle) {
         this.bundle = bundle;
     }
 
     @Override
-    public Pipeline.@NotNull Builder jsonConverter(@NotNull JsonConverter jsonConverter) {
-        Check.notNull(jsonConverter, "jsonConverter");
-        this.jsonConverter = jsonConverter;
+    public Pipeline.@NotNull Builder mapper(@NotNull Mapper mapper) {
+        Check.notNull(mapper, "mapper");
+        this.mapper = mapper;
         return this;
     }
 
     @Override
     public @NotNull Pipeline build() {
-        return new PipelineImpl(this.bundle, this.jsonConverter);
+        return new PipelineImpl(this.bundle, this.mapper);
     }
 }

@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -42,12 +42,12 @@ final class RedisMap implements StoreMap {
 
     private final RedissonClient redissonClient;
     private final String mapName;
-    private final JsonConverter jsonConverter;
+    private final Mapper mapper;
 
-    RedisMap(RedissonClient redissonClient, String mapName, JsonConverter jsonConverter) {
+    RedisMap(RedissonClient redissonClient, String mapName, Mapper mapper) {
         this.redissonClient = redissonClient;
         this.mapName = mapName;
-        this.jsonConverter = jsonConverter;
+        this.mapper = mapper;
     }
 
     @Override
@@ -58,7 +58,7 @@ final class RedisMap implements StoreMap {
         if (json == null)
             return null;
 
-        return this.jsonConverter.read(json, DocumentData.class);
+        return this.mapper.read(json, DocumentData.class);
     }
 
     @Override
@@ -67,7 +67,7 @@ final class RedisMap implements StoreMap {
         Check.notNull(documentData, "documentData");
 
         RBucket<String> bucket = this.bucket(uniqueId);
-        bucket.set(this.jsonConverter.writeAsString(documentData));
+        bucket.set(this.mapper.writeAsString(documentData));
     }
 
     @Override
@@ -99,7 +99,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(this.jsonConverter.read(stringValue, DocumentData.class));
+            documents.add(this.mapper.read(stringValue, DocumentData.class));
         }
         return PipeStream.fromIterable(documents);
     }
@@ -118,7 +118,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            DocumentData value = this.jsonConverter.read(stringValue, DocumentData.class);
+            DocumentData value = this.mapper.read(stringValue, DocumentData.class);
 
             entries.put(key, value);
         }

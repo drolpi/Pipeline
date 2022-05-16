@@ -19,7 +19,7 @@ package de.natrox.pipeline;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
@@ -32,16 +32,16 @@ import java.util.Set;
 final class PipelineImpl implements Pipeline {
 
     private final ConnectingStore connectingStore;
-    private final JsonConverter jsonConverter;
+    private final Mapper mapper;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
-    PipelineImpl(@NotNull PartBundle partBundle, @NotNull JsonConverter jsonConverter) {
+    PipelineImpl(@NotNull PartBundle partBundle, @NotNull Mapper mapper) {
         Check.notNull(partBundle, "partBundle");
-        Check.notNull(jsonConverter, "jsonConverter");
+        Check.notNull(mapper, "mapper");
 
-        this.jsonConverter = jsonConverter;
+        this.mapper = mapper;
         this.connectingStore = partBundle.createConnectingStore(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
@@ -78,8 +78,8 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull JsonConverter jsonConverter() {
-        return this.jsonConverter;
+    public @NotNull Mapper mapper() {
+        return this.mapper;
     }
 
     @Override

@@ -19,9 +19,9 @@ rootProject.name = "Pipeline"
 include(
     ":config",
     ":core",
-    ":gson-converter",
+    ":gson-mapper",
     ":h2",
-    ":jackson-converter",
+    ":jackson-mapper",
     ":json",
     ":mongo",
     ":mysql",

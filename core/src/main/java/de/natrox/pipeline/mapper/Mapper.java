@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.mapper;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @ApiStatus.Internal
-public interface JsonConverter {
+public interface Mapper {
 
     @NotNull String writeAsString(@NotNull Object object);
 

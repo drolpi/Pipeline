@@ -17,6 +17,7 @@
 package de.natrox.pipeline.json;
 
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -31,16 +32,16 @@ import java.util.stream.Stream;
 final class JsonStore extends AbstractStore {
 
     private final Path directory;
-    private final JsonConverter jsonConverter;
+    private final Mapper mapper;
 
     JsonStore(Pipeline pipeline, JsonConfig jsonConfig) {
-        this.jsonConverter = pipeline.jsonConverter();
+        this.mapper = pipeline.mapper();
         this.directory = Path.of(jsonConfig.directory());
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
-        return new JsonMap(mapName, this.directory, this.jsonConverter);
+        return new JsonMap(mapName, this.directory, this.mapper);
     }
 
     @Override

@@ -21,8 +21,8 @@ import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
-import de.natrox.pipeline.jackson.JacksonConverter;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.jackson.JacksonMapper;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
 import de.natrox.pipeline.object.ObjectData;
@@ -65,11 +65,11 @@ public class ExampleTest {
         RedisProvider redisProvider = redisConfig.createProvider();
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
-        JsonConverter jsonConverter = JacksonConverter.create();
+        Mapper mapper = JacksonMapper.create();
 
         Pipeline pipeline = Pipeline
             .of(mongoProvider, redisProvider, inMemoryProvider, redisProvider)
-            .jsonConverter(jsonConverter)
+            .mapper(mapper)
             .build();
 
         // Document repository

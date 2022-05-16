@@ -20,13 +20,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Reader;
 import java.io.Writer;
 
-public final class GsonConverter implements JsonConverter {
+public final class GsonMapper implements Mapper {
 
     public final Gson gson = new GsonBuilder()
         .serializeNulls()
@@ -36,12 +36,12 @@ public final class GsonConverter implements JsonConverter {
         .registerTypeAdapter(DocumentData.class, new DocumentDataDeserializer())
         .create();
 
-    private GsonConverter() {
+    private GsonMapper() {
 
     }
 
-    public static @NotNull GsonConverter create() {
-        return new GsonConverter();
+    public static @NotNull GsonMapper create() {
+        return new GsonMapper();
     }
 
     @Override

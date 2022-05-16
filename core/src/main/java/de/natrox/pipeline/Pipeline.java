@@ -19,7 +19,7 @@ package de.natrox.pipeline;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.json.JsonConverter;
+import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
@@ -108,7 +108,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     @NotNull Set<String> repositories();
 
-    @NotNull JsonConverter jsonConverter();
+    @NotNull Mapper mapper();
 
     boolean isShutDowned();
 
@@ -126,7 +126,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
-        @NotNull Builder jsonConverter(@NotNull JsonConverter jsonConverter);
+        @NotNull Builder mapper(@NotNull Mapper mapper);
 
     }
 
