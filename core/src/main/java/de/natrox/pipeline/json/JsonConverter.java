@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.json;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@ApiStatus.Internal
 public interface JsonConverter {
 
     @NotNull String writeAsString(@NotNull Object object);
