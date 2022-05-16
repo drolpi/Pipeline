@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +48,9 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
-        return sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.TABLE_COLUMN_VAL, mapName, SQLConstants.TABLE_COLUMN_KEY),
-            resultSet -> resultSet.next() ? this.jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class) : null,
+        return this.sqlStore.executeQuery(
+            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
+            resultSet -> resultSet.next() ? this.jsonConverter.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class) : null,
             null,
             uniqueId.toString()
         );
@@ -60,14 +59,14 @@ public class SqlMap implements StoreMap {
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData document) {
         String jsonDocument = this.jsonConverter.writeAsString(document);
-        if (!contains(uniqueId)) {
-            sqlStore.executeUpdate(
-                String.format(SQLConstants.INSERT_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_KEY, SQLConstants.TABLE_COLUMN_VAL),
+        if (!this.contains(uniqueId)) {
+            this.sqlStore.executeUpdate(
+                String.format(SQLConstants.INSERT_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
                 uniqueId.toString(), jsonDocument
             );
         } else {
-            sqlStore.executeUpdate(
-                String.format(SQLConstants.UPDATE_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_VAL, SQLConstants.TABLE_COLUMN_KEY),
+            this.sqlStore.executeUpdate(
+                String.format(SQLConstants.UPDATE_BY_UUID, this.mapName, SQLConstants.COLUMN_VAL, SQLConstants.COLUMN_KEY),
                 jsonDocument, uniqueId.toString()
             );
         }
@@ -75,8 +74,8 @@ public class SqlMap implements StoreMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
-        return sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.TABLE_COLUMN_KEY, mapName, SQLConstants.TABLE_COLUMN_KEY),
+        return this.sqlStore.executeQuery(
+            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_KEY, this.mapName, SQLConstants.COLUMN_KEY),
             ResultSet::next,
             false,
             uniqueId.toString()
@@ -85,61 +84,61 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<UUID> keys() {
-        return PipeStream.fromIterable(sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, SQLConstants.TABLE_COLUMN_KEY, mapName),
+        return this.sqlStore.executeQuery(
+            String.format(SQLConstants.SELECT_ALL, SQLConstants.COLUMN_KEY, this.mapName),
             resultSet -> {
-                Collection<UUID> keys = new ArrayList<>();
-                while (resultSet.next()) {
-                    keys.add(UUID.fromString(resultSet.getString(SQLConstants.TABLE_COLUMN_KEY)));
-                }
-                return keys;
-            }, List.of()));
+                List<UUID> keys = new ArrayList<>();
+                while (resultSet.next())
+                    keys.add(UUID.fromString(resultSet.getString(SQLConstants.COLUMN_KEY)));
+
+                return PipeStream.fromIterable(keys);
+            }, PipeStream.empty());
     }
 
     @Override
     public @NotNull PipeStream<DocumentData> values() {
-        return PipeStream.fromIterable(sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, SQLConstants.TABLE_COLUMN_VAL, mapName),
+        return this.sqlStore.executeQuery(
+            String.format(SQLConstants.SELECT_ALL, SQLConstants.COLUMN_VAL, this.mapName),
             resultSet -> {
-                Collection<DocumentData> documents = new ArrayList<>();
-                while (resultSet.next()) {
-                    documents.add(jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class));
-                }
-                return documents;
-            }, List.of()));
+                List<DocumentData> documents = new ArrayList<>();
+                while (resultSet.next())
+                    documents.add(this.jsonConverter.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class));
+
+                return PipeStream.fromIterable(documents);
+            }, PipeStream.empty());
     }
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        return PipeStream.fromMap(sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, mapName),
+        return this.sqlStore.executeQuery(
+            String.format(SQLConstants.SELECT_ALL, SQLConstants.EVERY, this.mapName),
             resultSet -> {
                 Map<UUID, DocumentData> map = new HashMap<>();
-                while (resultSet.next()) {
+                while (resultSet.next())
                     map.put(
-                        UUID.fromString(resultSet.getString(SQLConstants.TABLE_COLUMN_KEY)),
-                        jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class)
+                        UUID.fromString(resultSet.getString(SQLConstants.COLUMN_KEY)),
+                        this.jsonConverter.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class)
                     );
-                }
-                return map;
-            }, Map.of()));
+                return PipeStream.fromMap(map);
+            }, PipeStream.empty());
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
-        sqlStore.executeUpdate(
-            String.format(SQLConstants.DELETE_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_KEY),
+        this.sqlStore.executeUpdate(
+            String.format(SQLConstants.DELETE_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY),
             uniqueId.toString()
         );
     }
 
     @Override
     public void clear() {
-
+        //TODO:
     }
 
     @Override
     public long size() {
+        //TODO:
         return 0;
     }
 }

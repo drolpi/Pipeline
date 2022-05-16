@@ -38,12 +38,10 @@ public abstract class SqlStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
     private final HikariDataSource dataSource;
-    private final Map<String, SqlMap> sqlMapRegistry;
 
     public SqlStore(Pipeline pipeline, HikariDataSource dataSource) {
         this.jsonConverter = pipeline.jsonConverter();
         this.dataSource = dataSource;
-        this.sqlMapRegistry = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -54,11 +52,6 @@ public abstract class SqlStore extends AbstractStore {
     @Override
     public boolean hasMap(@NotNull String mapName) {
         return false;
-    }
-
-    @Override
-    public void closeMap(@NotNull String mapName) {
-
     }
 
     @Override
@@ -82,8 +75,8 @@ public abstract class SqlStore extends AbstractStore {
         executeUpdate(String.format(
             SQLConstants.CREATE_TABLE,
             name,
-            SQLConstants.TABLE_COLUMN_KEY,
-            SQLConstants.TABLE_COLUMN_VAL
+            SQLConstants.COLUMN_KEY,
+            SQLConstants.COLUMN_VAL
         ));
     }
 
