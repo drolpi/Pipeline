@@ -67,7 +67,7 @@ public final class JacksonConverter implements JsonConverter {
     @Override
     public @NotNull String writeAsString(@NotNull Object object) {
         try {
-            return objectMapper.writeValueAsString(object);
+            return this.objectMapper.writeValueAsString(object);
         } catch (Exception exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
@@ -76,7 +76,7 @@ public final class JacksonConverter implements JsonConverter {
     @Override
     public void write(@NotNull Writer writer, @NotNull Object object) {
         try {
-            objectMapper.writeValue(writer, object);
+            this.objectMapper.writeValue(writer, object);
         } catch (Exception exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
@@ -85,16 +85,16 @@ public final class JacksonConverter implements JsonConverter {
     @Override
     public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
         try {
-            return objectMapper.readValue(json, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return this.objectMapper.readValue(json, type);
+        } catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
     @Override
     public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
         try {
-            return objectMapper.readValue(reader, type);
+            return this.objectMapper.readValue(reader, type);
         } catch (Exception exception) {
             throw new RuntimeException("Unable to parse json from reader", exception);
         }
@@ -102,6 +102,6 @@ public final class JacksonConverter implements JsonConverter {
 
     @Override
     public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return objectMapper.convertValue(object, type);
+        return this.objectMapper.convertValue(object, type);
     }
 }
