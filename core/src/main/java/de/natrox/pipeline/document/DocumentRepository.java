@@ -17,6 +17,7 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -31,9 +32,9 @@ public sealed interface DocumentRepository extends Repository<DocumentData> perm
 
     @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId);
 
-    @NotNull DocumentCursor find(@NotNull FindOptions findOptions);
+    @NotNull Cursor<DocumentData> find(@NotNull FindOptions findOptions);
 
-    default @NotNull DocumentCursor find() {
+    default @NotNull Cursor<DocumentData> find() {
         return this.find(FindOptions.DEFAULT);
     }
 

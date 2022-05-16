@@ -22,6 +22,7 @@ import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.stream.BoundedStream;
@@ -55,7 +56,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull DocumentCursor find(@NotNull FindOptions findOptions) {
+    public @NotNull Cursor<DocumentData> find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
         PipeStream<Pair<UUID, DocumentData>> stream = this.storeMap.entries();
 

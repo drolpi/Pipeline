@@ -18,7 +18,6 @@ package de.natrox.pipeline.object;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
@@ -64,7 +63,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
-        DocumentCursor documentCursor = this.documentRepository.find(findOptions);
+        Cursor<DocumentData> documentCursor = this.documentRepository.find(findOptions);
         return new ObjectCursor<>(this, ((DocumentStream) documentCursor).asPairStream());
     }
 

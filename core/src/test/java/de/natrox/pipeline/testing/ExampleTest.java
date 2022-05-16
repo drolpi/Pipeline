@@ -18,7 +18,6 @@ package de.natrox.pipeline.testing;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.condition.Conditions;
-import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
@@ -103,7 +102,7 @@ public class ExampleTest {
 
             // Find
             {
-                DocumentCursor cursor = repository.find(
+                Cursor<DocumentData> cursor = repository.find(
                     FindOptions
                         .builder()
                         .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))

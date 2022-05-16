@@ -17,8 +17,8 @@
 package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentCursor;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.repository.Cursor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class DocumentStream implements DocumentCursor {
+public final class DocumentStream implements Cursor<DocumentData> {
 
     private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
