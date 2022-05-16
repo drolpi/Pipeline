@@ -18,8 +18,14 @@ package de.natrox.pipeline.json;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public interface JsonConverter {
 
@@ -30,6 +36,14 @@ public interface JsonConverter {
     <T> @NotNull T read(@NotNull String json, Class<? extends T> type);
 
     <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type);
+
+    default <T> @NotNull T read(@NotNull InputStream inputStream, Class<? extends T> type) {
+        return this.read(new InputStreamReader(inputStream, StandardCharsets.UTF_8), type);
+    }
+
+    default <T> @NotNull T read(@NotNull Path path, Class<? extends T> type) throws IOException {
+        return this.read(Files.newInputStream(path), type);
+    }
 
     <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
 
