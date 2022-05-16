@@ -70,21 +70,38 @@ final class RedisLocalUpdater implements LocalUpdater {
 
     @Override
     public void pushClear(@Nullable Runnable callback) {
-        //TODO:
+        this.dataTopic.publish(new ClearDataBlock(this.senderId));
+        if (callback != null)
+            callback.run();
     }
 
     static abstract class DataBlock implements Serializable {
 
         public final UUID senderId;
+
+        DataBlock(@NotNull UUID senderId) {
+            this.senderId = senderId;
+        }
+    }
+
+    static abstract class DocumentDataBlock extends DataBlock {
+
         public final UUID documentId;
 
-        DataBlock(@NotNull UUID senderId, @NotNull UUID documentId) {
-            this.senderId = senderId;
+        DocumentDataBlock(@NotNull UUID senderId, @NotNull UUID documentId) {
+            super(senderId);
             this.documentId = documentId;
         }
     }
 
-    static class UpdateDataBlock extends DataBlock {
+    static class ClearDataBlock extends DataBlock {
+
+        public ClearDataBlock(@NotNull UUID senderId) {
+            super(senderId);
+        }
+    }
+
+    static class UpdateDataBlock extends DocumentDataBlock {
 
         public final String dataToUpdate;
 
@@ -94,7 +111,7 @@ final class RedisLocalUpdater implements LocalUpdater {
         }
     }
 
-    static class RemoveDataBlock extends DataBlock {
+    static class RemoveDataBlock extends DocumentDataBlock {
 
         public RemoveDataBlock(@NotNull UUID senderId, @NotNull UUID documentId) {
             super(senderId, documentId);
