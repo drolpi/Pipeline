@@ -73,6 +73,7 @@ public final class ConnectingMap implements StoreMap {
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.put(uniqueId, documentData);
             this.localUpdater.pushUpdate(uniqueId, documentData, () -> {
+
             });
         }
         if (this.globalCacheMap != null) {
@@ -118,6 +119,7 @@ public final class ConnectingMap implements StoreMap {
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.remove(uniqueId);
             this.localUpdater.pushRemoval(uniqueId, () -> {
+
             });
         }
         if (this.globalCacheMap != null) {
@@ -128,7 +130,16 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void clear() {
+        if (this.localCacheMap != null && this.localUpdater != null) {
+            this.localCacheMap.clear();
+            this.localUpdater.pushClear(() -> {
 
+            });
+        }
+        if (this.globalCacheMap != null) {
+            this.globalCacheMap.clear();
+        }
+        this.storageMap.clear();
     }
 
     @Override
