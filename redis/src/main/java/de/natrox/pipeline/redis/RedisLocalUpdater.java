@@ -57,7 +57,7 @@ final class RedisLocalUpdater implements LocalUpdater {
     public void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new UpdateDataBlock(this.senderId, uniqueId, this.jsonConverter.toJson(documentData)));
+        this.dataTopic.publish(new UpdateDataBlock(this.senderId, uniqueId, this.jsonConverter.writeAsString(documentData)));
         if (callback != null)
             callback.run();
     }

@@ -58,13 +58,13 @@ final class RedisMap implements StoreMap {
         if (json == null)
             return null;
 
-        return this.jsonConverter.fromJson(json, DocumentData.class);
+        return this.jsonConverter.read(json, DocumentData.class);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         RBucket<String> bucket = this.bucket(uniqueId);
-        bucket.set(this.jsonConverter.toJson(documentData));
+        bucket.set(this.jsonConverter.writeAsString(documentData));
     }
 
     @Override
@@ -95,7 +95,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(this.jsonConverter.fromJson(stringValue, DocumentData.class));
+            documents.add(this.jsonConverter.read(stringValue, DocumentData.class));
         }
         return PipeStream.fromIterable(documents);
     }
@@ -114,7 +114,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            DocumentData value = this.jsonConverter.fromJson(stringValue, DocumentData.class);
+            DocumentData value = this.jsonConverter.read(stringValue, DocumentData.class);
 
             entries.put(key, value);
         }

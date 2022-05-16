@@ -62,7 +62,7 @@ final class MongoMap implements StoreMap {
             return null;
 
         Document valueDocument = document.get(VALUE_NAME, Document.class);
-        return this.jsonConverter.fromJson(valueDocument.toJson(), DocumentData.class);
+        return this.jsonConverter.read(valueDocument.toJson(), DocumentData.class);
     }
 
     @Override
@@ -71,7 +71,7 @@ final class MongoMap implements StoreMap {
             Filters.eq(KEY_NAME, uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
-                Updates.set(VALUE_NAME, Document.parse(this.jsonConverter.toJson(documentData)))
+                Updates.set(VALUE_NAME, Document.parse(this.jsonConverter.writeAsString(documentData)))
             ),
             INSERT_OR_REPLACE_OPTIONS);
     }
@@ -101,7 +101,7 @@ final class MongoMap implements StoreMap {
         Collection<DocumentData> documents = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(this.jsonConverter.fromJson(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
+                documents.add(this.jsonConverter.read(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
             }
         }
         return PipeStream.fromIterable(documents);
@@ -114,7 +114,7 @@ final class MongoMap implements StoreMap {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get(KEY_NAME, UUID.class);
-                DocumentData value = this.jsonConverter.fromJson(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
+                DocumentData value = this.jsonConverter.read(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
 
                 entries.put(key, value);
             }

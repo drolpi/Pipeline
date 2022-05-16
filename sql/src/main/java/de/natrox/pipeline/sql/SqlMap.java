@@ -51,7 +51,7 @@ public class SqlMap implements StoreMap {
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         return sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.TABLE_COLUMN_VAL, mapName, SQLConstants.TABLE_COLUMN_KEY),
-            resultSet -> resultSet.next() ? this.jsonConverter.fromJson(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class) : null,
+            resultSet -> resultSet.next() ? this.jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class) : null,
             null,
             uniqueId.toString()
         );
@@ -59,7 +59,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData document) {
-        String jsonDocument = this.jsonConverter.toJson(document);
+        String jsonDocument = this.jsonConverter.writeAsString(document);
         if (!contains(uniqueId)) {
             sqlStore.executeUpdate(
                 String.format(SQLConstants.INSERT_BY_UUID, mapName, SQLConstants.TABLE_COLUMN_KEY, SQLConstants.TABLE_COLUMN_VAL),
@@ -103,7 +103,7 @@ public class SqlMap implements StoreMap {
             resultSet -> {
                 Collection<DocumentData> documents = new ArrayList<>();
                 while (resultSet.next()) {
-                    documents.add(jsonConverter.fromJson(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class));
+                    documents.add(jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class));
                 }
                 return documents;
             }, List.of()));
@@ -118,7 +118,7 @@ public class SqlMap implements StoreMap {
                 while (resultSet.next()) {
                     map.put(
                         UUID.fromString(resultSet.getString(SQLConstants.TABLE_COLUMN_KEY)),
-                        jsonConverter.fromJson(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class)
+                        jsonConverter.read(resultSet.getString(SQLConstants.TABLE_COLUMN_VAL), DocumentData.class)
                     );
                 }
                 return map;
