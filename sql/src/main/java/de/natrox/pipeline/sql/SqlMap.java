@@ -35,8 +35,6 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 public class SqlMap implements StoreMap {
 
-    //TODO: Add null checks
-
     private final SqlStore sqlStore;
     private final String mapName;
     private final JsonConverter jsonConverter;
