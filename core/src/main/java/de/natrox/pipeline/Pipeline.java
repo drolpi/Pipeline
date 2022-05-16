@@ -86,7 +86,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     static @NotNull Builder of(
         @NotNull LocalStorageProvider localStorageProvider,
-                               @NotNull LocalCacheProvider localCacheProvider
+        @NotNull LocalCacheProvider localCacheProvider
     ) {
         Check.notNull(localStorageProvider, "localStorageProvider");
         Check.notNull(localCacheProvider, "localCacheProvider");

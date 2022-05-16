@@ -63,7 +63,7 @@ final class PipelineImpl implements Pipeline {
     @Override
     public void destroyRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        connectingStore.removeMap(name);
+        this.connectingStore.removeMap(name);
     }
 
     @Override

@@ -20,9 +20,7 @@ import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 final class InMemoryStore extends AbstractStore {
 

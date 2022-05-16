@@ -16,9 +16,9 @@
 
 package de.natrox.pipeline.part.connecting;
 
+import de.natrox.pipeline.part.LocalUpdater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.part.LocalUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

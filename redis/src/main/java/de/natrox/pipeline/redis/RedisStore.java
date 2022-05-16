@@ -23,9 +23,7 @@ import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 final class RedisStore extends AbstractStore {

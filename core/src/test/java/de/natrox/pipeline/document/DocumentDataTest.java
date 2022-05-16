@@ -17,7 +17,6 @@
 package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

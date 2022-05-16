@@ -20,11 +20,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,13 +30,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SqlStore extends AbstractStore {
 

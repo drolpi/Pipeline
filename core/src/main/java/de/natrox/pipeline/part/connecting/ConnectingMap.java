@@ -18,8 +18,8 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.LocalUpdater;
+import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -72,7 +72,8 @@ public final class ConnectingMap implements StoreMap {
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.put(uniqueId, documentData);
-            this.localUpdater.pushUpdate(uniqueId, documentData, () -> {});
+            this.localUpdater.pushUpdate(uniqueId, documentData, () -> {
+            });
         }
         if (this.globalCacheMap != null) {
             this.globalCacheMap.put(uniqueId, documentData);
@@ -116,7 +117,8 @@ public final class ConnectingMap implements StoreMap {
     public void remove(@NotNull UUID uniqueId) {
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.remove(uniqueId);
-            this.localUpdater.pushRemoval(uniqueId, () -> {});
+            this.localUpdater.pushRemoval(uniqueId, () -> {
+            });
         }
         if (this.globalCacheMap != null) {
             this.globalCacheMap.remove(uniqueId);

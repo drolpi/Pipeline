@@ -31,7 +31,8 @@ public final class SimpleInstanceCreator<T extends ObjectData> implements Instan
             constructor.setAccessible(true);
 
             return constructor.newInstance(pipeline);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new RuntimeException("Error while instantiating instance of class " + type.getSimpleName(), e);
         }
     }
