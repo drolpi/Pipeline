@@ -18,11 +18,18 @@ package de.natrox.pipeline.json;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Reader;
+import java.io.Writer;
+
 public interface JsonConverter {
 
-    @NotNull String toJson(@NotNull Object object);
+    @NotNull String writeAsString(@NotNull Object object);
 
-    <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type);
+    void write(@NotNull Writer writer, @NotNull Object object);
+
+    <T> @NotNull T read(@NotNull String json, Class<? extends T> type);
+
+    <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type);
 
     <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
 

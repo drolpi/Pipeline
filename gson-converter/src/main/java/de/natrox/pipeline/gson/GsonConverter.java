@@ -18,9 +18,13 @@ package de.natrox.pipeline.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Reader;
+import java.io.Writer;
 
 public final class GsonConverter implements JsonConverter {
 
@@ -41,17 +45,31 @@ public final class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public @NotNull String toJson(@NotNull Object object) {
+    public @NotNull String writeAsString(@NotNull Object object) {
         return gson.toJson(object);
     }
 
     @Override
-    public <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type) {
+    public void write(@NotNull Writer writer, @NotNull Object object) {
+        gson.toJson(object, writer);
+    }
+
+    @Override
+    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
         return gson.fromJson(json, type);
     }
 
     @Override
+    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
+        try {
+            return gson.fromJson(JsonParser.parseReader(reader), type);
+        } catch (Exception exception) {
+            throw new RuntimeException("Unable to parse json from reader", exception);
+        }
+    }
+
+    @Override
     public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return this.fromJson(this.toJson(object), type);
+        return this.read(this.writeAsString(object), type);
     }
 }

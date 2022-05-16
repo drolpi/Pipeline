@@ -31,6 +31,11 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+
 public final class JacksonConverter implements JsonConverter {
 
     private final ObjectMapper objectMapper;
@@ -60,20 +65,38 @@ public final class JacksonConverter implements JsonConverter {
     }
 
     @Override
-    public @NotNull String toJson(@NotNull Object object) {
+    public @NotNull String writeAsString(@NotNull Object object) {
         try {
             return objectMapper.writeValueAsString(object);
+        } catch (Exception exception) {
+            throw new RuntimeException("Unable to write json", exception);
+        }
+    }
+
+    @Override
+    public void write(@NotNull Writer writer, @NotNull Object object) {
+        try {
+            objectMapper.writeValue(writer, object);
+        } catch (Exception exception) {
+            throw new RuntimeException("Unable to write json", exception);
+        }
+    }
+
+    @Override
+    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
+        try {
+            return objectMapper.readValue(json, type);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public <T> @NotNull T fromJson(@NotNull String json, Class<? extends T> type) {
+    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
         try {
-            return objectMapper.readValue(json, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return objectMapper.readValue(reader, type);
+        } catch (Exception exception) {
+            throw new RuntimeException("Unable to parse json from reader", exception);
         }
     }
 
