@@ -35,15 +35,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 final class JsonMap implements StoreMap {
 
-    private final String mapName;
     private final Path mapPath;
     private final JsonConverter jsonConverter;
 
     public JsonMap(String mapName, Path directory, JsonConverter jsonConverter) {
-        this.mapName = mapName;
         this.mapPath = directory.resolve(mapName);
         this.jsonConverter = jsonConverter;
     }
@@ -82,9 +81,9 @@ final class JsonMap implements StoreMap {
         if (Files.notExists(this.mapPath))
             return PipeStream.empty();
 
-        try {
+        try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
             return PipeStream.fromIterable(
-                Files.walk(this.mapPath, 1)
+                stream
                     .skip(1)
                     .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
                     .map(path -> FileNameUtil.getBaseName(path.toString()))
@@ -103,8 +102,8 @@ final class JsonMap implements StoreMap {
         if (Files.notExists(this.mapPath))
             return PipeStream.empty();
 
-        try {
-            List<UUID> keys = Files.walk(this.mapPath, 1)
+        try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
+            List<UUID> keys = stream
                 .skip(1)
                 .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
                 .map(path -> FileNameUtil.getBaseName(path.toString()))
@@ -129,8 +128,8 @@ final class JsonMap implements StoreMap {
         if (Files.notExists(this.mapPath))
             return PipeStream.empty();
 
-        try {
-            List<UUID> keys = Files.walk(this.mapPath, 1)
+        try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
+            List<UUID> keys = stream
                 .skip(1)
                 .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
                 .map(path -> FileNameUtil.getBaseName(path.toString()))
