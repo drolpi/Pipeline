@@ -28,4 +28,6 @@ public interface LocalUpdater {
 
     void pushRemoval(@NotNull UUID uniqueId, @Nullable Runnable callback);
 
+    void pushClear(@Nullable Runnable callback);
+
 }

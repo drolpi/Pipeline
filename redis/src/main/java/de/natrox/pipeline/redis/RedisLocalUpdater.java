@@ -36,18 +36,16 @@ final class RedisLocalUpdater implements LocalUpdater {
     //TODO: Maybe rename???
     private final static String DATA_TOPIC = "DataTopic";
 
-    private final RedissonClient redissonClient;
     private final JsonConverter jsonConverter;
     private final RTopic dataTopic;
-    private final MessageListener<DataBlock> messageListener;
     private final UUID senderId = UUID.randomUUID();
 
     RedisLocalUpdater(Pipeline pipeline, RedissonClient redissonClient) {
-        this.redissonClient = redissonClient;
         this.jsonConverter = pipeline.jsonConverter();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 
-        this.messageListener = (channel, dataBlock) -> {
+        //TODO:
+        MessageListener<DataBlock> messageListener = (channel, dataBlock) -> {
             //TODO:
         };
         this.dataTopic.addListener(DataBlock.class, messageListener);
@@ -68,6 +66,11 @@ final class RedisLocalUpdater implements LocalUpdater {
         this.dataTopic.publish(new RemoveDataBlock(this.senderId, uniqueId));
         if (callback != null)
             callback.run();
+    }
+
+    @Override
+    public void pushClear(@Nullable Runnable callback) {
+        //TODO:
     }
 
     static abstract class DataBlock implements Serializable {
