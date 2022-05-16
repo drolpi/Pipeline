@@ -102,16 +102,9 @@ final class JsonMap implements StoreMap {
         if (Files.notExists(this.mapPath))
             return PipeStream.empty();
 
-        try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
-            List<UUID> keys = stream
-                .skip(1)
-                .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
-                .map(path -> FileNameUtil.getBaseName(path.toString()))
-                .map(UUID::fromString)
-                .toList();
-
+        try {
             List<DocumentData> documents = new ArrayList<>();
-            for (UUID key : keys) {
+            for (UUID key : this.keys()) {
                 documents.add(this.loadFromFile(key));
             }
 
@@ -128,16 +121,9 @@ final class JsonMap implements StoreMap {
         if (Files.notExists(this.mapPath))
             return PipeStream.empty();
 
-        try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
-            List<UUID> keys = stream
-                .skip(1)
-                .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
-                .map(path -> FileNameUtil.getBaseName(path.toString()))
-                .map(UUID::fromString)
-                .toList();
-
+        try {
             Map<UUID, DocumentData> entries = new HashMap<>();
-            for (UUID key : keys) {
+            for (UUID key : this.keys()) {
                 entries.put(key, this.loadFromFile(key));
             }
 

@@ -79,7 +79,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<UUID> keys() {
-        List<UUID> keys = redisKeys()
+        List<UUID> keys = this.redisKeys()
             .stream()
             .map(s -> UUID.fromString(s.split(":")[2]))
             .collect(Collectors.toList());
