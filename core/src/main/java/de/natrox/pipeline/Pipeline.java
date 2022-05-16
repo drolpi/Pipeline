@@ -22,7 +22,13 @@ import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -30,8 +36,66 @@ import java.util.Set;
 @ApiStatus.Experimental
 public sealed interface Pipeline permits PipelineImpl {
 
-    static @NotNull Builder builder() {
-        return new PipelineBuilderImpl();
+    static @NotNull Builder of(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull GlobalCacheProvider globalCacheProvider,
+        @NotNull LocalCacheProvider localCacheProvider,
+        @NotNull LocalUpdaterProvider localUpdaterProvider
+    ) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            globalCacheProvider,
+            localCacheProvider,
+            localUpdaterProvider
+        ));
+    }
+
+    static @NotNull Builder of(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull LocalCacheProvider localCacheProvider,
+        @NotNull LocalUpdaterProvider localUpdaterProvider
+    ) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            null,
+            localCacheProvider,
+            localUpdaterProvider
+        ));
+    }
+
+    static @NotNull Builder of(
+        @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull GlobalCacheProvider globalCacheProvider
+    ) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            globalCacheProvider,
+            null,
+            null
+        ));
+    }
+
+    static @NotNull Builder of(@NotNull GlobalStorageProvider globalStorageProvider) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            null,
+            null,
+            null
+        ));
+    }
+
+    static @NotNull Builder of(
+        @NotNull LocalStorageProvider localStorageProvider,
+                               @NotNull LocalCacheProvider localCacheProvider
+    ) {
+        Check.notNull(localStorageProvider, "localStorageProvider");
+        Check.notNull(localCacheProvider, "localCacheProvider");
+        return new PipelineBuilderImpl(new PartBundle.Local(localStorageProvider, localCacheProvider));
+    }
+
+    static @NotNull Builder of(@NotNull LocalStorageProvider localStorageProvider) {
+        Check.notNull(localStorageProvider, "localStorageProvider");
+        return new PipelineBuilderImpl(new PartBundle.Local(localStorageProvider, null));
     }
 
     @NotNull DocumentRepository repository(@NotNull String name);
@@ -63,8 +127,6 @@ public sealed interface Pipeline permits PipelineImpl {
     }
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
-
-        @NotNull Builder bundle(@NotNull PartBundle bundle);
 
         @NotNull Builder jsonConverter(@NotNull JsonConverter jsonConverter);
 

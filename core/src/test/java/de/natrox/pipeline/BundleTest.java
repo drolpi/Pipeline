@@ -23,11 +23,8 @@ public class BundleTest {
 
     @Test
     public void test(LocalStorageProvider localStorageProvider) {
-        PartBundle bundle = PartBundle.local(localStorageProvider);
-
         Pipeline pipeline = Pipeline
-            .builder()
-            .bundle(bundle)
+            .of(localStorageProvider)
             .build();
     }
 

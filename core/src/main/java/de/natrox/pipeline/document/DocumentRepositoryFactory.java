@@ -26,11 +26,11 @@ import java.util.Map;
 @ApiStatus.Internal
 public final class DocumentRepositoryFactory {
 
-    private final ConnectingStore connectingPart;
+    private final ConnectingStore connectingStore;
     private final Map<String, DocumentRepository> repositoryMap;
 
-    public DocumentRepositoryFactory(ConnectingStore connectingPart) {
-        this.connectingPart = connectingPart;
+    public DocumentRepositoryFactory(ConnectingStore connectingStore) {
+        this.connectingStore = connectingStore;
         this.repositoryMap = new HashMap<>();
     }
 
@@ -46,8 +46,8 @@ public final class DocumentRepositoryFactory {
     }
 
     private DocumentRepository createRepository(String name) {
-        StoreMap storeMap = this.connectingPart.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingPart, storeMap);
+        StoreMap storeMap = this.connectingStore.openMap(name);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingStore, storeMap);
         this.repositoryMap.put(name, repository);
 
         return repository;

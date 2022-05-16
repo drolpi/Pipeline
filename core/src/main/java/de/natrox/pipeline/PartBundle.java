@@ -16,61 +16,53 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.LocalUpdater;
+import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
-public sealed interface PartBundle permits PartBundleImpl.Local, PartBundleImpl.Global {
+sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
 
-    static @NotNull PartBundle local(
-        @NotNull LocalStorageProvider localStorageProvider,
-        @NotNull LocalCacheProvider localCacheProvider
-    ) {
-        Check.notNull(localStorageProvider, "localStorageProvider");
-        Check.notNull(localCacheProvider, "localCacheProvider");
-        return new PartBundleImpl.Local(localStorageProvider, localCacheProvider);
+    @NotNull ConnectingStore createConnectingStore(@NotNull Pipeline pipeline);
+
+    record Local(@NotNull LocalStorageProvider localStorageProvider,
+                 @Nullable LocalCacheProvider localCacheProvider) implements PartBundle {
+
+        @Override
+        public @NotNull ConnectingStore createConnectingStore(@NotNull Pipeline pipeline) {
+            Store storage = this.localStorageProvider.createLocalStorage(pipeline);
+            Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache(pipeline) : null;
+
+            return new ConnectingStore(storage, null, localCache, null);
+        }
+
     }
 
-    static @NotNull PartBundle local(@NotNull LocalStorageProvider localStorageProvider) {
-        Check.notNull(localStorageProvider, "localStorageProvider");
-        return new PartBundleImpl.Local(localStorageProvider, null);
-    }
+    record Global(@NotNull GlobalStorageProvider globalStorageProvider,
+                  @Nullable GlobalCacheProvider globalCacheProvider,
+                  @Nullable LocalCacheProvider localCacheProvider,
+                  @Nullable LocalUpdaterProvider localUpdaterProvider) implements PartBundle {
 
-    static @NotNull PartBundle global(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull GlobalCacheProvider globalCacheProvider,
-        @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull LocalUpdaterProvider localUpdaterProvider
-    ) {
-        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, localCacheProvider, localUpdaterProvider);
-    }
+        @Override
+        public @NotNull ConnectingStore createConnectingStore(@NotNull Pipeline pipeline) {
+            Store storage = this.globalStorageProvider.createGlobalStorage(pipeline);
+            Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(pipeline) : null;
 
-    static @NotNull PartBundle global(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull LocalUpdaterProvider localUpdaterProvider
-    ) {
-        return new PartBundleImpl.Global(globalStorageProvider, null, localCacheProvider, localUpdaterProvider);
-    }
+            boolean local = this.localUpdaterProvider != null && this.localCacheProvider != null;
+            Store localCache = local ? this.localCacheProvider.createLocalCache(pipeline) : null;
+            LocalUpdater localUpdater = local ? this.localUpdaterProvider.createDataUpdater(pipeline) : null;
 
-    static @NotNull PartBundle global(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull GlobalCacheProvider globalCacheProvider
-    ) {
-        return new PartBundleImpl.Global(globalStorageProvider, globalCacheProvider, null, null);
-    }
+            return new ConnectingStore(storage, globalCache, localCache, localUpdater);
+        }
 
-    static @NotNull PartBundle global(@NotNull GlobalStorageProvider globalStorageProvider) {
-        return new PartBundleImpl.Global(globalStorageProvider, null, null, null);
     }
-
-    @NotNull ConnectingStore createConnectingPart(@NotNull Pipeline pipeline);
 
 }

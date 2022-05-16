@@ -27,13 +27,8 @@ public class PipelineTest {
     public void testBuilder() {
         InMemoryProvider provider = InMemoryProvider.create();
 
-        Pipeline.Builder builder = Pipeline.builder();
+        Pipeline.Builder builder = Pipeline.of(provider);
         assertNotNull(builder);
-        assertThrows(NullPointerException.class, builder::build);
-
-        PartBundle bundle = PartBundle.local(provider);
-        assertNotNull(bundle);
-        builder.bundle(bundle);
         assertNotNull(builder.build());
     }
 
@@ -48,7 +43,7 @@ public class PipelineTest {
 
     private Pipeline buildPipeline() {
         return Pipeline
-            .builder()
+            .of(InMemoryProvider.create())
             .build();
     }
 

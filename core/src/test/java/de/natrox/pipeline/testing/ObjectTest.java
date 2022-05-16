@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.testing;
 
-import de.natrox.pipeline.PartBundle;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.jackson.JacksonConverter;
 import de.natrox.pipeline.object.ObjectData;
@@ -33,11 +32,8 @@ public class ObjectTest {
 
     @Test
     public void test() {
-        PartBundle bundle = PartBundle.local(InMemoryProvider.create());
-
         Pipeline pipeline = Pipeline
-            .builder()
-            .bundle(bundle)
+            .of(InMemoryProvider.create())
             .jsonConverter(JacksonConverter.create())
             .build();
 

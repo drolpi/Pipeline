@@ -42,7 +42,7 @@ final class PipelineImpl implements Pipeline {
         Check.notNull(jsonConverter, "jsonConverter");
 
         this.jsonConverter = jsonConverter;
-        this.connectingStore = partBundle.createConnectingPart(this);
+        this.connectingStore = partBundle.createConnectingStore(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.documentRepositoryFactory);

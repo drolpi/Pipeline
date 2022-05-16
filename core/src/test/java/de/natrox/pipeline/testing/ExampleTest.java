@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.testing;
 
-import de.natrox.pipeline.PartBundle;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentCursor;
@@ -67,12 +66,10 @@ public class ExampleTest {
         RedisProvider redisProvider = redisConfig.createProvider();
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
-        PartBundle bundle = PartBundle.global(mongoProvider, redisProvider, inMemoryProvider, redisProvider);
         JsonConverter jsonConverter = JacksonConverter.create();
 
         Pipeline pipeline = Pipeline
-            .builder()
-            .bundle(bundle)
+            .of(mongoProvider, redisProvider, inMemoryProvider, redisProvider)
             .jsonConverter(jsonConverter)
             .build();
 

@@ -22,18 +22,11 @@ import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilderImpl implements Pipeline.Builder {
 
-    private PartBundle bundle;
+    private final PartBundle bundle;
     private JsonConverter jsonConverter;
 
-    PipelineBuilderImpl() {
-
-    }
-
-    @Override
-    public Pipeline.@NotNull Builder bundle(@NotNull PartBundle bundle) {
-        Check.notNull(bundle, "bundle");
+    PipelineBuilderImpl(PartBundle bundle) {
         this.bundle = bundle;
-        return this;
     }
 
     @Override
@@ -45,6 +38,6 @@ final class PipelineBuilderImpl implements Pipeline.Builder {
 
     @Override
     public @NotNull Pipeline build() {
-        return new PipelineImpl(bundle, jsonConverter);
+        return new PipelineImpl(this.bundle, this.jsonConverter);
     }
 }
