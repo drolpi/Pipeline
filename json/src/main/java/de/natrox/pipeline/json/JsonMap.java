@@ -152,6 +152,7 @@ final class JsonMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         try {
             Files.deleteIfExists(this.savedFile(uniqueId));
         } catch (IOException e) {
