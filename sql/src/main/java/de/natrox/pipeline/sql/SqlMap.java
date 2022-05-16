@@ -49,7 +49,7 @@ public class SqlMap implements StoreMap {
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
+            String.format(SQLConstants.SELECT_BY, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
             resultSet -> resultSet.next() ? this.jsonConverter.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class) : null,
             null,
             uniqueId.toString()
@@ -64,12 +64,12 @@ public class SqlMap implements StoreMap {
         String jsonDocument = this.jsonConverter.writeAsString(documentData);
         if (!this.contains(uniqueId)) {
             this.sqlStore.executeUpdate(
-                String.format(SQLConstants.INSERT_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
+                String.format(SQLConstants.INSERT_BY, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
                 uniqueId.toString(), jsonDocument
             );
         } else {
             this.sqlStore.executeUpdate(
-                String.format(SQLConstants.UPDATE_BY_UUID, this.mapName, SQLConstants.COLUMN_VAL, SQLConstants.COLUMN_KEY),
+                String.format(SQLConstants.UPDATE_BY, this.mapName, SQLConstants.COLUMN_VAL, SQLConstants.COLUMN_KEY),
                 jsonDocument, uniqueId.toString()
             );
         }
@@ -79,7 +79,7 @@ public class SqlMap implements StoreMap {
     public boolean contains(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_KEY, this.mapName, SQLConstants.COLUMN_KEY),
+            String.format(SQLConstants.SELECT_BY, SQLConstants.COLUMN_KEY, this.mapName, SQLConstants.COLUMN_KEY),
             ResultSet::next,
             false,
             uniqueId.toString()
@@ -131,7 +131,7 @@ public class SqlMap implements StoreMap {
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         this.sqlStore.executeUpdate(
-            String.format(SQLConstants.DELETE_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY),
+            String.format(SQLConstants.DELETE_BY, this.mapName, SQLConstants.COLUMN_KEY),
             uniqueId.toString()
         );
     }

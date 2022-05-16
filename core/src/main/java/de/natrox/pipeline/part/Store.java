@@ -18,9 +18,13 @@ package de.natrox.pipeline.part;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 public interface Store {
 
     @NotNull StoreMap openMap(@NotNull String mapName);
+
+    @NotNull Set<String> maps();
 
     boolean hasMap(@NotNull String mapName);
 

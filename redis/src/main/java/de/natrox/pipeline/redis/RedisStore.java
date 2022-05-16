@@ -44,6 +44,12 @@ final class RedisStore extends AbstractStore {
     }
 
     @Override
+    public @NotNull Set<String> maps() {
+        //TODO: Fix exception if array length is lesser than 1
+        return this.redissonClient.getKeys().getKeysStream().map(s -> s.split(":")[1]).collect(Collectors.toSet());
+    }
+
+    @Override
     public boolean hasMap(@NotNull String mapName) {
         return true;
     }
@@ -55,6 +61,7 @@ final class RedisStore extends AbstractStore {
     }
 
     private Set<String> keys(String mapName) {
+        //TODO: Fix exception if array length is lesser than 1
         return this.redissonClient
             .getKeys()
             .getKeysStream()

@@ -24,6 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 final class JsonStore extends AbstractStore {
 
@@ -38,6 +41,18 @@ final class JsonStore extends AbstractStore {
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         return new JsonMap(mapName, this.directory, this.jsonConverter);
+    }
+
+    @Override
+    public @NotNull Set<String> maps() {
+        try (Stream<Path> stream = Files.walk(this.directory, 1)) {
+            return stream
+                .skip(1)
+                .map(path -> path.toFile().getName())
+                .collect(Collectors.toSet());
+        } catch (IOException e) {
+            return Set.of();
+        }
     }
 
     @Override

@@ -22,6 +22,8 @@ import de.natrox.pipeline.part.LocalUpdater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
+
 @SuppressWarnings("ClassCanBeRecord")
 public final class ConnectingStore implements Store {
 
@@ -52,6 +54,12 @@ public final class ConnectingStore implements Store {
         StoreMap storageMap = this.storage.openMap(mapName);
 
         return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.localUpdater);
+    }
+
+    @Override
+    public @NotNull Set<String> maps() {
+        //TODO: Maybe use other parts too
+        return this.storage.maps();
     }
 
     @Override

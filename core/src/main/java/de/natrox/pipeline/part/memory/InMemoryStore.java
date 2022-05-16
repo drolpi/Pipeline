@@ -21,6 +21,7 @@ import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 final class InMemoryStore extends AbstractStore {
@@ -35,8 +36,13 @@ final class InMemoryStore extends AbstractStore {
     }
 
     @Override
+    public @NotNull Set<String> maps() {
+        return this.storeMapRegistry.keySet();
+    }
+
+    @Override
     public boolean hasMap(@NotNull String mapName) {
-        return storeMapRegistry.containsKey(mapName);
+        return this.storeMapRegistry.containsKey(mapName);
     }
 
     @Override

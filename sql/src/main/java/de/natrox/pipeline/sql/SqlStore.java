@@ -20,9 +20,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +32,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SqlStore extends AbstractStore {
@@ -47,6 +53,23 @@ public abstract class SqlStore extends AbstractStore {
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         return new SqlMap(this, mapName, this.jsonConverter);
+    }
+
+    @Override
+    public @NotNull Set<String> maps() {
+        //TODO: test
+        return this.executeQuery(
+            String.format(SQLConstants.SELECT_BY, SQLConstants.TABLE_NAME, "INFORMATION_SCHEMA.TABLES", "TABLE_SCHEMA"),
+            resultSet -> {
+                Set<String> names = new HashSet<>();
+                while (resultSet.next())
+                    names.add(resultSet.getString(SQLConstants.TABLE_NAME));
+
+                return names;
+            },
+            Set.of(),
+            "test"
+        );
     }
 
     @Override

@@ -73,15 +73,8 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull Set<String> documentRepositories() {
-        //TODO:
-        return null;
-    }
-
-    @Override
-    public @NotNull Set<String> objectRepositories() {
-        //TODO:
-        return null;
+    public @NotNull Set<String> repositories() {
+        return this.connectingStore.maps();
     }
 
     @Override

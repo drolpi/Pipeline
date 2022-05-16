@@ -25,6 +25,9 @@ import de.natrox.pipeline.part.StoreMap;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 final class MongoStore extends AbstractStore {
 
     private final JsonConverter jsonConverter;
@@ -38,6 +41,15 @@ final class MongoStore extends AbstractStore {
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         return new MongoMap(this.collection(mapName), this.jsonConverter);
+    }
+
+    @Override
+    public @NotNull Set<String> maps() {
+        Set<String> names = new HashSet<>();
+        for (String name : this.mongoDatabase.listCollectionNames()) {
+            names.add(name);
+        }
+        return names;
     }
 
     @Override

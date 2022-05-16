@@ -22,13 +22,13 @@ import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
+import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -106,9 +106,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     <T extends ObjectData> void destroyRepository(@NotNull Class<T> type);
 
-    @NotNull Set<String> documentRepositories();
-
-    @NotNull Set<String> objectRepositories();
+    @NotNull Set<String> repositories();
 
     @NotNull JsonConverter jsonConverter();
 
@@ -118,12 +116,12 @@ public sealed interface Pipeline permits PipelineImpl {
 
     default boolean hasRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        return this.documentRepositories().contains(name);
+        return this.repositories().contains(name);
     }
 
     default <T> boolean hasRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        return this.objectRepositories().contains(type.getName());
+        return this.repositories().contains(AnnotationResolver.identifier(type));
     }
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {

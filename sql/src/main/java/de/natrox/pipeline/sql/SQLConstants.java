@@ -20,12 +20,13 @@ final class SQLConstants {
 
     public static final String COLUMN_KEY = "UUID";
     public static final String COLUMN_VAL = "Document";
+    public static final String TABLE_NAME = "TABLE_NAME";
     public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (%s VARCHAR(64) PRIMARY KEY, %s TEXT);";
     public static final String SELECT_ALL = "SELECT %s FROM `%s`;";
-    public static final String SELECT_BY_UUID = "SELECT %s FROM `%s` WHERE %s = ?";
-    public static final String INSERT_BY_UUID = "INSERT INTO `%s` (%s,%s) VALUES (?, ?);";
-    public static final String UPDATE_BY_UUID = "UPDATE `%s` SET %s=? WHERE %s=?";
-    public static final String DELETE_BY_UUID = "DELETE FROM `%s` WHERE %s = ?";
+    public static final String SELECT_BY = "SELECT %s FROM `%s` WHERE %s = ?";
+    public static final String INSERT_BY = "INSERT INTO `%s` (%s,%s) VALUES (?, ?);";
+    public static final String UPDATE_BY = "UPDATE `%s` SET %s=? WHERE %s=?";
+    public static final String DELETE_BY = "DELETE FROM `%s` WHERE %s = ?";
     public static final String EVERY = "*";
 
     private SQLConstants() {
