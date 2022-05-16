@@ -17,6 +17,7 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.StoreMap;
@@ -39,8 +40,6 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ClassCanBeRecord")
 final class RedisMap implements StoreMap {
 
-    //TODO: Add null checks
-
     private final RedissonClient redissonClient;
     private final String mapName;
     private final JsonConverter jsonConverter;
@@ -53,6 +52,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         RBucket<String> bucket = this.bucket(uniqueId);
         String json = bucket.get();
         if (json == null)
@@ -63,12 +63,16 @@ final class RedisMap implements StoreMap {
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
+
         RBucket<String> bucket = this.bucket(uniqueId);
         bucket.set(this.jsonConverter.writeAsString(documentData));
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         RBucket<String> bucket = this.bucket(uniqueId);
         return bucket.isExists();
     }
@@ -123,17 +127,19 @@ final class RedisMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         RBucket<String> bucket = this.bucket(uniqueId);
         bucket.delete();
     }
 
     @Override
     public void clear() {
-
+        //TODO:
     }
 
     @Override
     public long size() {
+        //TODO:
         return 0;
     }
 
