@@ -17,6 +17,7 @@
 package de.natrox.pipeline.sort;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,14 +32,18 @@ public final class Sorts {
     }
 
     public static SortEntry and(@NotNull SortEntry... sortEntries) {
+        Check.notNull(sortEntries, "sortEntries");
+        Check.argCondition(sortEntries.length < 2, "At least two sort entries must be specified");
         return new SortEntryImpl(Arrays.stream(sortEntries).flatMap(sortEntry -> sortEntry.sortingOrders().stream()).collect(Collectors.toList()));
     }
 
     public static SortEntry ascending(@NotNull String field) {
+        Check.notNull(field, "field");
         return new SortEntryImpl(new Pair<>(field, SortOrder.Ascending));
     }
 
     public static SortEntry descending(@NotNull String field) {
+        Check.notNull(field, "field");
         return new SortEntryImpl(new Pair<>(field, SortOrder.Descending));
     }
 
