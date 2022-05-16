@@ -21,6 +21,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.StoreMap;
@@ -39,8 +40,6 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 final class MongoMap implements StoreMap {
 
-    //TODO: Add null checks
-
     private static final String KEY_NAME = "Key";
     private static final String VALUE_NAME = "Value";
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
@@ -55,6 +54,7 @@ final class MongoMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         Document document = collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
@@ -67,6 +67,9 @@ final class MongoMap implements StoreMap {
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
+
         this.collection.updateOne(
             Filters.eq(KEY_NAME, uniqueId),
             Updates.combine(
@@ -78,6 +81,7 @@ final class MongoMap implements StoreMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         Document document = this.collection
             .find(Filters.eq(KEY_NAME, uniqueId))
             .first();
@@ -124,6 +128,7 @@ final class MongoMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         this.collection.deleteOne(Filters.eq(KEY_NAME, uniqueId));
     }
 
