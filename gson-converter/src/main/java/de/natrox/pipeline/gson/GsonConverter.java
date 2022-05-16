@@ -46,23 +46,23 @@ public final class GsonConverter implements JsonConverter {
 
     @Override
     public @NotNull String writeAsString(@NotNull Object object) {
-        return gson.toJson(object);
+        return this.gson.toJson(object);
     }
 
     @Override
     public void write(@NotNull Writer writer, @NotNull Object object) {
-        gson.toJson(object, writer);
+        this.gson.toJson(object, writer);
     }
 
     @Override
     public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
-        return gson.fromJson(json, type);
+        return this.gson.fromJson(json, type);
     }
 
     @Override
     public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
         try {
-            return gson.fromJson(JsonParser.parseReader(reader), type);
+            return this.gson.fromJson(JsonParser.parseReader(reader), type);
         } catch (Exception exception) {
             throw new RuntimeException("Unable to parse json from reader", exception);
         }
