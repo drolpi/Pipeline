@@ -17,6 +17,7 @@
 package de.natrox.pipeline.sql;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import de.natrox.pipeline.part.StoreMap;
@@ -48,6 +49,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
             resultSet -> resultSet.next() ? this.jsonConverter.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class) : null,
@@ -57,8 +59,11 @@ public class SqlMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData document) {
-        String jsonDocument = this.jsonConverter.writeAsString(document);
+    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
+
+        String jsonDocument = this.jsonConverter.writeAsString(documentData);
         if (!this.contains(uniqueId)) {
             this.sqlStore.executeUpdate(
                 String.format(SQLConstants.INSERT_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
@@ -74,6 +79,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY_UUID, SQLConstants.COLUMN_KEY, this.mapName, SQLConstants.COLUMN_KEY),
             ResultSet::next,
@@ -125,6 +131,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         this.sqlStore.executeUpdate(
             String.format(SQLConstants.DELETE_BY_UUID, this.mapName, SQLConstants.COLUMN_KEY),
             uniqueId.toString()
