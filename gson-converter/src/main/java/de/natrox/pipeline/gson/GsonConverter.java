@@ -61,11 +61,7 @@ public final class GsonConverter implements JsonConverter {
 
     @Override
     public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
-        try {
-            return this.gson.fromJson(JsonParser.parseReader(reader), type);
-        } catch (Exception exception) {
-            throw new RuntimeException("Unable to parse json from reader", exception);
-        }
+        return this.gson.fromJson(JsonParser.parseReader(reader), type);
     }
 
     @Override

@@ -31,7 +31,6 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.json.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -68,7 +67,7 @@ public final class JacksonConverter implements JsonConverter {
     public @NotNull String writeAsString(@NotNull Object object) {
         try {
             return this.objectMapper.writeValueAsString(object);
-        } catch (Exception exception) {
+        } catch (JsonProcessingException exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
     }
@@ -77,7 +76,7 @@ public final class JacksonConverter implements JsonConverter {
     public void write(@NotNull Writer writer, @NotNull Object object) {
         try {
             this.objectMapper.writeValue(writer, object);
-        } catch (Exception exception) {
+        } catch (IOException exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
     }
@@ -95,7 +94,7 @@ public final class JacksonConverter implements JsonConverter {
     public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
         try {
             return this.objectMapper.readValue(reader, type);
-        } catch (Exception exception) {
+        } catch (IOException exception) {
             throw new RuntimeException("Unable to parse json from reader", exception);
         }
     }
