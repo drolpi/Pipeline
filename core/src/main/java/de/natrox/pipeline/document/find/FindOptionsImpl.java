@@ -18,6 +18,7 @@ package de.natrox.pipeline.document.find;
 
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.sort.SortEntry;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("ClassCanBeRecord")
 final class FindOptionsImpl implements FindOptions {
@@ -42,11 +43,11 @@ final class FindOptionsImpl implements FindOptions {
         return this.limit;
     }
 
-    public Condition condition() {
+    public @Nullable Condition condition() {
         return this.condition;
     }
 
-    public SortEntry sortBy() {
+    public @Nullable SortEntry sortBy() {
         return this.sortBy;
     }
 }
