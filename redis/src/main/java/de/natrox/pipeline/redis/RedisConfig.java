@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class RedisConfig implements PartConfig<RedisProvider> {
@@ -95,9 +96,15 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
             return this;
         }
 
+        public final @NotNull Builder endpoint(@NotNull Consumer<RedisEndpoint.@NotNull Builder> consumer) {
+            RedisEndpoint.Builder builder = RedisEndpoint.builder();
+            consumer.accept(builder);
+            return this.endpoints(builder.build());
+        }
+
         @Override
         public @NotNull RedisConfig build() {
-            return new RedisConfig(username, password, endpoints.build());
+            return new RedisConfig(this.username, this.password, this.endpoints.build());
         }
     }
 }

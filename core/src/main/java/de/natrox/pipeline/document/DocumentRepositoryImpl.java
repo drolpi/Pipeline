@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @SuppressWarnings("ClassCanBeRecord")
 final class DocumentRepositoryImpl implements DocumentRepository {
@@ -80,6 +81,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         }
 
         return new DocumentStream(stream);
+    }
+
+    @Override
+    public @NotNull Cursor<DocumentData> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer) {
+        FindOptions.Builder builder = FindOptions.builder();
+        consumer.accept(builder);
+        return this.find(builder.build());
     }
 
     @Override

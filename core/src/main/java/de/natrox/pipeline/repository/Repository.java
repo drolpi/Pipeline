@@ -16,10 +16,27 @@
 
 package de.natrox.pipeline.repository;
 
+import de.natrox.pipeline.document.find.FindOptions;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @ApiStatus.Experimental
 public interface Repository<T> {
+
+    @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
+
+    @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer);
+
+    default Cursor<T> find() {
+        return this.find(FindOptions.DEFAULT);
+    }
+
+    boolean exists(@NotNull UUID uniqueId);
+
+    void remove(@NotNull UUID uniqueId);
 
     void close();
 

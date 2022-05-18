@@ -30,7 +30,6 @@ import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.part.memory.InMemoryProvider;
 import de.natrox.pipeline.redis.RedisConfig;
-import de.natrox.pipeline.redis.RedisEndpoint;
 import de.natrox.pipeline.redis.RedisProvider;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.Sorts;
@@ -53,14 +52,7 @@ public class ExampleTest {
 
         RedisConfig redisConfig = RedisConfig
             .builder()
-            .endpoints(
-                RedisEndpoint
-                    .builder()
-                    .host("127.0.0.1")
-                    .port(6379)
-                    .database(0)
-                    .build()
-            )
+            .endpoint(builder -> builder.host("127.0.0.1").port(6379).database(0))
             .build();
         RedisProvider redisProvider = redisConfig.createProvider();
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
@@ -102,12 +94,10 @@ public class ExampleTest {
 
             // Find
             {
-                Cursor<DocumentData> cursor = repository.find(
-                    FindOptions
-                        .builder()
+                Cursor<DocumentData> cursor = repository.find(builder ->
+                    builder
                         .condition(Conditions.and(Conditions.eq("european", true), Conditions.gt("age", 18)))
                         .sort(Sorts.and(Sorts.ascending("name"), Sorts.descending("age")))
-                        .build()
                 );
 
                 for (DocumentData documentData : cursor) {

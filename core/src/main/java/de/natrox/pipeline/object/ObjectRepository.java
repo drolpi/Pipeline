@@ -17,8 +17,6 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.find.FindOptions;
-import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -33,17 +31,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
 
     @NotNull T loadOrCreate(@NotNull UUID uniqueId);
 
-    @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
-
-    default Cursor<T> find() {
-        return this.find(FindOptions.DEFAULT);
-    }
-
     void save(@NotNull T objectData);
-
-    boolean exists(@NotNull UUID uniqueId);
-
-    void remove(@NotNull UUID uniqueId);
 
     @NotNull Class<T> type();
 
