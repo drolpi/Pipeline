@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
@@ -34,7 +35,7 @@ public final class DocumentRepositoryFactory {
         this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository repository(String name) {
+    public DocumentRepository repository(String name, DocumentOptions options) {
         if (this.repositoryMap.containsKey(name)) {
             DocumentRepository repository = this.repositoryMap.get(name);
             if (!repository.isDropped() && repository.isOpen()) {
@@ -42,12 +43,12 @@ public final class DocumentRepositoryFactory {
             }
             this.repositoryMap.remove(name);
         }
-        return this.createRepository(name);
+        return this.createRepository(name, options);
     }
 
-    private DocumentRepository createRepository(String name) {
+    private DocumentRepository createRepository(String name, DocumentOptions options) {
         StoreMap storeMap = this.connectingStore.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingStore, storeMap);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingStore, storeMap, options);
         this.repositoryMap.put(name, repository);
 
         return repository;

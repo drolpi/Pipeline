@@ -20,6 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.repository.Cursor;
@@ -35,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 @SuppressWarnings("ClassCanBeRecord")
 final class DocumentRepositoryImpl implements DocumentRepository {
@@ -43,11 +43,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private final String repositoryName;
     private final Store store;
     private final StoreMap storeMap;
+    private final DocumentOptions options;
 
-    DocumentRepositoryImpl(String repositoryName, Store store, StoreMap storeMap) {
+    DocumentRepositoryImpl(String repositoryName, Store store, StoreMap storeMap, DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.store = store;
         this.storeMap = storeMap;
+        this.options = options;
     }
 
     @Override
