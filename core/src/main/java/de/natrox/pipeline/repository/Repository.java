@@ -28,7 +28,11 @@ public interface Repository<T> {
 
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
-    @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer);
+    default @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer) {
+        FindOptions.Builder builder = FindOptions.builder();
+        consumer.accept(builder);
+        return this.find(builder.build());
+    }
 
     default Cursor<T> find() {
         return this.find(FindOptions.DEFAULT);

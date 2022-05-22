@@ -84,13 +84,6 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull Cursor<DocumentData> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer) {
-        FindOptions.Builder builder = FindOptions.builder();
-        consumer.accept(builder);
-        return this.find(builder.build());
-    }
-
-    @Override
     public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(document, "document");
