@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/github/license/NatroxMC/Pipeline?style=for-the-badge&color=b2204c)](../LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=for-the-badge)](https://github.com/RichardLitt/standard-readme)
 
-Pipeline is an very fast and open-source store library that synchronizes records between databases and caches. It supports all types of databases and caches and already has many implemented. It has a fast and easy-to-use API.
+Pipeline is a very fast and open-source store library that synchronizes records between databases and caches. It supports all types of databases and caches and already has many implemented. It has a fast and easy-to-use API.
 
 # Table of contents
 
