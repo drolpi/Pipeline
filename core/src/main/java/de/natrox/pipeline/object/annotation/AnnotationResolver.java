@@ -31,7 +31,7 @@ public final class AnnotationResolver {
         Check.notNull(type, "type");
         Properties properties = type.getAnnotation(Properties.class);
         if (properties == null)
-            throw new RuntimeException(type.getName() + " does not have Properties Annotation set");
+            throw new RuntimeException(type.getName() + " does not have Properties annotation set");
         return properties;
     }
 
