@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.memory;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ final class InMemoryStore extends AbstractStore {
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return new InMemoryMap();
     }
 
@@ -40,16 +42,19 @@ final class InMemoryStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return this.storeMapRegistry.containsKey(mapName);
     }
 
     @Override
     public void closeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         // nothing to do
     }
 
     @Override
     public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         if (this.storeMapRegistry.containsKey(mapName)) {
             StoreMap storeMap = this.storeMapRegistry.get(mapName);
             storeMap.clear();
