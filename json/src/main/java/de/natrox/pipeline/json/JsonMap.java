@@ -139,8 +139,10 @@ final class JsonMap implements StoreMap {
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        Path path = this.savedFile(uniqueId);
+
         try {
-            Files.deleteIfExists(this.savedFile(uniqueId));
+            Files.delete(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -148,13 +150,14 @@ final class JsonMap implements StoreMap {
 
     @Override
     public void clear() {
-        //TODO:
+        for (UUID key : this.keys()) {
+            this.remove(key);
+        }
     }
 
     @Override
     public long size() {
-        //TODO:
-        return 0;
+        return this.keys().size();
     }
 
     private DocumentData loadFromFile(@NotNull UUID uniqueId) throws IOException {
