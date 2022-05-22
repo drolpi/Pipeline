@@ -58,7 +58,7 @@ public final class DocumentSorter implements Comparator<Pair<UUID, DocumentData>
                     || value1 instanceof Iterable
                     || value2.getClass().isArray()
                     || value2 instanceof Iterable) {
-                    throw new RuntimeException("cannot sort on an array or collection object");
+                    throw new RuntimeException("Cannot sort on an array or collection object");
                 }
 
                 Comparable c1 = (Comparable) value1;
