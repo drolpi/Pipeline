@@ -17,6 +17,7 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
@@ -37,16 +38,20 @@ final class InMemoryMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.map.get(uniqueId);
     }
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
         this.map.put(uniqueId, documentData);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         return this.map.containsKey(uniqueId);
     }
 
@@ -67,6 +72,7 @@ final class InMemoryMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         this.map.remove(uniqueId);
     }
 
