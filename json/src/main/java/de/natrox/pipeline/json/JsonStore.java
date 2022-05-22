@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.json;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
@@ -41,6 +42,7 @@ final class JsonStore extends AbstractStore {
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return new JsonMap(mapName, this.directory, this.mapper);
     }
 
@@ -58,11 +60,13 @@ final class JsonStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return Files.exists(this.directory.resolve(mapName));
     }
 
     @Override
     public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         try {
             Files.delete(this.directory.resolve(mapName));
         } catch (IOException e) {
