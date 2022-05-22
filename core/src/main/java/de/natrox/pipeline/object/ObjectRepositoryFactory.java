@@ -20,6 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
+import de.natrox.pipeline.object.option.ObjectOptions;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public final class ObjectRepositoryFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type) {
+    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type, ObjectOptions options) {
         String name = AnnotationResolver.identifier(type);
 
         if (this.repositoryMap.containsKey(name)) {
@@ -49,12 +50,12 @@ public final class ObjectRepositoryFactory {
             }
             this.repositoryMap.remove(name);
         }
-        return this.createRepository(name, type);
+        return this.createRepository(name, type, options);
     }
 
-    private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type) {
-        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name);
-        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(pipeline, type, documentRepository);
+    private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions options) {
+        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options.toDocumentOptions());
+        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 
         return repository;

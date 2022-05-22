@@ -21,6 +21,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.object.option.ObjectOptions;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
@@ -34,10 +35,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final DocumentRepository documentRepository;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository) {
+    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository, ObjectOptions options) {
         this.type = type;
         this.documentRepository = documentRepository;
-        this.objectCache = new ObjectCache<>(pipeline, type);
+        this.objectCache = new ObjectCache<>(pipeline, type, options);
     }
 
     @Override

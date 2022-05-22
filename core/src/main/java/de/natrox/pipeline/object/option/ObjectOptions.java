@@ -16,11 +16,13 @@
 
 package de.natrox.pipeline.object.option;
 
+import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.repository.Options;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
 public sealed interface ObjectOptions extends Options permits ObjectOptionsImpl {
@@ -30,6 +32,11 @@ public sealed interface ObjectOptions extends Options permits ObjectOptionsImpl 
     static @NotNull Builder builder() {
         return new ObjectOptionsBuilderImpl();
     }
+
+    <T extends ObjectData> @Nullable InstanceCreator<T> instanceCreator(@NotNull Class<? extends T> type);
+
+    //TODO: Maybe search for a better solution
+    @NotNull DocumentOptions toDocumentOptions();
 
     @ApiStatus.Experimental
     sealed interface Builder extends OptionsBuilder<ObjectOptions> permits ObjectOptionsBuilderImpl {

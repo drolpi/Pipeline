@@ -16,5 +16,31 @@
 
 package de.natrox.pipeline.object.option;
 
+import de.natrox.pipeline.document.option.DocumentOptions;
+import de.natrox.pipeline.object.InstanceCreator;
+import de.natrox.pipeline.object.ObjectData;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
+@SuppressWarnings({"ClassCanBeRecord", "rawtypes"})
 final class ObjectOptionsImpl implements ObjectOptions {
+
+    private final Map<Class, InstanceCreator> instanceCreators;
+
+    public ObjectOptionsImpl(Map<Class, InstanceCreator> instanceCreators) {
+        this.instanceCreators = instanceCreators;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends ObjectData> InstanceCreator<T> instanceCreator(@NotNull Class<? extends T> type) {
+        return instanceCreators.get(type);
+    }
+
+    @Override
+    public @NotNull DocumentOptions toDocumentOptions() {
+        //TODO: Very important
+        return null;
+    }
 }

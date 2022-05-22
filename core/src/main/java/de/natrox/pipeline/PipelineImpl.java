@@ -54,14 +54,14 @@ final class PipelineImpl implements Pipeline {
     public @NotNull DocumentRepository repository(@NotNull String name, @NotNull DocumentOptions options) {
         Check.notNull(name, "name");
         Check.notNull(options, "options");
-        return this.documentRepositoryFactory.repository(name);
+        return this.documentRepositoryFactory.repository(name, options);
     }
 
     @Override
     public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions options) {
         Check.notNull(type, "type");
         Check.notNull(options, "options");
-        return this.objectRepositoryFactory.repository(type);
+        return this.objectRepositoryFactory.repository(type, options);
     }
 
     @Override

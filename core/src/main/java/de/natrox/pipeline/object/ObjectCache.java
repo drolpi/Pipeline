@@ -18,6 +18,7 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.object.option.ObjectOptions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -28,12 +29,14 @@ public final class ObjectCache<T extends ObjectData> {
 
     private final Pipeline pipeline;
     private final Class<T> type;
+    private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(Pipeline pipeline, Class<T> type) {
+    ObjectCache(Pipeline pipeline, Class<T> type, ObjectOptions options) {
         this.pipeline = pipeline;
         this.type = type;
         this.cache = new ConcurrentHashMap<>();
+        this.instanceCreator = options.instanceCreator(type) != null ? options.instanceCreator(type) : new SimpleInstanceCreator<>();
     }
 
     public T get(UUID uniqueId) {
@@ -44,11 +47,9 @@ public final class ObjectCache<T extends ObjectData> {
     }
 
     private @NotNull T create(UUID uniqueId) {
-        // FIXME: 13.05.2022
-        InstanceCreator<T> instanceCreator = new SimpleInstanceCreator<>();
         T instance;
         try {
-            instance = instanceCreator.get(this.type, this.pipeline);
+            instance = this.instanceCreator.get(this.type, this.pipeline);
         } catch (Throwable throwable) {
             throw new RuntimeException("Error while creating instance of class " + this.type.getSimpleName(), throwable);
         }
