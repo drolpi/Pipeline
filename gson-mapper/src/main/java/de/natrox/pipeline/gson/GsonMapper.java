@@ -16,56 +16,12 @@
 
 package de.natrox.pipeline.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.Mapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Reader;
-import java.io.Writer;
+public sealed interface GsonMapper extends Mapper permits GsonMapperImpl {
 
-public final class GsonMapper implements Mapper {
-
-    public final Gson gson = new GsonBuilder()
-        .serializeNulls()
-        .setPrettyPrinting()
-        .disableHtmlEscaping()
-        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .registerTypeAdapter(DocumentData.class, new DocumentDataDeserializer())
-        .create();
-
-    private GsonMapper() {
-
-    }
-
-    public static @NotNull GsonMapper create() {
-        return new GsonMapper();
-    }
-
-    @Override
-    public @NotNull String writeAsString(@NotNull Object object) {
-        return this.gson.toJson(object);
-    }
-
-    @Override
-    public void write(@NotNull Writer writer, @NotNull Object object) {
-        this.gson.toJson(object, writer);
-    }
-
-    @Override
-    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
-        return this.gson.fromJson(json, type);
-    }
-
-    @Override
-    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
-        return this.gson.fromJson(JsonParser.parseReader(reader), type);
-    }
-
-    @Override
-    public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return this.read(this.writeAsString(object), type);
+    static @NotNull GsonMapper create() {
+        return new GsonMapperImpl();
     }
 }
