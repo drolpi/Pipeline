@@ -18,6 +18,7 @@ package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
@@ -40,6 +41,7 @@ final class MongoStore extends AbstractStore {
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return new MongoMap(this.collection(mapName), this.mapper);
     }
 
@@ -54,6 +56,7 @@ final class MongoStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         try {
             this.mongoDatabase.getCollection(mapName);
             return true;
@@ -64,6 +67,7 @@ final class MongoStore extends AbstractStore {
 
     @Override
     public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         this.collection(mapName).drop();
         this.storeMapRegistry.remove(mapName);
     }
