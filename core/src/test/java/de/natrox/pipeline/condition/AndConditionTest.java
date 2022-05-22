@@ -37,7 +37,7 @@ public class AndConditionTest {
         when(condition3.apply(any())).thenReturn(true);
 
         AndCondition andCondition = new AndCondition(condition1, condition2, condition3);
-        assertTrue(andCondition.apply(Pair.of(null, null)));
+        assertTrue(andCondition.apply(Pair.empty()));
 
         verify(condition1).apply(any());
         verify(condition2).apply(any());
@@ -56,7 +56,7 @@ public class AndConditionTest {
         when(condition3.apply(any())).thenReturn(true);
 
         AndCondition andCondition = new AndCondition(condition1, condition2, condition3);
-        assertFalse(andCondition.apply(Pair.of(null, null)));
+        assertFalse(andCondition.apply(Pair.empty()));
 
         verify(condition1).apply(any());
     }

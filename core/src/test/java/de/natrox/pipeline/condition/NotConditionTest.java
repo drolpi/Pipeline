@@ -31,7 +31,7 @@ public class NotConditionTest {
         when(condition.apply(any())).thenReturn(true);
 
         NotCondition notCondition = new NotCondition(condition);
-        assertFalse(notCondition.apply(Pair.of(null, null)));
+        assertFalse(notCondition.apply(Pair.empty()));
 
         verify(condition).apply(any());
     }
@@ -42,7 +42,7 @@ public class NotConditionTest {
         when(condition.apply(any())).thenReturn(false);
 
         NotCondition notCondition = new NotCondition(condition);
-        assertTrue(notCondition.apply(Pair.of(null, null)));
+        assertTrue(notCondition.apply(Pair.empty()));
 
         verify(condition).apply(any());
     }

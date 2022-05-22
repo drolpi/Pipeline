@@ -36,7 +36,7 @@ public class OrConditionTest {
         when(condition3.apply(any())).thenReturn(false);
 
         OrCondition orCondition = new OrCondition(condition1, condition2, condition3);
-        assertTrue(orCondition.apply(Pair.of(null, null)));
+        assertTrue(orCondition.apply(Pair.empty()));
 
         verify(condition1).apply(any());
     }
@@ -53,7 +53,7 @@ public class OrConditionTest {
         when(condition3.apply(any())).thenReturn(true);
 
         OrCondition orCondition = new OrCondition(condition1, condition2, condition3);
-        assertTrue(orCondition.apply(Pair.of(null, null)));
+        assertTrue(orCondition.apply(Pair.empty()));
 
         verify(condition1).apply(any());
     }
