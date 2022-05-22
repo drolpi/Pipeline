@@ -27,7 +27,7 @@ import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.stream.BoundedStream;
-import de.natrox.pipeline.stream.ConditionStream;
+import de.natrox.pipeline.stream.ConditionalStream;
 import de.natrox.pipeline.stream.DocumentStream;
 import de.natrox.pipeline.stream.PipeStream;
 import de.natrox.pipeline.stream.SortedDocumentStream;
@@ -65,7 +65,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
         Condition condition = findOptions.condition();
         if (condition != null) {
-            stream = new ConditionStream(condition, stream);
+            stream = new ConditionalStream(condition, stream);
         }
 
         SortEntry sortBy = findOptions.sortBy();

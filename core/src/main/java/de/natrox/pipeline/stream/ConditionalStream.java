@@ -27,12 +27,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class ConditionStream implements PipeStream<Pair<UUID, DocumentData>> {
+public final class ConditionalStream implements PipeStream<Pair<UUID, DocumentData>> {
 
     private final Condition condition;
     private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
 
-    public ConditionStream(Condition condition, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
+    public ConditionalStream(Condition condition, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.condition = condition;
         this.pipeStream = pipeStream;
     }
