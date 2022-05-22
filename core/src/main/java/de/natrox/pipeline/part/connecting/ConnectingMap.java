@@ -17,6 +17,7 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.LocalUpdater;
 import de.natrox.pipeline.part.StoreMap;
@@ -45,6 +46,8 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
+
         if (this.localCacheMap != null) {
             DocumentData documentData = this.fromPart(uniqueId, this.localCacheMap);
             if (documentData != null) {
@@ -70,6 +73,8 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.put(uniqueId, documentData);
             this.localUpdater.pushUpdate(uniqueId, documentData, () -> {
@@ -84,6 +89,7 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         if (this.localCacheMap != null) {
             boolean localExists = this.localCacheMap.contains(uniqueId);
             if (localExists)
@@ -116,6 +122,7 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
         if (this.localCacheMap != null && this.localUpdater != null) {
             this.localCacheMap.remove(uniqueId);
             this.localUpdater.pushRemoval(uniqueId, () -> {
