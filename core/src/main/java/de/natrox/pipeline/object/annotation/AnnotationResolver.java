@@ -17,8 +17,10 @@
 package de.natrox.pipeline.object.annotation;
 
 import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+@ApiStatus.Internal
 public final class AnnotationResolver {
 
     private AnnotationResolver() {
