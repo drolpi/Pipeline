@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RBucket;
 import org.redisson.api.RBuckets;
+import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 
@@ -37,17 +38,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ClassCanBeRecord")
 final class RedisMap implements StoreMap {
 
+    private final RedisStore redisStore;
     private final RedissonClient redissonClient;
     private final String mapName;
     private final Mapper mapper;
 
-    RedisMap(RedissonClient redissonClient, String mapName, Mapper mapper) {
-        this.redissonClient = redissonClient;
+    RedisMap(RedisStore redisStore, String mapName) {
+        this.redisStore = redisStore;
+        this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.mapper = mapper;
+        this.mapper = redisStore.mapper();
     }
 
     @Override
@@ -79,7 +81,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<UUID> keys() {
-        List<UUID> keys = this.redisKeys()
+        List<UUID> keys = this.redisStore.keys(this.mapName)
             .stream()
             .map(s -> UUID.fromString(s.split(":")[2]))
             .collect(Collectors.toList());
@@ -88,7 +90,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<DocumentData> values() {
-        Set<String> keys = this.redisKeys();
+        Set<String> keys = this.redisStore.keys(this.mapName);
         RBuckets redisBuckets = this.redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
@@ -106,7 +108,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        Set<String> keys = this.redisKeys();
+        Set<String> keys = this.redisStore.keys(this.mapName);
         RBuckets redisBuckets = this.redissonClient.getBuckets();
         Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
@@ -134,24 +136,17 @@ final class RedisMap implements StoreMap {
 
     @Override
     public void clear() {
-        //TODO:
+        Set<String> keys = this.redisStore.keys(this.mapName);
+        RKeys redisKeys = this.redissonClient.getKeys();
+        redisKeys.delete(keys.toArray(new String[0]));
     }
 
     @Override
     public long size() {
-        //TODO:
-        return 0;
+        return this.redisStore.keys(this.mapName).size();
     }
 
     private RBucket<String> bucket(UUID uniqueId) {
         return this.redissonClient.getBucket("Cache:" + this.mapName + ":" + uniqueId, StringCodec.INSTANCE);
-    }
-
-    public synchronized Set<String> redisKeys() {
-        return this.redissonClient
-            .getKeys()
-            .getKeysStream()
-            .filter(s -> s.split(":")[1].equals(this.mapName))
-            .collect(Collectors.toSet());
     }
 }

@@ -38,13 +38,17 @@ final class RedisStore extends AbstractStore {
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
-        return new RedisMap(this.redissonClient, mapName, this.mapper);
+        return new RedisMap(this, mapName);
     }
 
     @Override
     public @NotNull Set<String> maps() {
-        //TODO: Fix exception if array length is lesser than 1
-        return this.redissonClient.getKeys().getKeysStream().map(s -> s.split(":")[1]).collect(Collectors.toSet());
+        return this.redissonClient
+            .getKeys()
+            .getKeysStream()
+            .filter(this::filterKey)
+            .map(s -> s.split(":")[1])
+            .collect(Collectors.toSet());
     }
 
     @Override
@@ -58,12 +62,27 @@ final class RedisStore extends AbstractStore {
         this.storeMapRegistry.remove(mapName);
     }
 
-    private Set<String> keys(String mapName) {
-        //TODO: Fix exception if array length is lesser than 1
+    Set<String> keys(String mapName) {
         return this.redissonClient
             .getKeys()
             .getKeysStream()
-            .filter(s -> s.split(":")[1].equals(mapName))
+            .filter(this::filterKey)
             .collect(Collectors.toSet());
+    }
+
+    private boolean filterKey(String mapName) {
+        String[] split = mapName.split(":");
+        if (split.length != 3)
+            return false;
+
+        return split[1].equals(mapName);
+    }
+
+    public RedissonClient redissonClient() {
+        return this.redissonClient;
+    }
+
+    public Mapper mapper() {
+        return this.mapper;
     }
 }
