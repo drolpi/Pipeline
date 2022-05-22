@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.connecting;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.LocalUpdater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
@@ -41,6 +42,7 @@ public final class ConnectingStore implements Store {
 
     @Override
     public @NotNull StoreMap openMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         StoreMap localCacheMap = null;
         if (this.localCache != null) {
             localCacheMap = this.localCache.openMap(mapName);
@@ -64,6 +66,7 @@ public final class ConnectingStore implements Store {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         //TODO: Maybe check other parts too
         return this.storage.hasMap(mapName);
     }
@@ -71,6 +74,7 @@ public final class ConnectingStore implements Store {
 
     @Override
     public void closeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         if (this.localCache != null) {
             this.localCache.closeMap(mapName);
         }
@@ -84,6 +88,7 @@ public final class ConnectingStore implements Store {
 
     @Override
     public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         if (this.localCache != null) {
             this.localCache.removeMap(mapName);
         }
