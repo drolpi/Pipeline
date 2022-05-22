@@ -21,21 +21,18 @@ import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
+@SuppressWarnings("ClassCanBeRecord")
+final class ObjectOptionsImpl<T extends ObjectData> implements ObjectOptions<T> {
 
-@SuppressWarnings({"ClassCanBeRecord", "rawtypes"})
-final class ObjectOptionsImpl implements ObjectOptions {
+    private final InstanceCreator<T> instanceCreator;
 
-    private final Map<Class, InstanceCreator> instanceCreators;
-
-    public ObjectOptionsImpl(Map<Class, InstanceCreator> instanceCreators) {
-        this.instanceCreators = instanceCreators;
+    public ObjectOptionsImpl(InstanceCreator<T> instanceCreator) {
+        this.instanceCreator = instanceCreator;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends ObjectData> InstanceCreator<T> instanceCreator(@NotNull Class<? extends T> type) {
-        return instanceCreators.get(type);
+    public InstanceCreator<T> instanceCreator() {
+        return this.instanceCreator;
     }
 
     @Override

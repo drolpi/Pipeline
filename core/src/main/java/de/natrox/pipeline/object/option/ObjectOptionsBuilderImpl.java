@@ -16,27 +16,24 @@
 
 package de.natrox.pipeline.object.option;
 
-import com.google.common.collect.ImmutableMap;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("rawtypes")
-final class ObjectOptionsBuilderImpl implements ObjectOptions.Builder {
+final class ObjectOptionsBuilderImpl<T extends ObjectData> implements ObjectOptions.Builder<T> {
 
-    private final ImmutableMap.Builder<Class, InstanceCreator> instanceCreators = new ImmutableMap.Builder<>();
+    private InstanceCreator<T> instanceCreator;
 
     @Override
-    public <T extends ObjectData> ObjectOptions.@NotNull Builder instanceCreator(@NotNull Class<? extends T> type, @NotNull InstanceCreator<T> instanceCreator) {
-        Check.notNull(type, "type");
+    public ObjectOptions.@NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator) {
         Check.notNull(instanceCreator, "instanceCreator");
-        this.instanceCreators.put(type, instanceCreator);
+        this.instanceCreator = instanceCreator;
         return this;
     }
 
     @Override
-    public ObjectOptions build() {
-        return new ObjectOptionsImpl(this.instanceCreators.build());
+    public ObjectOptions<T> build() {
+        return new ObjectOptionsImpl<>(instanceCreator);
     }
 }

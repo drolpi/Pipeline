@@ -35,7 +35,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final DocumentRepository documentRepository;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository, ObjectOptions options) {
+    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository, ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.objectCache = new ObjectCache<>(pipeline, type, options);

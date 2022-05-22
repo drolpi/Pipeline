@@ -25,23 +25,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
-public sealed interface ObjectOptions extends Options permits ObjectOptionsImpl {
+public sealed interface ObjectOptions<T extends ObjectData> extends Options permits ObjectOptionsImpl {
 
-    @NotNull ObjectOptions DEFAULT = ObjectOptions.builder().build();
-
-    static @NotNull Builder builder() {
-        return new ObjectOptionsBuilderImpl();
+    static <T extends ObjectData> @NotNull Builder<T> of(Class<? extends T> type) {
+        return new ObjectOptionsBuilderImpl<>();
     }
 
-    <T extends ObjectData> @Nullable InstanceCreator<T> instanceCreator(@NotNull Class<? extends T> type);
+    @Nullable InstanceCreator<T> instanceCreator();
 
     //TODO: Maybe search for a better solution
     @NotNull DocumentOptions toDocumentOptions();
 
     @ApiStatus.Experimental
-    sealed interface Builder extends OptionsBuilder<ObjectOptions> permits ObjectOptionsBuilderImpl {
+    sealed interface Builder<T extends ObjectData> extends OptionsBuilder<ObjectOptions<T>> permits ObjectOptionsBuilderImpl {
 
-        <T extends ObjectData> @NotNull Builder instanceCreator(@NotNull Class<? extends T> type, @NotNull InstanceCreator<T> instanceCreator);
+        @NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator);
 
     }
 

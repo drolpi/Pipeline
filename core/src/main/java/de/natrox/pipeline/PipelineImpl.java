@@ -58,7 +58,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions options) {
+    public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options) {
         Check.notNull(type, "type");
         Check.notNull(options, "options");
         return this.objectRepositoryFactory.repository(type, options);

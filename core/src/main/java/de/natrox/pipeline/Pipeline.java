@@ -113,16 +113,16 @@ public sealed interface Pipeline permits PipelineImpl {
         return this.repository(name, DocumentOptions.DEFAULT);
     }
 
-    <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions options);
+    <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options);
 
-    default <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull Consumer<ObjectOptions.Builder> consumer) {
-        ObjectOptions.Builder builder = ObjectOptions.builder();
+    default <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull Consumer<ObjectOptions.Builder<T>> consumer) {
+        ObjectOptions.Builder<T> builder = ObjectOptions.of(type);
         consumer.accept(builder);
         return this.repository(type, builder.build());
     }
 
     default <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type) {
-        return this.repository(type, ObjectOptions.DEFAULT);
+        return this.repository(type, ObjectOptions.of(type).build());
     }
 
     void destroyRepository(@NotNull String name);

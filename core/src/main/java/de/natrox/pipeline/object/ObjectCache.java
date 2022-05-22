@@ -32,11 +32,11 @@ public final class ObjectCache<T extends ObjectData> {
     private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(Pipeline pipeline, Class<T> type, ObjectOptions options) {
+    ObjectCache(Pipeline pipeline, Class<T> type, ObjectOptions<T> options) {
         this.pipeline = pipeline;
         this.type = type;
         this.cache = new ConcurrentHashMap<>();
-        this.instanceCreator = options.instanceCreator(type) != null ? options.instanceCreator(type) : new SimpleInstanceCreator<>();
+        this.instanceCreator = options.instanceCreator() != null ? options.instanceCreator() : new SimpleInstanceCreator<>();
     }
 
     public T get(UUID uniqueId) {

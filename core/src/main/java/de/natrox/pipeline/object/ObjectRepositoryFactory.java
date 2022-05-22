@@ -40,7 +40,7 @@ public final class ObjectRepositoryFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type, ObjectOptions options) {
+    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type, ObjectOptions<T> options) {
         String name = AnnotationResolver.identifier(type);
 
         if (this.repositoryMap.containsKey(name)) {
@@ -53,7 +53,7 @@ public final class ObjectRepositoryFactory {
         return this.createRepository(name, type, options);
     }
 
-    private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions options) {
+    private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions<T> options) {
         DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options.toDocumentOptions());
         ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
