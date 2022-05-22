@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.AbstractStore;
@@ -38,6 +39,7 @@ final class RedisStore extends AbstractStore {
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return new RedisMap(this, mapName);
     }
 
@@ -53,11 +55,13 @@ final class RedisStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         return true;
     }
 
     @Override
     public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
         this.redissonClient.getKeys().delete(this.keys(mapName).toArray(new String[0]));
         this.storeMapRegistry.remove(mapName);
     }
