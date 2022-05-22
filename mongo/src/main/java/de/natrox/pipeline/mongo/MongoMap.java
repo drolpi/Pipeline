@@ -134,7 +134,7 @@ final class MongoMap implements StoreMap {
 
     @Override
     public void clear() {
-
+        this.collection.deleteMany(new Document());
     }
 
     @Override
