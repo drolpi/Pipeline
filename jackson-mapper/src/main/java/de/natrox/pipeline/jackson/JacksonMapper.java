@@ -16,91 +16,13 @@
 
 package de.natrox.pipeline.jackson;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.Mapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+public sealed interface JacksonMapper extends Mapper permits JacksonMapperImpl {
 
-public final class JacksonMapper implements Mapper {
-
-    private final ObjectMapper objectMapper;
-
-    private JacksonMapper() {
-        SimpleModule simpleModule = new SimpleModule()
-            .addDeserializer(DocumentData.class, new DocumentDataDeserializer());
-
-        this.objectMapper = JsonMapper.builder()
-            .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN)
-            .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .visibility(VisibilityChecker.Std
-                .defaultInstance()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE))
-            .addModule(simpleModule)
-            .build();
+    static @NotNull JacksonMapperImpl create() {
+        return new JacksonMapperImpl();
     }
 
-    public static @NotNull JacksonMapper create() {
-        return new JacksonMapper();
-    }
-
-    @Override
-    public @NotNull String writeAsString(@NotNull Object object) {
-        try {
-            return this.objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException exception) {
-            throw new RuntimeException("Unable to write json", exception);
-        }
-    }
-
-    @Override
-    public void write(@NotNull Writer writer, @NotNull Object object) {
-        try {
-            this.objectMapper.writeValue(writer, object);
-        } catch (IOException exception) {
-            throw new RuntimeException("Unable to write json", exception);
-        }
-    }
-
-    @Override
-    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
-        try {
-            return this.objectMapper.readValue(json, type);
-        } catch (JsonProcessingException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    @Override
-    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
-        try {
-            return this.objectMapper.readValue(reader, type);
-        } catch (IOException exception) {
-            throw new RuntimeException("Unable to parse json from reader", exception);
-        }
-    }
-
-    @Override
-    public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return this.objectMapper.convertValue(object, type);
-    }
 }
