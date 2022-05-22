@@ -1,17 +1,15 @@
-# Pipeline
+# Pipeline (NOT READY FOR PRODUCTION)
 
 [![license](https://img.shields.io/github/license/NatroxMC/Pipeline?style=for-the-badge&color=b2204c)](../LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=for-the-badge)](https://github.com/RichardLitt/standard-readme)
 
-# Note: NOT READY FOR PRODUCTION
-
-- We are currently working on a rewrite! [Click here](https://github.com/NatroxMC/Pipeline/tree/unstable/rewrite).
+Pipeline is an very fast and open-source store library that synchronizes records between databases and caches. It supports all types of databases and caches and already has many implemented. It has a fast and easy-to-use API.
 
 # Table of contents
 
 - [Why use the Pipeline?](#why-use-the-pipeline)
 - [Advantages & Disadvantages](#advantages-and-disadvantages)
-- [How to use](#how-to-use)
+- [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -33,7 +31,7 @@ Coming soon.
 - Coming soon
 - Coming soon
 
-# How to Use
+# Usage
 
 Coming soon.
 
