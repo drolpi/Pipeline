@@ -23,15 +23,15 @@ import java.util.UUID;
 
 final class NotEqualsCondition extends ComparableCondition {
 
-    private final EqualsCondition condition;
+    private final Condition condition;
 
     NotEqualsCondition(String field, Object value) {
         super(field, value);
-        this.condition = new EqualsCondition(field, value);
+        this.condition = new EqualsCondition(field, value).not();
     }
 
     @Override
     public boolean apply(Pair<UUID, DocumentData> element) {
-        return !condition.apply(element);
+        return this.condition.apply(element);
     }
 }
