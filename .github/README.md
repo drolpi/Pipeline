@@ -46,7 +46,7 @@ So now we can begin. The pipeline is divided into different parts:
 - [Cache](#cache) also knwo as a temporary data store.
   - [GlobalCache](#globalcache) is a cache implementation, which holds its data in a global temporary memory store.
   - [LocalCache](#localcache) is a cache implementation, which holds its data in the local temporary memory.
-- [DataUpdater](#dataupdater) is a updater, which updates the the local tempory memory store.
+- [DataUpdater](#dataupdater) is an updater, which updates the the local tempory memory store.
 
 ## Config
 **Note: This feature is not yet implemented!**
