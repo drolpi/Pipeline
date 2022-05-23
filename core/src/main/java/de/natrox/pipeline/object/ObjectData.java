@@ -18,6 +18,7 @@ package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.object.annotation.Named;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +48,7 @@ public abstract class ObjectData {
         DocumentData documentData = DocumentData.create();
         for (Field field : persistentFields()) {
             try {
-                String key = fieldName(field);
+                String key = AnnotationResolver.fieldName(field);
                 field.setAccessible(true);
                 Object value = field.get(this);
 
@@ -66,7 +67,7 @@ public abstract class ObjectData {
     public void deserialize(DocumentData document) {
         for (Field field : persistentFields()) {
             try {
-                String key = fieldName(field);
+                String key = AnnotationResolver.fieldName(field);
                 Object value = document.get(key);
 
                 if (value == null)
@@ -93,11 +94,6 @@ public abstract class ObjectData {
             .stream()
             .filter(field -> !Modifier.isTransient(field.getModifiers()))
             .collect(Collectors.toSet());
-    }
-
-    private String fieldName(Field field) {
-        Named named = field.getAnnotation(Named.class);
-        return named != null ? named.name() : field.getName();
     }
 
     @Override

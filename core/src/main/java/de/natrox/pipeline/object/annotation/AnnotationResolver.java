@@ -20,6 +20,8 @@ import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
+
 @ApiStatus.Internal
 public final class AnnotationResolver {
 
@@ -38,5 +40,10 @@ public final class AnnotationResolver {
     public static @NotNull String identifier(Class<?> type) {
         Check.notNull(type, "type");
         return AnnotationResolver.properties(type).identifier();
+    }
+
+    public static @NotNull String fieldName(Field field) {
+        Named named = field.getAnnotation(Named.class);
+        return named != null ? named.name() : field.getName();
     }
 }
