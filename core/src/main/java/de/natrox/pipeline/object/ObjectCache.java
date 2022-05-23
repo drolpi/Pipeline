@@ -49,7 +49,7 @@ public final class ObjectCache<T extends ObjectData> {
     private @NotNull T create(UUID uniqueId) {
         T instance;
         try {
-            instance = this.instanceCreator.get(this.type, this.pipeline);
+            instance = this.instanceCreator.create(this.type, this.pipeline);
         } catch (Throwable throwable) {
             throw new RuntimeException("Error while creating instance of class " + this.type.getSimpleName(), throwable);
         }

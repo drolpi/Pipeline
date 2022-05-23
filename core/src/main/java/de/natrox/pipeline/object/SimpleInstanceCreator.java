@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 public final class SimpleInstanceCreator<T extends ObjectData> implements InstanceCreator<T> {
 
     @Override
-    public @NotNull T get(@NotNull Class<? extends T> type, Pipeline pipeline) {
+    public @NotNull T create(@NotNull Class<? extends T> type, Pipeline pipeline) {
         try {
             Constructor<? extends T> constructor = type.getConstructor(Pipeline.class);
             constructor.setAccessible(true);

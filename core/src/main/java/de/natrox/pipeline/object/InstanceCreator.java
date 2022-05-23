@@ -22,6 +22,6 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface InstanceCreator<T extends ObjectData> {
 
-    @NotNull T get(Class<? extends T> dataClass, Pipeline pipe);
+    @NotNull T create(Class<? extends T> dataClass, Pipeline pipe);
 
 }
