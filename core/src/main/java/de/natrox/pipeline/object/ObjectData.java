@@ -103,11 +103,11 @@ public abstract class ObjectData {
         if (!(other instanceof ObjectData pipelineData))
             return false;
 
-        return Objects.equals(uniqueId(), pipelineData.uniqueId());
+        return Objects.equals(this.uniqueId(), pipelineData.uniqueId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueId());
+        return Objects.hash(this.uniqueId());
     }
 }
