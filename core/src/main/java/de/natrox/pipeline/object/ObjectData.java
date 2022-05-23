@@ -46,7 +46,7 @@ public abstract class ObjectData {
 
     public DocumentData serialize() {
         DocumentData documentData = DocumentData.create();
-        for (Field field : persistentFields()) {
+        for (Field field : this.persistentFields()) {
             try {
                 String key = AnnotationResolver.fieldName(field);
                 field.setAccessible(true);
@@ -65,7 +65,7 @@ public abstract class ObjectData {
     }
 
     public void deserialize(DocumentData document) {
-        for (Field field : persistentFields()) {
+        for (Field field : this.persistentFields()) {
             try {
                 String key = AnnotationResolver.fieldName(field);
                 Object value = document.get(key);
