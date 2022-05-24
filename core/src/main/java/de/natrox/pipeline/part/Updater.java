@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface LocalUpdater {
+public interface Updater {
 
     void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData pipelineData, @Nullable Runnable callback);
 

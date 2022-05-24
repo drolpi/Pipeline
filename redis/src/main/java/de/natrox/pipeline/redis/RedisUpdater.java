@@ -20,7 +20,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.Mapper;
-import de.natrox.pipeline.part.LocalUpdater;
+import de.natrox.pipeline.part.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
@@ -31,7 +31,7 @@ import org.redisson.codec.SerializationCodec;
 import java.io.Serializable;
 import java.util.UUID;
 
-final class RedisLocalUpdater implements LocalUpdater {
+final class RedisUpdater implements Updater {
 
     //TODO: Maybe rename???
     private final static String DATA_TOPIC = "DataTopic";
@@ -40,7 +40,7 @@ final class RedisLocalUpdater implements LocalUpdater {
     private final RTopic dataTopic;
     private final UUID senderId = UUID.randomUUID();
 
-    RedisLocalUpdater(Pipeline pipeline, RedissonClient redissonClient) {
+    RedisUpdater(Pipeline pipeline, RedissonClient redissonClient) {
         this.mapper = pipeline.mapper();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 

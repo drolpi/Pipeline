@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.LocalUpdater;
+import de.natrox.pipeline.part.Updater;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -32,15 +32,15 @@ public final class ConnectingMap implements StoreMap {
     private final StoreMap storageMap;
     private final @Nullable StoreMap globalCacheMap;
     private final @Nullable StoreMap localCacheMap;
-    private final @Nullable LocalUpdater localUpdater;
+    private final @Nullable Updater updater;
 
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable LocalUpdater localUpdater) {
+    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
-        this.localUpdater = localUpdater;
+        this.updater = updater;
         this.dataSynchronizer = new DataSynchronizer(this);
     }
 
@@ -75,9 +75,9 @@ public final class ConnectingMap implements StoreMap {
     public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        if (this.localCacheMap != null && this.localUpdater != null) {
+        if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.put(uniqueId, documentData);
-            this.localUpdater.pushUpdate(uniqueId, documentData, () -> {
+            this.updater.pushUpdate(uniqueId, documentData, () -> {
 
             });
         }
@@ -123,9 +123,9 @@ public final class ConnectingMap implements StoreMap {
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        if (this.localCacheMap != null && this.localUpdater != null) {
+        if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.remove(uniqueId);
-            this.localUpdater.pushRemoval(uniqueId, () -> {
+            this.updater.pushRemoval(uniqueId, () -> {
 
             });
         }
@@ -137,9 +137,9 @@ public final class ConnectingMap implements StoreMap {
 
     @Override
     public void clear() {
-        if (this.localCacheMap != null && this.localUpdater != null) {
+        if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.clear();
-            this.localUpdater.pushClear(() -> {
+            this.updater.pushClear(() -> {
 
             });
         }

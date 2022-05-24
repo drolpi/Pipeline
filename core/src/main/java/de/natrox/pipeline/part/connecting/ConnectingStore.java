@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.LocalUpdater;
+import de.natrox.pipeline.part.Updater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -31,13 +31,13 @@ public final class ConnectingStore implements Store {
     private final Store storage;
     private final @Nullable Store globalCache;
     private final @Nullable Store localCache;
-    private final @Nullable LocalUpdater localUpdater;
+    private final @Nullable Updater updater;
 
-    public ConnectingStore(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable LocalUpdater localUpdater) {
+    public ConnectingStore(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.localCache = localCache;
-        this.localUpdater = localUpdater;
+        this.updater = updater;
     }
 
     @Override
@@ -55,7 +55,7 @@ public final class ConnectingStore implements Store {
 
         StoreMap storageMap = this.storage.openMap(mapName);
 
-        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.localUpdater);
+        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.updater);
     }
 
     @Override

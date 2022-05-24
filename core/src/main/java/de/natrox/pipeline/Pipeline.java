@@ -29,7 +29,7 @@ import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
-import de.natrox.pipeline.part.provider.LocalUpdaterProvider;
+import de.natrox.pipeline.part.provider.UpdaterProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,26 +43,26 @@ public sealed interface Pipeline permits PipelineImpl {
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider,
         @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull LocalUpdaterProvider localUpdaterProvider
+        @NotNull UpdaterProvider updaterProvider
     ) {
         return new PipelineBuilderImpl(new PartBundle.Global(
             globalStorageProvider,
             globalCacheProvider,
             localCacheProvider,
-            localUpdaterProvider
+            updaterProvider
         ));
     }
 
     static @NotNull Builder of(
         @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull LocalUpdaterProvider localUpdaterProvider
+        @NotNull UpdaterProvider updaterProvider
     ) {
         return new PipelineBuilderImpl(new PartBundle.Global(
             globalStorageProvider,
             null,
             localCacheProvider,
-            localUpdaterProvider
+            updaterProvider
         ));
     }
 
