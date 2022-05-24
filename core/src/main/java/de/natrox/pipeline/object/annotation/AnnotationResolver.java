@@ -29,7 +29,7 @@ public final class AnnotationResolver {
         throw new UnsupportedOperationException();
     }
 
-    public static @NotNull Properties properties(Class<?> type) {
+    public static @NotNull Properties properties(@NotNull Class<?> type) {
         Check.notNull(type, "type");
         Properties properties = type.getAnnotation(Properties.class);
         if (properties == null)
@@ -37,12 +37,13 @@ public final class AnnotationResolver {
         return properties;
     }
 
-    public static @NotNull String identifier(Class<?> type) {
+    public static @NotNull String identifier(@NotNull Class<?> type) {
         Check.notNull(type, "type");
         return AnnotationResolver.properties(type).identifier();
     }
 
-    public static @NotNull String fieldName(Field field) {
+    public static @NotNull String fieldName(@NotNull Field field) {
+        Check.notNull(field, "field");
         Named named = field.getAnnotation(Named.class);
         return named != null ? named.name() : field.getName();
     }
