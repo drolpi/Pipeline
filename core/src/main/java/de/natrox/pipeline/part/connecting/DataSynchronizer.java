@@ -20,6 +20,7 @@ import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -43,31 +44,44 @@ public final class DataSynchronizer {
         this.executorService = Executors.newCachedThreadPool();
     }
 
-    public void synchronizeTo(UUID uniqueId, DocumentData document, DataSourceType... destinations) {
-        this.executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, document, destinations)));
+    public void synchronizeTo(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull... destinations) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
+        Check.notNull(destinations, "destinations");
+        this.executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, documentData, destinations)));
     }
 
-    public boolean to(UUID uniqueId, DocumentData document, DataSourceType... destinations) {
+    public boolean to(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull... destinations) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(documentData, "documentData");
+        Check.notNull(destinations, "destinations");
+
         List<DataSourceType> destinationList = Arrays.asList(destinations);
         if (this.localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
-            this.localCache.put(uniqueId, document);
+            this.localCache.put(uniqueId, documentData);
         }
         if (this.globalCache != null && destinationList.contains(DataSourceType.GLOBAL_CACHE)) {
-            this.globalCache.put(uniqueId, document);
+            this.globalCache.put(uniqueId, documentData);
         }
         if (destinationList.contains(DataSourceType.STORAGE)) {
-            this.storage.put(uniqueId, document);
+            this.storage.put(uniqueId, documentData);
         }
         return true;
     }
 
-    public CompletableFuture<DocumentData> synchronizeFom(UUID uniqueId, DataSourceType source) {
+    public CompletableFuture<DocumentData> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(source, "source");
+
         CompletableFuture<DocumentData> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
         return future;
     }
 
-    public DocumentData from(UUID uniqueId, DataSourceType source) {
+    public DocumentData from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(source, "source");
+
         if (this.localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
             return this.localCache.get(uniqueId);
         } else if (this.globalCache != null && source.equals(DataSourceType.GLOBAL_CACHE)) {
@@ -78,11 +92,14 @@ public final class DataSynchronizer {
         return null;
     }
 
-    public void synchronizeFromTo(UUID uniqueId, DataSourceType sourceType, DataSourceType... destinations) {
-        this.executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, sourceType, destinations)));
+    public void synchronizeFromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull... destinations) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(source, "source");
+        Check.notNull(destinations, "destinations");
+        this.executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, source, destinations)));
     }
 
-    public boolean fromTo(UUID uniqueId, DataSourceType source, DataSourceType... destinations) {
+    public boolean fromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
