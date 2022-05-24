@@ -116,4 +116,20 @@ public final class ConnectingStore implements Store {
         }
         this.storage.close();
     }
+
+    public Store storage() {
+        return this.storage;
+    }
+
+    public @Nullable Store globalCache() {
+        return this.globalCache;
+    }
+
+    public @Nullable Store localCache() {
+        return this.localCache;
+    }
+
+    public @Nullable Updater updater() {
+        return this.updater;
+    }
 }

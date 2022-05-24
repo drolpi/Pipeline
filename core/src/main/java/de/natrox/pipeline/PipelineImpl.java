@@ -47,7 +47,7 @@ final class PipelineImpl implements Pipeline {
         this.connectingStore = partBundle.createConnectingStore(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
-        this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.documentRepositoryFactory);
+        this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);
     }
 
     @Override

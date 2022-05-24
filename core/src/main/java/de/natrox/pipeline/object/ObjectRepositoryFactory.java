@@ -21,6 +21,7 @@ import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.object.option.ObjectOptions;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -30,11 +31,13 @@ import java.util.Map;
 public final class ObjectRepositoryFactory {
 
     private final Pipeline pipeline;
+    private final ConnectingStore store;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final Map<String, ObjectRepository<? extends ObjectData>> repositoryMap;
 
-    public ObjectRepositoryFactory(Pipeline pipeline, DocumentRepositoryFactory documentRepositoryFactory) {
+    public ObjectRepositoryFactory(Pipeline pipeline, ConnectingStore store, DocumentRepositoryFactory documentRepositoryFactory) {
         this.pipeline = pipeline;
+        this.store = store;
         this.documentRepositoryFactory = documentRepositoryFactory;
         this.repositoryMap = new HashMap<>();
     }
@@ -55,7 +58,7 @@ public final class ObjectRepositoryFactory {
 
     private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions<T> options) {
         DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options.toDocumentOptions());
-        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, type, documentRepository, options);
+        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, this.store, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 
         return repository;

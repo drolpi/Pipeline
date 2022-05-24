@@ -23,6 +23,7 @@ import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@SuppressWarnings("ClassCanBeRecord")
 final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
@@ -45,7 +45,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private final StoreMap storeMap;
     private final DocumentOptions options;
 
-    DocumentRepositoryImpl(String repositoryName, Store store, StoreMap storeMap, DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, ConnectingStore store, StoreMap storeMap, DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.store = store;
         this.storeMap = storeMap;
@@ -126,16 +126,19 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isDropped() {
+        //TODO:
         return false;
     }
 
     @Override
     public boolean isOpen() {
+        //TODO:
         return false;
     }
 
     @Override
     public long size() {
+        //TODO:
         return 0;
     }
 }

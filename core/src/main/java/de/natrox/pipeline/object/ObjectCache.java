@@ -16,10 +16,15 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.eventbus.EventBus;
+import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.option.ObjectOptions;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
+import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -29,15 +34,37 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ObjectCache<T extends ObjectData> {
 
     private final Pipeline pipeline;
+    private final Updater updater;
+
+    private final ObjectRepositoryImpl<T> repository;
     private final Class<T> type;
+    private final String mapName;
     private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(Pipeline pipeline, Class<T> type, ObjectOptions<T> options) {
+    ObjectCache(Pipeline pipeline, ConnectingStore store, ObjectRepositoryImpl<T> repository, ObjectOptions<T> options) {
         this.pipeline = pipeline;
-        this.type = type;
+        this.updater = store.updater();
+        this.repository = repository;
+        this.type = repository.type();
+        this.mapName = repository.mapName();
         this.cache = new ConcurrentHashMap<>();
         this.instanceCreator = options.instanceCreator() != null ? options.instanceCreator() : TypeInstanceCreator.create(type);
+        this.registerListeners();
+    }
+
+    private void registerListeners() {
+        if (this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+        eventBus.register(
+            EventListener
+                .builder(DocumentUpdateEvent.class)
+                .condition(event -> event.repositoryName().equals(this.mapName))
+                .handler(event -> this.repository.convertToData(event.documentId(), event.documentData()))
+                .build()
+        );
     }
 
     public T get(UUID uniqueId) {

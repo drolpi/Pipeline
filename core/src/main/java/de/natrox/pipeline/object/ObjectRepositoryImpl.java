@@ -22,6 +22,7 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.object.option.ObjectOptions;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +34,14 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     private final Class<T> type;
     private final DocumentRepository documentRepository;
+    private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, Class<T> type, DocumentRepository documentRepository, ObjectOptions<T> options) {
+    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
-        this.objectCache = new ObjectCache<>(pipeline, type, options);
+        this.mapName = documentRepository.name();
+        this.objectCache = new ObjectCache<>(pipeline, store, this, options);
     }
 
     @Override
@@ -91,6 +94,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public @NotNull Class<T> type() {
         return this.type;
+    }
+
+    public @NotNull String mapName() {
+        return this.mapName;
     }
 
     @Override

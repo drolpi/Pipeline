@@ -20,6 +20,7 @@ import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,5 +60,9 @@ public final class DocumentRepositoryFactory {
             collection.close();
         }
         this.repositoryMap.clear();
+    }
+
+    public @NotNull ConnectingStore connectingStore() {
+        return this.connectingStore;
     }
 }
