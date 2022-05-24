@@ -14,19 +14,3 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":gson-mapper",
-    ":guice-creator",
-    ":h2",
-    ":jackson-mapper",
-    ":json",
-    ":mongo",
-    ":mysql",
-    ":redis",
-    ":sql",
-    ":sqlite"
-)
