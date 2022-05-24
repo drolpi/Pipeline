@@ -16,6 +16,7 @@
 
 dependencies {
     implementation(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
+    implementation(files("D:\\workspace\\NatroxMC\\EventBus\\build\\libs\\eventbus.jar"))
 
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("org.reflections:reflections:0.10.2")

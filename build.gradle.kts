@@ -40,6 +40,7 @@ subprojects {
     dependencies {
         //TEMP
         compileOnly(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
+        compileOnly(files("D:\\workspace\\NatroxMC\\EventBus\\build\\libs\\eventbus.jar"))
 
         compileOnly("org.jetbrains:annotations:23.0.0")
         compileOnly("org.reflections:reflections:0.10.2")
