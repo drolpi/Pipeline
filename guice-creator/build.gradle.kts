@@ -14,3 +14,6 @@
  * limitations under the License.
  */
 
+dependencies {
+    implementation("com.google.inject:guice:5.1.0")
+}
