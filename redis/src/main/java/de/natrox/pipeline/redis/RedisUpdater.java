@@ -54,7 +54,6 @@ final class RedisUpdater implements Updater {
     }
 
     private void call(CharSequence channel, UpdaterEvent event) {
-        System.out.println("Null check!");
         if (event == null)
             return;
 
@@ -69,7 +68,6 @@ final class RedisUpdater implements Updater {
                 this.mapper.read(redisEvent.documentData(), DocumentData.class)
             );
 
-        System.out.println("Receive!");
         this.eventBus.call(event);
     }
 
@@ -77,7 +75,6 @@ final class RedisUpdater implements Updater {
     public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        System.out.println("Push!");
         this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.mapper.writeAsString(documentData)));
         if (callback != null)
             callback.run();
