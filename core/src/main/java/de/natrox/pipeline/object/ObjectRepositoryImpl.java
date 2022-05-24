@@ -44,7 +44,9 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.documentRepository.get(uniqueId).map(document -> this.convertToData(uniqueId, document));
+        // Instantiate T as fast as possible so that the Updater can still apply updates while loading a record
+        T data = this.objectCache.get(uniqueId);
+        return this.documentRepository.get(uniqueId).map(document -> this.convertToData(data, document));
     }
 
     @Override
@@ -98,31 +100,38 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public void drop() {
-
+        //TODO:
     }
 
     @Override
     public boolean isDropped() {
+        //TODO:
         return false;
     }
 
     @Override
     public boolean isOpen() {
+        //TODO:
         return false;
     }
 
     @Override
     public long size() {
+        //TODO:
         return 0;
     }
 
     @Override
     public void close() {
-
+        //TODO:
     }
 
     public T convertToData(UUID uniqueId, DocumentData document) {
         T data = this.objectCache.get(uniqueId);
+        return this.convertToData(data, document);
+    }
+
+    public T convertToData(T data, DocumentData document) {
         data.deserialize(document);
         return data;
     }

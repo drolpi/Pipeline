@@ -61,7 +61,7 @@ final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
 
         @Override
         public T next() {
-            Pair<UUID, DocumentData> next = documentIterator.next();
+            Pair<UUID, DocumentData> next = this.documentIterator.next();
             return repository.convertToData(next.first(), next.second());
         }
 
