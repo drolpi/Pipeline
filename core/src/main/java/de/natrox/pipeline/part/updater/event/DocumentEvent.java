@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.updater;
+package de.natrox.pipeline.part.updater.event;
 
 import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;

@@ -16,10 +16,9 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.pipeline.part.updater.DocumentEvent;
+import de.natrox.pipeline.part.updater.event.DocumentEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 final class RedisDocumentUpdateEvent extends DocumentEvent {

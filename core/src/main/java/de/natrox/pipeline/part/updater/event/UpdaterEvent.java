@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.updater;
+package de.natrox.pipeline.part.updater.event;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public final class DocumentUpdateEvent extends DocumentEvent {
+public abstract class UpdaterEvent implements Serializable {
 
-    private final DocumentData documentData;
+    private final UUID senderId;
+    private final String repositoryName;
 
-    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, DocumentData documentData) {
-        super(senderId, repositoryName, documentId);
-        Check.notNull(documentData, "documentData");
-        this.documentData = documentData;
+    public UpdaterEvent(@NotNull UUID senderId, @NotNull String repositoryName) {
+        Check.notNull(senderId, "senderId");
+        Check.notNull(repositoryName, "repositoryName");
+        this.senderId = senderId;
+        this.repositoryName = repositoryName;
     }
 
-    public @NotNull DocumentData documentData() {
-        return this.documentData;
+    public @NotNull UUID senderId() {
+        return this.senderId;
+    }
+
+    public @NotNull String repositoryName() {
+        return this.repositoryName;
     }
 }

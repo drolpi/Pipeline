@@ -22,7 +22,7 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.part.updater.DocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
