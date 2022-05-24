@@ -61,6 +61,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private T create(UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         T data = this.objectCache.get(uniqueId);
+        data.handleCreate();
         DocumentData documentData = this.convertToDocument(data);
         this.documentRepository.insert(uniqueId, documentData);
         return data;
@@ -88,6 +89,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        T data = this.objectCache.get(uniqueId);
+        data.handleDelete();
         this.documentRepository.remove(uniqueId);
     }
 

@@ -62,9 +62,17 @@ public final class ObjectCache<T extends ObjectData> {
             EventListener
                 .builder(DocumentUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(event -> this.repository.convertToData(event.documentId(), event.documentData()))
+                .handler(this::updateData)
                 .build()
         );
+    }
+
+    private void updateData(DocumentUpdateEvent event) {
+        T data = this.get(event.documentId());
+        DocumentData documentData = event.documentData();
+        this.repository.convertToData(data, documentData);
+
+        data.handleUpdate(documentData);
     }
 
     public T get(UUID uniqueId) {

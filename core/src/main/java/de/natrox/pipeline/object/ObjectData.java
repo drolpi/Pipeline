@@ -96,6 +96,30 @@ public abstract class ObjectData {
             .collect(Collectors.toSet());
     }
 
+    /**
+     * Executed after instantiation of the Object
+     * Executed before Object is put into the repository
+     */
+    public void handleCreate() {
+
+    }
+
+    /**
+     * Executed after an Updater updated the object
+     *
+     * @param before The DocumentData the object had before syncing
+     */
+    public void handleUpdate(@NotNull DocumentData before) {
+
+    }
+
+    /**
+     * Executed before the object is deleted from the repository.
+     */
+    public void handleDelete() {
+
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other)
