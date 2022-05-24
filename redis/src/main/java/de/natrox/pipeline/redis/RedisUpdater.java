@@ -21,6 +21,7 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.part.updater.event.DocumentEvent;
 import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
@@ -100,5 +101,19 @@ final class RedisUpdater implements Updater {
     @Override
     public @NotNull EventBus eventBus() {
         return this.eventBus;
+    }
+
+    static final class RedisDocumentUpdateEvent extends DocumentEvent {
+
+        private final String documentData;
+
+        public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, String documentData) {
+            super(senderId, repositoryName, documentId);
+            this.documentData = documentData;
+        }
+
+        public String documentData() {
+            return this.documentData;
+        }
     }
 }
