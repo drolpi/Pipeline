@@ -115,7 +115,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public void close() {
-        store.removeMap(this.repositoryName);
+        this.store.removeMap(this.repositoryName);
     }
 
     @Override
@@ -132,13 +132,11 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isOpen() {
-        //TODO:
-        return false;
+        return this.store != null && !this.store.isClosed() && !this.isDropped();
     }
 
     @Override
     public long size() {
-        //TODO:
-        return 0;
+        return this.storeMap.size();
     }
 }
