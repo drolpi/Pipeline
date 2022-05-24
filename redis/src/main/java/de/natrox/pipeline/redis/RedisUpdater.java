@@ -27,6 +27,7 @@ import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import de.natrox.pipeline.part.updater.event.UpdaterEvent;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
