@@ -76,9 +76,9 @@ MongoConfig mongoConfig = MongoConfig
     .host("0.0.0.0")
     .port(27017)
     .database("database")
-    .authSource("admin") //Optional
-    .username("username") //Optional
-    .password("password") //Optional
+    .authSource("admin") // Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 MongoProvider mongoProvider = mongoConfig.createProvider();
 ```
@@ -94,8 +94,8 @@ MySqlConfig mySqlConfig = MySqlConfig
     .port(3306)
     .database("database")
     .useSsl(false) //Optional
-    .username("username") //Optional
-    .password("password") //Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 MySqlProvider mySqlProvider = mySqlConfig.createProvider();
 ```
@@ -151,11 +151,11 @@ RedisConfig redisConfig = RedisConfig
             .builder()
             .host("0.0.0.0")
             .port(6379)
-            .database(0) //Optional
+            .database(0) // Optional
             .build()
     )
-    .username("username") //Optional
-    .password("password") //Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 RedisProvider redisProvider = redisConfig.createProvider();
 ```
@@ -170,17 +170,17 @@ RedisConfig redisConfig = RedisConfig
             .builder()
             .host("0.0.0.0")
             .port(6379)
-            .database(0) //Optional
+            .database(0) // Optional
             .build(),
         RedisEndpoint
             .builder()
             .host("0.0.0.1")
             .port(6379)
-            .database(5) //Optional
+            .database(5) // Optional
             .build()
     )
-    .username("username") //Optional
-    .password("password") //Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 RedisProvider redisProvider = redisConfig.createProvider();
 ```
@@ -203,11 +203,11 @@ RedisConfig redisConfig = RedisConfig
             .builder()
             .host("0.0.0.0")
             .port(6379)
-            .database(0) //Optional
+            .database(0) // Optional
             .build()
     )
-    .username("username") //Optional
-    .password("password") //Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 RedisProvider redisProvider = redisConfig.createProvider();
 ```
@@ -222,17 +222,17 @@ RedisConfig redisConfig = RedisConfig
             .builder()
             .host("0.0.0.0")
             .port(6379)
-            .database(0) //Optional
+            .database(0) // Optional
             .build(),
         RedisEndpoint
             .builder()
             .host("0.0.0.1")
             .port(6379)
-            .database(5) //Optional
+            .database(5) // Optional
             .build()
     )
-    .username("username") //Optional
-    .password("password") //Optional
+    .username("username") // Optional
+    .password("password") // Optional
     .build();
 RedisProvider redisProvider = redisConfig.createProvider();
 ```
