@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.updater.event;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface UpdaterProvider extends PartProvider {
+import java.util.UUID;
 
-    @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline);
+public final class MapClearEvent extends UpdaterEvent {
 
+    public MapClearEvent(@NotNull UUID senderId, @NotNull String repositoryName) {
+        super(senderId, repositoryName);
+    }
 }

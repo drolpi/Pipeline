@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import com.google.common.base.Strings;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Updater;
+import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;

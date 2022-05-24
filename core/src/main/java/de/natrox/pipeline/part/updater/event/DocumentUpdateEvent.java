@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.updater.event;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Updater {
+public final class DocumentUpdateEvent extends DocumentEvent {
 
-    void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData pipelineData, @Nullable Runnable callback);
+    private final DocumentData documentData;
 
-    void pushRemoval(@NotNull UUID uniqueId, @Nullable Runnable callback);
+    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, DocumentData documentData) {
+        super(senderId, repositoryName, documentId);
+        Check.notNull(documentData, "documentData");
+        this.documentData = documentData;
+    }
 
-    void pushClear(@Nullable Runnable callback);
-
+    public @NotNull DocumentData documentData() {
+        return this.documentData;
+    }
 }

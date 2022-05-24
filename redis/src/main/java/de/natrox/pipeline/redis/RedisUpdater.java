@@ -17,18 +17,23 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
+import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.Updater;
+import de.natrox.pipeline.part.updater.event.DocumentEvent;
+import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.MapClearEvent;
+import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.event.UpdaterEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
-import org.redisson.api.listener.MessageListener;
 import org.redisson.codec.SerializationCodec;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 final class RedisUpdater implements Updater {
@@ -37,84 +42,76 @@ final class RedisUpdater implements Updater {
     private final static String DATA_TOPIC = "DataTopic";
 
     private final DocumentMapper documentMapper;
+    private final EventBus eventBus;
     private final RTopic dataTopic;
     private final UUID senderId = UUID.randomUUID();
 
     RedisUpdater(Pipeline pipeline, RedissonClient redissonClient) {
         this.documentMapper = pipeline.documentMapper();
+        this.eventBus = EventBus.create();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 
-        //TODO:
-        MessageListener<DataBlock> messageListener = (channel, dataBlock) -> {
-            //TODO:
-        };
-        this.dataTopic.addListener(DataBlock.class, messageListener);
+        this.dataTopic.addListener(UpdaterEvent.class, this::call);
+    }
+
+    private void call(CharSequence channel, UpdaterEvent event) {
+        if (event == null)
+            return;
+
+        if (event.senderId().equals(this.senderId))
+            return;
+
+        if (event instanceof RedisDocumentUpdateEvent redisEvent)
+            event = new DocumentUpdateEvent(
+                redisEvent.senderId(),
+                redisEvent.repositoryName(),
+                redisEvent.documentId(),
+                this.mapper.read(redisEvent.documentData(), DocumentData.class)
+            );
+
+        this.eventBus.call(event);
     }
 
     @Override
-    public void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
+    public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new UpdateDataBlock(this.senderId, uniqueId, this.documentMapper.writeAsString(documentData)));
+        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.documentMapper.writeAsString(documentData)));
         if (callback != null)
             callback.run();
     }
 
     @Override
-    public void pushRemoval(@NotNull UUID uniqueId, @Nullable Runnable callback) {
+    public void pushRemoval(@NotNull String repositoryName, @NotNull UUID uniqueId, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
-        this.dataTopic.publish(new RemoveDataBlock(this.senderId, uniqueId));
+        this.dataTopic.publish(new DocumentRemoveEvent(this.senderId, repositoryName, uniqueId));
         if (callback != null)
             callback.run();
     }
 
     @Override
-    public void pushClear(@Nullable Runnable callback) {
-        this.dataTopic.publish(new ClearDataBlock(this.senderId));
+    public void pushClear(@NotNull String repositoryName, @Nullable Runnable callback) {
+        this.dataTopic.publish(new MapClearEvent(this.senderId, repositoryName));
         if (callback != null)
             callback.run();
     }
 
-    static abstract class DataBlock implements Serializable {
-
-        public final UUID senderId;
-
-        DataBlock(@NotNull UUID senderId) {
-            this.senderId = senderId;
-        }
+    @Override
+    public @NotNull EventBus eventBus() {
+        return this.eventBus;
     }
 
-    static abstract class DocumentDataBlock extends DataBlock {
+    static final class RedisDocumentUpdateEvent extends DocumentEvent {
 
-        public final UUID documentId;
+        private final String documentData;
 
-        DocumentDataBlock(@NotNull UUID senderId, @NotNull UUID documentId) {
-            super(senderId);
-            this.documentId = documentId;
+        public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, String documentData) {
+            super(senderId, repositoryName, documentId);
+            this.documentData = documentData;
         }
-    }
 
-    static class ClearDataBlock extends DataBlock {
-
-        public ClearDataBlock(@NotNull UUID senderId) {
-            super(senderId);
-        }
-    }
-
-    static class UpdateDataBlock extends DocumentDataBlock {
-
-        public final String dataToUpdate;
-
-        public UpdateDataBlock(@NotNull UUID senderId, @NotNull UUID documentId, String dataToUpdate) {
-            super(senderId, documentId);
-            this.dataToUpdate = dataToUpdate;
-        }
-    }
-
-    static class RemoveDataBlock extends DocumentDataBlock {
-
-        public RemoveDataBlock(@NotNull UUID senderId, @NotNull UUID documentId) {
-            super(senderId, documentId);
+        public String documentData() {
+            return this.documentData;
         }
     }
 }

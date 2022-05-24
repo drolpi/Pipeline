@@ -18,9 +18,12 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
+import de.natrox.eventbus.EventBus;
+import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.part.Updater;
 import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +32,7 @@ import java.util.UUID;
 
 public final class ConnectingMap implements StoreMap {
 
+    private final String mapName;
     private final StoreMap storageMap;
     private final @Nullable StoreMap globalCacheMap;
     private final @Nullable StoreMap localCacheMap;
@@ -36,12 +40,45 @@ public final class ConnectingMap implements StoreMap {
 
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
+    public ConnectingMap(String mapName, StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
+        this.mapName = mapName;
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
         this.updater = updater;
         this.dataSynchronizer = new DataSynchronizer(this);
+        this.registerListeners();
+    }
+
+    private void registerListeners() {
+        if (this.localCacheMap == null || this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+
+        eventBus.register(
+            EventListener
+                .builder(DocumentUpdateEvent.class)
+                .condition(event -> event.repositoryName().equals(this.mapName))
+                .handler(event -> this.localCacheMap.put(event.documentId(), event.documentData()))
+                .build()
+        );
+
+        eventBus.register(
+            EventListener
+                .builder(DocumentUpdateEvent.class)
+                .condition(event -> event.repositoryName().equals(this.mapName))
+                .handler(event -> this.localCacheMap.remove(event.documentId()))
+                .build()
+        );
+
+        eventBus.register(
+            EventListener
+                .builder(DocumentUpdateEvent.class)
+                .condition(event -> event.repositoryName().equals(this.mapName))
+                .handler(event -> this.localCacheMap.clear())
+                .build()
+        );
     }
 
     @Override
@@ -77,7 +114,7 @@ public final class ConnectingMap implements StoreMap {
         Check.notNull(documentData, "documentData");
         if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.put(uniqueId, documentData);
-            this.updater.pushUpdate(uniqueId, documentData, () -> {
+            this.updater.pushUpdate(this.mapName, uniqueId, documentData, () -> {
 
             });
         }
@@ -125,7 +162,7 @@ public final class ConnectingMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.remove(uniqueId);
-            this.updater.pushRemoval(uniqueId, () -> {
+            this.updater.pushRemoval(this.mapName, uniqueId, () -> {
 
             });
         }
@@ -139,7 +176,7 @@ public final class ConnectingMap implements StoreMap {
     public void clear() {
         if (this.localCacheMap != null && this.updater != null) {
             this.localCacheMap.clear();
-            this.updater.pushClear(() -> {
+            this.updater.pushClear(this.mapName, () -> {
 
             });
         }
