@@ -104,7 +104,8 @@ public final class ConnectingMap implements StoreMap {
 
     private DocumentData fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
         DocumentData documentData = storeMap.get(uniqueId);
-        this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
+        if(documentData != null)
+            this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
         return documentData;
     }
 
