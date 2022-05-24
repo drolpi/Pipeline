@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.updater;
 
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -27,15 +28,17 @@ public abstract class UpdaterEvent implements Serializable {
     private final String repositoryName;
 
     public UpdaterEvent(@NotNull UUID senderId, @NotNull String repositoryName) {
+        Check.notNull(senderId, "senderId");
+        Check.notNull(repositoryName, "repositoryName");
         this.senderId = senderId;
         this.repositoryName = repositoryName;
     }
 
-    public UUID senderId() {
+    public @NotNull UUID senderId() {
         return this.senderId;
     }
 
-    public String repositoryName() {
+    public @NotNull String repositoryName() {
         return this.repositoryName;
     }
 }

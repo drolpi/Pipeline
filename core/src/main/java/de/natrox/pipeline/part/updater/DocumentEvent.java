@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.updater;
 
+import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -26,10 +27,11 @@ public abstract class DocumentEvent extends UpdaterEvent {
 
     public DocumentEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId) {
         super(senderId, repositoryName);
+        Check.notNull(documentId, "documentId");
         this.documentId = documentId;
     }
 
-    public UUID documentId() {
+    public @NotNull UUID documentId() {
         return this.documentId;
     }
 }

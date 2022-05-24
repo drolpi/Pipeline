@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.updater;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,10 +28,11 @@ public final class DocumentUpdateEvent extends DocumentEvent {
 
     public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, DocumentData documentData) {
         super(senderId, repositoryName, documentId);
+        Check.notNull(documentData, "documentData");
         this.documentData = documentData;
     }
 
-    public DocumentData documentData() {
+    public @NotNull DocumentData documentData() {
         return this.documentData;
     }
 }
