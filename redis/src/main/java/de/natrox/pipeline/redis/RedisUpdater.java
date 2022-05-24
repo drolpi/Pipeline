@@ -20,11 +20,12 @@ import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentEvent;
 import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
-import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.UpdaterEvent;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +66,7 @@ final class RedisUpdater implements Updater {
                 redisEvent.senderId(),
                 redisEvent.repositoryName(),
                 redisEvent.documentId(),
-                this.mapper.read(redisEvent.documentData(), DocumentData.class)
+                this.documentMapper.read(redisEvent.documentData())
             );
 
         this.eventBus.call(event);
