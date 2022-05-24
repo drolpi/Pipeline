@@ -20,7 +20,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.bson.Document;
@@ -31,18 +31,18 @@ import java.util.Set;
 
 final class MongoStore extends AbstractStore {
 
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
     private final MongoDatabase mongoDatabase;
 
     MongoStore(Pipeline pipeline, MongoDatabase mongoDatabase) {
-        this.mapper = pipeline.mapper();
+        this.documentMapper = pipeline.documentMapper();
         this.mongoDatabase = mongoDatabase;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         Check.notNull(mapName, "mapName");
-        return new MongoMap(this.collection(mapName), this.mapper);
+        return new MongoMap(this.collection(mapName), this.documentMapper);
     }
 
     @Override

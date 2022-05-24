@@ -16,13 +16,13 @@
 
 package de.natrox.pipeline.jackson;
 
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface JacksonMapper extends Mapper permits JacksonMapperImpl {
+public sealed interface JacksonDocumentMapper extends DocumentMapper permits JacksonDocumentMapperImpl {
 
-    static @NotNull JacksonMapperImpl create() {
-        return new JacksonMapperImpl();
+    static @NotNull JacksonDocumentMapperImpl create() {
+        return new JacksonDocumentMapperImpl();
     }
 
 }

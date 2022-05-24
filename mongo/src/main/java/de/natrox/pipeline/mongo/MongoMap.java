@@ -23,7 +23,7 @@ import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.bson.Document;
@@ -45,11 +45,11 @@ final class MongoMap implements StoreMap {
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final MongoCollection<Document> collection;
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
 
-    MongoMap(MongoCollection<Document> collection, Mapper mapper) {
+    MongoMap(MongoCollection<Document> collection, DocumentMapper documentMapper) {
         this.collection = collection;
-        this.mapper = mapper;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -62,7 +62,7 @@ final class MongoMap implements StoreMap {
             return null;
 
         Document valueDocument = document.get(VALUE_NAME, Document.class);
-        return this.mapper.read(valueDocument.toJson(), DocumentData.class);
+        return this.documentMapper.read(valueDocument.toJson());
     }
 
     @Override
@@ -74,7 +74,7 @@ final class MongoMap implements StoreMap {
             Filters.eq(KEY_NAME, uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
-                Updates.set(VALUE_NAME, Document.parse(this.mapper.writeAsString(documentData)))
+                Updates.set(VALUE_NAME, Document.parse(this.documentMapper.writeAsString(documentData)))
             ),
             INSERT_OR_REPLACE_OPTIONS);
     }
@@ -105,7 +105,7 @@ final class MongoMap implements StoreMap {
         Collection<DocumentData> documents = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(this.mapper.read(cursor.next().get(VALUE_NAME, Document.class).toJson(), DocumentData.class));
+                documents.add(this.documentMapper.read(cursor.next().get(VALUE_NAME, Document.class).toJson()));
             }
         }
         return PipeStream.fromIterable(documents);
@@ -118,7 +118,7 @@ final class MongoMap implements StoreMap {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get(KEY_NAME, UUID.class);
-                DocumentData value = this.mapper.read(document.get(VALUE_NAME, Document.class).toJson(), DocumentData.class);
+                DocumentData value = this.documentMapper.read(document.get(VALUE_NAME, Document.class).toJson());
 
                 entries.put(key, value);
             }

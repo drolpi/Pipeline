@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.mapper;
 
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,24 +30,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @ApiStatus.Internal
-public interface Mapper {
+public interface DocumentMapper {
 
-    @NotNull String writeAsString(@NotNull Object object);
+    @NotNull String writeAsString(@NotNull DocumentData documentData);
 
-    void write(@NotNull Writer writer, @NotNull Object object);
+    void write(@NotNull Writer writer, @NotNull DocumentData documentData);
 
-    <T> @NotNull T read(@NotNull String json, Class<? extends T> type);
+    @NotNull DocumentData read(@NotNull String json);
 
-    <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type);
+    @NotNull DocumentData read(@NotNull Reader reader);
 
-    default <T> @NotNull T read(@NotNull InputStream inputStream, Class<? extends T> type) {
-        return this.read(new InputStreamReader(inputStream, StandardCharsets.UTF_8), type);
+    default @NotNull DocumentData read(@NotNull InputStream inputStream) {
+        return this.read(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
-    default <T> @NotNull T read(@NotNull Path path, Class<? extends T> type) throws IOException {
-        return this.read(Files.newInputStream(path), type);
+    default @NotNull DocumentData read(@NotNull Path path) throws IOException {
+        return this.read(Files.newInputStream(path));
     }
-
-    <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type);
 
 }

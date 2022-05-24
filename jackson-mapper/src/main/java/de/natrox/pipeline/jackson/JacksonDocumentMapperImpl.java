@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-final class JacksonMapperImpl implements JacksonMapper {
+final class JacksonDocumentMapperImpl implements JacksonDocumentMapper {
 
     private final ObjectMapper objectMapper;
 
-    JacksonMapperImpl() {
+    JacksonDocumentMapperImpl() {
         SimpleModule simpleModule = new SimpleModule()
             .addDeserializer(DocumentData.class, new DocumentDataDeserializer());
 
@@ -59,43 +59,38 @@ final class JacksonMapperImpl implements JacksonMapper {
     }
 
     @Override
-    public @NotNull String writeAsString(@NotNull Object object) {
+    public @NotNull String writeAsString(@NotNull DocumentData documentData) {
         try {
-            return this.objectMapper.writeValueAsString(object);
+            return this.objectMapper.writeValueAsString(documentData);
         } catch (JsonProcessingException exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
     }
 
     @Override
-    public void write(@NotNull Writer writer, @NotNull Object object) {
+    public void write(@NotNull Writer writer, @NotNull DocumentData documentData) {
         try {
-            this.objectMapper.writeValue(writer, object);
+            this.objectMapper.writeValue(writer, documentData);
         } catch (IOException exception) {
             throw new RuntimeException("Unable to write json", exception);
         }
     }
 
     @Override
-    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
+    public @NotNull DocumentData read(@NotNull String json) {
         try {
-            return this.objectMapper.readValue(json, type);
+            return this.objectMapper.readValue(json, DocumentData.class);
         } catch (JsonProcessingException exception) {
             throw new RuntimeException(exception);
         }
     }
 
     @Override
-    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
+    public @NotNull DocumentData read(@NotNull Reader reader) {
         try {
-            return this.objectMapper.readValue(reader, type);
+            return this.objectMapper.readValue(reader, DocumentData.class);
         } catch (IOException exception) {
             throw new RuntimeException("Unable to parse json from reader", exception);
         }
-    }
-
-    @Override
-    public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return this.objectMapper.convertValue(object, type);
     }
 }

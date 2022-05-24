@@ -18,7 +18,7 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 
 final class RedisStore extends AbstractStore {
 
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
     private final RedissonClient redissonClient;
 
     RedisStore(Pipeline pipeline, RedissonClient redissonClient) {
-        this.mapper = pipeline.mapper();
+        this.documentMapper = pipeline.documentMapper();
         this.redissonClient = redissonClient;
     }
 
@@ -86,7 +86,7 @@ final class RedisStore extends AbstractStore {
         return this.redissonClient;
     }
 
-    public Mapper mapper() {
-        return this.mapper;
+    public DocumentMapper mapper() {
+        return this.documentMapper;
     }
 }

@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -43,13 +43,13 @@ final class RedisMap implements StoreMap {
     private final RedisStore redisStore;
     private final RedissonClient redissonClient;
     private final String mapName;
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
 
     RedisMap(RedisStore redisStore, String mapName) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.mapper = redisStore.mapper();
+        this.documentMapper = redisStore.mapper();
     }
 
     @Override
@@ -60,7 +60,7 @@ final class RedisMap implements StoreMap {
         if (json == null)
             return null;
 
-        return this.mapper.read(json, DocumentData.class);
+        return this.documentMapper.read(json);
     }
 
     @Override
@@ -69,7 +69,7 @@ final class RedisMap implements StoreMap {
         Check.notNull(documentData, "documentData");
 
         RBucket<String> bucket = this.bucket(uniqueId);
-        bucket.set(this.mapper.writeAsString(documentData));
+        bucket.set(this.documentMapper.writeAsString(documentData));
     }
 
     @Override
@@ -101,7 +101,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            documents.add(this.mapper.read(stringValue, DocumentData.class));
+            documents.add(this.documentMapper.read(stringValue));
         }
         return PipeStream.fromIterable(documents);
     }
@@ -120,7 +120,7 @@ final class RedisMap implements StoreMap {
             if (!(objectValue instanceof String stringValue))
                 continue;
 
-            DocumentData value = this.mapper.read(stringValue, DocumentData.class);
+            DocumentData value = this.documentMapper.read(stringValue);
 
             entries.put(key, value);
         }

@@ -20,13 +20,13 @@ import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
 import de.natrox.pipeline.part.updater.event.DocumentEvent;
 import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.UpdaterEvent;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RTopic;
@@ -40,13 +40,13 @@ final class RedisUpdater implements Updater {
     //TODO: Maybe rename???
     private final static String DATA_TOPIC = "DataTopic";
 
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
     private final EventBus eventBus;
     private final RTopic dataTopic;
     private final UUID senderId = UUID.randomUUID();
 
     RedisUpdater(Pipeline pipeline, RedissonClient redissonClient) {
-        this.mapper = pipeline.mapper();
+        this.documentMapper = pipeline.documentMapper();
         this.eventBus = EventBus.create();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 
@@ -75,7 +75,7 @@ final class RedisUpdater implements Updater {
     public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.mapper.writeAsString(documentData)));
+        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.documentMapper.writeAsString(documentData)));
         if (callback != null)
             callback.run();
     }
