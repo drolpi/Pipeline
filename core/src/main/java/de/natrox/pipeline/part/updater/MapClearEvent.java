@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.updater;
 
-import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Updater {
+public final class MapClearEvent extends UpdaterEvent {
 
-    void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData pipelineData, @Nullable Runnable callback);
-
-    void pushRemoval(@NotNull UUID uniqueId, @Nullable Runnable callback);
-
-    void pushClear(@Nullable Runnable callback);
-
+    public MapClearEvent(@NotNull UUID senderId, @NotNull String repositoryName) {
+        super(senderId, repositoryName);
+    }
 }

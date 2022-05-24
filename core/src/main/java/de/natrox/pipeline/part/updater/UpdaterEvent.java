@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.updater;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface UpdaterProvider extends PartProvider {
+import java.io.Serializable;
+import java.util.UUID;
 
-    @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline);
+public abstract class UpdaterEvent implements Serializable {
 
+    private final UUID senderId;
+    private final String repositoryName;
+
+    public UpdaterEvent(@NotNull UUID senderId, @NotNull String repositoryName) {
+        this.senderId = senderId;
+        this.repositoryName = repositoryName;
+    }
+
+    public UUID senderId() {
+        return this.senderId;
+    }
+
+    public String repositoryName() {
+        return this.repositoryName;
+    }
 }

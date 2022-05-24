@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.redis;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.DocumentEvent;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface UpdaterProvider extends PartProvider {
+import java.io.Serializable;
+import java.util.UUID;
 
-    @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline);
+final class RedisDocumentUpdateEvent extends DocumentEvent {
 
+    private final String documentData;
+
+    public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, String documentData) {
+        super(senderId, repositoryName, documentId);
+        this.documentData = documentData;
+    }
+
+    public String documentData() {
+        return this.documentData;
+    }
 }

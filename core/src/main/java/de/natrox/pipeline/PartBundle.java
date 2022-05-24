@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.pipeline.part.Updater;
+import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;

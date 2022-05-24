@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.updater;
 
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface UpdaterProvider extends PartProvider {
+import java.util.UUID;
 
-    @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline);
+public final class DocumentUpdateEvent extends DocumentEvent {
 
+    private final DocumentData documentData;
+
+    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, DocumentData documentData) {
+        super(senderId, repositoryName, documentId);
+        this.documentData = documentData;
+    }
+
+    public DocumentData documentData() {
+        return this.documentData;
+    }
 }

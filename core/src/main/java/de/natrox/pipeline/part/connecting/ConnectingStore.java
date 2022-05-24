@@ -17,9 +17,9 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.Updater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +55,7 @@ public final class ConnectingStore implements Store {
 
         StoreMap storageMap = this.storage.openMap(mapName);
 
-        return new ConnectingMap(storageMap, globalCacheMap, localCacheMap, this.updater);
+        return new ConnectingMap(mapName, storageMap, globalCacheMap, localCacheMap, this.updater);
     }
 
     @Override
