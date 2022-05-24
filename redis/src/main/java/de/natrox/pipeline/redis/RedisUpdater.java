@@ -19,7 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,12 +36,12 @@ final class RedisUpdater implements Updater {
     //TODO: Maybe rename???
     private final static String DATA_TOPIC = "DataTopic";
 
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
     private final RTopic dataTopic;
     private final UUID senderId = UUID.randomUUID();
 
     RedisUpdater(Pipeline pipeline, RedissonClient redissonClient) {
-        this.mapper = pipeline.mapper();
+        this.documentMapper = pipeline.documentMapper();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 
         //TODO:
@@ -55,7 +55,7 @@ final class RedisUpdater implements Updater {
     public void pushUpdate(@NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new UpdateDataBlock(this.senderId, uniqueId, this.mapper.writeAsString(documentData)));
+        this.dataTopic.publish(new UpdateDataBlock(this.senderId, uniqueId, this.documentMapper.writeAsString(documentData)));
         if (callback != null)
             callback.run();
     }

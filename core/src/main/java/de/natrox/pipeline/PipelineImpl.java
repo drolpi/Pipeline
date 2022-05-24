@@ -20,7 +20,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.document.option.DocumentOptions;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.ObjectRepositoryFactory;
@@ -34,16 +34,16 @@ import java.util.Set;
 final class PipelineImpl implements Pipeline {
 
     private final ConnectingStore connectingStore;
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
-    PipelineImpl(@NotNull PartBundle partBundle, @NotNull Mapper mapper) {
+    PipelineImpl(@NotNull PartBundle partBundle, @NotNull DocumentMapper documentMapper) {
         Check.notNull(partBundle, "partBundle");
-        Check.notNull(mapper, "mapper");
+        Check.notNull(documentMapper, "mapper");
 
-        this.mapper = mapper;
+        this.documentMapper = documentMapper;
         this.connectingStore = partBundle.createConnectingStore(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
@@ -82,8 +82,8 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull Mapper mapper() {
-        return this.mapper;
+    public @NotNull DocumentMapper documentMapper() {
+        return this.documentMapper;
     }
 
     @Override

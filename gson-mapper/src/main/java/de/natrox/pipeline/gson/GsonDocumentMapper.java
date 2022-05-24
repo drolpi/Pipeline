@@ -16,12 +16,12 @@
 
 package de.natrox.pipeline.gson;
 
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface GsonMapper extends Mapper permits GsonMapperImpl {
+public sealed interface GsonDocumentMapper extends DocumentMapper permits GsonDocumentMapperImpl {
 
-    static @NotNull GsonMapper create() {
-        return new GsonMapperImpl();
+    static @NotNull GsonDocumentMapper create() {
+        return new GsonDocumentMapperImpl();
     }
 }

@@ -19,7 +19,7 @@ package de.natrox.pipeline.sql;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -37,12 +37,12 @@ public class SqlMap implements StoreMap {
 
     private final SqlStore sqlStore;
     private final String mapName;
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
 
-    SqlMap(SqlStore sqlStore, String mapName, Mapper mapper) {
+    SqlMap(SqlStore sqlStore, String mapName, DocumentMapper documentMapper) {
         this.sqlStore = sqlStore;
         this.mapName = mapName;
-        this.mapper = mapper;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SqlMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
             String.format(SQLConstants.SELECT_BY, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
-            resultSet -> resultSet.next() ? this.mapper.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class) : null,
+            resultSet -> resultSet.next() ? this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL)) : null,
             null,
             uniqueId.toString()
         );
@@ -61,7 +61,7 @@ public class SqlMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
 
-        String jsonDocument = this.mapper.writeAsString(documentData);
+        String jsonDocument = this.documentMapper.writeAsString(documentData);
         if (!this.contains(uniqueId)) {
             this.sqlStore.executeUpdate(
                 String.format(SQLConstants.INSERT_BY, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
@@ -106,7 +106,7 @@ public class SqlMap implements StoreMap {
             resultSet -> {
                 List<DocumentData> documents = new ArrayList<>();
                 while (resultSet.next())
-                    documents.add(this.mapper.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class));
+                    documents.add(this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL)));
 
                 return PipeStream.fromIterable(documents);
             }, PipeStream.empty());
@@ -121,7 +121,7 @@ public class SqlMap implements StoreMap {
                 while (resultSet.next())
                     map.put(
                         UUID.fromString(resultSet.getString(SQLConstants.COLUMN_KEY)),
-                        this.mapper.read(resultSet.getString(SQLConstants.COLUMN_VAL), DocumentData.class)
+                        this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL))
                     );
                 return PipeStream.fromMap(map);
             }, PipeStream.empty());

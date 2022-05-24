@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Reader;
 import java.io.Writer;
 
-final class GsonMapperImpl implements GsonMapper {
+final class GsonDocumentMapperImpl implements GsonDocumentMapper {
 
     public final Gson gson = new GsonBuilder()
         .serializeNulls()
@@ -35,32 +35,27 @@ final class GsonMapperImpl implements GsonMapper {
         .registerTypeAdapter(DocumentData.class, new DocumentDataDeserializer())
         .create();
 
-    GsonMapperImpl() {
+    GsonDocumentMapperImpl() {
 
     }
 
     @Override
-    public @NotNull String writeAsString(@NotNull Object object) {
-        return this.gson.toJson(object);
+    public @NotNull String writeAsString(@NotNull DocumentData documentData) {
+        return this.gson.toJson(documentData);
     }
 
     @Override
-    public void write(@NotNull Writer writer, @NotNull Object object) {
-        this.gson.toJson(object, writer);
+    public void write(@NotNull Writer writer, @NotNull DocumentData documentData) {
+        this.gson.toJson(documentData, writer);
     }
 
     @Override
-    public <T> @NotNull T read(@NotNull String json, Class<? extends T> type) {
-        return this.gson.fromJson(json, type);
+    public @NotNull DocumentData read(@NotNull String json) {
+        return this.gson.fromJson(json, DocumentData.class);
     }
 
     @Override
-    public <T> @NotNull T read(@NotNull Reader reader, Class<? extends T> type) {
-        return this.gson.fromJson(JsonParser.parseReader(reader), type);
-    }
-
-    @Override
-    public <T> @NotNull T convert(@NotNull Object object, Class<? extends T> type) {
-        return this.read(this.writeAsString(object), type);
+    public @NotNull DocumentData read(@NotNull Reader reader) {
+        return this.gson.fromJson(JsonParser.parseReader(reader), DocumentData.class);
     }
 }

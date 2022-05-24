@@ -243,20 +243,20 @@ RedisProvider redisProvider = redisConfig.createProvider();
 
 # Mapper
 
-The Mapper handles the conversion of objects.
+The DocumentMapper handles the serialization/deserialization of the DocumentData class.
 
 ## Gson
 
 Code example:
 ```java
-Mapper mapper = GsonMapper.create();
+DocumentMapper documentMapper = GsonDocumentMapper.create();
 ```
 
 ## Jackson
 
 Code example:
 ```java
-Mapper mapper = JacksonMapper.create();
+DocumentMapper documentMapper = JacksonDocumentMapper.create();
 ```
 
 # Build your Pipeline

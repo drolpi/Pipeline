@@ -19,7 +19,7 @@ package de.natrox.pipeline.json;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import jodd.io.FileNameUtil;
@@ -41,11 +41,11 @@ import java.util.stream.Stream;
 final class JsonMap implements StoreMap {
 
     private final Path mapPath;
-    private final Mapper mapper;
+    private final DocumentMapper documentMapper;
 
-    public JsonMap(String mapName, Path directory, Mapper mapper) {
+    public JsonMap(String mapName, Path directory, DocumentMapper documentMapper) {
         this.mapPath = directory.resolve(mapName);
-        this.mapper = mapper;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -167,7 +167,7 @@ final class JsonMap implements StoreMap {
         File file = new File(path.toUri());
         if (!file.exists())
             return null;
-        return this.mapper.read(path, DocumentData.class);
+        return this.documentMapper.read(path);
     }
 
     private void saveJsonToFile(@NotNull UUID objectUUID, @NotNull DocumentData documentData) throws IOException {
@@ -182,7 +182,7 @@ final class JsonMap implements StoreMap {
         }
 
         FileWriter writer = new FileWriter(file);
-        this.mapper.write(writer, documentData);
+        this.documentMapper.write(writer, documentData);
     }
 
     private Path savedFile(@NotNull UUID uniqueId) {

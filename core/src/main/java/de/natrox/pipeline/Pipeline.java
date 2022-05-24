@@ -20,7 +20,7 @@ import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.option.DocumentOptions;
-import de.natrox.pipeline.mapper.Mapper;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
@@ -131,7 +131,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     @NotNull Set<String> repositories();
 
-    @NotNull Mapper mapper();
+    @NotNull DocumentMapper documentMapper();
 
     boolean isShutDowned();
 
@@ -149,7 +149,7 @@ public sealed interface Pipeline permits PipelineImpl {
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
-        @NotNull Builder mapper(@NotNull Mapper mapper);
+        @NotNull Builder documentMapper(@NotNull DocumentMapper documentMapper);
 
     }
 
