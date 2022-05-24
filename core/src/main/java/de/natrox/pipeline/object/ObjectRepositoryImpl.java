@@ -124,8 +124,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public long size() {
-        //TODO:
-        return 0;
+        return this.documentRepository.size();
     }
 
     @Override
