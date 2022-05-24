@@ -15,5 +15,6 @@
  */
 
 dependencies {
+    compileOnly(project(":core"))
     implementation("com.google.inject:guice:5.1.0")
 }
