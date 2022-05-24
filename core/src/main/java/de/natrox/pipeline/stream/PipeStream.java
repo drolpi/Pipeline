@@ -23,7 +23,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,20 +38,7 @@ public interface PipeStream<T> extends Iterable<T> {
 
     static <T, U> PipeStream<Pair<T, U>> fromMap(Map<T, U> map) {
         Check.notNull(map, "map");
-        return PipeStream.fromIterable(() -> new Iterator<>() {
-            private final Iterator<Map.Entry<T, U>> entryIterator = map.entrySet().iterator();
-
-            @Override
-            public boolean hasNext() {
-                return this.entryIterator.hasNext();
-            }
-
-            @Override
-            public Pair<T, U> next() {
-                Map.Entry<T, U> entry = this.entryIterator.next();
-                return new Pair<>(entry.getKey(), entry.getValue());
-            }
-        });
+        return PipeStream.fromIterable(() -> new PairIterator<>(map));
     }
 
     static <V> PipeStream<V> single(@NotNull V v) {
