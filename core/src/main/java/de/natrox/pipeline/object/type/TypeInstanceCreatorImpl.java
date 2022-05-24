@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.object.type;
 
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public final class SimpleInstanceCreator<T extends ObjectData> implements InstanceCreator<T> {
+final class TypeInstanceCreatorImpl<T extends ObjectData> implements TypeInstanceCreator<T> {
+
+    TypeInstanceCreatorImpl() {
+
+    }
 
     @Override
     public @NotNull T create(@NotNull Class<? extends T> type, Pipeline pipeline) {
