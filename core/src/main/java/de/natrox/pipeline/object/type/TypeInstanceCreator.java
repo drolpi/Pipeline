@@ -25,7 +25,6 @@ public interface TypeInstanceCreator<T extends ObjectData> extends InstanceCreat
 
     static <T extends ObjectData> @NotNull TypeInstanceCreator<T> create(@NotNull Class<? extends T> type) {
         Check.notNull(type, "type");
-        return new TypeInstanceCreatorImpl<>();
+        return new TypeInstanceCreatorImpl<>(type);
     }
-
 }

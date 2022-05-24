@@ -23,22 +23,25 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+@SuppressWarnings("ClassCanBeRecord")
 final class TypeInstanceCreatorImpl<T extends ObjectData> implements TypeInstanceCreator<T> {
 
-    TypeInstanceCreatorImpl() {
+    private final Class<? extends T> type;
 
+    TypeInstanceCreatorImpl(Class<? extends T> type) {
+        this.type = type;
     }
 
     @Override
-    public @NotNull T create(@NotNull Class<? extends T> type, Pipeline pipeline) {
+    public @NotNull T create(@NotNull Pipeline pipeline) {
         try {
-            Constructor<? extends T> constructor = type.getConstructor(Pipeline.class);
+            Constructor<? extends T> constructor = this.type.getConstructor(Pipeline.class);
             constructor.setAccessible(true);
 
             return constructor.newInstance(pipeline);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new RuntimeException("Error while instantiating instance of class " + type.getSimpleName(), e);
+            throw new RuntimeException("Error while instantiating instance of class " + this.type.getSimpleName(), e);
         }
     }
 
