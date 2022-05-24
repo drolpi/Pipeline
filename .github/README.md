@@ -267,7 +267,7 @@ TODO:
 # Contributing
 
 See [the contributing file](CONTRIBUTING.md)!
-All WIP features are previewed as Draft PRs
+All WIP features are previewed as Draft PRs!
 
 # License
 
