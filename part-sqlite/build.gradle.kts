@@ -16,7 +16,7 @@
 
 dependencies {
     compileOnly(project(":core"))
-    implementation(project(":sql"))
+    implementation(project(":part-sql"))
 
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
 }

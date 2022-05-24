@@ -19,14 +19,14 @@ rootProject.name = "Pipeline"
 include(
     ":config",
     ":core",
-    ":gson-mapper",
-    ":guice-creator",
-    ":h2",
-    ":jackson-mapper",
-    ":json",
-    ":mongo",
-    ":mysql",
-    ":redis",
-    ":sql",
-    ":sqlite"
+    ":creator-guice",
+    ":mapper-gson",
+    ":mapper-jackson",
+    ":part-h2",
+    ":part-json",
+    ":part-mongo",
+    ":part-redis",
+    ":part-mysql",
+    ":part-sql",
+    ":part-sqlite"
 )

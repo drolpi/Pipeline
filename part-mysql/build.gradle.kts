@@ -16,7 +16,7 @@
 
 dependencies {
     compileOnly(project(":core"))
-    implementation(project(":sql"))
+    implementation(project(":part-sql"))
 
     implementation("mysql:mysql-connector-java:8.0.29")
 }
