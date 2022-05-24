@@ -22,7 +22,7 @@ import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
-public interface GuiceInstanceCreator<T extends ObjectData> extends InstanceCreator<T> {
+public sealed interface GuiceInstanceCreator<T extends ObjectData> extends InstanceCreator<T> permits GuiceInstanceCreatorImpl {
 
     static <T extends ObjectData> @NotNull GuiceInstanceCreator<T> create(@NotNull Class<? extends T> type, @NotNull Injector injector) {
         Check.notNull(type, "type");
