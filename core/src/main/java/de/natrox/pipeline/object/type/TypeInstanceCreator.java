@@ -21,7 +21,7 @@ import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 
-public interface TypeInstanceCreator<T extends ObjectData> extends InstanceCreator<T> {
+public sealed interface TypeInstanceCreator<T extends ObjectData> extends InstanceCreator<T> permits TypeInstanceCreatorImpl {
 
     static <T extends ObjectData> @NotNull TypeInstanceCreator<T> create(@NotNull Class<? extends T> type) {
         Check.notNull(type, "type");
