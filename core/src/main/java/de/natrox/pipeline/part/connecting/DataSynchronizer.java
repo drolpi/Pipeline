@@ -44,14 +44,17 @@ public final class DataSynchronizer {
         this.executorService = Executors.newCachedThreadPool();
     }
 
-    public void synchronizeTo(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull... destinations) {
+    public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
         Check.notNull(destinations, "destinations");
-        this.executorService.submit(new CatchingRunnable(() -> this.to(uniqueId, documentData, destinations)));
+
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.executorService.submit(new CatchingRunnable(() -> future.complete(this.to(uniqueId, documentData, destinations))));
+        return future;
     }
 
-    public boolean to(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull... destinations) {
+    public boolean to(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
         Check.notNull(destinations, "destinations");
@@ -92,17 +95,21 @@ public final class DataSynchronizer {
         return null;
     }
 
-    public void synchronizeFromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull... destinations) {
+    public CompletableFuture<Boolean> synchronizeFromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
-        this.executorService.submit(new CatchingRunnable(() -> this.fromTo(uniqueId, source, destinations)));
+
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.executorService.submit(new CatchingRunnable(() -> future.complete(this.fromTo(uniqueId, source, destinations))));
+        return future;
     }
 
-    public boolean fromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull... destinations) {
+    public boolean fromTo(@NotNull UUID uniqueId, @NotNull DataSourceType source, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
+
         DocumentData documentData = from(uniqueId, source);
         // Error while loading from local cache
         if (documentData == null)
