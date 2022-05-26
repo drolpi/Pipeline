@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
@@ -43,7 +44,7 @@ public abstract class ObjectData {
         return this.uniqueId;
     }
 
-    public DocumentData serialize() {
+    public @NotNull DocumentData serialize() {
         DocumentData documentData = DocumentData.create();
         for (Field field : this.persistentFields()) {
             try {
@@ -63,7 +64,8 @@ public abstract class ObjectData {
         return documentData;
     }
 
-    public void deserialize(DocumentData document) {
+    public void deserialize(@NotNull DocumentData document) {
+        Check.notNull(document, "document");
         for (Field field : this.persistentFields()) {
             try {
                 String key = AnnotationResolver.fieldName(field);
