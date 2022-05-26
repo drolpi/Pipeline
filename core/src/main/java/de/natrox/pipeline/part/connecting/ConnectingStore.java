@@ -60,7 +60,6 @@ public final class ConnectingStore implements Store {
 
     @Override
     public @NotNull Set<String> maps() {
-        //TODO: Maybe use other parts too
         return this.storage.maps();
     }
 
@@ -102,8 +101,9 @@ public final class ConnectingStore implements Store {
 
     @Override
     public boolean isClosed() {
-        //TODO: Maybe check other parts too
-        return this.storage.isClosed();
+        return this.storage.isClosed()
+            || (this.globalCache != null && this.globalCache.isClosed())
+            || (this.localCache != null && this.localCache.isClosed());
     }
 
     @Override
