@@ -32,7 +32,7 @@ Coming soon.
 - Coming soon
 
 # Usage
-The following explains in detail how to use the pipeline and what it does.
+The following explains in detail how to use the Pipeline and what it does.
 
 # Add to your project
 - Gradle: (Not yet available)
