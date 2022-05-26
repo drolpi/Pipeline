@@ -45,21 +45,24 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
     private final DocumentMapper documentMapper;
-    private final Store store;
-    private final StoreMap storeMap;
     private final DocumentOptions options;
+
+    private Store store;
+    private StoreMap storeMap;
 
     DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, ConnectingStore store, StoreMap storeMap, DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.documentMapper = pipeline.documentMapper();
+        this.options = options;
         this.store = store;
         this.storeMap = storeMap;
-        this.options = options;
     }
 
     @Override
     public @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        this.checkOpened();
+
         byte[] data = this.storeMap.get(uniqueId);
         if (data == null)
             return Optional.empty();
@@ -69,6 +72,8 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public @NotNull Cursor<DocumentData> find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
+        this.checkOpened();
+
         PipeStream<Pair<UUID, DocumentData>> stream = PipeStream.fromIterable(
             this.storeMap
                 .entries()
@@ -104,6 +109,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(document, "document");
+        this.checkOpened();
 
         DocumentData newDoc = document.clone();
         newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
@@ -114,12 +120,14 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public boolean exists(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        this.checkOpened();
         return this.storeMap.contains(uniqueId);
     }
 
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        this.checkOpened();
         this.storeMap.remove(uniqueId);
     }
 
@@ -129,19 +137,31 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void close() {
-        this.store.removeMap(this.repositoryName);
+    public void clear() {
+        this.checkOpened();
+        this.storeMap.clear();
     }
 
     @Override
-    public void drop() {
+    public void close() {
         this.store.closeMap(this.repositoryName);
-        this.store.removeMap(this.repositoryName);
+
+        this.store = null;
+        this.storeMap = null;
     }
 
     @Override
     public boolean isDropped() {
         return !this.store.hasMap(this.repositoryName);
+    }
+
+
+    @Override
+    public void drop() {
+        this.checkOpened();
+        this.close();
+
+        this.store.removeMap(this.repositoryName);
     }
 
     @Override
@@ -151,6 +171,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public long size() {
+        this.checkOpened();
         return this.storeMap.size();
+    }
+
+    private void checkOpened() {
+        if (this.isOpen())
+            return;
+        throw new RuntimeException("Repository is closed");
     }
 }

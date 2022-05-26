@@ -42,11 +42,13 @@ public interface Repository<T> {
 
     void remove(@NotNull UUID uniqueId);
 
-    void close();
+    void clear();
 
     void drop();
 
     boolean isDropped();
+
+    void close();
 
     boolean isOpen();
 

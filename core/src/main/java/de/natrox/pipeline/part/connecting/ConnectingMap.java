@@ -16,14 +16,12 @@
 
 package de.natrox.pipeline.part.connecting;
 
-import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
-import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,7 +115,7 @@ public final class ConnectingMap implements StoreMap {
         if (this.localCacheMap != null) {
             this.localCacheMap.put(uniqueId, data);
         }
-        if(this.updater != null) {
+        if (this.updater != null) {
             this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
 
             });
@@ -167,7 +165,7 @@ public final class ConnectingMap implements StoreMap {
         if (this.localCacheMap != null) {
             this.localCacheMap.remove(uniqueId);
         }
-        if(this.updater != null) {
+        if (this.updater != null) {
             this.updater.pushRemoval(this.mapName, uniqueId, () -> {
 
             });

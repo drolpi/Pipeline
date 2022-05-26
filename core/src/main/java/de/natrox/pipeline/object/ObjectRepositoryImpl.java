@@ -95,6 +95,11 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
+    public void clear() {
+        //TODO:
+    }
+
+    @Override
     public @NotNull Class<T> type() {
         return this.type;
     }
