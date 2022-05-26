@@ -36,7 +36,7 @@ public final class MySqlProvider implements GlobalStorageProvider {
         Check.notNull(config, "config");
         this.config = config;
 
-        var hikariConfig = new HikariConfig();
+        HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setJdbcUrl(String.format(
             CONNECT_URL_FORMAT,
