@@ -16,6 +16,9 @@
 
 package de.natrox.pipeline.concurrent;
 
+import de.natrox.common.validate.Check;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -29,7 +32,8 @@ public final class LockService {
         this.lockRegistry = new HashMap<>();
     }
 
-    public synchronized Lock getReadLock(String name) {
+    public synchronized @NotNull Lock getReadLock(@NotNull String name) {
+        Check.notNull(name, "name");
         if (this.lockRegistry.containsKey(name)) {
             ReentrantReadWriteLock rwLock = this.lockRegistry.get(name);
             return rwLock.readLock();
@@ -39,11 +43,13 @@ public final class LockService {
         return rwLock.readLock();
     }
 
-    public synchronized Lock getReadLock(Class<?> type) {
+    public synchronized @NotNull Lock getReadLock(@NotNull Class<?> type) {
+        Check.notNull(type, "type");
         return this.getReadLock(type.getName());
     }
 
-    public synchronized Lock getWriteLock(String name) {
+    public synchronized @NotNull Lock getWriteLock(@NotNull String name) {
+        Check.notNull(name, "name");
         if (this.lockRegistry.containsKey(name)) {
             ReentrantReadWriteLock rwLock = this.lockRegistry.get(name);
             return rwLock.writeLock();
@@ -53,7 +59,8 @@ public final class LockService {
         return rwLock.writeLock();
     }
 
-    public synchronized Lock getWriteLock(Class<?> type) {
+    public synchronized @NotNull Lock getWriteLock(@NotNull Class<?> type) {
+        Check.notNull(type, "type");
         return this.getWriteLock(type.getName());
     }
 }
