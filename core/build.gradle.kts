@@ -28,6 +28,7 @@ dependencies {
     testImplementation(project(":part-bin"))
     testImplementation(project(":part-mysql"))
     testImplementation(project(":part-h2"))
+    testImplementation(project(":part-sqlite"))
     testImplementation(project(":creator-guice"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
