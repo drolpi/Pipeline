@@ -19,7 +19,6 @@ package de.natrox.pipeline.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -35,19 +34,17 @@ import java.util.Set;
 
 public abstract class SqlStore extends AbstractStore {
 
-    private final DocumentMapper documentMapper;
     private final HikariDataSource dataSource;
     private final String databaseName;
 
     public SqlStore(Pipeline pipeline, HikariDataSource dataSource, String databaseName) {
-        this.documentMapper = pipeline.documentMapper();
         this.dataSource = dataSource;
         this.databaseName = databaseName;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
-        return new SqlMap(this, mapName, this.documentMapper);
+        return new SqlMap(this, mapName);
     }
 
     @Override

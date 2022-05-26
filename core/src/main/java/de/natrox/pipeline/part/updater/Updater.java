@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public interface Updater {
 
-    void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData pipelineData, @Nullable Runnable callback);
+    void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, byte @NotNull [] data, @Nullable Runnable callback);
 
     void pushRemoval(@NotNull String repositoryName, @NotNull UUID uniqueId, @Nullable Runnable callback);
 

@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.document;
 
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
@@ -28,10 +29,12 @@ import java.util.Map;
 @ApiStatus.Internal
 public final class DocumentRepositoryFactory {
 
+    private final Pipeline pipeline;
     private final ConnectingStore connectingStore;
     private final Map<String, DocumentRepository> repositoryMap;
 
-    public DocumentRepositoryFactory(ConnectingStore connectingStore) {
+    public DocumentRepositoryFactory(Pipeline pipeline, ConnectingStore connectingStore) {
+        this.pipeline = pipeline;
         this.connectingStore = connectingStore;
         this.repositoryMap = new HashMap<>();
     }
@@ -49,7 +52,7 @@ public final class DocumentRepositoryFactory {
 
     private DocumentRepository createRepository(String name, DocumentOptions options) {
         StoreMap storeMap = this.connectingStore.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, this.connectingStore, storeMap, options);
+        DocumentRepository repository = new DocumentRepositoryImpl(name, this.pipeline, this.connectingStore, storeMap, options);
         this.repositoryMap.put(name, repository);
 
         return repository;

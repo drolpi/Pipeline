@@ -18,7 +18,6 @@ package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,44 +43,44 @@ public final class DataSynchronizer {
         this.executorService = Executors.newCachedThreadPool();
     }
 
-    public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull ... destinations) {
+    public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        this.executorService.submit(new CatchingRunnable(() -> future.complete(this.to(uniqueId, documentData, destinations))));
+        this.executorService.submit(new CatchingRunnable(() -> future.complete(this.to(uniqueId, data, destinations))));
         return future;
     }
 
-    public boolean to(@NotNull UUID uniqueId, @NotNull DocumentData documentData, DataSourceType @NotNull ... destinations) {
+    public boolean to(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
 
         List<DataSourceType> destinationList = Arrays.asList(destinations);
         if (this.localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
-            this.localCache.put(uniqueId, documentData);
+            this.localCache.put(uniqueId, data);
         }
         if (this.globalCache != null && destinationList.contains(DataSourceType.GLOBAL_CACHE)) {
-            this.globalCache.put(uniqueId, documentData);
+            this.globalCache.put(uniqueId, data);
         }
         if (destinationList.contains(DataSourceType.STORAGE)) {
-            this.storage.put(uniqueId, documentData);
+            this.storage.put(uniqueId, data);
         }
         return true;
     }
 
-    public CompletableFuture<DocumentData> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+    public CompletableFuture<byte[]> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
 
-        CompletableFuture<DocumentData> future = new CompletableFuture<>();
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
         return future;
     }
 
-    public DocumentData from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+    public byte[] from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
 
@@ -110,7 +109,7 @@ public final class DataSynchronizer {
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
 
-        DocumentData documentData = from(uniqueId, source);
+        byte[] documentData = from(uniqueId, source);
         // Error while loading from local cache
         if (documentData == null)
             return false;

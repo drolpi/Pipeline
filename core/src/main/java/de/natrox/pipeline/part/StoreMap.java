@@ -22,21 +22,24 @@ import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface StoreMap {
 
-    @Nullable DocumentData get(@NotNull UUID uniqueId);
+    byte @Nullable [] get(@NotNull UUID uniqueId);
 
-    void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData);
+    void put(@NotNull UUID uniqueId, byte @NotNull [] data);
 
     boolean contains(@NotNull UUID uniqueId);
 
-    @NotNull PipeStream<UUID> keys();
+    @NotNull Collection<UUID> keys();
 
-    @NotNull PipeStream<DocumentData> values();
+    @NotNull Collection<byte[]> values();
 
-    @NotNull PipeStream<Pair<UUID, DocumentData>> entries();
+    @NotNull Map<UUID, byte[]> entries();
 
     void remove(@NotNull UUID uniqueId);
 

@@ -16,41 +16,35 @@
 
 package de.natrox.pipeline.bin;
 
-import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.stream.PipeStream;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 final class BinMap implements StoreMap {
 
     private final Path mapPath;
-    private final DocumentMapper documentMapper;
 
-    public BinMap(String mapName, Path directory, DocumentMapper documentMapper) {
+    public BinMap(String mapName, Path directory) {
         this.mapPath = directory.resolve(mapName);
-        this.documentMapper = documentMapper;
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         try {
             return this.loadFromFile(uniqueId);
@@ -61,12 +55,12 @@ final class BinMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, @NotNull byte[] data) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
 
         try {
-            this.saveToFile(uniqueId, documentData);
+            this.saveToFile(uniqueId, data);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,62 +73,60 @@ final class BinMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
+    public @NotNull Collection<UUID> keys() {
         if (Files.notExists(this.mapPath))
-            return PipeStream.empty();
+            return Set.of();
 
         try (Stream<Path> stream = Files.walk(this.mapPath, 1)) {
-            return PipeStream.fromIterable(
-                stream
-                    .skip(1)
-                    .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".bin"))
-                    .map(path -> FileNameUtil.getBaseName(path.toString()))
-                    .map(UUID::fromString)
-                    .toList()
-            );
+            return stream
+                .skip(1)
+                .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".bin"))
+                .map(path -> FileNameUtil.getBaseName(path.toString()))
+                .map(UUID::fromString)
+                .toList();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return PipeStream.empty();
+        return Set.of();
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
+    public @NotNull Collection<byte[]> values() {
         if (Files.notExists(this.mapPath))
-            return PipeStream.empty();
+            return Set.of();
 
         try {
-            List<DocumentData> documents = new ArrayList<>();
+            List<byte[]> documents = new ArrayList<>();
             for (UUID key : this.keys()) {
                 documents.add(this.loadFromFile(key));
             }
 
-            return PipeStream.fromIterable(documents);
+            return documents;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return PipeStream.empty();
+        return Set.of();
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
+    public @NotNull Map<UUID, byte[]> entries() {
         if (Files.notExists(this.mapPath))
-            return PipeStream.empty();
+            return Map.of();
 
         try {
-            Map<UUID, DocumentData> entries = new HashMap<>();
+            Map<UUID, byte[]> entries = new HashMap<>();
             for (UUID key : this.keys()) {
                 entries.put(key, this.loadFromFile(key));
             }
 
-            return PipeStream.fromMap(entries);
+            return entries;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return PipeStream.empty();
+        return Map.of();
     }
 
     @Override
@@ -161,19 +153,19 @@ final class BinMap implements StoreMap {
         return this.keys().size();
     }
 
-    private DocumentData loadFromFile(@NotNull UUID uniqueId) throws IOException {
+    private byte[] loadFromFile(@NotNull UUID uniqueId) throws IOException {
         Check.notNull(uniqueId, "uniqueId");
 
         Path path = this.savedFile(uniqueId);
         File file = new File(path.toUri());
         if (!file.exists())
             return null;
-        return this.documentMapper.read(new FileInputStream(file));
+        return Files.readAllBytes(path);
     }
 
-    private void saveToFile(@NotNull UUID objectUUID, @NotNull DocumentData documentData) throws IOException {
+    private void saveToFile(@NotNull UUID objectUUID, byte @NotNull [] data) throws IOException {
         Check.notNull(objectUUID, "objectUUID");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
 
         Path path = this.savedFile(objectUUID);
         File file = new File(path.toUri());
@@ -182,7 +174,7 @@ final class BinMap implements StoreMap {
                 throw new RuntimeException("Could not create files for BinMap in " + path);
         }
 
-        this.documentMapper.write(new FileOutputStream(file), documentData);
+        Files.write(path, data);
     }
 
     private Path savedFile(@NotNull UUID uniqueId) {

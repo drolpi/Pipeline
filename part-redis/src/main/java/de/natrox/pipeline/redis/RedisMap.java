@@ -18,17 +18,16 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RBinaryStream;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,37 +40,30 @@ final class RedisMap implements StoreMap {
     private final RedisStore redisStore;
     private final RedissonClient redissonClient;
     private final String mapName;
-    private final DocumentMapper documentMapper;
 
-    RedisMap(RedisStore redisStore, String mapName, DocumentMapper documentMapper) {
+    RedisMap(RedisStore redisStore, String mapName) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.documentMapper = documentMapper;
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte[] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         RBinaryStream stream = this.stream(uniqueId);
         if (!stream.isExists())
             return null;
 
-        byte[] bytes = stream.get();
-        if (bytes == null)
-            return null;
-
-        return this.documentMapper.read(bytes);
+        return stream.get();
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
 
-        byte[] bytes = this.documentMapper.write(documentData);
         RBinaryStream stream = this.stream(uniqueId);
-        stream.set(bytes);
+        stream.set(data);
     }
 
     @Override
@@ -82,19 +74,18 @@ final class RedisMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
-        List<UUID> keys = this.redisStore.keys(this.mapName)
+    public @NotNull Collection<UUID> keys() {
+        return this.redisStore.keys(this.mapName)
             .stream()
             .map(s -> UUID.fromString(s.split(":")[2]))
             .collect(Collectors.toList());
-        return PipeStream.fromIterable(keys);
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
+    public @NotNull Collection<byte[]> values() {
         Set<String> keys = this.redisStore.keys(this.mapName);
 
-        List<DocumentData> documents = new ArrayList<>();
+        List<byte[]> documents = new ArrayList<>();
         for (var key : keys) {
             RBinaryStream stream = this.redissonClient.getBinaryStream(key);
 
@@ -105,16 +96,16 @@ final class RedisMap implements StoreMap {
             if (bytes == null)
                 continue;
 
-            documents.add(this.documentMapper.read(bytes));
+            documents.add(bytes);
         }
-        return PipeStream.fromIterable(documents);
+        return documents;
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        PipeStream<UUID> keys = this.keys();
+    public @NotNull Map<UUID, byte[]> entries() {
+        Collection<UUID> keys = this.keys();
+        Map<UUID, byte[]> entries = new HashMap<>();
 
-        Map<UUID, DocumentData> entries = new HashMap<>();
         for (var key : keys) {
             RBinaryStream stream = this.stream(key);
 
@@ -125,9 +116,9 @@ final class RedisMap implements StoreMap {
             if (bytes == null)
                 continue;
 
-            entries.put(key, this.documentMapper.read(bytes));
+            entries.put(key, bytes);
         }
-        return PipeStream.fromMap(entries);
+        return entries;
     }
 
     @Override

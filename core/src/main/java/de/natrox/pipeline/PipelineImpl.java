@@ -45,7 +45,7 @@ final class PipelineImpl implements Pipeline {
         this.documentMapper = DocumentMapper.create();
         this.connectingStore = partBundle.createConnectingStore(this);
 
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this.connectingStore);
+        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);
     }
 

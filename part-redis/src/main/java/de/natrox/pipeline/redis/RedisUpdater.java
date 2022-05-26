@@ -19,10 +19,7 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.updater.Updater;
-import de.natrox.pipeline.part.updater.event.DocumentEvent;
 import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
@@ -40,13 +37,11 @@ final class RedisUpdater implements Updater {
     //TODO: Maybe rename???
     private final static String DATA_TOPIC = "DataTopic";
 
-    private final DocumentMapper documentMapper;
     private final EventBus eventBus;
     private final RTopic dataTopic;
     private final UUID senderId = UUID.randomUUID();
 
-    RedisUpdater(Pipeline pipeline, RedissonClient redissonClient) {
-        this.documentMapper = pipeline.documentMapper();
+    RedisUpdater(RedissonClient redissonClient) {
         this.eventBus = EventBus.create();
         this.dataTopic = redissonClient.getTopic(DATA_TOPIC, new SerializationCodec());
 
@@ -60,22 +55,14 @@ final class RedisUpdater implements Updater {
         if (event.senderId().equals(this.senderId))
             return;
 
-        if (event instanceof RedisDocumentUpdateEvent redisEvent)
-            event = new DocumentUpdateEvent(
-                redisEvent.senderId(),
-                redisEvent.repositoryName(),
-                redisEvent.documentId(),
-                this.documentMapper.read(redisEvent.data())
-            );
-
         this.eventBus.call(event);
     }
 
     @Override
-    public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
+    public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, byte @NotNull [] data, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.documentMapper.write(documentData)));
+        Check.notNull(data, "data");
+        this.dataTopic.publish(new DocumentUpdateEvent(this.senderId, repositoryName, uniqueId, data));
         if (callback != null)
             callback.run();
     }
@@ -98,20 +85,5 @@ final class RedisUpdater implements Updater {
     @Override
     public @NotNull EventBus eventBus() {
         return this.eventBus;
-    }
-
-    //TODO: Maybe divide a better solution?
-    static final class RedisDocumentUpdateEvent extends DocumentEvent {
-
-        private final byte[] data;
-
-        public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, byte[] data) {
-            super(senderId, repositoryName, documentId);
-            this.data = data;
-        }
-
-        public byte[] data() {
-            return this.data;
-        }
     }
 }

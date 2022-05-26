@@ -22,8 +22,6 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.bson.Document;
@@ -44,15 +42,13 @@ final class MongoMap implements StoreMap {
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final MongoCollection<Document> collection;
-    private final DocumentMapper documentMapper;
 
-    MongoMap(MongoCollection<Document> collection, DocumentMapper documentMapper) {
+    MongoMap(MongoCollection<Document> collection) {
         this.collection = collection;
-        this.documentMapper = documentMapper;
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         Document document = this.collection
             .find(Filters.eq("key", uniqueId))
@@ -60,21 +56,19 @@ final class MongoMap implements StoreMap {
         if (document == null)
             return null;
 
-        byte[] bytes = document.get("data", Binary.class).getData();
-        return this.documentMapper.read(bytes);
+        return document.get("data", Binary.class).getData();
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
 
-        byte[] bytes = this.documentMapper.write(documentData);
         this.collection.updateOne(
             Filters.eq("key", uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document("key", uniqueId)),
-                Updates.set("data", new Binary(bytes))
+                Updates.set("data", new Binary(data))
             ),
             INSERT_OR_REPLACE_OPTIONS
         );
@@ -91,43 +85,42 @@ final class MongoMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
+    public @NotNull Collection<UUID> keys() {
         List<UUID> keys = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 keys.add(cursor.next().get("key", UUID.class));
             }
         }
-        return PipeStream.fromIterable(keys);
+        return keys;
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
-        Collection<DocumentData> documents = new ArrayList<>();
+    public @NotNull Collection<byte[]> values() {
+        Collection<byte[]> documents = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 byte[] bytes = document.get("data", Binary.class).getData();
-                documents.add(this.documentMapper.read(bytes));
+                documents.add(bytes);
             }
         }
-        return PipeStream.fromIterable(documents);
+        return documents;
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        Map<UUID, DocumentData> entries = new HashMap<>();
+    public @NotNull Map<UUID, byte[]> entries() {
+        Map<UUID, byte[]> entries = new HashMap<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get("key", UUID.class);
                 byte[] bytes = document.get("data", Binary.class).getData();
-                DocumentData value = this.documentMapper.read(bytes);
 
-                entries.put(key, value);
+                entries.put(key, bytes);
             }
         }
-        return PipeStream.fromMap(entries);
+        return entries;
     }
 
     @Override

@@ -24,15 +24,15 @@ import java.util.UUID;
 
 public final class DocumentUpdateEvent extends DocumentEvent {
 
-    private final DocumentData documentData;
+    private final byte[] documentData;
 
-    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, DocumentData documentData) {
+    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, byte @NotNull [] documentData) {
         super(senderId, repositoryName, documentId);
         Check.notNull(documentData, "documentData");
         this.documentData = documentData;
     }
 
-    public @NotNull DocumentData documentData() {
+    public byte @NotNull [] documentData() {
         return this.documentData;
     }
 }

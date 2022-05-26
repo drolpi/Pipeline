@@ -18,9 +18,11 @@ package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.document.option.DocumentOptions;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
@@ -37,16 +39,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
+    private final DocumentMapper documentMapper;
     private final Store store;
     private final StoreMap storeMap;
     private final DocumentOptions options;
 
-    DocumentRepositoryImpl(String repositoryName, ConnectingStore store, StoreMap storeMap, DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, ConnectingStore store, StoreMap storeMap, DocumentOptions options) {
         this.repositoryName = repositoryName;
+        this.documentMapper = pipeline.documentMapper();
         this.store = store;
         this.storeMap = storeMap;
         this.options = options;
@@ -55,13 +60,23 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     @Override
     public @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        return Optional.ofNullable(this.storeMap.get(uniqueId));
+        byte[] data = this.storeMap.get(uniqueId);
+        if (data == null)
+            return Optional.empty();
+        return Optional.of(this.documentMapper.read(data));
     }
 
     @Override
     public @NotNull Cursor<DocumentData> find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
-        PipeStream<Pair<UUID, DocumentData>> stream = this.storeMap.entries();
+        PipeStream<Pair<UUID, DocumentData>> stream = PipeStream.fromIterable(
+            this.storeMap
+                .entries()
+                .entrySet()
+                .stream()
+                .map(entry -> Pair.of(entry.getKey(), this.documentMapper.read(entry.getValue())))
+                .collect(Collectors.toList())
+        );
 
         Condition condition = findOptions.condition();
         if (condition != null) {
@@ -93,7 +108,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         DocumentData newDoc = document.clone();
         newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
 
-        this.storeMap.put(uniqueId, newDoc);
+        this.storeMap.put(uniqueId, this.documentMapper.write(newDoc));
     }
 
     @Override

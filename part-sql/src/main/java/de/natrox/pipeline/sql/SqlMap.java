@@ -18,8 +18,6 @@ package de.natrox.pipeline.sql;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +25,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -37,36 +37,33 @@ public class SqlMap implements StoreMap {
 
     private final SqlStore sqlStore;
     private final String mapName;
-    private final DocumentMapper documentMapper;
 
-    SqlMap(SqlStore sqlStore, String mapName, DocumentMapper documentMapper) {
+    SqlMap(SqlStore sqlStore, String mapName) {
         this.sqlStore = sqlStore;
         this.mapName = mapName;
-        this.documentMapper = documentMapper;
         this.sqlStore.executeUpdate("CREATE TABLE IF NOT EXISTS `" + mapName + "` (`key` TEXT, `data` LONGBLOB);");
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
             "SELECT data FROM " + this.mapName + " WHERE key = " + uniqueId.toString(),
-            resultSet -> resultSet.next() ? this.documentMapper.read(resultSet.getBytes("data")) : null,
+            resultSet -> resultSet.next() ? resultSet.getBytes("data") : null,
             null,
             uniqueId.toString()
         );
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
 
-        byte[] bytes = this.documentMapper.write(documentData);
         if (!this.contains(uniqueId)) {
-            this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", uniqueId.toString(), bytes);
+            this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", uniqueId.toString(), data);
         } else {
-            this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", uniqueId.toString(), bytes);
+            this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", uniqueId.toString(), data);
         }
     }
 
@@ -82,7 +79,7 @@ public class SqlMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
+    public @NotNull Collection<UUID> keys() {
         return this.sqlStore.executeQuery(
             "SELECT `key` FROM " + this.mapName,
             resultSet -> {
@@ -90,36 +87,36 @@ public class SqlMap implements StoreMap {
                 while (resultSet.next())
                     keys.add(UUID.fromString(resultSet.getString("key")));
 
-                return PipeStream.fromIterable(keys);
-            }, PipeStream.empty());
+                return keys;
+            }, Set.of());
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
+    public @NotNull Collection<byte[]> values() {
         return this.sqlStore.executeQuery(
             "SELECT `data` FROM " + this.mapName,
             resultSet -> {
-                List<DocumentData> documents = new ArrayList<>();
+                List<byte[]> documents = new ArrayList<>();
                 while (resultSet.next())
-                    documents.add(this.documentMapper.read(resultSet.getBytes("data")));
+                    documents.add(resultSet.getBytes("data"));
 
-                return PipeStream.fromIterable(documents);
-            }, PipeStream.empty());
+                return documents;
+            }, Set.of());
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
+    public @NotNull Map<UUID, byte[]> entries() {
         return this.sqlStore.executeQuery(
             "SELECT * FROM " + this.mapName,
             resultSet -> {
-                Map<UUID, DocumentData> map = new HashMap<>();
+                Map<UUID, byte[]> map = new HashMap<>();
                 while (resultSet.next())
                     map.put(
                         UUID.fromString(resultSet.getString("key")),
-                        this.documentMapper.read(resultSet.getBytes("data"))
+                        resultSet.getBytes("data")
                     );
-                return PipeStream.fromMap(map);
-            }, PipeStream.empty());
+                return map;
+            }, Map.of());
     }
 
     @Override

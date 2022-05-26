@@ -18,32 +18,32 @@ package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 final class InMemoryMap implements StoreMap {
 
-    private final Map<UUID, DocumentData> map;
+    private final Map<UUID, byte[]> map;
 
     InMemoryMap() {
         this.map = new ConcurrentHashMap<>();
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.map.get(uniqueId);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] documentData) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
         this.map.put(uniqueId, documentData);
@@ -56,18 +56,18 @@ final class InMemoryMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
-        return PipeStream.fromIterable(this.map.keySet());
+    public @NotNull Collection<UUID> keys() {
+        return this.map.keySet();
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
-        return PipeStream.fromIterable(this.map.values());
+    public @NotNull Collection<byte[]> values() {
+        return this.map.values();
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        return PipeStream.fromMap(this.map);
+    public @NotNull Map<UUID, byte[]> entries() {
+        return this.map;
     }
 
     @Override

@@ -20,14 +20,15 @@ import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.part.StoreMap;
-import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public final class ConnectingMap implements StoreMap {
@@ -82,18 +83,18 @@ public final class ConnectingMap implements StoreMap {
     }
 
     @Override
-    public @Nullable DocumentData get(@NotNull UUID uniqueId) {
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
 
         if (this.localCacheMap != null) {
-            DocumentData documentData = this.fromPart(uniqueId, this.localCacheMap);
+            byte[] documentData = this.fromPart(uniqueId, this.localCacheMap);
             if (documentData != null) {
                 return documentData;
             }
         }
 
         if (this.globalCacheMap != null) {
-            DocumentData documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            byte[] documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
             if (documentData != null) {
                 return documentData;
             }
@@ -102,27 +103,27 @@ public final class ConnectingMap implements StoreMap {
         return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
     }
 
-    private DocumentData fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
-        DocumentData documentData = storeMap.get(uniqueId);
-        if(documentData != null)
-            this.dataSynchronizer.synchronizeTo(uniqueId, documentData, destinations);
-        return documentData;
+    private byte[] fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
+        byte[] data = storeMap.get(uniqueId);
+        if (data != null)
+            this.dataSynchronizer.synchronizeTo(uniqueId, data, destinations);
+        return data;
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull DocumentData documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
+        Check.notNull(data, "data");
         if (this.localCacheMap != null && this.updater != null) {
-            this.localCacheMap.put(uniqueId, documentData);
-            this.updater.pushUpdate(this.mapName, uniqueId, documentData, () -> {
+            this.localCacheMap.put(uniqueId, data);
+            this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
 
             });
         }
         if (this.globalCacheMap != null) {
-            this.globalCacheMap.put(uniqueId, documentData);
+            this.globalCacheMap.put(uniqueId, data);
         }
-        this.storageMap.put(uniqueId, documentData);
+        this.storageMap.put(uniqueId, data);
     }
 
     @Override
@@ -144,17 +145,17 @@ public final class ConnectingMap implements StoreMap {
     }
 
     @Override
-    public @NotNull PipeStream<UUID> keys() {
+    public @NotNull Collection<UUID> keys() {
         return this.storageMap.keys();
     }
 
     @Override
-    public @NotNull PipeStream<DocumentData> values() {
+    public @NotNull Collection<byte[]> values() {
         return this.storageMap.values();
     }
 
     @Override
-    public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
+    public @NotNull Map<UUID, byte[]> entries() {
         return this.storageMap.entries();
     }
 
