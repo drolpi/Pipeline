@@ -46,7 +46,7 @@ public class SqlMap implements StoreMap {
     public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            "SELECT data FROM " + this.mapName + " WHERE key = " + uniqueId.toString(),
+            "SELECT `data` FROM `" + this.mapName + "` WHERE `key` = ?",
             resultSet -> resultSet.next() ? resultSet.getBytes("data") : null,
             null,
             uniqueId.toString()
@@ -59,9 +59,15 @@ public class SqlMap implements StoreMap {
         Check.notNull(data, "data");
 
         if (!this.contains(uniqueId)) {
-            this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", uniqueId.toString(), data);
+            this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", statement -> {
+                statement.setString(1, uniqueId.toString());
+                statement.setBytes(2, data);
+            });
         } else {
-            this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", uniqueId.toString(), data);
+            this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", statement -> {
+                statement.setString(1, uniqueId.toString());
+                statement.setBytes(2, data);
+            });
         }
     }
 
@@ -69,7 +75,7 @@ public class SqlMap implements StoreMap {
     public boolean contains(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            "SELECT `key` FROM " + this.mapName + " WHERE key = ?",
+            "SELECT `key` FROM `" + this.mapName + "` WHERE `key` = ?",
             ResultSet::next,
             false,
             uniqueId.toString()
@@ -78,15 +84,7 @@ public class SqlMap implements StoreMap {
 
     @Override
     public @NotNull Collection<UUID> keys() {
-        return this.sqlStore.executeQuery(
-            "SELECT `key` FROM " + this.mapName,
-            resultSet -> {
-                List<UUID> keys = new ArrayList<>();
-                while (resultSet.next())
-                    keys.add(UUID.fromString(resultSet.getString("key")));
-
-                return keys;
-            }, Set.of());
+        return this.sqlKeys().stream().map(UUID::fromString).toList();
     }
 
     @Override
@@ -121,19 +119,30 @@ public class SqlMap implements StoreMap {
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         this.sqlStore.executeUpdate(
-            "DELETE FROM " + this.mapName + " WHERE key = ?",
+            "DELETE FROM `" + this.mapName + "` WHERE `key` = ?",
             uniqueId.toString()
         );
     }
 
     @Override
     public void clear() {
-        //TODO:
+        this.sqlStore.executeUpdate("DELETE FROM Test");
     }
 
     @Override
     public long size() {
-        //TODO:
-        return 0;
+        return this.keys().size();
+    }
+
+    private List<String> sqlKeys() {
+        return this.sqlStore.executeQuery(
+            "SELECT `key` FROM " + this.mapName,
+            resultSet -> {
+                List<String> keys = new ArrayList<>();
+                while (resultSet.next())
+                    keys.add(resultSet.getString("key"));
+
+                return keys;
+            }, List.of());
     }
 }

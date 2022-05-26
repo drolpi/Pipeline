@@ -17,8 +17,8 @@
 package de.natrox.pipeline.sql;
 
 import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.consumer.ThrowableConsumer;
 import de.natrox.common.function.ThrowableFunction;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -89,11 +89,17 @@ public class SqlStore extends AbstractStore {
     }
 
     public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
-        try (Connection con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
-            // write all parameters
+        return this.executeUpdate(query, statement -> {
             for (int i = 0; i < objects.length; i++) {
                 statement.setString(i + 1, Objects.toString(objects[i]));
             }
+        });
+    }
+
+    public int executeUpdate(@NotNull String query, @NotNull ThrowableConsumer<PreparedStatement, SQLException> consumer) {
+        try (Connection con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
+            // write all parameters
+            consumer.accept(statement);
 
             // execute the statement
             return statement.executeUpdate();
