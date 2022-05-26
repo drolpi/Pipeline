@@ -39,6 +39,6 @@ public final class BinProvider implements LocalStorageProvider {
 
     @Override
     public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
-        return new BinStore(pipeline, this.binConfig);
+        return new BinStore(this.binConfig);
     }
 }

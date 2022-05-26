@@ -17,8 +17,6 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
@@ -33,17 +31,15 @@ import java.util.stream.Stream;
 final class BinStore extends AbstractStore {
 
     private final Path directory;
-    private final DocumentMapper documentMapper;
 
-    BinStore(Pipeline pipeline, BinConfig binConfig) {
-        this.documentMapper = pipeline.documentMapper();
+    BinStore(BinConfig binConfig) {
         this.directory = Path.of(binConfig.directory());
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         Check.notNull(mapName, "mapName");
-        return new BinMap(mapName, this.directory, this.documentMapper);
+        return new BinMap(mapName, this.directory);
     }
 
     @Override
