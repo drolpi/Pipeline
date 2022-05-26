@@ -18,5 +18,6 @@ dependencies {
     compileOnly(project(":core"))
     implementation(project(":part-sql"))
 
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("mysql:mysql-connector-java:8.0.29")
 }

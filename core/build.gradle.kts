@@ -26,6 +26,7 @@ dependencies {
     testImplementation(project(":part-mongo"))
     testImplementation(project(":part-redis"))
     testImplementation(project(":part-bin"))
+    testImplementation(project(":part-mysql"))
     testImplementation(project(":creator-guice"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
