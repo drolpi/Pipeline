@@ -68,6 +68,19 @@ public sealed interface Pipeline permits PipelineImpl {
 
     static @NotNull Builder of(
         @NotNull GlobalStorageProvider globalStorageProvider,
+        @NotNull GlobalCacheProvider globalCacheProvider,
+        @NotNull UpdaterProvider updaterProvider
+    ) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            globalCacheProvider,
+            null,
+            updaterProvider
+        ));
+    }
+
+    static @NotNull Builder of(
+        @NotNull GlobalStorageProvider globalStorageProvider,
         @NotNull GlobalCacheProvider globalCacheProvider
     ) {
         return new PipelineBuilderImpl(new PartBundle.Global(
@@ -75,6 +88,15 @@ public sealed interface Pipeline permits PipelineImpl {
             globalCacheProvider,
             null,
             null
+        ));
+    }
+
+    static @NotNull Builder of(@NotNull GlobalStorageProvider globalStorageProvider, @NotNull UpdaterProvider updaterProvider) {
+        return new PipelineBuilderImpl(new PartBundle.Global(
+            globalStorageProvider,
+            null,
+            null,
+            updaterProvider
         ));
     }
 
