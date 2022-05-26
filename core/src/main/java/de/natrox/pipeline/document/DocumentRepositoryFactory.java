@@ -41,7 +41,7 @@ public final class DocumentRepositoryFactory {
         this.pipeline = pipeline;
         this.connectingStore = connectingStore;
         this.lockService = lockService;
-        this.writeLock = lockService.getWriteLock(this.getClass().getName());
+        this.writeLock = lockService.getWriteLock(this.getClass());
         this.repositoryMap = new HashMap<>();
     }
 

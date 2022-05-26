@@ -39,6 +39,10 @@ public final class LockService {
         return rwLock.readLock();
     }
 
+    public synchronized Lock getReadLock(Class<?> type) {
+        return this.getReadLock(type.getName());
+    }
+
     public synchronized Lock getWriteLock(String name) {
         if (this.lockRegistry.containsKey(name)) {
             ReentrantReadWriteLock rwLock = this.lockRegistry.get(name);
@@ -47,5 +51,9 @@ public final class LockService {
         ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
         this.lockRegistry.put(name, rwLock);
         return rwLock.writeLock();
+    }
+
+    public synchronized Lock getWriteLock(Class<?> type) {
+        return this.getWriteLock(type.getName());
     }
 }
