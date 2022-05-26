@@ -17,6 +17,7 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.document.option.DocumentOptions;
@@ -35,6 +36,7 @@ final class PipelineImpl implements Pipeline {
 
     private final ConnectingStore connectingStore;
     private final DocumentMapper documentMapper;
+    private final LockService lockService;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
@@ -43,9 +45,10 @@ final class PipelineImpl implements Pipeline {
         Check.notNull(partBundle, "partBundle");
 
         this.documentMapper = DocumentMapper.create();
+        this.lockService = new LockService();
         this.connectingStore = partBundle.createConnectingStore(this);
 
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore);
+        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore, this.lockService);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);
     }
 

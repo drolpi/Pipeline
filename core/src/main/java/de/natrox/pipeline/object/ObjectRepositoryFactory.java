@@ -26,6 +26,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @ApiStatus.Internal
 public final class ObjectRepositoryFactory {
@@ -34,26 +36,33 @@ public final class ObjectRepositoryFactory {
     private final ConnectingStore store;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final Map<String, ObjectRepository<? extends ObjectData>> repositoryMap;
+    private final Lock lock;
 
     public ObjectRepositoryFactory(Pipeline pipeline, ConnectingStore store, DocumentRepositoryFactory documentRepositoryFactory) {
         this.pipeline = pipeline;
         this.store = store;
         this.documentRepositoryFactory = documentRepositoryFactory;
         this.repositoryMap = new HashMap<>();
+        this.lock = new ReentrantLock();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type, ObjectOptions<T> options) {
         String name = AnnotationResolver.identifier(type);
 
-        if (this.repositoryMap.containsKey(name)) {
-            ObjectRepository<T> repository = (ObjectRepository<T>) this.repositoryMap.get(name);
-            if (!repository.isDropped() && repository.isOpen()) {
-                return repository;
+        try {
+            this.lock.lock();
+            if (this.repositoryMap.containsKey(name)) {
+                ObjectRepository<T> repository = (ObjectRepository<T>) this.repositoryMap.get(name);
+                if (!repository.isDropped() && repository.isOpen()) {
+                    return repository;
+                }
+                this.repositoryMap.remove(name);
             }
-            this.repositoryMap.remove(name);
+            return this.createRepository(name, type, options);
+        } finally {
+            this.lock.unlock();
         }
-        return this.createRepository(name, type, options);
     }
 
     private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions<T> options) {
@@ -65,9 +74,14 @@ public final class ObjectRepositoryFactory {
     }
 
     public void clear() {
-        for (ObjectRepository<?> repository : this.repositoryMap.values()) {
-            repository.close();
+        try {
+            this.lock.lock();
+            for (ObjectRepository<?> repository : this.repositoryMap.values()) {
+                repository.close();
+            }
+            this.repositoryMap.clear();
+        } finally {
+            this.lock.unlock();
         }
-        this.repositoryMap.clear();
     }
 }
