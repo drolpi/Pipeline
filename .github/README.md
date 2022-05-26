@@ -103,17 +103,6 @@ MySqlProvider mySqlProvider = mySqlConfig.createProvider();
 ## LocalStorage
 A local persistent data store.
 
-### H2
-
-Code example:
-```java
-H2Config h2Config = H2Config
-    .builder()
-    .path(Path.of("storage", "database"))
-    .build();
-H2Provider h2Provider = h2Config.createProvider();
-```
-
 ### Binary
 
 Code example:
@@ -123,6 +112,17 @@ BinConfig binConfig = BinConfig
     .path(Path.of("storage"))
     .build();
 BinProvider binProvider = binConfig.createProvider();
+```
+
+### H2
+
+Code example:
+```java
+H2Config h2Config = H2Config
+    .builder()
+    .path(Path.of("storage", "database"))
+    .build();
+H2Provider h2Provider = h2Config.createProvider();
 ```
 
 ### SQLite
