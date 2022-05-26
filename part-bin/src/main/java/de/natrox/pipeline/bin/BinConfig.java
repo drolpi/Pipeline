@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.bin;
 
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class JsonConfig implements PartConfig<JsonProvider> {
+public final class BinConfig implements PartConfig<BinProvider> {
 
     private final String directory;
 
-    private JsonConfig(@NotNull Path directory) {
+    private BinConfig(@NotNull Path directory) {
         Check.notNull(directory, "directory");
         this.directory = directory.toString();
     }
@@ -41,11 +41,11 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
     }
 
     @Override
-    public @NotNull JsonProvider createProvider() {
-        return new JsonProvider(this);
+    public @NotNull BinProvider createProvider() {
+        return new BinProvider(this);
     }
 
-    public static class Builder implements IBuilder<JsonConfig> {
+    public static class Builder implements IBuilder<BinConfig> {
 
         private Path directory;
 
@@ -60,8 +60,8 @@ public final class JsonConfig implements PartConfig<JsonProvider> {
         }
 
         @Override
-        public @NotNull JsonConfig build() {
-            return new JsonConfig(this.directory);
+        public @NotNull BinConfig build() {
+            return new BinConfig(this.directory);
         }
     }
 

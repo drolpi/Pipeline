@@ -19,7 +19,6 @@ package de.natrox.pipeline.object;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.object.annotation.Named;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -68,7 +67,7 @@ public abstract class ObjectData {
         for (Field field : this.persistentFields()) {
             try {
                 String key = AnnotationResolver.fieldName(field);
-                Object value = document.get(key);
+                Object value = document.get(key, field.getType());
 
                 if (value == null)
                     continue;

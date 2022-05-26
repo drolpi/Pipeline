@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
@@ -30,20 +30,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-final class JsonStore extends AbstractStore {
+final class BinStore extends AbstractStore {
 
     private final Path directory;
     private final DocumentMapper documentMapper;
 
-    JsonStore(Pipeline pipeline, JsonConfig jsonConfig) {
+    BinStore(Pipeline pipeline, BinConfig binConfig) {
         this.documentMapper = pipeline.documentMapper();
-        this.directory = Path.of(jsonConfig.directory());
+        this.directory = Path.of(binConfig.directory());
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         Check.notNull(mapName, "mapName");
-        return new JsonMap(mapName, this.directory, this.documentMapper);
+        return new BinMap(mapName, this.directory, this.documentMapper);
     }
 
     @Override

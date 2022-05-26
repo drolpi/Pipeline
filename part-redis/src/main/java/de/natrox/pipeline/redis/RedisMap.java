@@ -24,11 +24,9 @@ import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.redisson.api.RBucket;
-import org.redisson.api.RBuckets;
+import org.redisson.api.RBinaryStream;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
-import org.redisson.client.codec.StringCodec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,22 +43,25 @@ final class RedisMap implements StoreMap {
     private final String mapName;
     private final DocumentMapper documentMapper;
 
-    RedisMap(RedisStore redisStore, String mapName) {
+    RedisMap(RedisStore redisStore, String mapName, DocumentMapper documentMapper) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.documentMapper = redisStore.mapper();
+        this.documentMapper = documentMapper;
     }
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        RBucket<String> bucket = this.bucket(uniqueId);
-        String json = bucket.get();
-        if (json == null)
+        RBinaryStream stream = this.stream(uniqueId);
+        if (!stream.isExists())
             return null;
 
-        return this.documentMapper.read(json);
+        byte[] bytes = stream.get();
+        if (bytes == null)
+            return null;
+
+        return this.documentMapper.read(bytes);
     }
 
     @Override
@@ -68,15 +69,16 @@ final class RedisMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
 
-        RBucket<String> bucket = this.bucket(uniqueId);
-        bucket.set(this.documentMapper.writeAsString(documentData));
+        byte[] bytes = this.documentMapper.write(documentData);
+        RBinaryStream stream = this.stream(uniqueId);
+        stream.set(bytes);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        RBucket<String> bucket = this.bucket(uniqueId);
-        return bucket.isExists();
+        RBinaryStream stream = this.stream(uniqueId);
+        return stream.isExists();
     }
 
     @Override
@@ -91,38 +93,39 @@ final class RedisMap implements StoreMap {
     @Override
     public @NotNull PipeStream<DocumentData> values() {
         Set<String> keys = this.redisStore.keys(this.mapName);
-        RBuckets redisBuckets = this.redissonClient.getBuckets();
-        Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
 
         List<DocumentData> documents = new ArrayList<>();
-        for (var entry : buckets.entrySet()) {
-            Object objectValue = entry.getValue();
+        for (var key : keys) {
+            RBinaryStream stream = this.redissonClient.getBinaryStream(key);
 
-            if (!(objectValue instanceof String stringValue))
+            if (!stream.isExists())
                 continue;
 
-            documents.add(this.documentMapper.read(stringValue));
+            byte[] bytes = stream.get();
+            if (bytes == null)
+                continue;
+
+            documents.add(this.documentMapper.read(bytes));
         }
         return PipeStream.fromIterable(documents);
     }
 
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
-        Set<String> keys = this.redisStore.keys(this.mapName);
-        RBuckets redisBuckets = this.redissonClient.getBuckets();
-        Map<String, Object> buckets = redisBuckets.get(keys.toArray(new String[0]));
+        PipeStream<UUID> keys = this.keys();
 
         Map<UUID, DocumentData> entries = new HashMap<>();
-        for (var entry : buckets.entrySet()) {
-            UUID key = UUID.fromString(entry.getKey().split(":")[2]);
-            Object objectValue = entry.getValue();
+        for (var key : keys) {
+            RBinaryStream stream = this.stream(key);
 
-            if (!(objectValue instanceof String stringValue))
+            if (!stream.isExists())
                 continue;
 
-            DocumentData value = this.documentMapper.read(stringValue);
+            byte[] bytes = stream.get();
+            if (bytes == null)
+                continue;
 
-            entries.put(key, value);
+            entries.put(key, this.documentMapper.read(bytes));
         }
         return PipeStream.fromMap(entries);
     }
@@ -130,8 +133,8 @@ final class RedisMap implements StoreMap {
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        RBucket<String> bucket = this.bucket(uniqueId);
-        bucket.delete();
+        RBinaryStream stream = this.stream(uniqueId);
+        stream.delete();
     }
 
     @Override
@@ -146,7 +149,7 @@ final class RedisMap implements StoreMap {
         return this.redisStore.keys(this.mapName).size();
     }
 
-    private RBucket<String> bucket(UUID uniqueId) {
-        return this.redissonClient.getBucket("Cache:" + this.mapName + ":" + uniqueId, StringCodec.INSTANCE);
+    private RBinaryStream stream(UUID uniqueId) {
+        return this.redissonClient.getBinaryStream("Cache:" + this.mapName + ":" + uniqueId.toString());
     }
 }

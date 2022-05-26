@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.bin;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
@@ -27,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,12 +39,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-final class JsonMap implements StoreMap {
+final class BinMap implements StoreMap {
 
     private final Path mapPath;
     private final DocumentMapper documentMapper;
 
-    public JsonMap(String mapName, Path directory, DocumentMapper documentMapper) {
+    public BinMap(String mapName, Path directory, DocumentMapper documentMapper) {
         this.mapPath = directory.resolve(mapName);
         this.documentMapper = documentMapper;
     }
@@ -65,7 +66,7 @@ final class JsonMap implements StoreMap {
         Check.notNull(documentData, "documentData");
 
         try {
-            this.saveJsonToFile(uniqueId, documentData);
+            this.saveToFile(uniqueId, documentData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,7 +87,7 @@ final class JsonMap implements StoreMap {
             return PipeStream.fromIterable(
                 stream
                     .skip(1)
-                    .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".json"))
+                    .filter(path -> FileNameUtil.getExtension(path.getFileName().toString()).equals(".bin"))
                     .map(path -> FileNameUtil.getBaseName(path.toString()))
                     .map(UUID::fromString)
                     .toList()
@@ -167,10 +168,10 @@ final class JsonMap implements StoreMap {
         File file = new File(path.toUri());
         if (!file.exists())
             return null;
-        return this.documentMapper.read(path);
+        return this.documentMapper.read(new FileInputStream(file));
     }
 
-    private void saveJsonToFile(@NotNull UUID objectUUID, @NotNull DocumentData documentData) throws IOException {
+    private void saveToFile(@NotNull UUID objectUUID, @NotNull DocumentData documentData) throws IOException {
         Check.notNull(objectUUID, "objectUUID");
         Check.notNull(documentData, "documentData");
 
@@ -178,16 +179,15 @@ final class JsonMap implements StoreMap {
         File file = new File(path.toUri());
         if (!file.exists()) {
             if (!file.getParentFile().mkdirs() || !file.createNewFile())
-                throw new RuntimeException("Could not create files for JsonMap in " + path);
+                throw new RuntimeException("Could not create files for BinMap in " + path);
         }
 
-        FileWriter writer = new FileWriter(file);
-        this.documentMapper.write(writer, documentData);
+        this.documentMapper.write(new FileOutputStream(file), documentData);
     }
 
     private Path savedFile(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.mapPath.resolve(Path.of(uniqueId + ".json"));
+        return this.mapPath.resolve(Path.of(uniqueId + ".bin"));
     }
 
 }

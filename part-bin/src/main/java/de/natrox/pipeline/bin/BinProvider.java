@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.json;
+package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
@@ -23,13 +23,13 @@ import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ClassCanBeRecord")
-final class JsonProvider implements LocalStorageProvider {
+public final class BinProvider implements LocalStorageProvider {
 
-    private final JsonConfig jsonConfig;
+    private final BinConfig binConfig;
 
-    JsonProvider(@NotNull JsonConfig jsonConfig) {
-        Check.notNull(jsonConfig, "jsonConfig");
-        this.jsonConfig = jsonConfig;
+    BinProvider(@NotNull BinConfig binConfig) {
+        Check.notNull(binConfig, "binConfig");
+        this.binConfig = binConfig;
     }
 
     @Override
@@ -39,6 +39,6 @@ final class JsonProvider implements LocalStorageProvider {
 
     @Override
     public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
-        return new JsonStore(pipeline, this.jsonConfig);
+        return new BinStore(pipeline, this.binConfig);
     }
 }

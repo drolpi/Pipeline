@@ -40,7 +40,7 @@ final class RedisStore extends AbstractStore {
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         Check.notNull(mapName, "mapName");
-        return new RedisMap(this, mapName);
+        return new RedisMap(this, mapName, this.documentMapper);
     }
 
     @Override
@@ -84,9 +84,5 @@ final class RedisStore extends AbstractStore {
 
     public RedissonClient redissonClient() {
         return this.redissonClient;
-    }
-
-    public DocumentMapper mapper() {
-        return this.documentMapper;
     }
 }

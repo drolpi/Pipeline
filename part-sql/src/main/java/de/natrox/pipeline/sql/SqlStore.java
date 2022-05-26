@@ -18,7 +18,6 @@ package de.natrox.pipeline.sql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.function.ThrowableFunction;
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.AbstractStore;
@@ -38,10 +37,12 @@ public abstract class SqlStore extends AbstractStore {
 
     private final DocumentMapper documentMapper;
     private final HikariDataSource dataSource;
+    private final String databaseName;
 
-    public SqlStore(Pipeline pipeline, HikariDataSource dataSource) {
+    public SqlStore(Pipeline pipeline, HikariDataSource dataSource, String databaseName) {
         this.documentMapper = pipeline.documentMapper();
         this.dataSource = dataSource;
+        this.databaseName = databaseName;
     }
 
     @Override
@@ -53,16 +54,16 @@ public abstract class SqlStore extends AbstractStore {
     public @NotNull Set<String> maps() {
         //TODO: test
         return this.executeQuery(
-            String.format(SQLConstants.SELECT_BY, SQLConstants.TABLE_NAME, "INFORMATION_SCHEMA.TABLES", "TABLE_SCHEMA"),
+            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?",
             resultSet -> {
                 Set<String> names = new HashSet<>();
                 while (resultSet.next())
-                    names.add(resultSet.getString(SQLConstants.TABLE_NAME));
+                    names.add(resultSet.getString("TABLE_NAME"));
 
                 return names;
             },
             Set.of(),
-            "test"
+            this.databaseName
         );
     }
 
@@ -85,16 +86,6 @@ public abstract class SqlStore extends AbstractStore {
     @Override
     public void close() {
         //TODO:
-    }
-
-    private void createTableIfNotExists(@NotNull String name) {
-        Check.notNull(name, "name");
-        executeUpdate(String.format(
-            SQLConstants.CREATE_TABLE,
-            name,
-            SQLConstants.COLUMN_KEY,
-            SQLConstants.COLUMN_VAL
-        ));
     }
 
     @NotNull

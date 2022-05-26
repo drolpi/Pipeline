@@ -43,14 +43,15 @@ public class SqlMap implements StoreMap {
         this.sqlStore = sqlStore;
         this.mapName = mapName;
         this.documentMapper = documentMapper;
+        this.sqlStore.executeUpdate("CREATE TABLE IF NOT EXISTS `" + mapName + "` (`key` TEXT, `data` LONGBLOB);");
     }
 
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY, SQLConstants.COLUMN_VAL, this.mapName, SQLConstants.COLUMN_KEY),
-            resultSet -> resultSet.next() ? this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL)) : null,
+            "SELECT data FROM " + this.mapName + " WHERE key = " + uniqueId.toString(),
+            resultSet -> resultSet.next() ? this.documentMapper.read(resultSet.getBytes("data")) : null,
             null,
             uniqueId.toString()
         );
@@ -61,17 +62,11 @@ public class SqlMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
 
-        String jsonDocument = this.documentMapper.writeAsString(documentData);
+        byte[] bytes = this.documentMapper.write(documentData);
         if (!this.contains(uniqueId)) {
-            this.sqlStore.executeUpdate(
-                String.format(SQLConstants.INSERT_BY, this.mapName, SQLConstants.COLUMN_KEY, SQLConstants.COLUMN_VAL),
-                uniqueId.toString(), jsonDocument
-            );
+            this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", uniqueId.toString(), bytes);
         } else {
-            this.sqlStore.executeUpdate(
-                String.format(SQLConstants.UPDATE_BY, this.mapName, SQLConstants.COLUMN_VAL, SQLConstants.COLUMN_KEY),
-                jsonDocument, uniqueId.toString()
-            );
+            this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", uniqueId.toString(), bytes);
         }
     }
 
@@ -79,7 +74,7 @@ public class SqlMap implements StoreMap {
     public boolean contains(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_BY, SQLConstants.COLUMN_KEY, this.mapName, SQLConstants.COLUMN_KEY),
+            "SELECT `key` FROM " + this.mapName + " WHERE key = ?",
             ResultSet::next,
             false,
             uniqueId.toString()
@@ -89,11 +84,11 @@ public class SqlMap implements StoreMap {
     @Override
     public @NotNull PipeStream<UUID> keys() {
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, SQLConstants.COLUMN_KEY, this.mapName),
+            "SELECT `key` FROM " + this.mapName,
             resultSet -> {
                 List<UUID> keys = new ArrayList<>();
                 while (resultSet.next())
-                    keys.add(UUID.fromString(resultSet.getString(SQLConstants.COLUMN_KEY)));
+                    keys.add(UUID.fromString(resultSet.getString("key")));
 
                 return PipeStream.fromIterable(keys);
             }, PipeStream.empty());
@@ -102,11 +97,11 @@ public class SqlMap implements StoreMap {
     @Override
     public @NotNull PipeStream<DocumentData> values() {
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, SQLConstants.COLUMN_VAL, this.mapName),
+            "SELECT `data` FROM " + this.mapName,
             resultSet -> {
                 List<DocumentData> documents = new ArrayList<>();
                 while (resultSet.next())
-                    documents.add(this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL)));
+                    documents.add(this.documentMapper.read(resultSet.getBytes("data")));
 
                 return PipeStream.fromIterable(documents);
             }, PipeStream.empty());
@@ -115,13 +110,13 @@ public class SqlMap implements StoreMap {
     @Override
     public @NotNull PipeStream<Pair<UUID, DocumentData>> entries() {
         return this.sqlStore.executeQuery(
-            String.format(SQLConstants.SELECT_ALL, SQLConstants.EVERY, this.mapName),
+            "SELECT * FROM " + this.mapName,
             resultSet -> {
                 Map<UUID, DocumentData> map = new HashMap<>();
                 while (resultSet.next())
                     map.put(
-                        UUID.fromString(resultSet.getString(SQLConstants.COLUMN_KEY)),
-                        this.documentMapper.read(resultSet.getString(SQLConstants.COLUMN_VAL))
+                        UUID.fromString(resultSet.getString("key")),
+                        this.documentMapper.read(resultSet.getBytes("data"))
                     );
                 return PipeStream.fromMap(map);
             }, PipeStream.empty());
@@ -131,7 +126,7 @@ public class SqlMap implements StoreMap {
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         this.sqlStore.executeUpdate(
-            String.format(SQLConstants.DELETE_BY, this.mapName, SQLConstants.COLUMN_KEY),
+            "DELETE FROM " + this.mapName + " WHERE key = ?",
             uniqueId.toString()
         );
     }

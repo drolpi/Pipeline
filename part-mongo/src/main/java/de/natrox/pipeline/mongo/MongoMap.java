@@ -27,6 +27,7 @@ import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.stream.PipeStream;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +41,6 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 final class MongoMap implements StoreMap {
 
-    private static final String KEY_NAME = "Key";
-    private static final String VALUE_NAME = "Value";
     private static final UpdateOptions INSERT_OR_REPLACE_OPTIONS = new UpdateOptions().upsert(true);
 
     private final MongoCollection<Document> collection;
@@ -55,14 +54,14 @@ final class MongoMap implements StoreMap {
     @Override
     public @Nullable DocumentData get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        Document document = collection
-            .find(Filters.eq(KEY_NAME, uniqueId))
+        Document document = this.collection
+            .find(Filters.eq("key", uniqueId))
             .first();
         if (document == null)
             return null;
 
-        Document valueDocument = document.get(VALUE_NAME, Document.class);
-        return this.documentMapper.read(valueDocument.toJson());
+        byte[] bytes = document.get("data", Binary.class).getData();
+        return this.documentMapper.read(bytes);
     }
 
     @Override
@@ -70,20 +69,22 @@ final class MongoMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
 
+        byte[] bytes = this.documentMapper.write(documentData);
         this.collection.updateOne(
-            Filters.eq(KEY_NAME, uniqueId),
+            Filters.eq("key", uniqueId),
             Updates.combine(
-                Updates.setOnInsert(new Document(KEY_NAME, uniqueId)),
-                Updates.set(VALUE_NAME, Document.parse(this.documentMapper.writeAsString(documentData)))
+                Updates.setOnInsert(new Document("key", uniqueId)),
+                Updates.set("data", new Binary(bytes))
             ),
-            INSERT_OR_REPLACE_OPTIONS);
+            INSERT_OR_REPLACE_OPTIONS
+        );
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         Document document = this.collection
-            .find(Filters.eq(KEY_NAME, uniqueId))
+            .find(Filters.eq("key", uniqueId))
             .first();
 
         return document != null;
@@ -94,7 +95,7 @@ final class MongoMap implements StoreMap {
         List<UUID> keys = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
-                keys.add(cursor.next().get(KEY_NAME, UUID.class));
+                keys.add(cursor.next().get("key", UUID.class));
             }
         }
         return PipeStream.fromIterable(keys);
@@ -105,7 +106,9 @@ final class MongoMap implements StoreMap {
         Collection<DocumentData> documents = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
-                documents.add(this.documentMapper.read(cursor.next().get(VALUE_NAME, Document.class).toJson()));
+                Document document = cursor.next();
+                byte[] bytes = document.get("data", Binary.class).getData();
+                documents.add(this.documentMapper.read(bytes));
             }
         }
         return PipeStream.fromIterable(documents);
@@ -117,8 +120,9 @@ final class MongoMap implements StoreMap {
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                UUID key = document.get(KEY_NAME, UUID.class);
-                DocumentData value = this.documentMapper.read(document.get(VALUE_NAME, Document.class).toJson());
+                UUID key = document.get("key", UUID.class);
+                byte[] bytes = document.get("data", Binary.class).getData();
+                DocumentData value = this.documentMapper.read(bytes);
 
                 entries.put(key, value);
             }
@@ -129,7 +133,7 @@ final class MongoMap implements StoreMap {
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        this.collection.deleteOne(Filters.eq(KEY_NAME, uniqueId));
+        this.collection.deleteOne(Filters.eq("key", uniqueId));
     }
 
     @Override

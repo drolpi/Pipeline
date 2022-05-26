@@ -114,15 +114,15 @@ H2Config h2Config = H2Config
 H2Provider h2Provider = h2Config.createProvider();
 ```
 
-### Json
+### Binary
 
 Code example:
 ```java
-JsonConfig jsonFileConfig = JsonConfig
+BinConfig binConfig = BinConfig
     .builder()
     .path(Path.of("storage"))
     .build();
-JsonProvider jsonProvider = jsonConfig.createProvider();
+BinProvider binProvider = binConfig.createProvider();
 ```
 
 ### SQLite
@@ -240,24 +240,6 @@ RedisProvider redisProvider = redisConfig.createProvider();
 ### ~~RabbitMQ~~ (Planned feature)
 
 ### ~~Netty~~ (Planned feature)
-
-# Mapper
-
-The DocumentMapper handles the serialization/deserialization of the DocumentData class.
-
-## Gson
-
-Code example:
-```java
-DocumentMapper documentMapper = GsonDocumentMapper.create();
-```
-
-## Jackson
-
-Code example:
-```java
-DocumentMapper documentMapper = JacksonDocumentMapper.create();
-```
 
 # Build your Pipeline
 Now the time has finally come, you can start building your pipeline.

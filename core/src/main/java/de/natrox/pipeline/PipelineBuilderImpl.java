@@ -16,28 +16,18 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.common.validate.Check;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import org.jetbrains.annotations.NotNull;
 
 final class PipelineBuilderImpl implements Pipeline.Builder {
 
     private final PartBundle bundle;
-    private DocumentMapper documentMapper;
 
     PipelineBuilderImpl(PartBundle bundle) {
         this.bundle = bundle;
     }
 
     @Override
-    public Pipeline.@NotNull Builder documentMapper(@NotNull DocumentMapper documentMapper) {
-        Check.notNull(documentMapper, "mapper");
-        this.documentMapper = documentMapper;
-        return this;
-    }
-
-    @Override
     public @NotNull Pipeline build() {
-        return new PipelineImpl(this.bundle, this.documentMapper);
+        return new PipelineImpl(this.bundle);
     }
 }

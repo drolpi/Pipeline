@@ -17,7 +17,6 @@
 package de.natrox.pipeline.testing;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.jackson.JacksonDocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Named;
@@ -34,7 +33,6 @@ public class ObjectTest {
     public void test() {
         Pipeline pipeline = Pipeline
             .of(InMemoryProvider.create())
-            .documentMapper(JacksonDocumentMapper.create())
             .build();
 
         ObjectRepository<TestObjectData> repository = pipeline.repository(TestObjectData.class);

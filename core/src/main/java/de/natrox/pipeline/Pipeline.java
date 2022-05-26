@@ -149,8 +149,6 @@ public sealed interface Pipeline permits PipelineImpl {
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
-        @NotNull Builder documentMapper(@NotNull DocumentMapper documentMapper);
-
     }
 
 }

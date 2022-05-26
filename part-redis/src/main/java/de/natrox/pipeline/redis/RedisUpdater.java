@@ -65,7 +65,7 @@ final class RedisUpdater implements Updater {
                 redisEvent.senderId(),
                 redisEvent.repositoryName(),
                 redisEvent.documentId(),
-                this.documentMapper.read(redisEvent.documentData())
+                this.documentMapper.read(redisEvent.data())
             );
 
         this.eventBus.call(event);
@@ -75,7 +75,7 @@ final class RedisUpdater implements Updater {
     public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull DocumentData documentData, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(documentData, "documentData");
-        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.documentMapper.writeAsString(documentData)));
+        this.dataTopic.publish(new RedisDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, this.documentMapper.write(documentData)));
         if (callback != null)
             callback.run();
     }
@@ -100,17 +100,18 @@ final class RedisUpdater implements Updater {
         return this.eventBus;
     }
 
+    //TODO: Maybe divide a better solution?
     static final class RedisDocumentUpdateEvent extends DocumentEvent {
 
-        private final String documentData;
+        private final byte[] data;
 
-        public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, String documentData) {
+        public RedisDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, byte[] data) {
             super(senderId, repositoryName, documentId);
-            this.documentData = documentData;
+            this.data = data;
         }
 
-        public String documentData() {
-            return this.documentData;
+        public byte[] data() {
+            return this.data;
         }
     }
 }

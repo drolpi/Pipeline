@@ -17,35 +17,23 @@
 package de.natrox.pipeline.mapper;
 
 import de.natrox.pipeline.document.DocumentData;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.OutputStream;
 
-@ApiStatus.Internal
-public interface DocumentMapper {
+public sealed interface DocumentMapper permits DocumentMapperImpl {
 
-    @NotNull String writeAsString(@NotNull DocumentData documentData);
-
-    void write(@NotNull Writer writer, @NotNull DocumentData documentData);
-
-    @NotNull DocumentData read(@NotNull String json);
-
-    @NotNull DocumentData read(@NotNull Reader reader);
-
-    default @NotNull DocumentData read(@NotNull InputStream inputStream) {
-        return this.read(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+    static @NotNull DocumentMapper create() {
+        return new DocumentMapperImpl();
     }
 
-    default @NotNull DocumentData read(@NotNull Path path) throws IOException {
-        return this.read(Files.newInputStream(path));
-    }
+    void write(@NotNull OutputStream outputStream, @NotNull DocumentData data);
+
+    byte @NotNull [] write(@NotNull DocumentData data);
+
+    @NotNull DocumentData read(@NotNull InputStream inputStream);
+
+    @NotNull DocumentData read(byte @NotNull [] bytes);
 
 }
