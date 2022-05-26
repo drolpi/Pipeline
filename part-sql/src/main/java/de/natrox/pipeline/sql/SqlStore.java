@@ -66,23 +66,20 @@ public abstract class SqlStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
-        return false;
+        //TODO: test
+        return this.executeQuery(
+            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?",
+            ResultSet::next,
+            false,
+            mapName
+        );
     }
 
     @Override
     public void removeMap(@NotNull String mapName) {
-
-    }
-
-    @Override
-    public boolean isClosed() {
-        //TODO:
-        return false;
-    }
-
-    @Override
-    public void close() {
-        //TODO:
+        //TODO: test
+        this.executeUpdate("DROP TABLE " + mapName);
+        this.storeMapRegistry.remove(mapName);
     }
 
     @NotNull
