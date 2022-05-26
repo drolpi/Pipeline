@@ -94,9 +94,6 @@ final class PipelineImpl implements Pipeline {
     public void shutdown() {
         this.connectingStore.close();
         this.documentRepositoryFactory.clear();
-    }
-
-    public ConnectingStore store() {
-        return this.connectingStore;
+        this.objectRepositoryFactory.clear();
     }
 }
