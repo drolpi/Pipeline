@@ -69,10 +69,11 @@ public final class ObjectCache<T extends ObjectData> {
 
     private void updateData(DocumentUpdateEvent event) {
         T data = this.get(event.documentId());
+        DocumentData before = data.serialize();
         DocumentData documentData = event.documentData();
         this.repository.convertToData(data, documentData);
 
-        data.handleUpdate(documentData);
+        data.handleUpdate(before);
     }
 
     public T get(UUID uniqueId) {

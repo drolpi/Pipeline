@@ -99,7 +99,7 @@ public class PrivateTest {
 
         @Override
         public void handleUpdate(@NotNull DocumentData before) {
-            System.out.println("Update");
+            System.out.println("N: " + this.name + " B: " + before.get("name", String.class));
         }
 
         public String name() {
