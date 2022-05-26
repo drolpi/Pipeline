@@ -32,12 +32,12 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class SqlStore extends AbstractStore {
+public class SqlStore extends AbstractStore {
 
     private final HikariDataSource dataSource;
     private final String databaseName;
 
-    public SqlStore(Pipeline pipeline, HikariDataSource dataSource, String databaseName) {
+    public SqlStore(HikariDataSource dataSource, String databaseName) {
         this.dataSource = dataSource;
         this.databaseName = databaseName;
     }
@@ -49,7 +49,6 @@ public abstract class SqlStore extends AbstractStore {
 
     @Override
     public @NotNull Set<String> maps() {
-        //TODO: test
         return this.executeQuery(
             "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?",
             resultSet -> {
@@ -66,7 +65,6 @@ public abstract class SqlStore extends AbstractStore {
 
     @Override
     public boolean hasMap(@NotNull String mapName) {
-        //TODO: test
         return this.executeQuery(
             "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?",
             ResultSet::next,
@@ -77,7 +75,6 @@ public abstract class SqlStore extends AbstractStore {
 
     @Override
     public void removeMap(@NotNull String mapName) {
-        //TODO: test
         this.executeUpdate("DROP TABLE " + mapName);
         this.storeMapRegistry.remove(mapName);
     }
