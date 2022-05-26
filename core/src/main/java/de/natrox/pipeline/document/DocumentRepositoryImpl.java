@@ -141,8 +141,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isDropped() {
-        //TODO:
-        return false;
+        return !this.store.hasMap(this.repositoryName);
     }
 
     @Override
