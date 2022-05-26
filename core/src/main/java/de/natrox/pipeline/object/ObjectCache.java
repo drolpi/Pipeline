@@ -71,7 +71,7 @@ public final class ObjectCache<T extends ObjectData> {
     }
 
     private void updateData(DocumentUpdateEvent event) {
-        T data = this.get(event.documentId());
+        T data = this.getOrCreate(event.documentId());
         DocumentData before = data.serialize();
         DocumentData documentData = this.documentMapper.read(event.documentData());
         this.repository.convertToData(data, documentData);
@@ -79,7 +79,7 @@ public final class ObjectCache<T extends ObjectData> {
         data.handleUpdate(before);
     }
 
-    public T get(UUID uniqueId) {
+    public T getOrCreate(UUID uniqueId) {
         if (!this.cache.containsKey(uniqueId)) {
             this.cache.put(uniqueId, create(uniqueId));
         }

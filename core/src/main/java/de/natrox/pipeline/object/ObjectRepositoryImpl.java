@@ -48,7 +48,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         // Instantiate T as fast as possible so that the Updater can still apply updates while loading a record
-        T data = this.objectCache.get(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId);
         return this.documentRepository.get(uniqueId).map(document -> this.convertToData(data, document));
     }
 
@@ -60,7 +60,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     private T create(UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        T data = this.objectCache.get(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId);
         data.handleCreate();
         DocumentData documentData = this.convertToDocument(data);
         this.documentRepository.insert(uniqueId, documentData);
@@ -89,14 +89,9 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        T data = this.objectCache.get(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId);
         data.handleDelete();
         this.documentRepository.remove(uniqueId);
-    }
-
-    @Override
-    public void clear() {
-        //TODO:
     }
 
     @Override
@@ -114,20 +109,28 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
+    public void clear() {
+        this.documentRepository.clear();
+    }
+
+    @Override
     public void drop() {
-        //TODO:
+        this.documentRepository.drop();
     }
 
     @Override
     public boolean isDropped() {
-        //TODO:
-        return false;
+        return this.documentRepository.isDropped();
+    }
+
+    @Override
+    public void close() {
+        this.documentRepository.close();
     }
 
     @Override
     public boolean isOpen() {
-        //TODO:
-        return false;
+        return this.documentRepository.isOpen();
     }
 
     @Override
@@ -135,13 +138,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         return this.documentRepository.size();
     }
 
-    @Override
-    public void close() {
-        //TODO:
-    }
-
     public T convertToData(UUID uniqueId, DocumentData document) {
-        T data = this.objectCache.get(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId);
         return this.convertToData(data, document);
     }
 
