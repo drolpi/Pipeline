@@ -57,7 +57,7 @@ public final class ObjectRepositoryFactory {
     }
 
     private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions<T> options) {
-        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options.toDocumentOptions());
+        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options);
         ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, this.store, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 

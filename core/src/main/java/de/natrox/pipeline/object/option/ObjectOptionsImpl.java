@@ -16,13 +16,11 @@
 
 package de.natrox.pipeline.object.option;
 
-import de.natrox.pipeline.document.option.DocumentOptions;
+import de.natrox.pipeline.document.option.DocumentOptionsImpl;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("ClassCanBeRecord")
-final class ObjectOptionsImpl<T extends ObjectData> implements ObjectOptions<T> {
+final class ObjectOptionsImpl<T extends ObjectData> extends DocumentOptionsImpl implements ObjectOptions<T> {
 
     private final InstanceCreator<T> instanceCreator;
 
@@ -33,11 +31,5 @@ final class ObjectOptionsImpl<T extends ObjectData> implements ObjectOptions<T> 
     @Override
     public InstanceCreator<T> instanceCreator() {
         return this.instanceCreator;
-    }
-
-    @Override
-    public @NotNull DocumentOptions toDocumentOptions() {
-        //TODO: Very important
-        return null;
     }
 }

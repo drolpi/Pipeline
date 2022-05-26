@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Experimental
-public sealed interface DocumentOptions extends Options permits DocumentOptionsImpl {
+public interface DocumentOptions extends Options {
 
     @NotNull DocumentOptions DEFAULT = DocumentOptions.builder().build();
 

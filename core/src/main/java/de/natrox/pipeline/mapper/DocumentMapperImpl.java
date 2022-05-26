@@ -89,13 +89,13 @@ final class DocumentMapperImpl implements DocumentMapper {
 
         @Override
         public void write(Kryo kryo, Output output, DocumentData document) {
-            mapSerializer.write(kryo, output, (Map) document);
+            this.mapSerializer.write(kryo, output, (Map) document);
         }
 
         @Override
         public DocumentData read(Kryo kryo, Input input, Class<? extends DocumentData> type) {
             DocumentData document = DocumentData.create();
-            Map<?, ?> map = mapSerializer.read(kryo, input, Map.class);
+            Map<?, ?> map = this.mapSerializer.read(kryo, input, Map.class);
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 document.append((String) entry.getKey(), entry.getValue());
             }

@@ -16,5 +16,9 @@
 
 package de.natrox.pipeline.document.option;
 
-final class DocumentOptionsImpl implements DocumentOptions {
+public class DocumentOptionsImpl implements DocumentOptions {
+
+    protected DocumentOptionsImpl() {
+
+    }
 }
