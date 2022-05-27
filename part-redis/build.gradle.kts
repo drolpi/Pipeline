@@ -16,5 +16,5 @@
 
 dependencies {
     compileOnly(project(":core"))
-    implementation("org.redisson:redisson-all:3.17.2")
+    implementation("org.redisson:redisson-all:3.17.3")
 }
