@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class SqlMap implements StoreMap {
+final class SqlMap implements StoreMap {
 
     private final SqlStore sqlStore;
     private final String mapName;

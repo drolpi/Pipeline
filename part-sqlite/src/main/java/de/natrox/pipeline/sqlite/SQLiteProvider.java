@@ -64,18 +64,6 @@ public final class SQLiteProvider implements GlobalStorageProvider {
 
     @Override
     public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new SqlStore(this.hikariDataSource, "") {
-            @Override
-            public @NotNull Set<String> maps() {
-                // FIXME: 26.05.2022
-                return Set.of();
-            }
-
-            @Override
-            public boolean hasMap(@NotNull String mapName) {
-                // FIXME: 26.05.2022
-                return true;
-            }
-        };
+        return new SQLiteStore(this.hikariDataSource);
     }
 }

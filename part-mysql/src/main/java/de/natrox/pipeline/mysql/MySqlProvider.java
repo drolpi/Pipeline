@@ -73,6 +73,6 @@ public final class MySqlProvider implements GlobalStorageProvider {
 
     @Override
     public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new SqlStore(this.hikariDataSource, this.config.database());
+        return new MySqlStore(this.hikariDataSource, this.config.database());
     }
 }

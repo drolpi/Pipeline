@@ -28,55 +28,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-public class SqlStore extends AbstractStore {
+public abstract class SqlStore extends AbstractStore {
 
-    private final HikariDataSource dataSource;
-    private final String databaseName;
+    protected final HikariDataSource dataSource;
 
-    public SqlStore(HikariDataSource dataSource, String databaseName) {
+    protected SqlStore(HikariDataSource dataSource) {
         this.dataSource = dataSource;
-        this.databaseName = databaseName;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         return new SqlMap(this, mapName);
-    }
-
-    @Override
-    public @NotNull Set<String> maps() {
-        return this.executeQuery(
-            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?",
-            resultSet -> {
-                Set<String> names = new HashSet<>();
-                while (resultSet.next())
-                    names.add(resultSet.getString("TABLE_NAME"));
-
-                return names;
-            },
-            Set.of(),
-            this.databaseName
-        );
-    }
-
-    @Override
-    public boolean hasMap(@NotNull String mapName) {
-        return this.executeQuery(
-            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?",
-            ResultSet::next,
-            false,
-            mapName
-        );
-    }
-
-    @Override
-    public void removeMap(@NotNull String mapName) {
-        this.executeUpdate("DROP TABLE " + mapName);
-        this.storeMapRegistry.remove(mapName);
     }
 
     @NotNull
@@ -86,14 +50,6 @@ public class SqlStore extends AbstractStore {
         } catch (SQLException exception) {
             throw new IllegalStateException("Unable to retrieve connection from pool", exception);
         }
-    }
-
-    public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
-        return this.executeUpdate(query, statement -> {
-            for (int i = 0; i < objects.length; i++) {
-                statement.setString(i + 1, Objects.toString(objects[i]));
-            }
-        });
     }
 
     public int executeUpdate(@NotNull String query, @NotNull ThrowableConsumer<PreparedStatement, SQLException> consumer) {
@@ -108,6 +64,14 @@ public class SqlStore extends AbstractStore {
             exception.printStackTrace();
             return -1;
         }
+    }
+
+    public int executeUpdate(@NotNull String query, @NotNull Object... objects) {
+        return this.executeUpdate(query, statement -> {
+            for (int i = 0; i < objects.length; i++) {
+                statement.setString(i + 1, Objects.toString(objects[i]));
+            }
+        });
     }
 
     public <T> T executeQuery(@NotNull String query, @NotNull ThrowableFunction<ResultSet, T, SQLException> callback, @Nullable T def, @NotNull Object... objects) {

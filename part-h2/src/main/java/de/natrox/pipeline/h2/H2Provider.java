@@ -23,14 +23,12 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
-import de.natrox.pipeline.sql.SqlStore;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 
 public final class H2Provider implements GlobalStorageProvider {
 
@@ -73,18 +71,6 @@ public final class H2Provider implements GlobalStorageProvider {
 
     @Override
     public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new SqlStore(this.hikariDataSource, "") {
-            @Override
-            public @NotNull Set<String> maps() {
-                // FIXME: 26.05.2022
-                return Set.of();
-            }
-
-            @Override
-            public boolean hasMap(@NotNull String mapName) {
-                // FIXME: 26.05.2022
-                return true;
-            }
-        };
+        return new H2Store(this.hikariDataSource);
     }
 }
