@@ -56,7 +56,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public @NotNull T loadOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.load(uniqueId).orElseGet(() -> this.create(uniqueId, instanceCreator));
+        return this.load(uniqueId, instanceCreator).orElseGet(() -> this.create(uniqueId, instanceCreator));
     }
 
     private T create(UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
