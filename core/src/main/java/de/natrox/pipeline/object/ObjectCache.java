@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ObjectCache<T extends ObjectData> {
 
     private final Pipeline pipeline;
-    private final DocumentMapper documentMapper;
     private final Updater updater;
 
     private final ObjectRepositoryImpl<T> repository;
@@ -48,7 +47,6 @@ public final class ObjectCache<T extends ObjectData> {
 
     ObjectCache(Pipeline pipeline, ConnectingStore store, ObjectRepositoryImpl<T> repository, ObjectOptions<T> options) {
         this.pipeline = pipeline;
-        this.documentMapper = pipeline.documentMapper();
         this.updater = store.updater();
         this.repository = repository;
         this.type = repository.type();
@@ -76,8 +74,7 @@ public final class ObjectCache<T extends ObjectData> {
         //TODO: Maybe use this.get to prevent creating a new object and only update existing ones
         T data = this.getOrCreate(event.documentId(), null);
         DocumentData before = data.serialize();
-        DocumentData documentData = this.documentMapper.read(event.documentData());
-        this.repository.convertToData(data, documentData);
+        this.repository.convertToData(data, event.documentData());
 
         data.handleUpdate(before);
     }

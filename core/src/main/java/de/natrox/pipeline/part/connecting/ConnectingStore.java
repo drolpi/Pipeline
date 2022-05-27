@@ -17,15 +17,20 @@
 package de.natrox.pipeline.part.connecting;
 
 import de.natrox.common.validate.Check;
+import de.natrox.eventbus.EventBus;
+import de.natrox.eventbus.EventListener;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class ConnectingStore implements Store {
 
     private final Store storage;
@@ -33,12 +38,36 @@ public final class ConnectingStore implements Store {
     private final @Nullable Store localCache;
     private final @Nullable Updater updater;
 
-    public ConnectingStore(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
+    private final DocumentMapper documentMapper;
+
+    public ConnectingStore(@NotNull Pipeline pipeline, @NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.localCache = localCache;
         this.updater = updater;
+        this.documentMapper = pipeline.documentMapper();
+        this.registerListeners();
     }
+
+    private void registerListeners() {
+        if (this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+
+        eventBus.register(
+            EventListener
+                .builder(ByteDocumentUpdateEvent.class)
+                .handler(event -> eventBus.call(new DocumentUpdateEvent(
+                    event.senderId(),
+                    event.repositoryName(),
+                    event.documentId(),
+                    this.documentMapper.read(event.documentData())
+                )))
+                .build()
+        );
+    }
+
 
     @Override
     public @NotNull StoreMap openMap(@NotNull String mapName) {

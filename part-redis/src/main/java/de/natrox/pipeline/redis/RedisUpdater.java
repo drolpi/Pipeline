@@ -18,10 +18,9 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
-import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import de.natrox.pipeline.part.updater.event.UpdaterEvent;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +61,7 @@ final class RedisUpdater implements Updater {
     public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, byte @NotNull [] data, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
-        this.dataTopic.publish(new DocumentUpdateEvent(this.senderId, repositoryName, uniqueId, data));
+        this.dataTopic.publish(new ByteDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, data));
         if (callback != null)
             callback.run();
     }

@@ -17,23 +17,21 @@
 package de.natrox.pipeline.part.updater.event;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class DocumentUpdateEvent extends DocumentEvent {
+public final class ByteDocumentUpdateEvent extends DocumentEvent {
 
-    private final DocumentData documentData;
+    private final byte[] documentData;
 
-    public DocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, @NotNull DocumentData documentData) {
+    public ByteDocumentUpdateEvent(@NotNull UUID senderId, @NotNull String repositoryName, @NotNull UUID documentId, byte @NotNull [] documentData) {
         super(senderId, repositoryName, documentId);
         Check.notNull(documentData, "documentData");
         this.documentData = documentData;
     }
 
-    public @NotNull DocumentData documentData() {
+    public byte @NotNull [] documentData() {
         return this.documentData;
     }
 }
-

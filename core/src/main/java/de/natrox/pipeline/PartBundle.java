@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline;
 
-import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
@@ -24,6 +23,7 @@ import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
+import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
             Store storage = this.localStorageProvider.createLocalStorage(pipeline);
             Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache(pipeline) : null;
 
-            return new ConnectingStore(storage, null, localCache, null);
+            return new ConnectingStore(pipeline, storage, null, localCache, null);
         }
 
     }
@@ -60,7 +60,7 @@ sealed interface PartBundle permits PartBundle.Local, PartBundle.Global {
             Store localCache = local ? this.localCacheProvider.createLocalCache(pipeline) : null;
             Updater updater = local ? this.updaterProvider.createDataUpdater(pipeline) : null;
 
-            return new ConnectingStore(storage, globalCache, localCache, updater);
+            return new ConnectingStore(pipeline, storage, globalCache, localCache, updater);
         }
 
     }

@@ -21,7 +21,7 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.part.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
-import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +57,7 @@ public final class ConnectingMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(DocumentUpdateEvent.class)
+                .builder(ByteDocumentUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
                 .handler(event -> this.localCacheMap.put(event.documentId(), event.documentData()))
                 .build()
@@ -65,7 +65,7 @@ public final class ConnectingMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(DocumentUpdateEvent.class)
+                .builder(ByteDocumentUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
                 .handler(event -> this.localCacheMap.remove(event.documentId()))
                 .build()
@@ -73,7 +73,7 @@ public final class ConnectingMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(DocumentUpdateEvent.class)
+                .builder(ByteDocumentUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
                 .handler(event -> this.localCacheMap.clear())
                 .build()
