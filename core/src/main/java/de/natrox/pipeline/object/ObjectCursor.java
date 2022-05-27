@@ -30,10 +30,12 @@ final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
 
     private final ObjectRepositoryImpl<T> repository;
     private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
+    private final InstanceCreator<T> instanceCreator;
 
-    public ObjectCursor(ObjectRepositoryImpl<T> repository, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
+    public ObjectCursor(ObjectRepositoryImpl<T> repository, InstanceCreator<T> instanceCreator, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.repository = repository;
         this.pipeStream = pipeStream;
+        this.instanceCreator = instanceCreator;
     }
 
     @Override
@@ -62,12 +64,12 @@ final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
         @Override
         public T next() {
             Pair<UUID, DocumentData> next = this.documentIterator.next();
-            return repository.convertToData(next.first(), next.second());
+            return repository.convertToData(next.first(), next.second(), instanceCreator);
         }
 
         @Override
         public void remove() {
-            throw new RuntimeException("remove on a cursor is not supported");
+            throw new RuntimeException("Remove on a cursor is not supported");
         }
     }
 }

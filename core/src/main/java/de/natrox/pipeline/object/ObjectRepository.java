@@ -17,19 +17,48 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.pipeline.document.DocumentRepository;
+import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.repository.Repository;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @ApiStatus.Experimental
 public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {
 
-    @NotNull Optional<T> load(@NotNull UUID uniqueId);
+    @NotNull Optional<T> load(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator);
 
-    @NotNull T loadOrCreate(@NotNull UUID uniqueId);
+    default @NotNull Optional<T> load(@NotNull UUID uniqueId) {
+        return this.load(uniqueId, null);
+    }
+
+    @NotNull T loadOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator);
+
+    default @NotNull T loadOrCreate(@NotNull UUID uniqueId) {
+        return this.loadOrCreate(uniqueId, null);
+    }
+
+    @NotNull Cursor<T> find(@NotNull FindOptions findOptions, @Nullable InstanceCreator<T> instanceCreator);
+
+    @Override
+    default @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
+        return this.find(findOptions, null);
+    }
+
+    default @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.Builder> consumer, @Nullable InstanceCreator<T> instanceCreator) {
+        FindOptions.Builder builder = FindOptions.builder();
+        consumer.accept(builder);
+        return this.find(builder.build(), instanceCreator);
+    }
+
+    default @NotNull Cursor<T> find(@Nullable InstanceCreator<T> instanceCreator) {
+        return this.find(FindOptions.DEFAULT, instanceCreator);
+    }
 
     void save(@NotNull T objectData);
 

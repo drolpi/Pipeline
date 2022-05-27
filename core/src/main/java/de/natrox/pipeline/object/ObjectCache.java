@@ -27,8 +27,10 @@ import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +54,7 @@ public final class ObjectCache<T extends ObjectData> {
         this.type = repository.type();
         this.mapName = repository.mapName();
         this.cache = new ConcurrentHashMap<>();
-        this.instanceCreator = options.instanceCreator() != null ? options.instanceCreator() : TypeInstanceCreator.create(type);
+        this.instanceCreator = options.instanceCreator() != null ? options.instanceCreator() : TypeInstanceCreator.create(this.type);
         this.registerListeners();
     }
 
@@ -71,7 +73,8 @@ public final class ObjectCache<T extends ObjectData> {
     }
 
     private void updateData(DocumentUpdateEvent event) {
-        T data = this.getOrCreate(event.documentId());
+        //TODO: Maybe use this.get to prevent creating a new object and only update existing ones
+        T data = this.getOrCreate(event.documentId(), null);
         DocumentData before = data.serialize();
         DocumentData documentData = this.documentMapper.read(event.documentData());
         this.repository.convertToData(data, documentData);
@@ -79,17 +82,22 @@ public final class ObjectCache<T extends ObjectData> {
         data.handleUpdate(before);
     }
 
-    public T getOrCreate(UUID uniqueId) {
+    public @NotNull Optional<T> get(@NotNull UUID uniqueId) {
+        return Optional.ofNullable(this.cache.get(uniqueId));
+    }
+
+    public @NotNull T getOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         if (!this.cache.containsKey(uniqueId)) {
-            this.cache.put(uniqueId, create(uniqueId));
+            this.cache.put(uniqueId, this.create(uniqueId, instanceCreator));
         }
         return this.cache.get(uniqueId);
     }
 
-    private @NotNull T create(UUID uniqueId) {
+    private @NotNull T create(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         T instance;
+        InstanceCreator<T> creator = instanceCreator != null ? instanceCreator : this.instanceCreator;
         try {
-            instance = this.instanceCreator.create(this.pipeline);
+            instance = creator.create(this.pipeline);
         } catch (Throwable throwable) {
             throw new RuntimeException("Error while creating instance of class " + this.type.getSimpleName(), throwable);
         }

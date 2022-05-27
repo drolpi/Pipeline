@@ -26,6 +26,7 @@ import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -45,22 +46,22 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
-    public @NotNull Optional<T> load(@NotNull UUID uniqueId) {
+    public @NotNull Optional<T> load(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(uniqueId, "uniqueId");
         // Instantiate T as fast as possible so that the Updater can still apply updates while loading a record
-        T data = this.objectCache.getOrCreate(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
         return this.documentRepository.get(uniqueId).map(document -> this.convertToData(data, document));
     }
 
     @Override
-    public @NotNull T loadOrCreate(@NotNull UUID uniqueId) {
+    public @NotNull T loadOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.load(uniqueId).orElseGet(() -> this.create(uniqueId));
+        return this.load(uniqueId).orElseGet(() -> this.create(uniqueId, instanceCreator));
     }
 
-    private T create(UUID uniqueId) {
+    private T create(UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(uniqueId, "uniqueId");
-        T data = this.objectCache.getOrCreate(uniqueId);
+        T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
         data.handleCreate();
         DocumentData documentData = this.convertToDocument(data);
         this.documentRepository.insert(uniqueId, documentData);
@@ -68,10 +69,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
-    public @NotNull Cursor<T> find(@NotNull FindOptions findOptions) {
+    public @NotNull Cursor<T> find(@NotNull FindOptions findOptions, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(findOptions, "findOptions");
         Cursor<DocumentData> documentCursor = this.documentRepository.find(findOptions);
-        return new ObjectCursor<>(this, ((DocumentStream) documentCursor).asPairStream());
+        return new ObjectCursor<>(this, instanceCreator, ((DocumentStream) documentCursor).asPairStream());
     }
 
     @Override
@@ -89,8 +90,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public void remove(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        T data = this.objectCache.getOrCreate(uniqueId);
-        data.handleDelete();
+        Optional<T> optional = this.objectCache.get(uniqueId);
+        optional.ifPresent(ObjectData::handleDelete);
         this.documentRepository.remove(uniqueId);
     }
 
@@ -138,8 +139,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         return this.documentRepository.size();
     }
 
-    public T convertToData(UUID uniqueId, DocumentData document) {
-        T data = this.objectCache.getOrCreate(uniqueId);
+    public T convertToData(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
+        T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
         return this.convertToData(data, document);
     }
 
