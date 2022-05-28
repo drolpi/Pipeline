@@ -18,11 +18,8 @@ package de.natrox.pipeline.redis;
 
 import com.google.common.base.Strings;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
-import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -32,15 +29,16 @@ import org.redisson.config.SingleServerConfig;
 import org.redisson.misc.RedisURI;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public final class RedisProvider implements UpdaterProvider, GlobalCacheProvider {
+public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvider permits RedisProviderImpl {
 
-    private final RedissonClient redissonClient;
+    static @NotNull RedisProvider of(@NotNull RedissonClient redissonClient) {
+        Check.notNull(redissonClient, "redissonClient");
+        return new RedisProviderImpl(redissonClient);
+    }
 
-    RedisProvider(@NotNull RedisConfig config) {
+    static @NotNull RedisProvider of(@NotNull RedisConfig config) {
         Check.notNull(config, "config");
-
         List<RedisEndpoint> endpoints = config.endpoints();
         int size = endpoints.size();
         if (size == 0)
@@ -77,21 +75,7 @@ public final class RedisProvider implements UpdaterProvider, GlobalCacheProvider
 
         redisConfig.setNettyThreads(4);
         redisConfig.setThreads(4);
-        this.redissonClient = Redisson.create(redisConfig);
+        return RedisProvider.of(Redisson.create(redisConfig));
     }
 
-    @Override
-    public void close() {
-        this.redissonClient.shutdown(0, 2, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public @NotNull Store createGlobalCache(@NotNull Pipeline pipeline) {
-        return new RedisStore(this.redissonClient);
-    }
-
-    @Override
-    public @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline) {
-        return new RedisUpdater(this.redissonClient);
-    }
 }

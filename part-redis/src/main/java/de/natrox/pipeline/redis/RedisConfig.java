@@ -60,7 +60,7 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
     @Override
     public @NotNull RedisProvider createProvider() {
         try {
-            return new RedisProvider(this);
+            return RedisProvider.of(this);
         } catch (Exception exception) {
             throw new PartException("Failed to create RedisProvider", exception);
         }
