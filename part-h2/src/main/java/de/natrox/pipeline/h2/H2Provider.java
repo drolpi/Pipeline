@@ -16,61 +16,15 @@
 
 package de.natrox.pipeline.h2;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import de.natrox.common.io.FileUtil;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
-import org.h2.Driver;
-import org.h2.jdbcx.JdbcDataSource;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+public sealed interface H2Provider extends GlobalStorageProvider permits H2ProviderImpl {
 
-public final class H2Provider implements GlobalStorageProvider {
-
-    static {
-        Driver.load();
+    static @NotNull H2Provider of(@NotNull H2Config h2Config) {
+        Check.notNull(h2Config, "h2Config");
+        return new H2ProviderImpl(h2Config);
     }
 
-    private final HikariDataSource hikariDataSource;
-
-    H2Provider(@NotNull H2Config config) {
-        Check.notNull(config, "config");
-        Path path = Path.of(config.path());
-
-        Path parent = path.getParent();
-
-        if (parent != null && !Files.exists(parent)) {
-            FileUtil.createDirectory(parent);
-        }
-        HikariConfig hikariConfig = new HikariConfig();
-
-        JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setUrl("jdbc:h2:file:" + path.toAbsolutePath());
-        hikariConfig.setDataSource(dataSource);
-
-        hikariConfig.setMinimumIdle(2);
-        hikariConfig.setMaximumPoolSize(100);
-        hikariConfig.setConnectionTimeout(10_000);
-        hikariConfig.setValidationTimeout(10_000);
-
-        this.hikariDataSource = new HikariDataSource(hikariConfig);
-    }
-
-    @Override
-    public void close() {
-        if (this.hikariDataSource != null) {
-            this.hikariDataSource.close();
-        }
-    }
-
-
-    @Override
-    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new H2Store(this.hikariDataSource);
-    }
 }

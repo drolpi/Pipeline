@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class H2Config implements PartConfig<H2Provider> {
+public final class H2Config implements PartConfig<H2ProviderImpl> {
 
     private final String path;
 
@@ -41,8 +41,8 @@ public final class H2Config implements PartConfig<H2Provider> {
     }
 
     @Override
-    public @NotNull H2Provider createProvider() {
-        return new H2Provider(this);
+    public @NotNull H2ProviderImpl createProvider() {
+        return new H2ProviderImpl(this);
     }
 
     public static class Builder implements IBuilder<H2Config> {
