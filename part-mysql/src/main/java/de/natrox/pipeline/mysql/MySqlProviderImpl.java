@@ -1,0 +1,47 @@
+/*
+ * Copyright 2020-2022 NatroxMC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.natrox.pipeline.mysql;
+
+import com.zaxxer.hikari.HikariDataSource;
+import de.natrox.common.validate.Check;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.Store;
+import org.jetbrains.annotations.NotNull;
+
+@SuppressWarnings("ClassCanBeRecord")
+public final class MySqlProviderImpl implements MySqlProvider {
+
+    private final HikariDataSource hikariDataSource;
+    private final String databaseName;
+
+    MySqlProviderImpl(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
+        Check.notNull(hikariDataSource, "hikariDataSource");
+        Check.notNull(databaseName, "databaseName");
+        this.hikariDataSource = hikariDataSource;
+        this.databaseName = databaseName;
+    }
+
+    @Override
+    public void close() {
+        this.hikariDataSource.close();
+    }
+
+    @Override
+    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
+        return new MySqlStore(this.hikariDataSource, this.databaseName);
+    }
+}

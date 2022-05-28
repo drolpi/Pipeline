@@ -19,27 +19,23 @@ package de.natrox.pipeline.mysql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
-import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 
-public final class MySqlProvider implements GlobalStorageProvider {
+public sealed interface MySqlProvider extends GlobalStorageProvider permits MySqlProviderImpl {
 
-    private static final String CONNECT_URL_FORMAT = "jdbc:mysql://%s:%d/%s?serverTimezone=UTC&useSSL=%b&trustServerCertificate=%b";
+    static @NotNull MySqlProvider of(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
+        Check.notNull(hikariDataSource, "hikariDataSource");
+        Check.notNull(databaseName, "databaseName");
+        return new MySqlProviderImpl(hikariDataSource, databaseName);
+    }
 
-    private final MySqlConfig config;
-    private final HikariDataSource hikariDataSource;
-
-    MySqlProvider(@NotNull MySqlConfig config) {
+    static @NotNull MySqlProvider of(@NotNull MySqlConfig config) {
         Check.notNull(config, "config");
-        this.config = config;
-
         HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setJdbcUrl(String.format(
-            CONNECT_URL_FORMAT,
+            "jdbc:mysql://%s:%d/%s?serverTimezone=UTC&useSSL=%b&trustServerCertificate=%b",
             config.host(), config.port(),
             config.database(), config.useSsl(), config.useSsl()
         ));
@@ -63,16 +59,6 @@ public final class MySqlProvider implements GlobalStorageProvider {
         hikariConfig.setConnectionTimeout(10_000);
         hikariConfig.setValidationTimeout(10_000);
 
-        this.hikariDataSource = new HikariDataSource(hikariConfig);
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new MySqlStore(this.hikariDataSource, this.config.database());
+        return MySqlProvider.of(new HikariDataSource(hikariConfig), config.database());
     }
 }

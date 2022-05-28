@@ -22,6 +22,7 @@ import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class MySqlConfig implements PartConfig<MySqlProvider> {
 
     private final String host;
@@ -74,7 +75,7 @@ public final class MySqlConfig implements PartConfig<MySqlProvider> {
 
     @Override
     public @NotNull MySqlProvider createProvider() {
-        return new MySqlProvider(this);
+        return MySqlProvider.of(this);
     }
 
     public static class Builder implements IBuilder<MySqlConfig> {
