@@ -27,19 +27,19 @@ import java.io.UnsupportedEncodingException;
 
 public sealed interface MongoProvider extends GlobalStorageProvider permits MongoProviderImpl {
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
+    static @NotNull MongoProvider of(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(mongoDatabase, "mongoDatabase");
         return new MongoProviderImpl(mongoClient, mongoDatabase);
     }
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoClient mongoClient, @NotNull String databaseName) {
+    static @NotNull MongoProvider of(@NotNull MongoClient mongoClient, @NotNull String databaseName) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(databaseName, "databaseName");
         return MongoProvider.of(mongoClient, mongoClient.getDatabase(databaseName));
     }
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoConfig config) throws UnsupportedEncodingException {
+    static @NotNull MongoProvider of(@NotNull MongoConfig config) throws UnsupportedEncodingException {
         Check.notNull(config, "config");
         return MongoProvider.of(MongoClients.create(config.buildConnectionUri()), config.database());
     }

@@ -29,7 +29,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class MongoConfig implements PartConfig<MongoProviderImpl> {
+public final class MongoConfig implements PartConfig<MongoProvider> {
 
     private final String host;
     private final int port;
@@ -112,7 +112,7 @@ public final class MongoConfig implements PartConfig<MongoProviderImpl> {
     }
 
     @Override
-    public @NotNull MongoProviderImpl createProvider() {
+    public @NotNull MongoProvider createProvider() {
         try {
             return MongoProvider.of(this);
         } catch (Exception exception) {
