@@ -20,27 +20,31 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
 
-public sealed interface MongoProvider extends GlobalStorageProvider permits MongoProviderImpl {
+final class MongoProviderImpl implements MongoProvider {
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
+    private final MongoDatabase mongoDatabase;
+
+    MongoProviderImpl(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(mongoDatabase, "mongoDatabase");
-        return new MongoProviderImpl(mongoClient, mongoDatabase);
+
+        this.mongoDatabase = mongoDatabase;
     }
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoClient mongoClient, @NotNull String databaseName) {
-        Check.notNull(mongoClient, "mongoClient");
-        Check.notNull(databaseName, "databaseName");
-        return MongoProvider.of(mongoClient, mongoClient.getDatabase(databaseName));
+    @Override
+    public void close() {
+
     }
 
-    static @NotNull MongoProviderImpl of(@NotNull MongoConfig config) throws UnsupportedEncodingException {
-        Check.notNull(config, "config");
-        return MongoProvider.of(MongoClients.create(config.buildConnectionUri()), config.database());
+    @Override
+    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
+        return new MongoStore(this.mongoDatabase);
     }
 }
