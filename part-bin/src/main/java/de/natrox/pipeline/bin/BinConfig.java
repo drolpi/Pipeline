@@ -42,7 +42,7 @@ public final class BinConfig implements PartConfig<BinProvider> {
 
     @Override
     public @NotNull BinProvider createProvider() {
-        return new BinProvider(this);
+        return BinProvider.of(this);
     }
 
     public static class Builder implements IBuilder<BinConfig> {

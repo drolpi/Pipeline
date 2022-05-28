@@ -17,14 +17,27 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface BinProvider extends LocalStorageProvider permits BinProviderImpl {
+@SuppressWarnings("ClassCanBeRecord")
+final class BinProviderImpl implements BinProvider {
 
-    static @NotNull BinProvider of(@NotNull BinConfig config) {
-        Check.notNull(config, "config");
-        return new BinProviderImpl(config);
+    private final BinConfig binConfig;
+
+    BinProviderImpl(@NotNull BinConfig binConfig) {
+        Check.notNull(binConfig, "binConfig");
+        this.binConfig = binConfig;
     }
 
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
+        return new BinStore(this.binConfig);
+    }
 }
