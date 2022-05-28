@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import de.natrox.pipeline.part.updater.Updater;
@@ -31,7 +30,6 @@ final class RedisProviderImpl implements RedisProvider {
     private final RedissonClient redissonClient;
 
     RedisProviderImpl(@NotNull RedissonClient redissonClient) {
-        Check.notNull(redissonClient, "redissonClient");
         this.redissonClient = redissonClient;
     }
 

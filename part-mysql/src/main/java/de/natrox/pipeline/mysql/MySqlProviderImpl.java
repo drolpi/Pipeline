@@ -17,7 +17,6 @@
 package de.natrox.pipeline.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +28,6 @@ public final class MySqlProviderImpl implements MySqlProvider {
     private final String databaseName;
 
     MySqlProviderImpl(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
-        Check.notNull(hikariDataSource, "hikariDataSource");
-        Check.notNull(databaseName, "databaseName");
         this.hikariDataSource = hikariDataSource;
         this.databaseName = databaseName;
     }

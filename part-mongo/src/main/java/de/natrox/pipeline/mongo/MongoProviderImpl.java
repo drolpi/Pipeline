@@ -18,7 +18,6 @@ package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
@@ -30,9 +29,6 @@ final class MongoProviderImpl implements MongoProvider {
     private final MongoDatabase mongoDatabase;
 
     MongoProviderImpl(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
-        Check.notNull(mongoClient, "mongoClient");
-        Check.notNull(mongoDatabase, "mongoDatabase");
-
         this.mongoClient = mongoClient;
         this.mongoDatabase = mongoDatabase;
     }

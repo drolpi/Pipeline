@@ -19,7 +19,6 @@ package de.natrox.pipeline.h2;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.h2.Driver;
@@ -38,7 +37,6 @@ final class H2ProviderImpl implements H2Provider {
     private final HikariDataSource hikariDataSource;
 
     H2ProviderImpl(@NotNull H2Config config) {
-        Check.notNull(config, "config");
         Path path = Path.of(config.path());
         Path parent = path.getParent();
 

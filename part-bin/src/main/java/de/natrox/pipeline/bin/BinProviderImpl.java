@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.bin;
 
-import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,6 @@ final class BinProviderImpl implements BinProvider {
     private final BinConfig binConfig;
 
     BinProviderImpl(@NotNull BinConfig binConfig) {
-        Check.notNull(binConfig, "binConfig");
         this.binConfig = binConfig;
     }
 
