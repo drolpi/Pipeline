@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface H2Provider extends GlobalStorageProvider permits H2ProviderImpl {
 
-    static @NotNull H2Provider of(@NotNull H2Config h2Config) {
-        Check.notNull(h2Config, "h2Config");
-        return new H2ProviderImpl(h2Config);
+    static @NotNull H2Provider of(@NotNull H2Config config) {
+        Check.notNull(config, "config");
+        return new H2ProviderImpl(config);
     }
 
 }
