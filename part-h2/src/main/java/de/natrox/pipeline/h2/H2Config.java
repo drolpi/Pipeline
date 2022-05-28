@@ -16,8 +16,8 @@
 
 package de.natrox.pipeline.h2;
 
-import de.natrox.common.validate.Check;
 import de.natrox.common.builder.IBuilder;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 

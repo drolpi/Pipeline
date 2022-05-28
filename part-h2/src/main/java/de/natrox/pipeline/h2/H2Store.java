@@ -20,7 +20,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Set;
 
 final class H2Store extends SqlStore {

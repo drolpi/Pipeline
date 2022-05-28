@@ -20,7 +20,6 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.option.ObjectOptions;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
 import de.natrox.pipeline.part.connecting.ConnectingStore;

@@ -16,14 +16,10 @@
 
 package de.natrox.pipeline.part;
 
-import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 

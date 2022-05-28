@@ -78,7 +78,7 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     @Override
     public <T> @Nullable T get(@NotNull String field, @NotNull Class<T> type) {
         Check.notNull(type, "type");
-        return type.cast(get(field));
+        return type.cast(this.get(field));
     }
 
     @Override

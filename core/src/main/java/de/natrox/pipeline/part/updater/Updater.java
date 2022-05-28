@@ -17,7 +17,6 @@
 package de.natrox.pipeline.part.updater;
 
 import de.natrox.eventbus.EventBus;
-import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

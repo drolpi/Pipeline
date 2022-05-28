@@ -19,7 +19,6 @@ package de.natrox.pipeline.object.option;
 import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.Options;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

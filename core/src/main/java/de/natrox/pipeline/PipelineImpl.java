@@ -37,7 +37,6 @@ final class PipelineImpl implements Pipeline {
 
     private final ConnectingStore connectingStore;
     private final DocumentMapper documentMapper;
-    private final LockService lockService;
 
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
@@ -46,10 +45,10 @@ final class PipelineImpl implements Pipeline {
         Check.notNull(partBundle, "partBundle");
 
         this.documentMapper = DocumentMapper.create();
-        this.lockService = new LockService();
+        LockService lockService = new LockService();
         this.connectingStore = partBundle.createConnectingStore(this);
 
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore, this.lockService);
+        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore, lockService);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);
     }
 
@@ -70,7 +69,7 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public boolean hasRepository(@NotNull String name)  {
+    public boolean hasRepository(@NotNull String name) {
         Check.notNull(name, "name");
         this.checkOpened();
         return this.repositories().contains(name);

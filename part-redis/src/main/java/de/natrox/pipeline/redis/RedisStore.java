@@ -17,7 +17,6 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.AbstractStore;
 import de.natrox.pipeline.part.StoreMap;
 import org.jetbrains.annotations.NotNull;
