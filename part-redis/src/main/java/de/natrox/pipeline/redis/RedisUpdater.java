@@ -33,8 +33,7 @@ import java.util.UUID;
 
 final class RedisUpdater implements Updater {
 
-    //TODO: Maybe rename???
-    private final static String DATA_TOPIC = "DataTopic";
+    private final static String DATA_TOPIC = "Updater";
 
     private final EventBus eventBus;
     private final RTopic dataTopic;
