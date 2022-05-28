@@ -28,19 +28,57 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-public abstract class SqlStore extends AbstractStore {
+public class SqlStore extends AbstractStore {
 
+    private static final String[] TABLE_TYPE = new String[]{"TABLE"};
     protected final HikariDataSource dataSource;
 
-    protected SqlStore(HikariDataSource dataSource) {
+    public SqlStore(HikariDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName) {
         return new SqlMap(this, mapName);
+    }
+
+    @Override
+    public @NotNull Set<String> maps() {
+        try (
+            Connection connection = this.connection();
+            ResultSet meta = connection.getMetaData().getTables(connection.getCatalog(), null, "%", TABLE_TYPE)
+        ) {
+            Set<String> names = new HashSet<>();
+            while (meta.next()) {
+                names.add(meta.getString("table_name"));
+            }
+            return names;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+
+        return Set.of();
+    }
+
+    @Override
+    public boolean hasMap(@NotNull String name) {
+        for (String mapName : this.maps()) {
+            if (mapName.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void removeMap(@NotNull String mapName) {
+        this.executeUpdate("DROP TABLE IF EXISTS `" + mapName + "`");
+        this.storeMapRegistry.remove(mapName);
     }
 
     @NotNull

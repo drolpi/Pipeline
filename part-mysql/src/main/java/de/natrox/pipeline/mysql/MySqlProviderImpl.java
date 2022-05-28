@@ -19,17 +19,15 @@ package de.natrox.pipeline.mysql;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class MySqlProviderImpl implements MySqlProvider {
 
     private final HikariDataSource hikariDataSource;
-    private final String databaseName;
 
     MySqlProviderImpl(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
         this.hikariDataSource = hikariDataSource;
-        this.databaseName = databaseName;
     }
 
     @Override
@@ -39,6 +37,6 @@ public final class MySqlProviderImpl implements MySqlProvider {
 
     @Override
     public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new MySqlStore(this.hikariDataSource, this.databaseName);
+        return new SqlStore(this.hikariDataSource);
     }
 }

@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 import org.sqlite.SQLiteDataSource;
 
@@ -61,6 +62,6 @@ final class SQLiteProviderImpl implements SQLiteProvider {
 
     @Override
     public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
-        return new SQLiteStore(this.hikariDataSource);
+        return new SqlStore(this.hikariDataSource);
     }
 }

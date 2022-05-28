@@ -20,6 +20,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 final class H2Store extends SqlStore {
@@ -30,18 +31,7 @@ final class H2Store extends SqlStore {
 
     @Override
     public @NotNull Set<String> maps() {
-        //TODO:
-        return null;
-    }
-
-    @Override
-    public boolean hasMap(@NotNull String mapName) {
-        //TODO:
-        return false;
-    }
-
-    @Override
-    public void removeMap(@NotNull String mapName) {
-        //TODO:
+        // FIXME: 28.05.2022 Don't list internal table names
+        return super.maps();
     }
 }
