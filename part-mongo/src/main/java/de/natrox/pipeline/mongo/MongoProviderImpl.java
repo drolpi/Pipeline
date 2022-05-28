@@ -17,30 +17,29 @@
 package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
-import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.UnsupportedEncodingException;
-
+@SuppressWarnings("ClassCanBeRecord")
 final class MongoProviderImpl implements MongoProvider {
 
+    private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
 
     MongoProviderImpl(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(mongoDatabase, "mongoDatabase");
 
+        this.mongoClient = mongoClient;
         this.mongoDatabase = mongoDatabase;
     }
 
     @Override
     public void close() {
-
+        this.mongoClient.close();
     }
 
     @Override
