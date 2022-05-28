@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class SQLiteConfig implements PartConfig<SQLiteProvider> {
+public final class SQLiteConfig implements PartConfig<SQLiteProviderImpl> {
 
     private final String path;
 
@@ -41,8 +41,8 @@ public final class SQLiteConfig implements PartConfig<SQLiteProvider> {
     }
 
     @Override
-    public @NotNull SQLiteProvider createProvider() {
-        return new SQLiteProvider(this);
+    public @NotNull SQLiteProviderImpl createProvider() {
+        return new SQLiteProviderImpl(this);
     }
 
     public static class Builder implements IBuilder<SQLiteConfig> {
