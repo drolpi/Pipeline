@@ -36,9 +36,9 @@ public class PipelineTest {
     public void shutdownTest() {
         Pipeline pipeline = buildPipeline();
 
-        assertFalse(pipeline.isShutDowned(), "The pipeline has not yet been shut down");
-        pipeline.shutdown();
-        assertTrue(pipeline.isShutDowned(), "The pipeline has already been shut down");
+        assertFalse(pipeline.isClosed(), "The pipeline has not yet been shut down");
+        pipeline.close();
+        assertTrue(pipeline.isClosed(), "The pipeline has already been shut down");
     }
 
     private Pipeline buildPipeline() {

@@ -21,6 +21,7 @@ import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.document.option.DocumentOptions;
+import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
@@ -56,6 +57,7 @@ final class PipelineImpl implements Pipeline {
     public @NotNull DocumentRepository repository(@NotNull String name, @NotNull DocumentOptions options) {
         Check.notNull(name, "name");
         Check.notNull(options, "options");
+        this.checkOpened();
         return this.documentRepositoryFactory.repository(name, options);
     }
 
@@ -63,23 +65,41 @@ final class PipelineImpl implements Pipeline {
     public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options) {
         Check.notNull(type, "type");
         Check.notNull(options, "options");
+        this.checkOpened();
         return this.objectRepositoryFactory.repository(type, options);
+    }
+
+    @Override
+    public boolean hasRepository(@NotNull String name)  {
+        Check.notNull(name, "name");
+        this.checkOpened();
+        return this.repositories().contains(name);
+    }
+
+    @Override
+    public <T> boolean hasRepository(@NotNull Class<T> type) {
+        Check.notNull(type, "type");
+        this.checkOpened();
+        return this.repositories().contains(AnnotationResolver.identifier(type));
     }
 
     @Override
     public void destroyRepository(@NotNull String name) {
         Check.notNull(name, "name");
+        this.checkOpened();
         this.connectingStore.removeMap(name);
     }
 
     @Override
     public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
+        this.checkOpened();
         this.connectingStore.removeMap(AnnotationResolver.identifier(type));
     }
 
     @Override
     public @NotNull Set<String> repositories() {
+        this.checkOpened();
         return this.connectingStore.maps();
     }
 
@@ -89,14 +109,20 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public boolean isShutDowned() {
+    public boolean isClosed() {
         return this.connectingStore == null || this.connectingStore.isClosed();
     }
 
     @Override
-    public void shutdown() {
+    public void close() {
         this.connectingStore.close();
         this.documentRepositoryFactory.clear();
         this.objectRepositoryFactory.clear();
+    }
+
+    public void checkOpened() {
+        if (this.isClosed()) {
+            throw new PipelineException("Pipeline is closed");
+        }
     }
 }

@@ -23,7 +23,6 @@ import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
-import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.object.option.ObjectOptions;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
@@ -147,6 +146,10 @@ public sealed interface Pipeline permits PipelineImpl {
         return this.repository(type, ObjectOptions.of(type).build());
     }
 
+    boolean hasRepository(@NotNull String name);
+
+    <T> boolean hasRepository(@NotNull Class<T> type);
+
     void destroyRepository(@NotNull String name);
 
     <T extends ObjectData> void destroyRepository(@NotNull Class<T> type);
@@ -155,19 +158,9 @@ public sealed interface Pipeline permits PipelineImpl {
 
     @NotNull DocumentMapper documentMapper();
 
-    boolean isShutDowned();
+    boolean isClosed();
 
-    void shutdown();
-
-    default boolean hasRepository(@NotNull String name) {
-        Check.notNull(name, "name");
-        return this.repositories().contains(name);
-    }
-
-    default <T> boolean hasRepository(@NotNull Class<T> type) {
-        Check.notNull(type, "type");
-        return this.repositories().contains(AnnotationResolver.identifier(type));
-    }
+    void close();
 
     sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
 
