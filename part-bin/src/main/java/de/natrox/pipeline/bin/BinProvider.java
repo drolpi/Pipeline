@@ -26,5 +26,4 @@ public sealed interface BinProvider extends LocalStorageProvider permits BinProv
         Check.notNull(config, "config");
         return new BinProviderImpl(config);
     }
-
 }

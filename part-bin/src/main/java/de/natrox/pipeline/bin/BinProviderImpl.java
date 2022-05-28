@@ -20,13 +20,14 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.Store;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("ClassCanBeRecord")
+import java.nio.file.Path;
+
 final class BinProviderImpl implements BinProvider {
 
-    private final BinConfig binConfig;
+    private final Path path;
 
     BinProviderImpl(@NotNull BinConfig binConfig) {
-        this.binConfig = binConfig;
+        this.path = Path.of(binConfig.directory());
     }
 
     @Override
@@ -36,6 +37,6 @@ final class BinProviderImpl implements BinProvider {
 
     @Override
     public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
-        return new BinStore(this.binConfig);
+        return new BinStore(this.path);
     }
 }

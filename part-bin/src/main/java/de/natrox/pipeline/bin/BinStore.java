@@ -32,8 +32,8 @@ final class BinStore extends AbstractStore {
 
     private final Path directory;
 
-    BinStore(BinConfig binConfig) {
-        this.directory = Path.of(binConfig.directory());
+    BinStore(Path directory) {
+        this.directory = directory;
     }
 
     @Override
