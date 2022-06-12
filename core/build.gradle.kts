@@ -37,7 +37,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.8.2")
     testImplementation("org.junit.platform:junit-platform-suite-api:1.8.2")
     testRuntimeOnly("org.junit.platform:junit-platform-suite-engine:1.8.2")
-    testImplementation("org.mockito:mockito-core:4.6.0")
+    testImplementation("org.mockito:mockito-core:4.6.1")
 }
 
 tasks.withType<Jar> {
