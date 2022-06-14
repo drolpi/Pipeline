@@ -19,5 +19,5 @@ dependencies {
     implementation(project(":part-sql"))
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("com.h2database:h2:2.1.212")
+    implementation("com.h2database:h2:2.1.214")
 }
