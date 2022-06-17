@@ -37,6 +37,6 @@ final class PairIterator<T, U> implements Iterator<Pair<T, U>> {
     @Override
     public Pair<T, U> next() {
         Map.Entry<T, U> entry = this.entryIterator.next();
-        return new Pair<>(entry.getKey(), entry.getValue());
+        return Pair.of(entry.getKey(), entry.getValue());
     }
 }

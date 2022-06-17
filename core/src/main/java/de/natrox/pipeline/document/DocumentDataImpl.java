@@ -398,7 +398,7 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
         @Override
         public Pair<String, Object> next() {
             Map.Entry<String, Object> next = this.iterator.next();
-            return new Pair<>(next.getKey(), next.getValue());
+            return Pair.of(next.getKey(), next.getValue());
         }
 
         @Override

@@ -39,12 +39,12 @@ public final class Sorts {
 
     public static SortEntry ascending(@NotNull String field) {
         Check.notNull(field, "field");
-        return new SortEntryImpl(new Pair<>(field, SortOrder.Ascending));
+        return new SortEntryImpl(Pair.of(field, SortOrder.Ascending));
     }
 
     public static SortEntry descending(@NotNull String field) {
         Check.notNull(field, "field");
-        return new SortEntryImpl(new Pair<>(field, SortOrder.Descending));
+        return new SortEntryImpl(Pair.of(field, SortOrder.Descending));
     }
 
 }
