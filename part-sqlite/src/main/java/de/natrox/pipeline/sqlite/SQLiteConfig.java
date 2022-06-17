@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.sqlite;
 
-import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
@@ -25,44 +24,22 @@ import java.nio.file.Path;
 
 public final class SQLiteConfig implements PartConfig<SQLiteProviderImpl> {
 
-    private final String path;
+    //TODO: Find better solution ?? Maybe use Path
+    String directory;
 
-    private SQLiteConfig(@NotNull Path path) {
+    SQLiteConfig() {
+
+    }
+
+    public @NotNull SQLiteConfig path(@NotNull Path path) {
         Check.notNull(path, "path");
-        this.path = path.toAbsolutePath().toString();
-    }
-
-    public static @NotNull Builder builder() {
-        return new Builder();
-    }
-
-    public String path() {
-        return this.path;
+        this.directory = path.toFile().getAbsolutePath();
+        return this;
     }
 
     @Override
-    public @NotNull SQLiteProviderImpl createProvider() {
+    public @NotNull SQLiteProviderImpl buildProvider() {
         return new SQLiteProviderImpl(this);
-    }
-
-    public static class Builder implements IBuilder<SQLiteConfig> {
-
-        private Path path;
-
-        private Builder() {
-
-        }
-
-        public @NotNull Builder path(@NotNull Path path) {
-            Check.notNull(path, "path");
-            this.path = path;
-            return this;
-        }
-
-        @Override
-        public @NotNull SQLiteConfig build() {
-            return new SQLiteConfig(this.path);
-        }
     }
 
 }

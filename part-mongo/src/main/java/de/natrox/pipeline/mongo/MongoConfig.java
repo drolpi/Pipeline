@@ -17,7 +17,6 @@
 package de.natrox.pipeline.mongo;
 
 import com.google.common.base.Strings;
-import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.PartConfig;
@@ -28,74 +27,58 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class MongoConfig implements PartConfig<MongoProvider> {
 
-    private final String host;
-    private final int port;
+    String database;
+    private String host;
+    private int port;
+    private String authSource;
+    private String username;
+    private String password;
+    private String overridingConnectionUri;
 
-    private final String authSource;
-    private final String username;
-    private final String password;
+    MongoConfig() {
 
-    private final String database;
+    }
 
-    private final String overridingConnectionUri;
-
-    private MongoConfig(
-        @NotNull String host,
-        int port,
-        @Nullable String authSource,
-        @Nullable String username,
-        @Nullable String password,
-        @NotNull String database,
-        @Nullable String overridingConnectionUri
-    ) {
+    public @NotNull MongoConfig host(@NotNull String host) {
         Check.notNull(host, "host");
-        Check.notNull(database, "database");
-
         this.host = host;
+        return this;
+    }
+
+    public @NotNull MongoConfig port(int port) {
         this.port = port;
+        return this;
+    }
+
+    public @NotNull MongoConfig authSource(@Nullable String authSource) {
         this.authSource = authSource;
+        return this;
+    }
+
+    public @NotNull MongoConfig username(@Nullable String username) {
         this.username = username;
+        return this;
+    }
+
+    public @NotNull MongoConfig password(@Nullable String password) {
         this.password = password;
+        return this;
+    }
+
+    public @NotNull MongoConfig database(@NotNull String database) {
+        Check.notNull(database, "database");
         this.database = database;
+        return this;
+    }
+
+    public @NotNull MongoConfig overridingConnectionUri(@Nullable String overridingConnectionUri) {
         this.overridingConnectionUri = overridingConnectionUri;
+        return this;
     }
 
-    public static @NotNull Builder builder() {
-        return new Builder();
-    }
-
-    public @NotNull String host() {
-        return this.host;
-    }
-
-    public int port() {
-        return this.port;
-    }
-
-    public String authSource() {
-        return this.authSource;
-    }
-
-    public String username() {
-        return this.username;
-    }
-
-    public String password() {
-        return this.password;
-    }
-
-    public @NotNull String database() {
-        return this.database;
-    }
-
-    public String overridingConnectionUri() {
-        return this.overridingConnectionUri;
-    }
-
-    public @NotNull String buildConnectionUri() throws UnsupportedEncodingException {
+    @NotNull String buildConnectionUri() throws UnsupportedEncodingException {
         if (!Strings.isNullOrEmpty(this.overridingConnectionUri))
             return this.overridingConnectionUri;
 
@@ -112,71 +95,13 @@ public final class MongoConfig implements PartConfig<MongoProvider> {
     }
 
     @Override
-    public @NotNull MongoProvider createProvider() {
+    public @NotNull MongoProvider buildProvider() {
+        Check.notNull(this.host, "host");
+        Check.notNull(this.database, "database");
         try {
             return MongoProvider.of(this);
         } catch (Exception exception) {
             throw new PartException("Failed to create MongoProvider", exception);
-        }
-    }
-
-    public static class Builder implements IBuilder<MongoConfig> {
-
-        private String host;
-        private int port;
-
-        private String authSource;
-        private String username;
-        private String password;
-
-        private String database;
-
-        private String overridingConnectionUri;
-
-        private Builder() {
-
-        }
-
-        public @NotNull Builder host(@NotNull String host) {
-            Check.notNull(host, "host");
-            this.host = host;
-            return this;
-        }
-
-        public @NotNull Builder port(int port) {
-            this.port = port;
-            return this;
-        }
-
-        public @NotNull Builder authSource(@Nullable String authSource) {
-            this.authSource = authSource;
-            return this;
-        }
-
-        public @NotNull Builder username(@Nullable String username) {
-            this.username = username;
-            return this;
-        }
-
-        public @NotNull Builder password(@Nullable String password) {
-            this.password = password;
-            return this;
-        }
-
-        public @NotNull Builder database(@NotNull String database) {
-            Check.notNull(database, "database");
-            this.database = database;
-            return this;
-        }
-
-        public @NotNull Builder overridingConnectionUri(@Nullable String overridingConnectionUri) {
-            this.overridingConnectionUri = overridingConnectionUri;
-            return this;
-        }
-
-        @Override
-        public @NotNull MongoConfig build() {
-            return new MongoConfig(this.host, this.port, this.authSource, this.username, this.password, this.database, this.overridingConnectionUri);
         }
     }
 }

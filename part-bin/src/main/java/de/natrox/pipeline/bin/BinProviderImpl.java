@@ -27,7 +27,7 @@ final class BinProviderImpl implements BinProvider {
     private final Path path;
 
     BinProviderImpl(@NotNull BinConfig binConfig) {
-        this.path = Path.of(binConfig.directory());
+        this.path = Path.of(binConfig.directory);
     }
 
     @Override

@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.bin;
 
-import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
@@ -25,44 +24,22 @@ import java.nio.file.Path;
 
 public final class BinConfig implements PartConfig<BinProvider> {
 
-    private final String directory;
+    //TODO: Find better solution ?? Maybe use Path
+    String directory;
 
-    private BinConfig(@NotNull Path directory) {
+    BinConfig() {
+
+    }
+
+    public @NotNull BinConfig path(@NotNull Path directory) {
         Check.notNull(directory, "directory");
-        this.directory = directory.toString();
-    }
-
-    public static @NotNull Builder builder() {
-        return new Builder();
-    }
-
-    public @NotNull String directory() {
-        return this.directory;
+        this.directory = directory.toFile().getAbsolutePath();
+        return this;
     }
 
     @Override
-    public @NotNull BinProvider createProvider() {
+    public @NotNull BinProvider buildProvider() {
         return BinProvider.of(this);
-    }
-
-    public static class Builder implements IBuilder<BinConfig> {
-
-        private Path directory;
-
-        private Builder() {
-
-        }
-
-        public @NotNull Builder path(@NotNull Path directory) {
-            Check.notNull(directory, "directory");
-            this.directory = directory;
-            return this;
-        }
-
-        @Override
-        public @NotNull BinConfig build() {
-            return new BinConfig(this.directory);
-        }
     }
 
 }

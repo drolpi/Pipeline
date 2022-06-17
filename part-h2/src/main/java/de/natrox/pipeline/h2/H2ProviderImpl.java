@@ -37,7 +37,7 @@ final class H2ProviderImpl implements H2Provider {
     private final HikariDataSource hikariDataSource;
 
     H2ProviderImpl(@NotNull H2Config config) {
-        Path path = Path.of(config.path());
+        Path path = Path.of(config.directory);
         Path parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {

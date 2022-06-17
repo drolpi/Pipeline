@@ -22,6 +22,10 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface SQLiteProvider extends GlobalStorageProvider permits SQLiteProviderImpl {
 
+    static @NotNull SQLiteConfig createConfig() {
+        return new SQLiteConfig();
+    }
+
     static @NotNull SQLiteProvider of(@NotNull SQLiteConfig config) {
         Check.notNull(config, "config");
         return new SQLiteProviderImpl(config);

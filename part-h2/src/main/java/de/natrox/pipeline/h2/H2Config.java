@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.h2;
 
-import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
@@ -25,44 +24,22 @@ import java.nio.file.Path;
 
 public final class H2Config implements PartConfig<H2ProviderImpl> {
 
-    private final String path;
+    //TODO: Find better solution ?? Maybe use Path
+    String directory;
 
-    private H2Config(@NotNull Path path) {
-        Check.notNull(path, "path");
-        this.path = path.toAbsolutePath().toString();
+    H2Config() {
+
     }
 
-    public static @NotNull Builder builder() {
-        return new Builder();
-    }
-
-    public @NotNull String path() {
-        return this.path;
+    public @NotNull H2Config path(@NotNull Path directory) {
+        Check.notNull(directory, "directory");
+        this.directory = directory.toFile().getAbsolutePath();
+        return this;
     }
 
     @Override
-    public @NotNull H2ProviderImpl createProvider() {
+    public @NotNull H2ProviderImpl buildProvider() {
         return new H2ProviderImpl(this);
-    }
-
-    public static class Builder implements IBuilder<H2Config> {
-
-        private Path path;
-
-        private Builder() {
-
-        }
-
-        public @NotNull Builder path(@NotNull Path path) {
-            Check.notNull(path, "path");
-            this.path = path;
-            return this;
-        }
-
-        @Override
-        public @NotNull H2Config build() {
-            return new H2Config(path);
-        }
     }
 
 }

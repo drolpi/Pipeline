@@ -21,6 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface PartConfig<T extends PartProvider> {
 
-    @NotNull T createProvider();
+    @NotNull T buildProvider();
 
 }

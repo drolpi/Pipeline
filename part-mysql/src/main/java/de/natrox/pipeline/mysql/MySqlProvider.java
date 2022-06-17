@@ -24,6 +24,10 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface MySqlProvider extends GlobalStorageProvider permits MySqlProviderImpl {
 
+    static @NotNull MySqlConfig createConfig() {
+        return new MySqlConfig();
+    }
+
     static @NotNull MySqlProvider of(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
         Check.notNull(hikariDataSource, "hikariDataSource");
         Check.notNull(databaseName, "databaseName");
@@ -36,12 +40,12 @@ public sealed interface MySqlProvider extends GlobalStorageProvider permits MySq
 
         hikariConfig.setJdbcUrl(String.format(
             "jdbc:mysql://%s:%d/%s?serverTimezone=UTC&useSSL=%b&trustServerCertificate=%b",
-            config.host(), config.port(),
-            config.database(), config.useSsl(), config.useSsl()
+            config.host, config.port,
+            config.database, config.useSsl, config.useSsl
         ));
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        hikariConfig.setUsername(config.username());
-        hikariConfig.setPassword(config.password());
+        hikariConfig.setUsername(config.username);
+        hikariConfig.setPassword(config.password);
 
         hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -59,6 +63,6 @@ public sealed interface MySqlProvider extends GlobalStorageProvider permits MySq
         hikariConfig.setConnectionTimeout(10_000);
         hikariConfig.setValidationTimeout(10_000);
 
-        return MySqlProvider.of(new HikariDataSource(hikariConfig), config.database());
+        return MySqlProvider.of(new HikariDataSource(hikariConfig), config.database);
     }
 }

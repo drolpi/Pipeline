@@ -33,7 +33,7 @@ final class SQLiteProviderImpl implements SQLiteProvider {
     private final HikariDataSource hikariDataSource;
 
     SQLiteProviderImpl(@NotNull SQLiteConfig config) {
-        Path path = Path.of(config.path());
+        Path path = Path.of(config.directory);
         Path parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {

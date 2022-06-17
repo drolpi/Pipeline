@@ -32,6 +32,10 @@ import java.util.List;
 
 public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvider permits RedisProviderImpl {
 
+    static @NotNull RedisConfig createConfig() {
+        return new RedisConfig();
+    }
+
     static @NotNull RedisProvider of(@NotNull RedissonClient redissonClient) {
         Check.notNull(redissonClient, "redissonClient");
         return new RedisProviderImpl(redissonClient);
@@ -39,7 +43,7 @@ public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvid
 
     static @NotNull RedisProvider of(@NotNull RedisConfig config) {
         Check.notNull(config, "config");
-        List<RedisEndpoint> endpoints = config.endpoints();
+        List<RedisEndpoint> endpoints = config.endpoints;
         int size = endpoints.size();
         if (size == 0)
             throw new IllegalArgumentException("Endpoints Array is empty");
@@ -49,28 +53,28 @@ public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvid
             ClusterServersConfig clusterServersConfig = redisConfig.useClusterServers();
 
             for (RedisEndpoint endpoint : endpoints) {
-                RedisURI uri = new RedisURI("redis", endpoint.host(), endpoint.port());
+                RedisURI uri = new RedisURI("redis", endpoint.host, endpoint.port);
                 clusterServersConfig.addNodeAddress(uri.toString());
             }
 
-            if (!Strings.isNullOrEmpty(config.username()))
-                clusterServersConfig.setUsername(config.username());
-            if (!Strings.isNullOrEmpty(config.password()))
-                clusterServersConfig.setPassword(config.password());
+            if (!Strings.isNullOrEmpty(config.username))
+                clusterServersConfig.setUsername(config.username);
+            if (!Strings.isNullOrEmpty(config.password))
+                clusterServersConfig.setPassword(config.password);
 
         } else {
             RedisEndpoint endpoint = endpoints.get(0);
             SingleServerConfig singleServerConfig = redisConfig.useSingleServer();
-            RedisURI uri = new RedisURI("redis", endpoint.host(), endpoint.port());
+            RedisURI uri = new RedisURI("redis", endpoint.host, endpoint.port);
             singleServerConfig
                 .setSubscriptionsPerConnection(30)
                 .setAddress(uri.toString())
-                .setDatabase(endpoint.database());
+                .setDatabase(endpoint.database);
 
-            if (!Strings.isNullOrEmpty(config.username()))
-                singleServerConfig.setUsername(config.username());
-            if (!Strings.isNullOrEmpty(config.password()))
-                singleServerConfig.setPassword(config.password());
+            if (!Strings.isNullOrEmpty(config.username))
+                singleServerConfig.setUsername(config.username);
+            if (!Strings.isNullOrEmpty(config.password))
+                singleServerConfig.setPassword(config.password);
         }
 
         redisConfig.setNettyThreads(4);

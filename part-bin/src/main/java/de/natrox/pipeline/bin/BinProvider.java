@@ -22,6 +22,10 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface BinProvider extends LocalStorageProvider permits BinProviderImpl {
 
+    static @NotNull BinConfig createConfig() {
+        return new BinConfig();
+    }
+
     static @NotNull BinProvider of(@NotNull BinConfig config) {
         Check.notNull(config, "config");
         return new BinProviderImpl(config);

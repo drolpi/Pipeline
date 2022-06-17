@@ -40,19 +40,17 @@ public class ExampleTest {
 
     @Test
     public void test() {
-        MongoConfig mongoConfig = MongoConfig
-            .builder()
+        MongoProvider mongoProvider = MongoProvider
+            .createConfig()
             .host("127.0.0.1")
             .port(27017)
             .database("rewrite")
-            .build();
-        MongoProvider mongoProvider = mongoConfig.createProvider();
+            .buildProvider();
 
-        RedisConfig redisConfig = RedisConfig
-            .builder()
-            .endpoint(builder -> builder.host("127.0.0.1").port(6379).database(0))
-            .build();
-        RedisProvider redisProvider = redisConfig.createProvider();
+        RedisProvider redisProvider = RedisProvider
+            .createConfig()
+            .endpoint(endpoint -> endpoint.host("127.0.0.1").port(6379).database(0))
+            .buildProvider();
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
         Pipeline pipeline = Pipeline

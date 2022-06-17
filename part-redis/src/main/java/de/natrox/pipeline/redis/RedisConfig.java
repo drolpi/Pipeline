@@ -16,95 +16,59 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.collect.ImmutableList;
-import de.natrox.common.builder.IBuilder;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class RedisConfig implements PartConfig<RedisProvider> {
 
-    private final String username;
-    private final String password;
-    private final List<RedisEndpoint> endpoints;
+    final List<RedisEndpoint> endpoints;
+    String username;
+    String password;
 
-    private RedisConfig(String username, String password, @NotNull List<RedisEndpoint> endpoints) {
-        Check.notNull(endpoints, "endpoints");
+    RedisConfig() {
+        this.endpoints = new ArrayList<>();
+    }
+
+    public @NotNull RedisConfig username(@Nullable String username) {
         this.username = username;
+        return this;
+    }
+
+    public @NotNull RedisConfig password(@Nullable String password) {
         this.password = password;
-        this.endpoints = endpoints;
+        return this;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public @NotNull RedisConfig endpoints(RedisEndpoint @NotNull ... endpoints) {
+        Check.notNull(endpoints, "endpoints");
+        for (int i = 0, length = endpoints.length; i < length; i++) {
+            RedisEndpoint endpoint = endpoints[i];
+            Check.notNull(endpoint, "alias at index %s", i);
+            this.endpoints.add(endpoint);
+        }
+        return this;
     }
 
-    public String username() {
-        return this.username;
-    }
-
-    public String password() {
-        return this.password;
-    }
-
-    public List<RedisEndpoint> endpoints() {
-        return this.endpoints;
+    public @NotNull RedisConfig endpoint(@NotNull Consumer<RedisEndpoint> consumer) {
+        Check.notNull(consumer, "consumer");
+        RedisEndpoint endpoint = RedisEndpoint.create();
+        consumer.accept(endpoint);
+        return this.endpoints(endpoint);
     }
 
     @Override
-    public @NotNull RedisProvider createProvider() {
+    public @NotNull RedisProvider buildProvider() {
         try {
             return RedisProvider.of(this);
         } catch (Exception exception) {
             throw new PartException("Failed to create RedisProvider", exception);
-        }
-    }
-
-    public static class Builder implements IBuilder<RedisConfig> {
-
-        private final ImmutableList.Builder<RedisEndpoint> endpoints;
-        private String username;
-        private String password;
-
-        private Builder() {
-            this.endpoints = new ImmutableList.Builder<>();
-        }
-
-        public Builder username(@Nullable String username) {
-            this.username = username;
-            return this;
-        }
-
-        public Builder password(@Nullable String password) {
-            this.password = password;
-            return this;
-        }
-
-        public @NotNull Builder endpoints(RedisEndpoint... endpoints) {
-            Check.notNull(endpoints, "endpoints");
-            for (int i = 0, length = endpoints.length; i < length; i++) {
-                RedisEndpoint endpoint = endpoints[i];
-                Check.notNull(endpoint, "alias at index %s", i);
-                this.endpoints.add(endpoint);
-            }
-            return this;
-        }
-
-        public final @NotNull Builder endpoint(@NotNull Consumer<RedisEndpoint.@NotNull Builder> consumer) {
-            RedisEndpoint.Builder builder = RedisEndpoint.builder();
-            consumer.accept(builder);
-            return this.endpoints(builder.build());
-        }
-
-        @Override
-        public @NotNull RedisConfig build() {
-            return new RedisConfig(this.username, this.password, this.endpoints.build());
         }
     }
 }
