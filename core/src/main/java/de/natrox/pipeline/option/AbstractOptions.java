@@ -18,7 +18,7 @@ package de.natrox.pipeline.option;
 
 import org.jetbrains.annotations.NotNull;
 
-abstract class AbstractOptions implements Options {
+abstract non-sealed class AbstractOptions implements Options {
 
     @SuppressWarnings("unchecked")
     abstract static class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {

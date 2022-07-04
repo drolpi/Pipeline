@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Experimental
-public interface Options {
+public sealed interface Options permits AbstractOptions, DocumentOptions, ObjectOptions {
 
     @ApiStatus.Experimental
     interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> {
