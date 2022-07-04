@@ -55,9 +55,9 @@ public class ExampleTest {
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
         Pipeline pipeline = Pipeline
-            .create(mongoProvider, config -> config.toString())
-            .globalCache(redisProvider, config -> config.toString())
-            .localCache(inMemoryProvider, redisProvider, config -> config.toString())
+            .create(mongoProvider, config -> config)
+            .globalCache(redisProvider, config -> config)
+            .localCache(inMemoryProvider, redisProvider, config -> config)
             .build();
 
         // Document repository
