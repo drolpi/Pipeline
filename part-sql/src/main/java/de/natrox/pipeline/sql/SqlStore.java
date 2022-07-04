@@ -19,8 +19,8 @@ package de.natrox.pipeline.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.consumer.ThrowableConsumer;
 import de.natrox.common.function.ThrowableFunction;
-import de.natrox.pipeline.part.AbstractStore;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.AbstractStore;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

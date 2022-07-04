@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.config;
 
-import de.natrox.pipeline.part.provider.PartProvider;
 import org.jetbrains.annotations.NotNull;
 
-public interface PartConfig<T extends PartProvider> {
+public interface LocalCacheConfig extends PartConfig.Cache {
 
-    @NotNull T buildProvider();
+    static @NotNull LocalCacheConfig create() {
+        return null;
+    }
 
 }

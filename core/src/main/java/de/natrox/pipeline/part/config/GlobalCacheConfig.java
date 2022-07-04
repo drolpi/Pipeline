@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.part.config;
 
-import de.natrox.pipeline.part.provider.LocalStorageProvider;
-import org.junit.jupiter.api.Test;
+import org.jetbrains.annotations.NotNull;
 
-public class BundleTest {
+public interface GlobalCacheConfig extends PartConfig.Cache {
 
-    @Test
-    public void test(LocalStorageProvider localStorageProvider) {
-        Pipeline pipeline = Pipeline
-            .of(localStorageProvider)
-            .build();
+    static @NotNull GlobalCacheConfig create() {
+        return null;
     }
 
 }

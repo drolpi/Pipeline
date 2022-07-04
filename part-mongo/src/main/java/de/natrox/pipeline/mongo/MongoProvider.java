@@ -27,10 +27,6 @@ import java.io.UnsupportedEncodingException;
 
 public sealed interface MongoProvider extends GlobalStorageProvider permits MongoProviderImpl {
 
-    static @NotNull MongoConfig createConfig() {
-        return new MongoConfig();
-    }
-
     static @NotNull MongoProvider of(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(mongoDatabase, "mongoDatabase");
@@ -40,11 +36,11 @@ public sealed interface MongoProvider extends GlobalStorageProvider permits Mong
     static @NotNull MongoProvider of(@NotNull MongoClient mongoClient, @NotNull String databaseName) {
         Check.notNull(mongoClient, "mongoClient");
         Check.notNull(databaseName, "databaseName");
-        return MongoProvider.of(mongoClient, mongoClient.getDatabase(databaseName));
+        return of(mongoClient, mongoClient.getDatabase(databaseName));
     }
 
-    static @NotNull MongoProvider of(@NotNull MongoConfig config) throws UnsupportedEncodingException {
+    static @NotNull MongoProvider of(@NotNull MongoConfig config) {
         Check.notNull(config, "config");
-        return MongoProvider.of(MongoClients.create(config.buildConnectionUri()), config.database);
+        return of(MongoClients.create(config.buildConnectionUri()), config.database);
     }
 }

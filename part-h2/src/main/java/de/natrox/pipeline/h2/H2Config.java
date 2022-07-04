@@ -17,12 +17,11 @@
 package de.natrox.pipeline.h2;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class H2Config implements PartConfig<H2ProviderImpl> {
+public final class H2Config {
 
     //TODO: Find better solution ?? Maybe use Path
     String directory;
@@ -31,15 +30,13 @@ public final class H2Config implements PartConfig<H2ProviderImpl> {
 
     }
 
-    public @NotNull H2Config path(@NotNull Path directory) {
+    public static @NotNull H2Config create() {
+        return new H2Config();
+    }
+
+    public @NotNull H2Config setPath(@NotNull Path directory) {
         Check.notNull(directory, "directory");
         this.directory = directory.toFile().getAbsolutePath();
         return this;
     }
-
-    @Override
-    public @NotNull H2ProviderImpl buildProvider() {
-        return new H2ProviderImpl(this);
-    }
-
 }

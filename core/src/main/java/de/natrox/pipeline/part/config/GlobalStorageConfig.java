@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+public interface GlobalStorageConfig extends PartConfig.Storage {
 
-public interface Store {
+    static @NotNull GlobalStorageConfig create() {
+        return null;
+    }
 
-    @NotNull StoreMap openMap(@NotNull String mapName);
-
-    @NotNull Set<String> maps();
-
-    boolean hasMap(@NotNull String mapName);
-
-    void closeMap(@NotNull String mapName);
-
-    void removeMap(@NotNull String mapName);
-
-    boolean isClosed();
-
-    void close();
 }

@@ -19,8 +19,8 @@ package de.natrox.pipeline.mongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.AbstractStore;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.AbstractStore;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 

@@ -17,11 +17,13 @@
 package de.natrox.pipeline.part.updater;
 
 import de.natrox.eventbus.EventBus;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+@ApiStatus.Internal
 public interface Updater {
 
     void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, byte @NotNull [] data, @Nullable Runnable callback);

@@ -17,11 +17,14 @@
 package de.natrox.pipeline.part.provider;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.config.GlobalStorageConfig;
+import de.natrox.pipeline.part.store.Store;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 public non-sealed interface GlobalStorageProvider extends PartProvider {
 
-    @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline);
+    @ApiStatus.Internal
+    @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline, @NotNull GlobalStorageConfig config);
 
 }

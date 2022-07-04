@@ -17,7 +17,7 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.StoreMap;
 import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ final class BinMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, @NotNull byte[] data) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
 

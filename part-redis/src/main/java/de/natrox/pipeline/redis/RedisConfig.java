@@ -17,8 +17,6 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.exception.PartException;
-import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class RedisConfig implements PartConfig<RedisProvider> {
+public final class RedisConfig {
 
     final List<RedisEndpoint> endpoints;
     String username;
@@ -36,17 +34,21 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         this.endpoints = new ArrayList<>();
     }
 
-    public @NotNull RedisConfig username(@Nullable String username) {
+    public static @NotNull RedisConfig create() {
+        return new RedisConfig();
+    }
+
+    public @NotNull RedisConfig setUsername(@Nullable String username) {
         this.username = username;
         return this;
     }
 
-    public @NotNull RedisConfig password(@Nullable String password) {
+    public @NotNull RedisConfig setPassword(@Nullable String password) {
         this.password = password;
         return this;
     }
 
-    public @NotNull RedisConfig endpoints(RedisEndpoint @NotNull ... endpoints) {
+    public @NotNull RedisConfig addEndpoints(RedisEndpoint @NotNull ... endpoints) {
         Check.notNull(endpoints, "endpoints");
         for (int i = 0, length = endpoints.length; i < length; i++) {
             RedisEndpoint endpoint = endpoints[i];
@@ -56,19 +58,10 @@ public final class RedisConfig implements PartConfig<RedisProvider> {
         return this;
     }
 
-    public @NotNull RedisConfig endpoint(@NotNull Consumer<RedisEndpoint> consumer) {
+    public @NotNull RedisConfig addEndpoint(@NotNull Consumer<RedisEndpoint> consumer) {
         Check.notNull(consumer, "consumer");
         RedisEndpoint endpoint = RedisEndpoint.create();
         consumer.accept(endpoint);
-        return this.endpoints(endpoint);
-    }
-
-    @Override
-    public @NotNull RedisProvider buildProvider() {
-        try {
-            return RedisProvider.of(this);
-        } catch (Exception exception) {
-            throw new PartException("Failed to create RedisProvider", exception);
-        }
+        return this.addEndpoints(endpoint);
     }
 }

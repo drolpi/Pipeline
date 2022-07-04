@@ -20,7 +20,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.config.GlobalStorageConfig;
+import de.natrox.pipeline.part.store.Store;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +37,8 @@ final class H2ProviderImpl implements H2Provider {
 
     private final HikariDataSource hikariDataSource;
 
-    H2ProviderImpl(@NotNull H2Config config) {
-        Path path = Path.of(config.directory);
-        Path parent = path.getParent();
+    H2ProviderImpl(@NotNull Path directory) {
+        Path parent = directory.getParent();
 
         if (parent != null && !Files.exists(parent)) {
             FileUtil.createDirectory(parent);
@@ -46,7 +46,7 @@ final class H2ProviderImpl implements H2Provider {
         HikariConfig hikariConfig = new HikariConfig();
 
         JdbcDataSource dataSource = new JdbcDataSource();
-        dataSource.setUrl("jdbc:h2:file:" + path.toAbsolutePath());
+        dataSource.setUrl("jdbc:h2:file:" + directory.toAbsolutePath());
         hikariConfig.setDataSource(dataSource);
 
         hikariConfig.setMinimumIdle(2);
@@ -64,9 +64,8 @@ final class H2ProviderImpl implements H2Provider {
         }
     }
 
-
     @Override
-    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline, @NotNull GlobalStorageConfig config) {
         return new H2Store(this.hikariDataSource);
     }
 }

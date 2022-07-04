@@ -17,12 +17,11 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class BinConfig implements PartConfig<BinProvider> {
+public final class BinConfig {
 
     //TODO: Find better solution ?? Maybe use Path
     String directory;
@@ -31,15 +30,13 @@ public final class BinConfig implements PartConfig<BinProvider> {
 
     }
 
-    public @NotNull BinConfig path(@NotNull Path directory) {
+    public static @NotNull BinConfig create() {
+        return new BinConfig();
+    }
+
+    public @NotNull BinConfig setPath(@NotNull Path directory) {
         Check.notNull(directory, "directory");
         this.directory = directory.toFile().getAbsolutePath();
         return this;
     }
-
-    @Override
-    public @NotNull BinProvider buildProvider() {
-        return BinProvider.of(this);
-    }
-
 }

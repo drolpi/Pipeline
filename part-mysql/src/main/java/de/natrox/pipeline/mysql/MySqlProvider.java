@@ -24,10 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface MySqlProvider extends GlobalStorageProvider permits MySqlProviderImpl {
 
-    static @NotNull MySqlConfig createConfig() {
-        return new MySqlConfig();
-    }
-
     static @NotNull MySqlProvider of(@NotNull HikariDataSource hikariDataSource, @NotNull String databaseName) {
         Check.notNull(hikariDataSource, "hikariDataSource");
         Check.notNull(databaseName, "databaseName");

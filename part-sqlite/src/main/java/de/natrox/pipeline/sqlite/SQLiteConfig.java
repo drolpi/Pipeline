@@ -17,12 +17,11 @@
 package de.natrox.pipeline.sqlite;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public final class SQLiteConfig implements PartConfig<SQLiteProviderImpl> {
+public final class SQLiteConfig {
 
     //TODO: Find better solution ?? Maybe use Path
     String directory;
@@ -31,15 +30,13 @@ public final class SQLiteConfig implements PartConfig<SQLiteProviderImpl> {
 
     }
 
+    public static @NotNull SQLiteConfig create() {
+        return new SQLiteConfig();
+    }
+
     public @NotNull SQLiteConfig path(@NotNull Path path) {
         Check.notNull(path, "path");
         this.directory = path.toFile().getAbsolutePath();
         return this;
     }
-
-    @Override
-    public @NotNull SQLiteProviderImpl buildProvider() {
-        return new SQLiteProviderImpl(this);
-    }
-
 }

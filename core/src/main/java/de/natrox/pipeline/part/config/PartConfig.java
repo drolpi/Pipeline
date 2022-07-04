@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.part.config;
 
-public class PipelineTest {
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Experimental
+public interface PartConfig {
+
+    @ApiStatus.Experimental
+    interface Storage extends PartConfig {
+
+    }
+
+    @ApiStatus.Experimental
+    interface Cache extends PartConfig {
+
+    }
 
 }

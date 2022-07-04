@@ -20,14 +20,22 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+
 public sealed interface BinProvider extends LocalStorageProvider permits BinProviderImpl {
 
-    static @NotNull BinConfig createConfig() {
-        return new BinConfig();
+    static @NotNull BinProvider of(@NotNull Path directory) {
+        Check.notNull(directory, "directory");
+        return new BinProviderImpl(directory);
+    }
+
+    static @NotNull BinProvider of(@NotNull String directory) {
+        Check.notNull(directory, "directory");
+        return of(Path.of(directory));
     }
 
     static @NotNull BinProvider of(@NotNull BinConfig config) {
         Check.notNull(config, "config");
-        return new BinProviderImpl(config);
+        return of(config.directory);
     }
 }

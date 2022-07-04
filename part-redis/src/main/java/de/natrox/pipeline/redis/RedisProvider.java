@@ -32,10 +32,6 @@ import java.util.List;
 
 public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvider permits RedisProviderImpl {
 
-    static @NotNull RedisConfig createConfig() {
-        return new RedisConfig();
-    }
-
     static @NotNull RedisProvider of(@NotNull RedissonClient redissonClient) {
         Check.notNull(redissonClient, "redissonClient");
         return new RedisProviderImpl(redissonClient);

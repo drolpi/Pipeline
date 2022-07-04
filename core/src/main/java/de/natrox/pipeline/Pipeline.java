@@ -24,11 +24,16 @@ import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.ObjectRepository;
 import de.natrox.pipeline.object.option.ObjectOptions;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
+import de.natrox.pipeline.part.config.GlobalStorageConfig;
+import de.natrox.pipeline.part.config.LocalCacheConfig;
+import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,88 +43,32 @@ import java.util.function.Consumer;
 @ApiStatus.Experimental
 public sealed interface Pipeline permits PipelineImpl {
 
-    static @NotNull Builder of(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull GlobalCacheProvider globalCacheProvider,
-        @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull UpdaterProvider updaterProvider
-    ) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            globalCacheProvider,
-            localCacheProvider,
-            updaterProvider
-        ));
+    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull GlobalStorageConfig config) {
+        Check.notNull(provider, "provider");
+        Check.notNull(config, "config");
+        return new PipelineBuilderImpl.GlobalBuilderImpl(provider, config);
     }
 
-    static @NotNull Builder of(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull LocalCacheProvider localCacheProvider,
-        @NotNull UpdaterProvider updaterProvider
-    ) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            null,
-            localCacheProvider,
-            updaterProvider
-        ));
+    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull Consumer<GlobalStorageConfig> consumer) {
+        Check.notNull(provider, "provider");
+        Check.notNull(consumer, "consumer");
+        GlobalStorageConfig config = GlobalStorageConfig.create();
+        consumer.accept(config);
+        return create(provider, config);
     }
 
-    static @NotNull Builder of(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull GlobalCacheProvider globalCacheProvider,
-        @NotNull UpdaterProvider updaterProvider
-    ) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            globalCacheProvider,
-            null,
-            updaterProvider
-        ));
+    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig config) {
+        Check.notNull(provider, "provider");
+        Check.notNull(config, "config");
+        return new PipelineBuilderImpl.LocalBuilderImpl(provider, config);
     }
 
-    static @NotNull Builder of(
-        @NotNull GlobalStorageProvider globalStorageProvider,
-        @NotNull GlobalCacheProvider globalCacheProvider
-    ) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            globalCacheProvider,
-            null,
-            null
-        ));
-    }
-
-    static @NotNull Builder of(@NotNull GlobalStorageProvider globalStorageProvider, @NotNull UpdaterProvider updaterProvider) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            null,
-            null,
-            updaterProvider
-        ));
-    }
-
-    static @NotNull Builder of(@NotNull GlobalStorageProvider globalStorageProvider) {
-        return new PipelineBuilderImpl(new PartBundle.Global(
-            globalStorageProvider,
-            null,
-            null,
-            null
-        ));
-    }
-
-    static @NotNull Builder of(
-        @NotNull LocalStorageProvider localStorageProvider,
-        @NotNull LocalCacheProvider localCacheProvider
-    ) {
-        Check.notNull(localStorageProvider, "localStorageProvider");
-        Check.notNull(localCacheProvider, "localCacheProvider");
-        return new PipelineBuilderImpl(new PartBundle.Local(localStorageProvider, localCacheProvider));
-    }
-
-    static @NotNull Builder of(@NotNull LocalStorageProvider localStorageProvider) {
-        Check.notNull(localStorageProvider, "localStorageProvider");
-        return new PipelineBuilderImpl(new PartBundle.Local(localStorageProvider, null));
+    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull Consumer<LocalStorageConfig> consumer) {
+        Check.notNull(provider, "provider");
+        Check.notNull(consumer, "consumer");
+        LocalStorageConfig config = LocalStorageConfig.create();
+        consumer.accept(config);
+        return create(provider, config);
     }
 
     @NotNull DocumentRepository repository(@NotNull String name, @NotNull DocumentOptions options);
@@ -162,7 +111,47 @@ public sealed interface Pipeline permits PipelineImpl {
 
     void close();
 
-    sealed interface Builder extends IBuilder<Pipeline> permits PipelineBuilderImpl {
+    interface Builder<R extends Builder<R>> extends IBuilder<Pipeline> {
+
+        @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull GlobalCacheConfig config);
+
+        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull Consumer<GlobalCacheConfig> consumer) {
+            GlobalCacheConfig config = GlobalCacheConfig.create();
+            consumer.accept(config);
+            return this.globalCache(provider, config);
+        }
+
+    }
+
+    interface GlobalBuilder extends Builder<GlobalBuilder> {
+
+        @NotNull Pipeline.GlobalBuilder localCache(
+            @NotNull LocalCacheProvider localCacheProvider,
+            @NotNull UpdaterProvider updaterProvider,
+            @NotNull LocalCacheConfig config
+        );
+
+        default @NotNull Pipeline.GlobalBuilder localCache(
+            @NotNull LocalCacheProvider localCacheProvider,
+            @NotNull UpdaterProvider updaterProvider,
+            @NotNull Consumer<LocalCacheConfig> consumer
+        ) {
+            LocalCacheConfig config = LocalCacheConfig.create();
+            consumer.accept(config);
+            return this.localCache(localCacheProvider, updaterProvider, config);
+        }
+
+    }
+
+    interface LocalBuilder extends Builder<LocalBuilder> {
+
+        @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull LocalCacheConfig localCacheConfig);
+
+        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull Consumer<LocalCacheConfig> consumer) {
+            LocalCacheConfig config = LocalCacheConfig.create();
+            consumer.accept(config);
+            return this.localCache(provider, config);
+        }
 
     }
 

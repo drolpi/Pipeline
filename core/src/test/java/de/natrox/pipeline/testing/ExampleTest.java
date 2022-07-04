@@ -40,21 +40,24 @@ public class ExampleTest {
 
     @Test
     public void test() {
-        MongoProvider mongoProvider = MongoProvider
-            .createConfig()
-            .host("127.0.0.1")
-            .port(27017)
-            .database("rewrite")
-            .buildProvider();
+        MongoConfig mongoConfig = MongoConfig
+            .create()
+            .setHost("127.0.0.1")
+            .setPort(27017)
+            .setDatabase("rewrite");
+        MongoProvider mongoProvider = MongoProvider.of(mongoConfig);
 
-        RedisProvider redisProvider = RedisProvider
-            .createConfig()
-            .endpoint(endpoint -> endpoint.host("127.0.0.1").port(6379).database(0))
-            .buildProvider();
+        RedisConfig redisConfig = RedisConfig
+            .create()
+            .addEndpoint(endpoint -> endpoint.setHost("127.0.0.1").setPort(6379).setDatabase(0));
+        RedisProvider redisProvider = RedisProvider.of(redisConfig);
+
         InMemoryProvider inMemoryProvider = InMemoryProvider.create();
 
         Pipeline pipeline = Pipeline
-            .of(mongoProvider, redisProvider, inMemoryProvider, redisProvider)
+            .create(mongoProvider, config -> config.toString())
+            .globalCache(redisProvider, config -> config.toString())
+            .localCache(inMemoryProvider, redisProvider, config -> config.toString())
             .build();
 
         // Document repository

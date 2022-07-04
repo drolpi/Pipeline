@@ -33,18 +33,18 @@ public final class RedisEndpoint {
         return new RedisEndpoint();
     }
 
-    public @NotNull RedisEndpoint host(@NotNull String host) {
+    public @NotNull RedisEndpoint setHost(@NotNull String host) {
         Check.notNull(host, "host");
         this.host = host;
         return this;
     }
 
-    public @NotNull RedisEndpoint port(int port) {
+    public @NotNull RedisEndpoint setPort(int port) {
         this.port = port;
         return this;
     }
 
-    public @NotNull RedisEndpoint database(int database) {
+    public @NotNull RedisEndpoint setDatabase(int database) {
         this.database = database;
         return this;
     }

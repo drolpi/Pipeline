@@ -19,7 +19,8 @@ package de.natrox.pipeline.mongo;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.config.GlobalStorageConfig;
+import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -39,7 +40,7 @@ final class MongoProviderImpl implements MongoProvider {
     }
 
     @Override
-    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull Store createGlobalStorage(@NotNull Pipeline pipeline, @NotNull GlobalStorageConfig config) {
         return new MongoStore(this.mongoDatabase);
     }
 }

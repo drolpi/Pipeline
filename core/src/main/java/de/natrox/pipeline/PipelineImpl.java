@@ -41,12 +41,12 @@ final class PipelineImpl implements Pipeline {
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
-    PipelineImpl(@NotNull PartBundle partBundle) {
-        Check.notNull(partBundle, "partBundle");
+    PipelineImpl(@NotNull PipelineBuilderImpl.AbstractBuilder<?> builder) {
+        Check.notNull(builder, "builder");
 
         this.documentMapper = DocumentMapper.create();
         LockService lockService = new LockService();
-        this.connectingStore = partBundle.createConnectingStore(this);
+        this.connectingStore = builder.createConnectingStore(this);
 
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore, lockService);
         this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);

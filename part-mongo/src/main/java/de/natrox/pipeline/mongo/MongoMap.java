@@ -21,7 +21,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.jetbrains.annotations.NotNull;

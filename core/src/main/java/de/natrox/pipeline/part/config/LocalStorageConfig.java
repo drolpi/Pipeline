@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.part.config;
 
-public class PipelineTest {
+import org.jetbrains.annotations.NotNull;
+
+public interface LocalStorageConfig extends PartConfig.Storage {
+
+    static @NotNull LocalStorageConfig create() {
+        return null;
+    }
 
 }

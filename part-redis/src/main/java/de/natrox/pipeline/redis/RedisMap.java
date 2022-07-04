@@ -17,7 +17,7 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBinaryStream;
 import org.redisson.api.RKeys;

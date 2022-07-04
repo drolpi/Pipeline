@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.store;
 
 import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;

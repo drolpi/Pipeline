@@ -17,11 +17,14 @@
 package de.natrox.pipeline.part.provider;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
+import de.natrox.pipeline.part.store.Store;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 public non-sealed interface GlobalCacheProvider extends PartProvider {
 
-    @NotNull Store createGlobalCache(@NotNull Pipeline pipeline);
+    @ApiStatus.Internal
+    @NotNull Store createGlobalCache(@NotNull Pipeline pipeline, @NotNull GlobalCacheConfig config);
 
 }

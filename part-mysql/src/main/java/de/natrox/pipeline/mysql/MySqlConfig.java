@@ -17,11 +17,10 @@
 package de.natrox.pipeline.mysql;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.PartConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MySqlConfig implements PartConfig<MySqlProvider> {
+public final class MySqlConfig {
 
     String host;
     int port;
@@ -34,41 +33,39 @@ public final class MySqlConfig implements PartConfig<MySqlProvider> {
 
     }
 
-    public MySqlConfig host(@NotNull String host) {
+    public static @NotNull MySqlConfig create() {
+        return new MySqlConfig();
+    }
+
+    public MySqlConfig setHost(@NotNull String host) {
         Check.notNull(host, "host");
         this.host = host;
         return this;
     }
 
-    public @NotNull MySqlConfig port(int port) {
+    public @NotNull MySqlConfig setPort(int port) {
         this.port = port;
         return this;
     }
 
-    public @NotNull MySqlConfig username(@Nullable String username) {
+    public @NotNull MySqlConfig setUsername(@Nullable String username) {
         this.username = username;
         return this;
     }
 
-    public @NotNull MySqlConfig password(@Nullable String password) {
+    public @NotNull MySqlConfig setPassword(@Nullable String password) {
         this.password = password;
         return this;
     }
 
-    public @NotNull MySqlConfig database(@NotNull String database) {
+    public @NotNull MySqlConfig setDatabase(@NotNull String database) {
         Check.notNull(database, "database");
         this.database = database;
         return this;
     }
 
-    public @NotNull MySqlConfig useSsl(boolean useSsl) {
+    public @NotNull MySqlConfig setUseSsl(boolean useSsl) {
         this.useSsl = useSsl;
         return this;
     }
-
-    @Override
-    public @NotNull MySqlProvider buildProvider() {
-        return MySqlProvider.of(this);
-    }
-
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part;
+package de.natrox.pipeline.part.store;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
+@ApiStatus.Internal
 public interface StoreMap {
 
     byte @Nullable [] get(@NotNull UUID uniqueId);

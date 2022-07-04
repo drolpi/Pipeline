@@ -20,15 +20,23 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+
 public sealed interface H2Provider extends GlobalStorageProvider permits H2ProviderImpl {
 
-    static @NotNull H2Config createConfig() {
-        return new H2Config();
+    static @NotNull H2Provider of(@NotNull Path directory) {
+        Check.notNull(directory, "directory");
+        return new H2ProviderImpl(directory);
+    }
+
+    static @NotNull H2Provider of(@NotNull String directory) {
+        Check.notNull(directory, "directory");
+        return of(Path.of(directory));
     }
 
     static @NotNull H2Provider of(@NotNull H2Config config) {
         Check.notNull(config, "config");
-        return new H2ProviderImpl(config);
+        return of(config.directory);
     }
 
 }

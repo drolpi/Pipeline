@@ -18,10 +18,12 @@ package de.natrox.pipeline.part.provider;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.part.updater.Updater;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 public non-sealed interface UpdaterProvider extends PartProvider {
 
+    @ApiStatus.Internal
     @NotNull Updater createDataUpdater(@NotNull Pipeline pipeline);
 
 }

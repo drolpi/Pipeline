@@ -17,7 +17,9 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.Store;
+import de.natrox.pipeline.part.config.LocalCacheConfig;
+import de.natrox.pipeline.part.config.LocalStorageConfig;
+import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
@@ -38,12 +40,12 @@ public final class InMemoryProvider implements LocalCacheProvider, LocalStorageP
     }
 
     @Override
-    public @NotNull Store createLocalCache(@NotNull Pipeline pipeline) {
+    public @NotNull Store createLocalCache(@NotNull Pipeline pipeline, @NotNull LocalCacheConfig config) {
         return new InMemoryStore();
     }
 
     @Override
-    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline) {
+    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline, @NotNull LocalStorageConfig config) {
         return new InMemoryStore();
     }
 }

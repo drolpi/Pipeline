@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.StoreMap;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
