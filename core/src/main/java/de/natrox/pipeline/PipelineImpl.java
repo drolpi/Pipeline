@@ -53,19 +53,33 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull DocumentRepository repository(@NotNull String name, @NotNull DocumentOptions options) {
+    public @NotNull DocumentRepository repository(@NotNull String name) {
         Check.notNull(name, "name");
-        Check.notNull(options, "options");
         this.checkOpened();
-        return this.documentRepositoryFactory.repository(name, options);
+        return this.documentRepositoryFactory.repository(name);
     }
 
     @Override
-    public <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options) {
+    public @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull DocumentOptions options) {
+        Check.notNull(name, "name");
+        Check.notNull(options, "options");
+        this.checkOpened();
+        return this.documentRepositoryFactory.createRepository(name, options);
+    }
+
+    @Override
+    public @NotNull <T extends ObjectData> ObjectRepository<T> repository(@NotNull Class<T> type) {
+        Check.notNull(type, "type");
+        this.checkOpened();
+        return this.objectRepositoryFactory.repository(type);
+    }
+
+    @Override
+    public <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options) {
         Check.notNull(type, "type");
         Check.notNull(options, "options");
         this.checkOpened();
-        return this.objectRepositoryFactory.repository(type, options);
+        return this.objectRepositoryFactory.createRepository(type, options);
     }
 
     @Override
@@ -120,8 +134,8 @@ final class PipelineImpl implements Pipeline {
     }
 
     public void checkOpened() {
-        if (this.isClosed()) {
-            throw new PipelineException("Pipeline is closed");
-        }
+        if (!this.isClosed())
+            return;
+        throw new PipelineException("Pipeline is closed");
     }
 }

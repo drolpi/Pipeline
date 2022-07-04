@@ -19,8 +19,8 @@ package de.natrox.pipeline.document;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.document.option.DocumentOptions;
-import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
+import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,9 +45,9 @@ public final class DocumentRepositoryFactory {
         this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository repository(String name, DocumentOptions options) {
+    public DocumentRepository repository(String name) {
         try {
-            writeLock.lock();
+            this.writeLock.lock();
             if (this.repositoryMap.containsKey(name)) {
                 DocumentRepository repository = this.repositoryMap.get(name);
                 if (!repository.isDropped() && repository.isOpen()) {
@@ -55,29 +55,41 @@ public final class DocumentRepositoryFactory {
                 }
                 this.repositoryMap.remove(name);
             }
-            return this.createRepository(name, options);
         } finally {
-            writeLock.unlock();
+            this.writeLock.unlock();
         }
+
+        //TODO: message/reason
+        throw new IllegalStateException();
     }
 
-    private DocumentRepository createRepository(String name, DocumentOptions options) {
-        StoreMap storeMap = this.connectingStore.openMap(name);
-        DocumentRepository repository = new DocumentRepositoryImpl(name, this.pipeline, this.lockService, this.connectingStore, storeMap, options);
-        this.repositoryMap.put(name, repository);
+    public DocumentRepository createRepository(String name, DocumentOptions options) {
+        try {
+            this.writeLock.lock();
+            if (this.repositoryMap.containsKey(name)) {
+                DocumentRepository repository = this.repository(name);
+                repository.close();
+            }
 
-        return repository;
+            StoreMap storeMap = this.connectingStore.openMap(name);
+            DocumentRepository repository = new DocumentRepositoryImpl(name, this.pipeline, this.lockService, this.connectingStore, storeMap, options);
+            this.repositoryMap.put(name, repository);
+
+            return repository;
+        } finally {
+            this.writeLock.unlock();
+        }
     }
 
     public void clear() {
         try {
-            writeLock.lock();
+            this.writeLock.lock();
             for (DocumentRepository collection : this.repositoryMap.values()) {
                 collection.close();
             }
             this.repositoryMap.clear();
         } finally {
-            writeLock.unlock();
+            this.writeLock.unlock();
         }
     }
 

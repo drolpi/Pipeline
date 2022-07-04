@@ -99,7 +99,6 @@ public final class ConnectingStore implements Store {
         return this.storage.hasMap(mapName);
     }
 
-
     @Override
     public void closeMap(@NotNull String mapName) {
         Check.notNull(mapName, "mapName");

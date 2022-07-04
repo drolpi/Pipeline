@@ -62,7 +62,7 @@ public class ExampleTest {
 
         // Document repository
         {
-            DocumentRepository repository = pipeline.repository("DAccount");
+            DocumentRepository repository = pipeline.createRepository("DAccount");
             UUID uniqueId = UUID.randomUUID();
 
             // Insert
@@ -106,7 +106,7 @@ public class ExampleTest {
 
         // Object repository
         {
-            ObjectRepository<AccountData> repository = pipeline.repository(AccountData.class);
+            ObjectRepository<AccountData> repository = pipeline.createRepository(AccountData.class);
             UUID uniqueId = UUID.randomUUID();
 
             // Load

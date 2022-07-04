@@ -33,7 +33,6 @@ import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,28 +70,32 @@ public sealed interface Pipeline permits PipelineImpl {
         return create(provider, config);
     }
 
-    @NotNull DocumentRepository repository(@NotNull String name, @NotNull DocumentOptions options);
+    @NotNull DocumentRepository repository(@NotNull String name);
 
-    default @NotNull DocumentRepository repository(@NotNull String name, @NotNull Consumer<DocumentOptions.Builder> consumer) {
+    @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull DocumentOptions options);
+
+    default @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull Consumer<DocumentOptions.Builder> consumer) {
         DocumentOptions.Builder builder = DocumentOptions.builder();
         consumer.accept(builder);
-        return this.repository(name, builder.build());
+        return this.createRepository(name, builder.build());
     }
 
-    default @NotNull DocumentRepository repository(@NotNull String name) {
-        return this.repository(name, DocumentOptions.DEFAULT);
+    default @NotNull DocumentRepository createRepository(@NotNull String name) {
+        return this.createRepository(name, DocumentOptions.DEFAULT);
     }
 
-    <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options);
+    <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type);
 
-    default <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type, @NotNull Consumer<ObjectOptions.Builder<T>> consumer) {
+    <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options);
+
+    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull Consumer<ObjectOptions.Builder<T>> consumer) {
         ObjectOptions.Builder<T> builder = ObjectOptions.of(type);
         consumer.accept(builder);
-        return this.repository(type, builder.build());
+        return this.createRepository(type, builder.build());
     }
 
-    default <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type) {
-        return this.repository(type, ObjectOptions.of(type).build());
+    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type) {
+        return this.createRepository(type, ObjectOptions.of(type).build());
     }
 
     boolean hasRepository(@NotNull String name);

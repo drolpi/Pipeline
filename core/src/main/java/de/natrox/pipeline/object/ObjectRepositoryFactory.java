@@ -47,7 +47,7 @@ public final class ObjectRepositoryFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type, ObjectOptions<T> options) {
+    public <T extends ObjectData> ObjectRepository<T> repository(Class<T> type) {
         String name = AnnotationResolver.identifier(type);
 
         try {
@@ -59,14 +59,25 @@ public final class ObjectRepositoryFactory {
                 }
                 this.repositoryMap.remove(name);
             }
-            return this.createRepository(name, type, options);
         } finally {
             this.lock.unlock();
         }
+
+        //TODO: message/reason
+        throw new IllegalStateException();
     }
 
-    private <T extends ObjectData> ObjectRepository<T> createRepository(String name, Class<T> type, ObjectOptions<T> options) {
-        DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name, options);
+    public  <T extends ObjectData> ObjectRepository<T> createRepository(Class<T> type, ObjectOptions<T> options) {
+        String name = AnnotationResolver.identifier(type);
+
+        if (this.repositoryMap.containsKey(name)) {
+            ObjectRepository<T> repository = this.repository(type);
+            repository.close();
+            DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name);
+            documentRepository.close();
+        }
+
+        DocumentRepository documentRepository = this.documentRepositoryFactory.createRepository(name, options);
         ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, this.store, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 
