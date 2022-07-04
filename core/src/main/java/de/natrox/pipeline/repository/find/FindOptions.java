@@ -30,7 +30,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
     @NotNull FindOptions DEFAULT = FindOptions.builder().build();
 
     static @NotNull Builder builder() {
-        return new FindOptionsBuilderImpl();
+        return new FindOptionsImpl.BuilderImpl();
     }
 
     int skip();
@@ -42,7 +42,7 @@ public sealed interface FindOptions permits FindOptionsImpl {
     @Nullable SortEntry sortBy();
 
     @ApiStatus.Experimental
-    sealed interface Builder extends IBuilder<FindOptions> permits FindOptionsBuilderImpl {
+    sealed interface Builder extends IBuilder<FindOptions> permits FindOptionsImpl.BuilderImpl {
 
         @NotNull Builder skip(@Range(from = 0, to = Integer.MAX_VALUE) int skip);
 
