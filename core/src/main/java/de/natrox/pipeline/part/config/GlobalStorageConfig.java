@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface GlobalStorageConfig extends PartConfig.Storage {
+public sealed interface GlobalStorageConfig extends PartConfig.Storage permits PartConfigImpl.GlobalStorageConfigImpl {
 
     static @NotNull GlobalStorageConfig create() {
         return new PartConfigImpl.GlobalStorageConfigImpl();

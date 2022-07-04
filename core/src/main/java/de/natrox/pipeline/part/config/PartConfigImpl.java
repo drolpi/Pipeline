@@ -18,15 +18,15 @@ package de.natrox.pipeline.part.config;
 
 final class PartConfigImpl {
 
-    abstract static class AbstractPartConfig implements PartConfig {
+    abstract static sealed class AbstractPartConfig implements PartConfig {
 
     }
 
-    abstract static class AbstractStorageConfig extends AbstractPartConfig implements PartConfig.Storage {
+    abstract static sealed class AbstractStorageConfig extends AbstractPartConfig implements PartConfig.Storage {
 
     }
 
-    abstract static class AbstractCacheConfig extends AbstractPartConfig implements PartConfig.Cache {
+    abstract static sealed class AbstractCacheConfig extends AbstractPartConfig implements PartConfig.Cache {
 
     }
 

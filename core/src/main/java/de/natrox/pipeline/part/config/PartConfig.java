@@ -19,15 +19,15 @@ package de.natrox.pipeline.part.config;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
-public interface PartConfig {
+public sealed interface PartConfig permits PartConfig.Cache, PartConfig.Storage, PartConfigImpl.AbstractPartConfig {
 
     @ApiStatus.Experimental
-    interface Storage extends PartConfig {
+    sealed interface Storage extends PartConfig permits GlobalStorageConfig, LocalStorageConfig, PartConfigImpl.AbstractStorageConfig {
 
     }
 
     @ApiStatus.Experimental
-    interface Cache extends PartConfig {
+    sealed interface Cache extends PartConfig permits GlobalCacheConfig, LocalCacheConfig, PartConfigImpl.AbstractCacheConfig {
 
     }
 

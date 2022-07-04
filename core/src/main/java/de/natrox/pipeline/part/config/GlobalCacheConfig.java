@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface GlobalCacheConfig extends PartConfig.Cache {
+public sealed interface GlobalCacheConfig extends PartConfig.Cache permits PartConfigImpl.GlobalCacheConfigImpl {
 
     static @NotNull GlobalCacheConfig create() {
         return new PartConfigImpl.GlobalCacheConfigImpl();

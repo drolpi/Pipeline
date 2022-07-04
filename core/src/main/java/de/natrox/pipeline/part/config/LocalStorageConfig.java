@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface LocalStorageConfig extends PartConfig.Storage {
+public sealed interface LocalStorageConfig extends PartConfig.Storage permits PartConfigImpl.LocalStorageConfigImpl {
 
     static @NotNull LocalStorageConfig create() {
         return new PartConfigImpl.LocalStorageConfigImpl();

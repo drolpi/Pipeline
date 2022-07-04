@@ -18,7 +18,7 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface LocalCacheConfig extends PartConfig.Cache {
+public sealed interface LocalCacheConfig extends PartConfig.Cache permits PartConfigImpl.LocalCacheConfigImpl {
 
     static @NotNull LocalCacheConfig create() {
         return new PartConfigImpl.LocalCacheConfigImpl();
