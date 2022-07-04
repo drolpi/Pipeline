@@ -382,7 +382,7 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    private static class MapPairIterator implements Iterator<Pair<String, Object>> {
+    private final static class MapPairIterator implements Iterator<Pair<String, Object>> {
 
         private final Iterator<Map.Entry<String, Object>> iterator;
 

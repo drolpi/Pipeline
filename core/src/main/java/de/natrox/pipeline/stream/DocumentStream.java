@@ -44,7 +44,7 @@ public final class DocumentStream implements Cursor<DocumentData> {
         return this.pipeStream;
     }
 
-    private static class DocumentCursorIterator implements Iterator<DocumentData> {
+    private final static class DocumentCursorIterator implements Iterator<DocumentData> {
 
         private final Iterator<Pair<UUID, DocumentData>> iterator;
 

@@ -46,7 +46,7 @@ public final class ConditionalStream implements PipeStream<Pair<UUID, DocumentDa
         return new ConditionIterator(iterator, this.condition);
     }
 
-    private static class ConditionIterator implements Iterator<Pair<UUID, DocumentData>> {
+    private final static class ConditionIterator implements Iterator<Pair<UUID, DocumentData>> {
         private final Iterator<Pair<UUID, DocumentData>> iterator;
         private final Condition condition;
         private Pair<UUID, DocumentData> nextPair;

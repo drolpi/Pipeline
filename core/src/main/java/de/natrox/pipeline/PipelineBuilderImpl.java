@@ -57,7 +57,7 @@ final class PipelineBuilderImpl {
         }
     }
 
-    static class GlobalBuilderImpl extends AbstractBuilder<Pipeline.GlobalBuilder> implements Pipeline.GlobalBuilder {
+    final static class GlobalBuilderImpl extends AbstractBuilder<Pipeline.GlobalBuilder> implements Pipeline.GlobalBuilder {
 
         private final GlobalStorageProvider globalStorageProvider;
         private final GlobalStorageConfig globalStorageConfig;
@@ -101,7 +101,7 @@ final class PipelineBuilderImpl {
         }
     }
 
-    static class LocalBuilderImpl extends AbstractBuilder<Pipeline.LocalBuilder> implements Pipeline.LocalBuilder {
+    final static class LocalBuilderImpl extends AbstractBuilder<Pipeline.LocalBuilder> implements Pipeline.LocalBuilder {
 
         private final LocalStorageProvider localStorageProvider;
         private final LocalStorageConfig localStorageConfig;

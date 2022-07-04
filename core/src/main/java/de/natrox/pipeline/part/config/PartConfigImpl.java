@@ -30,19 +30,19 @@ final class PartConfigImpl {
 
     }
 
-    static class GlobalStorageConfigImpl extends AbstractStorageConfig implements GlobalStorageConfig {
+    final static class GlobalStorageConfigImpl extends AbstractStorageConfig implements GlobalStorageConfig {
 
     }
 
-    static class LocalStorageConfigImpl extends AbstractStorageConfig implements LocalStorageConfig {
+    final static class LocalStorageConfigImpl extends AbstractStorageConfig implements LocalStorageConfig {
 
     }
 
-    static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
+    final static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
 
     }
 
-    static class LocalCacheConfigImpl extends AbstractCacheConfig implements  LocalCacheConfig {
+    final static class LocalCacheConfigImpl extends AbstractCacheConfig implements  LocalCacheConfig {
 
     }
 

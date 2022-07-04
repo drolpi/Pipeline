@@ -79,7 +79,7 @@ final class DocumentMapperImpl implements DocumentMapper {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static class DocumentSerializer extends Serializer<DocumentData> {
+    private final static class DocumentSerializer extends Serializer<DocumentData> {
         private final MapSerializer mapSerializer = new MapSerializer() {
             @Override
             protected Map create(Kryo kryo, Input input, Class type, int size) {
@@ -104,7 +104,7 @@ final class DocumentMapperImpl implements DocumentMapper {
         }
     }
 
-    private static class UUIDSerializer extends Serializer<UUID> {
+    private final static class UUIDSerializer extends Serializer<UUID> {
 
         @Override
         public void write(Kryo kryo, Output output, UUID object) {
