@@ -18,6 +18,8 @@ package de.natrox.pipeline.option;
 
 non-sealed class DocumentOptionsImpl implements DocumentOptions {
 
+    final static DocumentOptions DEFAULT = DocumentOptions.builder().build();
+
     private final boolean useGlobalCache;
     private final boolean useLocalCache;
 

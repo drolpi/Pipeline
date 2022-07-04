@@ -22,10 +22,12 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Experimental
 public sealed interface DocumentOptions extends Options permits DocumentOptionsImpl, ObjectOptions {
 
-    @NotNull DocumentOptions DEFAULT = DocumentOptions.builder().build();
-
     static @NotNull Builder builder() {
         return new DocumentOptionsImpl.BuilderImpl();
+    }
+
+    static @NotNull DocumentOptions defaults() {
+        return DocumentOptionsImpl.DEFAULT;
     }
 
     @ApiStatus.Experimental

@@ -27,10 +27,12 @@ import org.jetbrains.annotations.Range;
 @ApiStatus.Experimental
 public sealed interface FindOptions permits FindOptionsImpl {
 
-    @NotNull FindOptions DEFAULT = FindOptions.builder().build();
-
     static @NotNull Builder builder() {
         return new FindOptionsImpl.BuilderImpl();
+    }
+
+    static @NotNull FindOptions defaults() {
+        return FindOptionsImpl.DEFAULT;
     }
 
     int skip();

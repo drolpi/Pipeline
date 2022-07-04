@@ -26,6 +26,8 @@ import org.jetbrains.annotations.Range;
 @SuppressWarnings("ClassCanBeRecord")
 final class FindOptionsImpl implements FindOptions {
 
+    final static FindOptions DEFAULT = FindOptions.builder().build();
+
     private final int skip;
     private final int limit;
     private final Condition condition;

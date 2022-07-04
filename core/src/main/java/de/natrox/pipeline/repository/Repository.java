@@ -35,7 +35,7 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
     }
 
     default Cursor<T> find() {
-        return this.find(FindOptions.DEFAULT);
+        return this.find(FindOptions.defaults());
     }
 
     boolean exists(@NotNull UUID uniqueId);

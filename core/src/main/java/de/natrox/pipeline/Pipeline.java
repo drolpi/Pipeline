@@ -76,7 +76,7 @@ public sealed interface Pipeline permits PipelineImpl {
     }
 
     default @NotNull DocumentRepository createRepository(@NotNull String name) {
-        return this.createRepository(name, DocumentOptions.DEFAULT);
+        return this.createRepository(name, DocumentOptions.defaults());
     }
 
     <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type);
