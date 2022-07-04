@@ -18,14 +18,14 @@ package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
-import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.DocumentRepositoryFactory;
+import de.natrox.pipeline.repository.DocumentRepository;
+import de.natrox.pipeline.repository.DocumentRepositoryFactory;
 import de.natrox.pipeline.option.DocumentOptions;
 import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.object.ObjectRepository;
-import de.natrox.pipeline.object.ObjectRepositoryFactory;
+import de.natrox.pipeline.repository.ObjectRepository;
+import de.natrox.pipeline.repository.ObjectRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;

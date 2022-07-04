@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.repository.Cursor;
+import de.natrox.pipeline.object.InstanceCreator;
+import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 

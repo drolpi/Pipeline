@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
-import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.document.DocumentDataImpl;
+import de.natrox.pipeline.repository.find.FindOptions;
 import de.natrox.pipeline.option.DocumentOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.stream.BoundedStream;

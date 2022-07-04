@@ -18,14 +18,14 @@ package de.natrox.pipeline.repository;
 
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.repository.find.FindOptions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 @ApiStatus.Experimental
-public interface Repository<T> {
+public sealed interface Repository<T> permits DocumentRepository, ObjectRepository {
 
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 

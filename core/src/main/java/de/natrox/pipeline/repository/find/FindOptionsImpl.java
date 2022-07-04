@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document.find;
+package de.natrox.pipeline.repository.find;
 
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.sort.SortEntry;

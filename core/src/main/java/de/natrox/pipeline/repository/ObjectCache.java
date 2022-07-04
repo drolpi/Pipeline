@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.repository;
 
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.object.InstanceCreator;
+import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.option.ObjectOptions;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
@@ -33,7 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ObjectCache<T extends ObjectData> {
+final class ObjectCache<T extends ObjectData> {
 
     private final Pipeline pipeline;
     private final Updater updater;
@@ -78,11 +80,11 @@ public final class ObjectCache<T extends ObjectData> {
         data.handleUpdate(before);
     }
 
-    public @NotNull Optional<T> get(@NotNull UUID uniqueId) {
+    @NotNull Optional<T> get(@NotNull UUID uniqueId) {
         return Optional.ofNullable(this.cache.get(uniqueId));
     }
 
-    public @NotNull T getOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
+    @NotNull T getOrCreate(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
         if (!this.cache.containsKey(uniqueId)) {
             this.cache.put(uniqueId, this.create(uniqueId, instanceCreator));
         }

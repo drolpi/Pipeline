@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.document.DocumentRepository;
-import de.natrox.pipeline.document.find.FindOptions;
+import de.natrox.pipeline.object.InstanceCreator;
+import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.repository.find.FindOptions;
 import de.natrox.pipeline.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

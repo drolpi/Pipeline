@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document;
+package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;

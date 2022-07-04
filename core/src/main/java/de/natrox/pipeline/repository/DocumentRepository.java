@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document;
+package de.natrox.pipeline.repository;
 
-import de.natrox.pipeline.repository.Repository;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
