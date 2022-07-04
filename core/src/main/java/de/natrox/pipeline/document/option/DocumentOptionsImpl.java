@@ -18,7 +18,11 @@ package de.natrox.pipeline.document.option;
 
 public class DocumentOptionsImpl implements DocumentOptions {
 
-    protected DocumentOptionsImpl() {
+    private final boolean useGlobalCache;
+    private final boolean useLocalCache;
 
+    protected DocumentOptionsImpl(boolean useGlobalCache, boolean useLocalCache) {
+        this.useGlobalCache = useGlobalCache;
+        this.useLocalCache = useLocalCache;
     }
 }

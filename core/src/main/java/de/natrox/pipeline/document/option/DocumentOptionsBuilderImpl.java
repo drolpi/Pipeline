@@ -16,10 +16,12 @@
 
 package de.natrox.pipeline.document.option;
 
-final class DocumentOptionsBuilderImpl implements DocumentOptions.Builder {
+import de.natrox.pipeline.repository.AbstractOptions;
+
+final class DocumentOptionsBuilderImpl extends AbstractOptions.AbstractBuilder<DocumentOptions, DocumentOptions.Builder> implements DocumentOptions.Builder {
 
     @Override
     public DocumentOptions build() {
-        return new DocumentOptionsImpl();
+        return new DocumentOptionsImpl(this.useGlobalCache, this.useLocalCache);
     }
 }

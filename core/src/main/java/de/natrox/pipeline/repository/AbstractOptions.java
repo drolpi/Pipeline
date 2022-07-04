@@ -16,20 +16,27 @@
 
 package de.natrox.pipeline.repository;
 
-import de.natrox.common.builder.IBuilder;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-@ApiStatus.Experimental
-public interface Options {
+public abstract class AbstractOptions implements Options {
 
-    @ApiStatus.Experimental
-    interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> {
+    @SuppressWarnings("unchecked")
+    public abstract static class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
 
-        @NotNull R useGlobalCache(boolean use);
+        protected boolean useGlobalCache;
+        protected boolean useLocalCache;
 
-        @NotNull R useLocalCache(boolean use);
+        @Override
+        public @NotNull R useGlobalCache(boolean use) {
+            this.useGlobalCache = use;
+            return (R) this;
+        }
 
+        @Override
+        public @NotNull R useLocalCache(boolean use) {
+            this.useLocalCache = use;
+            return (R) this;
+        }
     }
 
 }

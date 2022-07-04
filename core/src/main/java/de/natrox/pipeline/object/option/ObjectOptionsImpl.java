@@ -24,7 +24,8 @@ final class ObjectOptionsImpl<T extends ObjectData> extends DocumentOptionsImpl 
 
     private final InstanceCreator<T> instanceCreator;
 
-    public ObjectOptionsImpl(InstanceCreator<T> instanceCreator) {
+    ObjectOptionsImpl(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
+        super(useGlobalCache, useLocalCache);
         this.instanceCreator = instanceCreator;
     }
 

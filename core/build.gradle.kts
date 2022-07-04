@@ -16,13 +16,15 @@
 
 dependencies {
     implementation(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
-    implementation(files("D:\\workspace\\NatroxMC\\EventBus\\build\\libs\\eventbus.jar"))
+    implementation(files("D:\\workspace\\NatroxMC\\Eventbus\\build\\libs\\eventbus.jar"))
 
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.esotericsoftware.kryo:kryo5:5.3.0")
     implementation("com.google.guava:guava:31.1-jre")
+    //FIX
+    implementation("org.redisson:redisson-all:3.17.4")
 
     testImplementation(project(":part-mongo"))
     testImplementation(project(":part-redis"))

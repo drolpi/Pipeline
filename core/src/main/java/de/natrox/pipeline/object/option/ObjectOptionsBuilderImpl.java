@@ -19,9 +19,10 @@ package de.natrox.pipeline.object.option;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.repository.AbstractOptions;
 import org.jetbrains.annotations.NotNull;
 
-final class ObjectOptionsBuilderImpl<T extends ObjectData> implements ObjectOptions.Builder<T> {
+final class ObjectOptionsBuilderImpl<T extends ObjectData> extends AbstractOptions.AbstractBuilder<ObjectOptions<T>, ObjectOptions.Builder<T>> implements ObjectOptions.Builder<T> {
 
     private InstanceCreator<T> instanceCreator;
 
@@ -34,6 +35,6 @@ final class ObjectOptionsBuilderImpl<T extends ObjectData> implements ObjectOpti
 
     @Override
     public ObjectOptions<T> build() {
-        return new ObjectOptionsImpl<>(instanceCreator);
+        return new ObjectOptionsImpl<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator);
     }
 }

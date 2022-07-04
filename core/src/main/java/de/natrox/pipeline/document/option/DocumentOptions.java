@@ -30,7 +30,7 @@ public interface DocumentOptions extends Options {
     }
 
     @ApiStatus.Experimental
-    sealed interface Builder extends OptionsBuilder<DocumentOptions> permits DocumentOptionsBuilderImpl {
+    sealed interface Builder extends OptionsBuilder<DocumentOptions, Builder> permits DocumentOptionsBuilderImpl {
 
     }
 
