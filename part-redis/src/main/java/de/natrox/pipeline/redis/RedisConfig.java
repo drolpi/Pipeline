@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
+import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,10 +59,8 @@ public final class RedisConfig {
         return this;
     }
 
-    public @NotNull RedisConfig addEndpoint(@NotNull Consumer<RedisEndpoint> consumer) {
-        Check.notNull(consumer, "consumer");
-        RedisEndpoint endpoint = RedisEndpoint.create();
-        consumer.accept(endpoint);
-        return this.addEndpoints(endpoint);
+    public @NotNull RedisConfig addEndpoint(@NotNull SingleTypeFunction<RedisEndpoint> function) {
+        Check.notNull(function, "function");
+        return this.addEndpoints(function.apply(RedisEndpoint.create()));
     }
 }

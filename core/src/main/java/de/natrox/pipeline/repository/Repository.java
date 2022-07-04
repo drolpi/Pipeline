@@ -16,22 +16,24 @@
 
 package de.natrox.pipeline.repository;
 
+import de.natrox.common.function.SingleTypeFunction;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.find.FindOptions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @ApiStatus.Experimental
 public interface Repository<T> {
 
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
-    default @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.@NotNull Builder> consumer) {
-        FindOptions.Builder builder = FindOptions.builder();
-        consumer.accept(builder);
-        return this.find(builder.build());
+    default @NotNull Cursor<T> find(@NotNull SingleTypeFunction<FindOptions.@NotNull Builder> function) {
+        Check.notNull(function, "function");
+        return this.find(function.apply(FindOptions.builder()).build());
     }
 
     default Cursor<T> find() {

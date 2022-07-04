@@ -17,6 +17,7 @@
 package de.natrox.pipeline;
 
 import de.natrox.common.builder.IBuilder;
+import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.option.DocumentOptions;
@@ -37,7 +38,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
 @ApiStatus.Experimental
 public sealed interface Pipeline permits PipelineImpl {
@@ -48,12 +48,10 @@ public sealed interface Pipeline permits PipelineImpl {
         return new PipelineBuilderImpl.GlobalBuilderImpl(provider, config);
     }
 
-    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull Consumer<GlobalStorageConfig> consumer) {
+    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull SingleTypeFunction<GlobalStorageConfig> function) {
         Check.notNull(provider, "provider");
-        Check.notNull(consumer, "consumer");
-        GlobalStorageConfig config = GlobalStorageConfig.create();
-        consumer.accept(config);
-        return create(provider, config);
+        Check.notNull(function, "function");
+        return create(provider, function.apply(GlobalStorageConfig.create()));
     }
 
     static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig config) {
@@ -62,22 +60,19 @@ public sealed interface Pipeline permits PipelineImpl {
         return new PipelineBuilderImpl.LocalBuilderImpl(provider, config);
     }
 
-    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull Consumer<LocalStorageConfig> consumer) {
+    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull SingleTypeFunction<LocalStorageConfig> function) {
         Check.notNull(provider, "provider");
-        Check.notNull(consumer, "consumer");
-        LocalStorageConfig config = LocalStorageConfig.create();
-        consumer.accept(config);
-        return create(provider, config);
+        Check.notNull(function, "function");
+        return create(provider, function.apply(LocalStorageConfig.create()));
     }
 
     @NotNull DocumentRepository repository(@NotNull String name);
 
     @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull DocumentOptions options);
 
-    default @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull Consumer<DocumentOptions.Builder> consumer) {
-        DocumentOptions.Builder builder = DocumentOptions.builder();
-        consumer.accept(builder);
-        return this.createRepository(name, builder.build());
+    default @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull SingleTypeFunction<DocumentOptions.Builder> function) {
+        Check.notNull(function, "function");
+        return this.createRepository(name, function.apply(DocumentOptions.builder()).build());
     }
 
     default @NotNull DocumentRepository createRepository(@NotNull String name) {
@@ -88,10 +83,9 @@ public sealed interface Pipeline permits PipelineImpl {
 
     <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options);
 
-    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull Consumer<ObjectOptions.Builder<T>> consumer) {
-        ObjectOptions.Builder<T> builder = ObjectOptions.of(type);
-        consumer.accept(builder);
-        return this.createRepository(type, builder.build());
+    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull SingleTypeFunction<ObjectOptions.Builder<T>> function) {
+        Check.notNull(function, "function");
+        return this.createRepository(type, function.apply(ObjectOptions.of(type)).build());
     }
 
     default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type) {
@@ -118,10 +112,10 @@ public sealed interface Pipeline permits PipelineImpl {
 
         @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull GlobalCacheConfig config);
 
-        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull Consumer<GlobalCacheConfig> consumer) {
-            GlobalCacheConfig config = GlobalCacheConfig.create();
-            consumer.accept(config);
-            return this.globalCache(provider, config);
+        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull SingleTypeFunction<GlobalCacheConfig> function) {
+            Check.notNull(provider, "provider");
+            Check.notNull(function, "function");
+            return this.globalCache(provider, function.apply(GlobalCacheConfig.create()));
         }
 
     }
@@ -137,25 +131,23 @@ public sealed interface Pipeline permits PipelineImpl {
         default @NotNull Pipeline.GlobalBuilder localCache(
             @NotNull LocalCacheProvider localCacheProvider,
             @NotNull UpdaterProvider updaterProvider,
-            @NotNull Consumer<LocalCacheConfig> consumer
+            @NotNull SingleTypeFunction<LocalCacheConfig> function
         ) {
-            LocalCacheConfig config = LocalCacheConfig.create();
-            consumer.accept(config);
-            return this.localCache(localCacheProvider, updaterProvider, config);
+            Check.notNull(localCacheProvider, "localCacheProvider");
+            Check.notNull(updaterProvider, "updaterProvider");
+            Check.notNull(function, "function");
+            return this.localCache(localCacheProvider, updaterProvider, function.apply(LocalCacheConfig.create()));
         }
-
     }
 
     interface LocalBuilder extends Builder<LocalBuilder> {
 
         @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull LocalCacheConfig localCacheConfig);
 
-        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull Consumer<LocalCacheConfig> consumer) {
-            LocalCacheConfig config = LocalCacheConfig.create();
-            consumer.accept(config);
-            return this.localCache(provider, config);
+        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull SingleTypeFunction<LocalCacheConfig> function) {
+            Check.notNull(provider, "provider");
+            Check.notNull(function, "function");
+            return this.localCache(provider, function.apply(LocalCacheConfig.create()));
         }
-
     }
-
 }

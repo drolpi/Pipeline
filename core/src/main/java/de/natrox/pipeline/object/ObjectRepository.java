@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.object;
 
+import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
 import de.natrox.pipeline.repository.Cursor;
@@ -50,10 +51,8 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
         return this.find(findOptions, null);
     }
 
-    default @NotNull Cursor<T> find(@NotNull Consumer<FindOptions.Builder> consumer, @Nullable InstanceCreator<T> instanceCreator) {
-        FindOptions.Builder builder = FindOptions.builder();
-        consumer.accept(builder);
-        return this.find(builder.build(), instanceCreator);
+    default @NotNull Cursor<T> find(@NotNull SingleTypeFunction<FindOptions.Builder> function, @Nullable InstanceCreator<T> instanceCreator) {
+        return this.find(function.apply(FindOptions.builder()).build(), instanceCreator);
     }
 
     default @NotNull Cursor<T> find(@Nullable InstanceCreator<T> instanceCreator) {
