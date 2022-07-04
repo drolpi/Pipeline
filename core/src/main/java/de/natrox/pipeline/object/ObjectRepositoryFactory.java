@@ -20,7 +20,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.DocumentRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.object.option.ObjectOptions;
+import de.natrox.pipeline.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 

@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 @ApiStatus.Experimental
 public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {

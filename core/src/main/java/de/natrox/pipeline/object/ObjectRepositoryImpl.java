@@ -21,7 +21,7 @@ import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentRepository;
 import de.natrox.pipeline.document.find.FindOptions;
-import de.natrox.pipeline.object.option.ObjectOptions;
+import de.natrox.pipeline.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.repository.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;

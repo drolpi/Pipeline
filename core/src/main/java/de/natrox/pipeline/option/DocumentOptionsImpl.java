@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document.option;
+package de.natrox.pipeline.option;
 
-public class DocumentOptionsImpl implements DocumentOptions {
+class DocumentOptionsImpl implements DocumentOptions {
 
     private final boolean useGlobalCache;
     private final boolean useLocalCache;
 
-    protected DocumentOptionsImpl(boolean useGlobalCache, boolean useLocalCache) {
+    DocumentOptionsImpl(boolean useGlobalCache, boolean useLocalCache) {
         this.useGlobalCache = useGlobalCache;
         this.useLocalCache = useLocalCache;
+    }
+
+    final static class BuilderImpl extends AbstractOptions.AbstractBuilder<DocumentOptions, DocumentOptions.Builder> implements DocumentOptions.Builder {
+
+        @Override
+        public DocumentOptions build() {
+            return new DocumentOptionsImpl(this.useGlobalCache, this.useLocalCache);
+        }
     }
 }

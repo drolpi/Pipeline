@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object.option;
+package de.natrox.pipeline.option;
 
-import de.natrox.pipeline.document.option.DocumentOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.ApiStatus;
@@ -27,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 public sealed interface ObjectOptions<T extends ObjectData> extends DocumentOptions permits ObjectOptionsImpl {
 
     static <T extends ObjectData> @NotNull Builder<T> of(Class<? extends T> type) {
-        return new ObjectOptionsBuilderImpl<>();
+        return new ObjectOptionsImpl.BuilderImpl<>();
     }
 
     @Nullable InstanceCreator<T> instanceCreator();
 
     @ApiStatus.Experimental
-    sealed interface Builder<T extends ObjectData> extends OptionsBuilder<ObjectOptions<T>, Builder<T>> permits ObjectOptionsBuilderImpl {
+    interface Builder<T extends ObjectData> extends OptionsBuilder<ObjectOptions<T>, Builder<T>> {
 
         @NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator);
 

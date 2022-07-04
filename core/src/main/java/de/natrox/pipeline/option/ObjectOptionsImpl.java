@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.object.option;
+package de.natrox.pipeline.option;
 
-import de.natrox.pipeline.document.option.DocumentOptionsImpl;
+import de.natrox.common.validate.Check;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import org.jetbrains.annotations.NotNull;
 
 final class ObjectOptionsImpl<T extends ObjectData> extends DocumentOptionsImpl implements ObjectOptions<T> {
 
@@ -32,5 +33,22 @@ final class ObjectOptionsImpl<T extends ObjectData> extends DocumentOptionsImpl 
     @Override
     public InstanceCreator<T> instanceCreator() {
         return this.instanceCreator;
+    }
+
+    final static class BuilderImpl<T extends ObjectData> extends AbstractOptions.AbstractBuilder<ObjectOptions<T>, ObjectOptions.Builder<T>> implements ObjectOptions.Builder<T> {
+
+        private InstanceCreator<T> instanceCreator;
+
+        @Override
+        public ObjectOptions.@NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator) {
+            Check.notNull(instanceCreator, "instanceCreator");
+            this.instanceCreator = instanceCreator;
+            return this;
+        }
+
+        @Override
+        public ObjectOptions<T> build() {
+            return new ObjectOptionsImpl<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator);
+        }
     }
 }

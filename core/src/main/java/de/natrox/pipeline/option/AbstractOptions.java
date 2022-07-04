@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline.option;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractOptions implements Options {
+abstract class AbstractOptions implements Options {
 
     @SuppressWarnings("unchecked")
-    public abstract static class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
+    abstract static class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
 
         protected boolean useGlobalCache;
         protected boolean useLocalCache;

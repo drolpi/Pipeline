@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.document.option;
+package de.natrox.pipeline.option;
 
-import de.natrox.pipeline.repository.Options;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,11 +25,11 @@ public interface DocumentOptions extends Options {
     @NotNull DocumentOptions DEFAULT = DocumentOptions.builder().build();
 
     static @NotNull Builder builder() {
-        return new DocumentOptionsBuilderImpl();
+        return new DocumentOptionsImpl.BuilderImpl();
     }
 
     @ApiStatus.Experimental
-    sealed interface Builder extends OptionsBuilder<DocumentOptions, Builder> permits DocumentOptionsBuilderImpl {
+    interface Builder extends OptionsBuilder<DocumentOptions, Builder> {
 
     }
 
