@@ -32,7 +32,8 @@ public sealed interface ObjectOptions<T extends ObjectData> extends DocumentOpti
     @Nullable InstanceCreator<T> instanceCreator();
 
     @ApiStatus.Experimental
-    interface Builder<T extends ObjectData> extends OptionsBuilder<ObjectOptions<T>, Builder<T>> {
+    sealed
+    interface Builder<T extends ObjectData> extends OptionsBuilder<ObjectOptions<T>, Builder<T>> permits ObjectOptionsImpl.BuilderImpl {
 
         @NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator);
 

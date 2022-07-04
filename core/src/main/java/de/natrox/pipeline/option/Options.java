@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public sealed interface Options permits AbstractOptions, DocumentOptions, ObjectOptions {
 
     @ApiStatus.Experimental
-    interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> {
+    sealed interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> permits AbstractOptions.AbstractBuilder, DocumentOptions.Builder, ObjectOptions.Builder {
 
         @NotNull R useGlobalCache(boolean use);
 

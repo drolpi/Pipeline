@@ -29,7 +29,8 @@ public sealed interface DocumentOptions extends Options permits DocumentOptionsI
     }
 
     @ApiStatus.Experimental
-    interface Builder extends OptionsBuilder<DocumentOptions, Builder> {
+    sealed
+    interface Builder extends OptionsBuilder<DocumentOptions, Builder> permits DocumentOptionsImpl.BuilderImpl {
 
     }
 

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 abstract non-sealed class AbstractOptions implements Options {
 
     @SuppressWarnings("unchecked")
-    abstract static class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
+    abstract static non-sealed class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
 
         protected boolean useGlobalCache;
         protected boolean useLocalCache;
