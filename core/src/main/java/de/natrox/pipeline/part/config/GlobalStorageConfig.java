@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 public interface GlobalStorageConfig extends PartConfig.Storage {
 
     static @NotNull GlobalStorageConfig create() {
-        return null;
+        return new PartConfigImpl.GlobalStorageConfigImpl();
     }
 
 }

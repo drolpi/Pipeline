@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 public interface LocalCacheConfig extends PartConfig.Cache {
 
     static @NotNull LocalCacheConfig create() {
-        return null;
+        return new PartConfigImpl.LocalCacheConfigImpl();
     }
 
 }

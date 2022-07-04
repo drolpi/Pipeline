@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 public interface GlobalCacheConfig extends PartConfig.Cache {
 
     static @NotNull GlobalCacheConfig create() {
-        return null;
+        return new PartConfigImpl.GlobalCacheConfigImpl();
     }
 
 }
