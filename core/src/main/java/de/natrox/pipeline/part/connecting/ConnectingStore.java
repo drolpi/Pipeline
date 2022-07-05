@@ -86,7 +86,7 @@ public final class ConnectingStore implements Store {
 
         StoreMap storageMap = this.storage.openMap(mapName, options);
 
-        return new ConnectingMap(mapName, storageMap, globalCacheMap, localCacheMap, this.updater);
+        return new ConnectingMap(mapName, storageMap, globalCacheMap, localCacheMap, updater);
     }
 
     @Override
