@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-dependencies {
-    compileOnly(project(":core"))
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.0")
+package de.natrox.pipeline.caffeine;
+
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import org.jetbrains.annotations.NotNull;
+
+public interface CaffeineProvider extends LocalCacheProvider {
+
+    static @NotNull CaffeineProvider create() {
+        return new CaffeineProviderImpl();
+    }
 }

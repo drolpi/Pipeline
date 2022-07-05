@@ -28,6 +28,7 @@ dependencies {
     testImplementation(project(":part-mongo"))
     testImplementation(project(":part-redis"))
     testImplementation(project(":part-bin"))
+    testImplementation(project(":part-caffeine"))
     testImplementation(project(":part-mysql"))
     testImplementation(project(":part-h2"))
     testImplementation(project(":part-sqlite"))

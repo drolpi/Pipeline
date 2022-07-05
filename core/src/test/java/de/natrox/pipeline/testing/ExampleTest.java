@@ -17,6 +17,7 @@
 package de.natrox.pipeline.testing;
 
 import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.caffeine.CaffeineProvider;
 import de.natrox.pipeline.condition.Conditions;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.repository.DocumentRepository;
@@ -52,12 +53,12 @@ public class ExampleTest {
             .addEndpoint(endpoint -> endpoint.setHost("127.0.0.1").setPort(6379).setDatabase(0));
         RedisProvider redisProvider = RedisProvider.of(redisConfig);
 
-        InMemoryProvider inMemoryProvider = InMemoryProvider.create();
+        CaffeineProvider caffeineProvider = CaffeineProvider.create();
 
         Pipeline pipeline = Pipeline
             .create(mongoProvider, config -> config)
             .globalCache(redisProvider, config -> config)
-            .localCache(inMemoryProvider, redisProvider, config -> config)
+            .localCache(caffeineProvider, redisProvider, config -> config)
             .build();
 
         // Document repository
