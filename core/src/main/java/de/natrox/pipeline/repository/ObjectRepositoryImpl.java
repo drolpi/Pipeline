@@ -36,7 +36,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, Options.ObjectOptions<T> options) {
+    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, RepositoryOptions.ObjectRepositoryOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
@@ -171,7 +171,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
         @Override
         public ObjectRepository<T> build() {
-            return this.factory.createRepository(this.type, new Options.ObjectOptions<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator));
+            return this.factory.createRepository(this.type, new RepositoryOptions.ObjectRepositoryOptions<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator));
         }
     }
 }

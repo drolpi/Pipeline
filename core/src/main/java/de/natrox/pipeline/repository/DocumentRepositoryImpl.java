@@ -46,7 +46,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
     private final DocumentMapper documentMapper;
-    private final Options.DocumentOptions options;
+    private final RepositoryOptions.DocumentRepositoryOptions options;
 
     private final Lock writeLock;
     private final Lock readLock;
@@ -54,7 +54,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private Store store;
     private StoreMap storeMap;
 
-    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, LockService lockService, ConnectingStore store, StoreMap storeMap, Options.DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, LockService lockService, ConnectingStore store, StoreMap storeMap, RepositoryOptions.DocumentRepositoryOptions options) {
         this.repositoryName = repositoryName;
         this.documentMapper = pipeline.documentMapper();
         this.options = options;
@@ -251,7 +251,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
         @Override
         public DocumentRepository build() {
-            return this.factory.createRepository(this.name, new Options.DocumentOptions(this.useGlobalCache, this.useLocalCache));
+            return this.factory.createRepository(this.name, new RepositoryOptions.DocumentRepositoryOptions(this.useGlobalCache, this.useLocalCache));
         }
     }
 }

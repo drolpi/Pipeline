@@ -19,12 +19,12 @@ package de.natrox.pipeline.repository;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 
-public sealed abstract class Options {
+public sealed abstract class RepositoryOptions {
 
     private final boolean useGlobalCache;
     private final boolean useLocalCache;
 
-    Options(boolean useGlobalCache, boolean useLocalCache) {
+    RepositoryOptions(boolean useGlobalCache, boolean useLocalCache) {
         this.useGlobalCache = useGlobalCache;
         this.useLocalCache = useLocalCache;
     }
@@ -37,18 +37,18 @@ public sealed abstract class Options {
         return this.useLocalCache;
     }
 
-    static non-sealed class DocumentOptions extends Options {
+    static non-sealed class DocumentRepositoryOptions extends RepositoryOptions {
 
-        DocumentOptions(boolean useGlobalCache, boolean useLocalCache) {
+        DocumentRepositoryOptions(boolean useGlobalCache, boolean useLocalCache) {
             super(useGlobalCache, useLocalCache);
         }
     }
 
-    static final class ObjectOptions<T extends ObjectData> extends DocumentOptions {
+    static final class ObjectRepositoryOptions<T extends ObjectData> extends DocumentRepositoryOptions {
 
         private final InstanceCreator<T> instanceCreator;
 
-        ObjectOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
+        ObjectRepositoryOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
             super(useGlobalCache, useLocalCache);
             this.instanceCreator = instanceCreator;
         }

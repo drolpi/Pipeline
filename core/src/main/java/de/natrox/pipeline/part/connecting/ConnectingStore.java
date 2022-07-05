@@ -19,7 +19,7 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.repository.Options;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.store.Store;
@@ -70,21 +70,21 @@ public final class ConnectingStore implements Store {
     }
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull Options options) {
+    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull RepositoryOptions repositoryOptions) {
         Check.notNull(mapName, "mapName");
         StoreMap localCacheMap = null;
         Updater updater = null;
-        if (options.useLocalCache() && this.localCache != null) {
-            localCacheMap = this.localCache.openMap(mapName, options);
+        if (repositoryOptions.useLocalCache() && this.localCache != null) {
+            localCacheMap = this.localCache.openMap(mapName, repositoryOptions);
             updater = this.updater;
         }
 
         StoreMap globalCacheMap = null;
-        if (options.useGlobalCache() && this.globalCache != null) {
-            globalCacheMap = this.globalCache.openMap(mapName, options);
+        if (repositoryOptions.useGlobalCache() && this.globalCache != null) {
+            globalCacheMap = this.globalCache.openMap(mapName, repositoryOptions);
         }
 
-        StoreMap storageMap = this.storage.openMap(mapName, options);
+        StoreMap storageMap = this.storage.openMap(mapName, repositoryOptions);
 
         return new ConnectingMap(mapName, storageMap, globalCacheMap, localCacheMap, updater);
     }
