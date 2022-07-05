@@ -22,6 +22,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.esotericsoftware.kryo:kryo5:5.3.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.0")
     //FIX
     implementation("org.redisson:redisson-all:3.17.4")
 
