@@ -71,7 +71,7 @@ public final class DocumentRepositoryFactory {
                 repository.close();
             }
 
-            StoreMap storeMap = this.connectingStore.openMap(name);
+            StoreMap storeMap = this.connectingStore.openMap(name, options);
             DocumentRepository repository = new DocumentRepositoryImpl(name, this.pipeline, this.lockService, this.connectingStore, storeMap, options);
             this.repositoryMap.put(name, repository);
 

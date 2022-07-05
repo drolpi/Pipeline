@@ -17,6 +17,7 @@
 package de.natrox.pipeline.part.store;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.option.Options;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -30,7 +31,7 @@ public abstract class AbstractStore implements Store {
     protected abstract StoreMap createMap(@NotNull String mapName);
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull Options options) {
         Check.notNull(mapName, "mapName");
         if (this.storeMapRegistry.containsKey(mapName)) {
             return this.storeMapRegistry.get(mapName);

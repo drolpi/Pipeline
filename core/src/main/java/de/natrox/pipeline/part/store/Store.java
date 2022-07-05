@@ -16,6 +16,7 @@
 
 package de.natrox.pipeline.part.store;
 
+import de.natrox.pipeline.option.Options;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +25,7 @@ import java.util.Set;
 @ApiStatus.Internal
 public interface Store {
 
-    @NotNull StoreMap openMap(@NotNull String mapName);
+    @NotNull StoreMap openMap(@NotNull String mapName, @NotNull Options options);
 
     @NotNull Set<String> maps();
 
