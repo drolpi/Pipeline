@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -66,7 +64,7 @@ public final class ObjectRepositoryFactory {
         throw new IllegalStateException();
     }
 
-    public  <T extends ObjectData> ObjectRepository<T> createRepository(Class<T> type, ObjectOptions<T> options) {
+    public  <T extends ObjectData> ObjectRepository<T> createRepository(Class<T> type, Options.ObjectOptions<T> options) {
         String name = AnnotationResolver.identifier(type);
 
         if (this.repositoryMap.containsKey(name)) {

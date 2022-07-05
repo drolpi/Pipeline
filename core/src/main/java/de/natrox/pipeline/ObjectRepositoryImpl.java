@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.find.FindOptions;
-import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
+import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +36,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, ObjectOptions<T> options) {
+    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, Options.ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
@@ -151,5 +149,29 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     private DocumentData convertToDocument(T data) {
         return data.serialize();
+    }
+
+    final static class BuilderImpl<T extends ObjectData> extends AbstractRepositoryBuilder<ObjectRepository<T>, ObjectRepository.Builder<T>> implements ObjectRepository.Builder<T> {
+
+        private final ObjectRepositoryFactory factory;
+        private final Class<T> type;
+        private InstanceCreator<T> instanceCreator;
+
+        BuilderImpl(ObjectRepositoryFactory factory, Class<T> type) {
+            this.factory = factory;
+            this.type = type;
+        }
+
+        @Override
+        public @NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator) {
+            Check.notNull(instanceCreator, "instanceCreator");
+            this.instanceCreator = instanceCreator;
+            return this;
+        }
+
+        @Override
+        public ObjectRepository<T> build() {
+            return this.factory.createRepository(this.type, new Options.ObjectOptions<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator));
+        }
     }
 }

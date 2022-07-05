@@ -18,16 +18,10 @@ package de.natrox.pipeline;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
-import de.natrox.pipeline.repository.DocumentRepository;
-import de.natrox.pipeline.repository.DocumentRepositoryFactory;
-import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.ObjectRepository;
-import de.natrox.pipeline.repository.ObjectRepositoryFactory;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,11 +54,10 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull DocumentOptions options) {
+    public @NotNull DocumentRepository.Builder buildRepository(@NotNull String name) {
         Check.notNull(name, "name");
-        Check.notNull(options, "options");
         this.checkOpened();
-        return this.documentRepositoryFactory.createRepository(name, options);
+        return new DocumentRepositoryImpl.BuilderImpl(this.documentRepositoryFactory, name);
     }
 
     @Override
@@ -75,11 +68,10 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options) {
+    public <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
-        Check.notNull(options, "options");
         this.checkOpened();
-        return this.objectRepositoryFactory.createRepository(type, options);
+        return new ObjectRepositoryImpl.BuilderImpl<>(this.objectRepositoryFactory, type);
     }
 
     @Override

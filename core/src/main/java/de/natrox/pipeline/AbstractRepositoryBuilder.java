@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
-import de.natrox.pipeline.stream.PipeStream;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
-@ApiStatus.Experimental
-public interface Cursor<T> extends PipeStream<T> {
+@SuppressWarnings("unchecked")
+abstract non-sealed class AbstractRepositoryBuilder<T extends Repository<?>, R extends Repository.Builder<T, R>> implements Repository.Builder<T, R> {
+
+    protected boolean useGlobalCache;
+    protected boolean useLocalCache;
+
+    @Override
+    public @NotNull R useGlobalCache(boolean use) {
+        this.useGlobalCache = use;
+        return (R) this;
+    }
+
+    @Override
+    public @NotNull R useLocalCache(boolean use) {
+        this.useLocalCache = use;
+        return (R) this;
+    }
 }

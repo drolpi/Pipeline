@@ -19,12 +19,8 @@ package de.natrox.pipeline;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.repository.DocumentRepository;
-import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.ObjectRepository;
-import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
@@ -68,29 +64,11 @@ public sealed interface Pipeline permits PipelineImpl {
 
     @NotNull DocumentRepository repository(@NotNull String name);
 
-    @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull DocumentOptions options);
-
-    default @NotNull DocumentRepository createRepository(@NotNull String name, @NotNull SingleTypeFunction<DocumentOptions.Builder> function) {
-        Check.notNull(function, "function");
-        return this.createRepository(name, function.apply(DocumentOptions.builder()).build());
-    }
-
-    default @NotNull DocumentRepository createRepository(@NotNull String name) {
-        return this.createRepository(name, DocumentOptions.defaults());
-    }
+    @NotNull DocumentRepository.Builder buildRepository(@NotNull String name);
 
     <T extends ObjectData> @NotNull ObjectRepository<T> repository(@NotNull Class<T> type);
 
-    <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull ObjectOptions<T> options);
-
-    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type, @NotNull SingleTypeFunction<ObjectOptions.Builder<T>> function) {
-        Check.notNull(function, "function");
-        return this.createRepository(type, function.apply(ObjectOptions.of(type)).build());
-    }
-
-    default <T extends ObjectData> @NotNull ObjectRepository<T> createRepository(@NotNull Class<T> type) {
-        return this.createRepository(type, ObjectOptions.of(type).build());
-    }
+    <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type);
 
     boolean hasRepository(@NotNull String name);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository.find;
+package de.natrox.pipeline.find;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.condition.Condition;

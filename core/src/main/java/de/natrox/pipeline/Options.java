@@ -14,47 +14,47 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository.option;
+package de.natrox.pipeline;
 
-import org.jetbrains.annotations.NotNull;
+import de.natrox.pipeline.object.InstanceCreator;
+import de.natrox.pipeline.object.ObjectData;
 
-abstract sealed class AbstractOptions implements Options permits DocumentOptionsImpl {
+public sealed abstract class Options {
 
     private final boolean useGlobalCache;
     private final boolean useLocalCache;
 
-    AbstractOptions(boolean useGlobalCache, boolean useLocalCache) {
+    Options(boolean useGlobalCache, boolean useLocalCache) {
         this.useGlobalCache = useGlobalCache;
         this.useLocalCache = useLocalCache;
     }
 
-    @Override
     public boolean useGlobalCache() {
         return this.useGlobalCache;
     }
 
-    @Override
     public boolean useLocalCache() {
         return this.useLocalCache;
     }
 
-    @SuppressWarnings("unchecked")
-    abstract static non-sealed class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {
+    static non-sealed class DocumentOptions extends Options {
 
-        protected boolean useGlobalCache;
-        protected boolean useLocalCache;
-
-        @Override
-        public @NotNull R useGlobalCache(boolean use) {
-            this.useGlobalCache = use;
-            return (R) this;
-        }
-
-        @Override
-        public @NotNull R useLocalCache(boolean use) {
-            this.useLocalCache = use;
-            return (R) this;
+        DocumentOptions(boolean useGlobalCache, boolean useLocalCache) {
+            super(useGlobalCache, useLocalCache);
         }
     }
 
+    static final class ObjectOptions<T extends ObjectData> extends DocumentOptions {
+
+        private final InstanceCreator<T> instanceCreator;
+
+        ObjectOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
+            super(useGlobalCache, useLocalCache);
+            this.instanceCreator = instanceCreator;
+        }
+
+        public InstanceCreator<T> instanceCreator() {
+            return this.instanceCreator;
+        }
+    }
 }

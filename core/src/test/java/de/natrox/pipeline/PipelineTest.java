@@ -19,9 +19,9 @@ package de.natrox.pipeline;
 import de.natrox.pipeline.caffeine.CaffeineProvider;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
+import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
-import de.natrox.pipeline.repository.DocumentRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -50,7 +50,22 @@ class PipelineTest {
             .localCache(caffeineProvider, redisProvider, builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
             .build();
 
-        DocumentRepository repository = pipeline.createRepository("OnlineTime", builder -> builder.useGlobalCache(true).useLocalCache(true));
+        {
+            DocumentRepository repository = pipeline
+                .buildRepository("OnlineTime")
+                .useGlobalCache(true)
+                .useLocalCache(true)
+                .build();
+        }
+
+        {
+            ObjectRepository<ObjectData> repository = pipeline
+                .buildRepository(ObjectData.class)
+                .useGlobalCache(true)
+                .useLocalCache(true)
+                .build();
+        }
+
     }
 
 }

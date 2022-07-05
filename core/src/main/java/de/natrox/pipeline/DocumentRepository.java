@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository.option;
+package de.natrox.pipeline;
 
-import de.natrox.common.builder.IBuilder;
+import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @ApiStatus.Experimental
-public sealed interface Options permits AbstractOptions, DocumentOptions, ObjectOptions {
+public sealed interface DocumentRepository extends Repository<DocumentData> permits DocumentRepositoryImpl {
 
-    boolean useGlobalCache();
+    void insert(@NotNull UUID uniqueId, @NotNull DocumentData document);
 
-    boolean useLocalCache();
+    @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId);
+
+    @NotNull String name();
 
     @ApiStatus.Experimental
-    sealed interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> permits AbstractOptions.AbstractBuilder, DocumentOptions.Builder, ObjectOptions.Builder {
-
-        @NotNull R useGlobalCache(boolean use);
-
-        @NotNull R useLocalCache(boolean use);
+    sealed interface Builder extends Repository.Builder<DocumentRepository, Builder> permits DocumentRepositoryImpl.BuilderImpl {
 
     }
 

@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.store;
 
-import de.natrox.pipeline.repository.option.Options;
+import de.natrox.pipeline.Options;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

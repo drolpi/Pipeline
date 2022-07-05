@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
+import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.repository.find.FindOptions;
+import de.natrox.pipeline.find.FindOptions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,4 +55,11 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
 
     long size();
 
+    sealed interface Builder<T extends Repository<?>, R extends Builder<T, R>> extends IBuilder<T> permits AbstractRepositoryBuilder, DocumentRepository.Builder, ObjectRepository.Builder {
+
+        @NotNull R useGlobalCache(boolean use);
+
+        @NotNull R useLocalCache(boolean use);
+
+    }
 }

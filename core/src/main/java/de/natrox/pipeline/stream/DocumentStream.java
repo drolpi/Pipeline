@@ -18,7 +18,7 @@ package de.natrox.pipeline.stream;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.repository.Cursor;
+import de.natrox.pipeline.Cursor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;

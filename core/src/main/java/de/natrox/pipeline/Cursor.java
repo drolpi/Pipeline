@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository.option;
+package de.natrox.pipeline;
 
+import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Experimental
-public sealed interface DocumentOptions extends Options permits DocumentOptionsImpl, ObjectOptions {
-
-    static @NotNull Builder builder() {
-        return new DocumentOptionsImpl.BuilderImpl();
-    }
-
-    static @NotNull DocumentOptions defaults() {
-        return DocumentOptionsImpl.DEFAULT;
-    }
-
-    @ApiStatus.Experimental
-    sealed
-    interface Builder extends OptionsBuilder<DocumentOptions, Builder> permits DocumentOptionsImpl.BuilderImpl {
-
-    }
-
+public interface Cursor<T> extends PipeStream<T> {
 }

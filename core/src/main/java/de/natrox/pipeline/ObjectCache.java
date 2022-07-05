@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.updater.Updater;
@@ -46,7 +44,7 @@ final class ObjectCache<T extends ObjectData> {
     private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(Pipeline pipeline, ConnectingStore store, ObjectRepositoryImpl<T> repository, ObjectOptions<T> options) {
+    ObjectCache(Pipeline pipeline, ConnectingStore store, ObjectRepositoryImpl<T> repository, Options.ObjectOptions<T> options) {
         this.pipeline = pipeline;
         this.updater = store.updater();
         this.repository = repository;

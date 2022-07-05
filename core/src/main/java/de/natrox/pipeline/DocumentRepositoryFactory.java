@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;
-import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.ApiStatus;
@@ -63,7 +61,7 @@ public final class DocumentRepositoryFactory {
         throw new IllegalStateException();
     }
 
-    public DocumentRepository createRepository(String name, DocumentOptions options) {
+    public DocumentRepository createRepository(String name, Options.DocumentOptions options) {
         try {
             this.writeLock.lock();
             if (this.repositoryMap.containsKey(name)) {

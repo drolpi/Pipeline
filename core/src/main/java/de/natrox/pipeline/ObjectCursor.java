@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
 import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;

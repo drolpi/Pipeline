@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.repository.find.FindOptions;
+import de.natrox.pipeline.find.FindOptions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,5 +62,11 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
     @NotNull Class<T> type();
 
     @NotNull DocumentRepository documentRepository();
+
+    sealed interface Builder<T extends ObjectData> extends Repository.Builder<ObjectRepository<T>, Builder<T>> permits ObjectRepositoryImpl.BuilderImpl {
+
+        @NotNull Builder<T> instanceCreator(@NotNull InstanceCreator<T> instanceCreator);
+
+    }
 
 }

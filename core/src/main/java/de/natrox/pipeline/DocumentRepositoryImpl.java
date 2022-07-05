@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentDataImpl;
-import de.natrox.pipeline.repository.find.FindOptions;
-import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
+import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
 import de.natrox.pipeline.stream.BoundedStream;
@@ -48,7 +46,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
     private final DocumentMapper documentMapper;
-    private final DocumentOptions options;
+    private final Options.DocumentOptions options;
 
     private final Lock writeLock;
     private final Lock readLock;
@@ -56,7 +54,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private Store store;
     private StoreMap storeMap;
 
-    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, LockService lockService, ConnectingStore store, StoreMap storeMap, DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, LockService lockService, ConnectingStore store, StoreMap storeMap, Options.DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.documentMapper = pipeline.documentMapper();
         this.options = options;
@@ -239,5 +237,21 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         if (this.isOpen())
             return;
         throw new RuntimeException("Repository is closed");
+    }
+
+    final static class BuilderImpl extends AbstractRepositoryBuilder<DocumentRepository, DocumentRepository.Builder> implements DocumentRepository.Builder {
+
+        private final DocumentRepositoryFactory factory;
+        private final String name;
+
+        BuilderImpl(DocumentRepositoryFactory factory, String name) {
+            this.factory = factory;
+            this.name = name;
+        }
+
+        @Override
+        public DocumentRepository build() {
+            return this.factory.createRepository(this.name, new Options.DocumentOptions(this.useGlobalCache, this.useLocalCache));
+        }
     }
 }
