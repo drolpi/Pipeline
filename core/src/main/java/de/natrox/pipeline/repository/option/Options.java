@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.option;
+package de.natrox.pipeline.repository.option;
 
 import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.ApiStatus;

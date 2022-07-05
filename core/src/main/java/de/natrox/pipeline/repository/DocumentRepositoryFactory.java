@@ -18,7 +18,7 @@ package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.concurrent.LockService;
-import de.natrox.pipeline.option.DocumentOptions;
+import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import org.jetbrains.annotations.ApiStatus;

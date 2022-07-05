@@ -22,7 +22,7 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.repository.find.FindOptions;
-import de.natrox.pipeline.option.ObjectOptions;
+import de.natrox.pipeline.repository.option.ObjectOptions;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;

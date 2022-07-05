@@ -19,7 +19,6 @@ package de.natrox.pipeline.part.connecting;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.option.Options;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;

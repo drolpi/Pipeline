@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.option;
+package de.natrox.pipeline.repository.option;
 
 non-sealed class DocumentOptionsImpl extends AbstractOptions implements DocumentOptions {
 

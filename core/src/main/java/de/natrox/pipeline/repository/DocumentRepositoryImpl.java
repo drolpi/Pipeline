@@ -24,7 +24,7 @@ import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentDataImpl;
 import de.natrox.pipeline.repository.find.FindOptions;
-import de.natrox.pipeline.option.DocumentOptions;
+import de.natrox.pipeline.repository.option.DocumentOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;

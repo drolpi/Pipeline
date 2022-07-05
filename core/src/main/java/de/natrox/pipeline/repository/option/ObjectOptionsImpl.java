@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.option;
+package de.natrox.pipeline.repository.option;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.object.InstanceCreator;

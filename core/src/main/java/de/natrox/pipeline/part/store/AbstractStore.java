@@ -17,7 +17,7 @@
 package de.natrox.pipeline.part.store;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.option.Options;
+import de.natrox.pipeline.repository.option.Options;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

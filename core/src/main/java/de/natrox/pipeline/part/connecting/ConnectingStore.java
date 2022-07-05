@@ -21,7 +21,7 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.DocumentMapper;
-import de.natrox.pipeline.option.Options;
+import de.natrox.pipeline.repository.option.Options;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
