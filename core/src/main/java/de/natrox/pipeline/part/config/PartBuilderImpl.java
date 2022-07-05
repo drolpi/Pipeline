@@ -35,18 +35,18 @@ final class PartBuilderImpl {
 
     abstract static class AbstractCacheBuilder<T extends PartConfig.Cache, R extends PartConfig.CacheBuilder<T, R>> implements PartConfig.CacheBuilder<T, R> {
 
-        protected Duration expireAfterWrite;
-        protected Duration expireAfterAccess;
+        protected long expireAfterWriteNanos = -1;
+        protected long expireAfterAccessNanos = -1;
 
         @Override
         public @NotNull R expireAfterWrite(long time, @NotNull TimeUnit unit) {
-            this.expireAfterWrite = Duration.of(time, unit.toChronoUnit());
+            this.expireAfterWriteNanos = unit.toNanos(time);
             return (R) this;
         }
 
         @Override
         public @NotNull R expireAfterAccess(long time, @NotNull TimeUnit unit) {
-            this.expireAfterAccess = Duration.of(time, unit.toChronoUnit());
+            this.expireAfterAccessNanos = unit.toNanos(time);
             return (R) this;
         }
 
@@ -72,7 +72,7 @@ final class PartBuilderImpl {
 
         @Override
         public @UnknownNullability GlobalCacheConfig build() {
-            return new PartConfigImpl.GlobalCacheConfigImpl(this.expireAfterWrite, this.expireAfterAccess);
+            return new PartConfigImpl.GlobalCacheConfigImpl(this.expireAfterWriteNanos, this.expireAfterAccessNanos);
         }
     }
 
@@ -80,7 +80,7 @@ final class PartBuilderImpl {
 
         @Override
         public @UnknownNullability LocalCacheConfig build() {
-            return new PartConfigImpl.LocalCacheConfigImpl(this.expireAfterWrite, this.expireAfterAccess);
+            return new PartConfigImpl.LocalCacheConfigImpl(this.expireAfterWriteNanos, this.expireAfterAccessNanos);
         }
     }
 

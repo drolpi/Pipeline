@@ -17,16 +17,18 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.caffeine.CaffeineProvider;
+import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
-import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
 import de.natrox.pipeline.repository.DocumentRepository;
-import de.natrox.pipeline.repository.ObjectRepository;
 import de.natrox.pipeline.repository.Pipeline;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 class PipelineTest {
@@ -59,16 +61,16 @@ class PipelineTest {
                 .useGlobalCache(true)
                 .useLocalCache(true)
                 .build();
-        }
 
-        {
-            ObjectRepository<ObjectData> repository = pipeline
-                .buildRepository(ObjectData.class)
-                .useGlobalCache(true)
-                .useLocalCache(true)
-                .build();
-        }
+            UUID uuid = UUID.randomUUID();
+            Instant start = Instant.now();
+            repository.insert(uuid, DocumentData.create("test", "test"));
+            System.out.println(Duration.between(start, Instant.now()).toMillis());
 
+            Instant middle = Instant.now();
+            repository.get(uuid);
+            System.out.println(Duration.between(middle, Instant.now()).toMillis());
+        }
     }
 
 }

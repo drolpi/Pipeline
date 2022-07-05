@@ -33,9 +33,9 @@ public sealed interface PartConfig permits PartConfig.Cache, PartConfig.Storage,
 
     sealed interface Cache extends PartConfig permits GlobalCacheConfig, LocalCacheConfig, PartConfigImpl.AbstractCacheConfig {
 
-        @NotNull Duration expireAfterWrite();
+        long expireAfterWriteNanos();
 
-        @NotNull Duration expireAfterAccess();
+        long expireAfterAccessNanos();
 
     }
 

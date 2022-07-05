@@ -32,22 +32,22 @@ final class PartConfigImpl {
 
     abstract static sealed class AbstractCacheConfig extends AbstractPartConfig implements PartConfig.Cache {
 
-        private final Duration expireAfterWrite;
-        private final Duration expireAfterAccess;
+        private final long expireAfterWriteNanos;
+        private final long expireAfterAccessNanos;
 
-        private AbstractCacheConfig(Duration expireAfterWrite, Duration expireAfterAccess) {
-            this.expireAfterWrite = expireAfterWrite;
-            this.expireAfterAccess = expireAfterAccess;
+        private AbstractCacheConfig(long expireAfterWriteNanos, long expireAfterAccessNanos) {
+            this.expireAfterWriteNanos = expireAfterWriteNanos;
+            this.expireAfterAccessNanos = expireAfterAccessNanos;
         }
 
         @Override
-        public @NotNull Duration expireAfterWrite() {
-            return this.expireAfterWrite;
+        public long expireAfterWriteNanos() {
+            return this.expireAfterWriteNanos;
         }
 
         @Override
-        public @NotNull Duration expireAfterAccess() {
-            return this.expireAfterAccess;
+        public long expireAfterAccessNanos() {
+            return this.expireAfterAccessNanos;
         }
     }
 
@@ -61,15 +61,15 @@ final class PartConfigImpl {
 
     final static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
 
-        GlobalCacheConfigImpl(Duration expireAfterWrite, Duration expireAfterAccess) {
-            super(expireAfterWrite, expireAfterAccess);
+        GlobalCacheConfigImpl(long expireAfterWriteNanos, long expireAfterAccessNanos) {
+            super(expireAfterWriteNanos, expireAfterAccessNanos);
         }
     }
 
     final static class LocalCacheConfigImpl extends AbstractCacheConfig implements LocalCacheConfig {
 
-        LocalCacheConfigImpl(Duration expireAfterWrite, Duration expireAfterAccess) {
-            super(expireAfterWrite, expireAfterAccess);
+        LocalCacheConfigImpl(long expireAfterWriteNanos, long expireAfterAccessNanos) {
+            super(expireAfterWriteNanos, expireAfterAccessNanos);
         }
     }
 

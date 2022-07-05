@@ -18,6 +18,7 @@ package de.natrox.pipeline.caffeine;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Scheduler;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.StoreMap;
@@ -27,22 +28,32 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 final class CaffeineMap implements StoreMap {
 
     private final Cache<UUID, byte[]> cache;
 
     CaffeineMap(LocalCacheConfig config) {
-        this.cache = Caffeine
+        Caffeine<Object, Object> builder = Caffeine
             .newBuilder()
-            .expireAfterWrite(config.expireAfterWrite())
-            .expireAfterAccess(config.expireAfterAccess())
-            .build();
+            .scheduler(Scheduler.systemScheduler());
+
+        long expireAfterWriteNanos = config.expireAfterWriteNanos();
+        if (expireAfterWriteNanos >= 0)
+            builder.expireAfterWrite(config.expireAfterWriteNanos(), TimeUnit.NANOSECONDS);
+
+        long expireAfterAccessNanos = config.expireAfterAccessNanos();
+        if (expireAfterAccessNanos >= 0)
+            builder.expireAfterAccess(config.expireAfterAccessNanos(), TimeUnit.NANOSECONDS);
+
+        this.cache = builder.build();
     }
 
     @Override
     public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
+        System.out.println(this.contains(uniqueId));
         return this.cache.getIfPresent(uniqueId);
     }
 
