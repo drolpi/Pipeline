@@ -16,9 +16,9 @@
 
 package de.natrox.pipeline.mongo;
 
-import com.google.common.base.Strings;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.exception.PartException;
+import de.natrox.pipeline.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

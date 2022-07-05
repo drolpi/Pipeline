@@ -46,7 +46,6 @@ subprojects {
         compileOnly("org.reflections:reflections:0.10.2")
         compileOnly("org.jodd:jodd-core:5.3.0")
         compileOnly("com.esotericsoftware.kryo:kryo5:5.3.0")
-        compileOnly("com.google.guava:guava:31.1-jre")
     }
 
     tasks.withType<JavaCompile> {

@@ -16,10 +16,10 @@
 
 package de.natrox.pipeline.redis;
 
-import com.google.common.base.Strings;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
+import de.natrox.pipeline.util.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

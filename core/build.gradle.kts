@@ -22,7 +22,6 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.esotericsoftware.kryo:kryo5:5.3.0")
-    implementation("com.google.guava:guava:31.1-jre")
     //FIX
     implementation("org.redisson:redisson-all:3.17.4")
 
