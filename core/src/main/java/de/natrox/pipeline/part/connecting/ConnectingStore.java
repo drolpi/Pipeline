@@ -21,6 +21,7 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.Pipeline;
 import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.option.Options;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
@@ -68,21 +69,22 @@ public final class ConnectingStore implements Store {
         );
     }
 
-
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName) {
+    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull Options options) {
         Check.notNull(mapName, "mapName");
         StoreMap localCacheMap = null;
-        if (this.localCache != null) {
-            localCacheMap = this.localCache.openMap(mapName);
+        Updater updater = null;
+        if (options.useLocalCache() && this.localCache != null) {
+            localCacheMap = this.localCache.openMap(mapName, options);
+            updater = this.updater;
         }
 
         StoreMap globalCacheMap = null;
-        if (this.globalCache != null) {
-            globalCacheMap = this.globalCache.openMap(mapName);
+        if (options.useGlobalCache() && this.globalCache != null) {
+            globalCacheMap = this.globalCache.openMap(mapName, options);
         }
 
-        StoreMap storageMap = this.storage.openMap(mapName);
+        StoreMap storageMap = this.storage.openMap(mapName, options);
 
         return new ConnectingMap(mapName, storageMap, globalCacheMap, localCacheMap, this.updater);
     }

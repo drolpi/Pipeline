@@ -18,7 +18,25 @@ package de.natrox.pipeline.option;
 
 import org.jetbrains.annotations.NotNull;
 
-abstract non-sealed class AbstractOptions implements Options {
+abstract sealed class AbstractOptions implements Options permits DocumentOptionsImpl {
+
+    private final boolean useGlobalCache;
+    private final boolean useLocalCache;
+
+    AbstractOptions(boolean useGlobalCache, boolean useLocalCache) {
+        this.useGlobalCache = useGlobalCache;
+        this.useLocalCache = useLocalCache;
+    }
+
+    @Override
+    public boolean useGlobalCache() {
+        return this.useGlobalCache;
+    }
+
+    @Override
+    public boolean useLocalCache() {
+        return this.useLocalCache;
+    }
 
     @SuppressWarnings("unchecked")
     abstract static non-sealed class AbstractBuilder<T extends Options, R extends Options.OptionsBuilder<T, R>> implements Options.OptionsBuilder<T, R> {

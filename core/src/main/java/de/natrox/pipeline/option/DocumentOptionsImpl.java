@@ -16,16 +16,12 @@
 
 package de.natrox.pipeline.option;
 
-non-sealed class DocumentOptionsImpl implements DocumentOptions {
+non-sealed class DocumentOptionsImpl extends AbstractOptions implements DocumentOptions {
 
     final static DocumentOptions DEFAULT = DocumentOptions.builder().build();
 
-    private final boolean useGlobalCache;
-    private final boolean useLocalCache;
-
     DocumentOptionsImpl(boolean useGlobalCache, boolean useLocalCache) {
-        this.useGlobalCache = useGlobalCache;
-        this.useLocalCache = useLocalCache;
+        super(useGlobalCache, useLocalCache);
     }
 
     final static class BuilderImpl extends AbstractOptions.AbstractBuilder<DocumentOptions, DocumentOptions.Builder> implements DocumentOptions.Builder {

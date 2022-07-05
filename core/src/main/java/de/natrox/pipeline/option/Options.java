@@ -23,6 +23,10 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Experimental
 public sealed interface Options permits AbstractOptions, DocumentOptions, ObjectOptions {
 
+    boolean useGlobalCache();
+
+    boolean useLocalCache();
+
     @ApiStatus.Experimental
     sealed interface OptionsBuilder<T extends Options, R extends OptionsBuilder<T, R>> extends IBuilder<T> permits AbstractOptions.AbstractBuilder, DocumentOptions.Builder, ObjectOptions.Builder {
 
