@@ -48,10 +48,10 @@ public sealed interface Pipeline permits PipelineImpl {
         return new PipelineBuilderImpl.GlobalBuilderImpl(provider, config);
     }
 
-    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull SingleTypeFunction<GlobalStorageConfig> function) {
+    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull SingleTypeFunction<GlobalStorageConfig.Builder> function) {
         Check.notNull(provider, "provider");
         Check.notNull(function, "function");
-        return create(provider, function.apply(GlobalStorageConfig.create()));
+        return create(provider, function.apply(GlobalStorageConfig.builder()).build());
     }
 
     static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig config) {
@@ -60,10 +60,10 @@ public sealed interface Pipeline permits PipelineImpl {
         return new PipelineBuilderImpl.LocalBuilderImpl(provider, config);
     }
 
-    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull SingleTypeFunction<LocalStorageConfig> function) {
+    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull SingleTypeFunction<LocalStorageConfig.Builder> function) {
         Check.notNull(provider, "provider");
         Check.notNull(function, "function");
-        return create(provider, function.apply(LocalStorageConfig.create()));
+        return create(provider, function.apply(LocalStorageConfig.builder()).build());
     }
 
     @NotNull DocumentRepository repository(@NotNull String name);
@@ -112,10 +112,10 @@ public sealed interface Pipeline permits PipelineImpl {
 
         @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull GlobalCacheConfig config);
 
-        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull SingleTypeFunction<GlobalCacheConfig> function) {
+        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull SingleTypeFunction<GlobalCacheConfig.Builder> function) {
             Check.notNull(provider, "provider");
             Check.notNull(function, "function");
-            return this.globalCache(provider, function.apply(GlobalCacheConfig.create()));
+            return this.globalCache(provider, function.apply(GlobalCacheConfig.builder()).build());
         }
 
     }
@@ -131,12 +131,12 @@ public sealed interface Pipeline permits PipelineImpl {
         default @NotNull Pipeline.GlobalBuilder localCache(
             @NotNull LocalCacheProvider localCacheProvider,
             @NotNull UpdaterProvider updaterProvider,
-            @NotNull SingleTypeFunction<LocalCacheConfig> function
+            @NotNull SingleTypeFunction<LocalCacheConfig.Builder> function
         ) {
             Check.notNull(localCacheProvider, "localCacheProvider");
             Check.notNull(updaterProvider, "updaterProvider");
             Check.notNull(function, "function");
-            return this.localCache(localCacheProvider, updaterProvider, function.apply(LocalCacheConfig.create()));
+            return this.localCache(localCacheProvider, updaterProvider, function.apply(LocalCacheConfig.builder()).build());
         }
     }
 
@@ -144,10 +144,10 @@ public sealed interface Pipeline permits PipelineImpl {
 
         @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull LocalCacheConfig localCacheConfig);
 
-        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull SingleTypeFunction<LocalCacheConfig> function) {
+        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull SingleTypeFunction<LocalCacheConfig.Builder> function) {
             Check.notNull(provider, "provider");
             Check.notNull(function, "function");
-            return this.localCache(provider, function.apply(LocalCacheConfig.create()));
+            return this.localCache(provider, function.apply(LocalCacheConfig.builder()).build());
         }
     }
 }

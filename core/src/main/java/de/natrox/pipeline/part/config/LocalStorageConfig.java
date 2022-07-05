@@ -20,8 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface LocalStorageConfig extends PartConfig.Storage permits PartConfigImpl.LocalStorageConfigImpl {
 
-    static @NotNull LocalStorageConfig create() {
-        return new PartConfigImpl.LocalStorageConfigImpl();
+    static @NotNull LocalStorageConfig.Builder builder() {
+        return new PartBuilderImpl.LocalStorageBuilder();
     }
 
+    interface Builder extends PartConfig.StorageBuilder<LocalStorageConfig, Builder> {
+
+    }
 }

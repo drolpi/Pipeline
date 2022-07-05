@@ -16,19 +16,42 @@
 
 package de.natrox.pipeline.part.config;
 
+import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @ApiStatus.Experimental
 public sealed interface PartConfig permits PartConfig.Cache, PartConfig.Storage, PartConfigImpl.AbstractPartConfig {
 
-    @ApiStatus.Experimental
     sealed interface Storage extends PartConfig permits GlobalStorageConfig, LocalStorageConfig, PartConfigImpl.AbstractStorageConfig {
 
     }
 
-    @ApiStatus.Experimental
     sealed interface Cache extends PartConfig permits GlobalCacheConfig, LocalCacheConfig, PartConfigImpl.AbstractCacheConfig {
+
+        @NotNull Duration expireAfterWrite();
+
+        @NotNull Duration expireAfterAccess();
 
     }
 
+    interface Builder<T extends PartConfig, R extends Builder<T, R>> extends IBuilder<T> {
+
+    }
+
+    interface StorageBuilder<T extends Storage, R extends PartConfig.Builder<T, R>> extends PartConfig.Builder<T, R> {
+
+    }
+
+    interface CacheBuilder<T extends Cache, R extends PartConfig.Builder<T, R>> extends PartConfig.Builder<T, R> {
+
+        @NotNull R expireAfterWrite(long time, @NotNull TimeUnit unit);
+
+        @NotNull R expireAfterAccess(long time, @NotNull TimeUnit unit);
+
+    }
 }

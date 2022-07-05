@@ -20,8 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface GlobalCacheConfig extends PartConfig.Cache permits PartConfigImpl.GlobalCacheConfigImpl {
 
-    static @NotNull GlobalCacheConfig create() {
-        return new PartConfigImpl.GlobalCacheConfigImpl();
+    static @NotNull GlobalCacheConfig.Builder builder() {
+        return new PartBuilderImpl.GlobalCacheBuilder();
     }
 
+    interface Builder extends PartConfig.CacheBuilder<GlobalCacheConfig, Builder> {
+
+    }
 }

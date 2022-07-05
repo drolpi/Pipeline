@@ -20,8 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface GlobalStorageConfig extends PartConfig.Storage permits PartConfigImpl.GlobalStorageConfigImpl {
 
-    static @NotNull GlobalStorageConfig create() {
-        return new PartConfigImpl.GlobalStorageConfigImpl();
+    static @NotNull GlobalStorageConfig.Builder builder() {
+        return new PartBuilderImpl.GlobalStorageBuilder();
     }
 
+    interface Builder extends PartConfig.StorageBuilder<GlobalStorageConfig, Builder> {
+
+    }
 }

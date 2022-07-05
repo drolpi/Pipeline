@@ -17,10 +17,8 @@
 package de.natrox.pipeline.part.memory;
 
 import de.natrox.pipeline.Pipeline;
-import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
-import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 

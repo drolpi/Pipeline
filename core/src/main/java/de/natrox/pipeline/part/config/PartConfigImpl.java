@@ -16,6 +16,10 @@
 
 package de.natrox.pipeline.part.config;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Duration;
+
 final class PartConfigImpl {
 
     abstract static sealed class AbstractPartConfig implements PartConfig {
@@ -28,6 +32,23 @@ final class PartConfigImpl {
 
     abstract static sealed class AbstractCacheConfig extends AbstractPartConfig implements PartConfig.Cache {
 
+        private final Duration expireAfterWrite;
+        private final Duration expireAfterAccess;
+
+        private AbstractCacheConfig(Duration expireAfterWrite, Duration expireAfterAccess) {
+            this.expireAfterWrite = expireAfterWrite;
+            this.expireAfterAccess = expireAfterAccess;
+        }
+
+        @Override
+        public @NotNull Duration expireAfterWrite() {
+            return this.expireAfterWrite;
+        }
+
+        @Override
+        public @NotNull Duration expireAfterAccess() {
+            return this.expireAfterAccess;
+        }
     }
 
     final static class GlobalStorageConfigImpl extends AbstractStorageConfig implements GlobalStorageConfig {
@@ -40,10 +61,16 @@ final class PartConfigImpl {
 
     final static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
 
+        GlobalCacheConfigImpl(Duration expireAfterWrite, Duration expireAfterAccess) {
+            super(expireAfterWrite, expireAfterAccess);
+        }
     }
 
-    final static class LocalCacheConfigImpl extends AbstractCacheConfig implements  LocalCacheConfig {
+    final static class LocalCacheConfigImpl extends AbstractCacheConfig implements LocalCacheConfig {
 
+        LocalCacheConfigImpl(Duration expireAfterWrite, Duration expireAfterAccess) {
+            super(expireAfterWrite, expireAfterAccess);
+        }
     }
 
 }

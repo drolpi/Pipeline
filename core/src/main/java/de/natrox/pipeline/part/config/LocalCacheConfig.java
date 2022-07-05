@@ -20,8 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface LocalCacheConfig extends PartConfig.Cache permits PartConfigImpl.LocalCacheConfigImpl {
 
-    static @NotNull LocalCacheConfig create() {
-        return new PartConfigImpl.LocalCacheConfigImpl();
+    static @NotNull LocalCacheConfig.Builder builder() {
+        return new PartBuilderImpl.LocalCacheBuilder();
     }
 
+    interface Builder extends PartConfig.CacheBuilder<LocalCacheConfig, Builder> {
+
+    }
 }
