@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":creator-guice",
-    ":part-bin",
-    ":part-caffeine",
-    ":part-h2",
-    ":part-mongo",
-    ":part-redis",
-    ":part-mysql",
-    ":part-sql",
-    ":part-sqlite"
-)
+dependencies {
+    compileOnly(project(":core"))
+}
