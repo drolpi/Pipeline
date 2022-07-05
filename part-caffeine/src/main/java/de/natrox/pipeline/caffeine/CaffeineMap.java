@@ -35,6 +35,8 @@ final class CaffeineMap implements StoreMap {
     CaffeineMap(LocalCacheConfig config) {
         this.cache = Caffeine
             .newBuilder()
+            .expireAfterWrite(config.expireAfterWrite())
+            .expireAfterAccess(config.expireAfterAccess())
             .build();
     }
 
