@@ -24,7 +24,7 @@ import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
-public final class InMemoryProvider implements LocalCacheProvider, LocalStorageProvider {
+public final class InMemoryProvider implements LocalStorageProvider {
 
     private InMemoryProvider() {
 
@@ -37,11 +37,6 @@ public final class InMemoryProvider implements LocalCacheProvider, LocalStorageP
     @Override
     public void close() {
 
-    }
-
-    @Override
-    public @NotNull Store createLocalCache(@NotNull Pipeline pipeline, @NotNull LocalCacheConfig config) {
-        return new InMemoryStore();
     }
 
     @Override
