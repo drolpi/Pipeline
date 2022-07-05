@@ -70,10 +70,12 @@ final class ObjectCache<T extends ObjectData> {
     }
 
     private void updateData(DocumentUpdateEvent event) {
-        //TODO: Maybe use this.get to prevent creating a new object and only update existing ones
-        T data = this.getOrCreate(event.documentId(), null);
+        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
+    }
+
+    private void updateData(T data, DocumentData update) {
         DocumentData before = data.serialize();
-        this.repository.convertToData(data, event.documentData());
+        this.repository.convertToData(data, update);
 
         data.handleUpdate(before);
     }
