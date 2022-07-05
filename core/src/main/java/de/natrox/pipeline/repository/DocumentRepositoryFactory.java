@@ -61,7 +61,7 @@ public final class DocumentRepositoryFactory {
         throw new IllegalStateException();
     }
 
-    public DocumentRepository createRepository(String name, RepositoryOptions.DocumentRepositoryOptions options) {
+    public DocumentRepository createRepository(String name, RepositoryOptions.DocumentOptions options) {
         try {
             this.writeLock.lock();
             if (this.repositoryMap.containsKey(name)) {

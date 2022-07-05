@@ -37,18 +37,18 @@ public sealed abstract class RepositoryOptions {
         return this.useLocalCache;
     }
 
-    static non-sealed class DocumentRepositoryOptions extends RepositoryOptions {
+    static non-sealed class DocumentOptions extends RepositoryOptions {
 
-        DocumentRepositoryOptions(boolean useGlobalCache, boolean useLocalCache) {
+        DocumentOptions(boolean useGlobalCache, boolean useLocalCache) {
             super(useGlobalCache, useLocalCache);
         }
     }
 
-    static final class ObjectRepositoryOptions<T extends ObjectData> extends DocumentRepositoryOptions {
+    static final class ObjectOptions<T extends ObjectData> extends DocumentOptions {
 
         private final InstanceCreator<T> instanceCreator;
 
-        ObjectRepositoryOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
+        ObjectOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
             super(useGlobalCache, useLocalCache);
             this.instanceCreator = instanceCreator;
         }
