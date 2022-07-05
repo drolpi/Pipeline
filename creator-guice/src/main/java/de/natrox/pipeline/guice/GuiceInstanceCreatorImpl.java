@@ -19,7 +19,7 @@ package de.natrox.pipeline.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 

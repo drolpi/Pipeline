@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.object.type;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.object.ObjectData;
 import org.jetbrains.annotations.NotNull;
 

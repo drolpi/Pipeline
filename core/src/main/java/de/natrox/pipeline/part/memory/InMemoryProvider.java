@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.part.memory;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;

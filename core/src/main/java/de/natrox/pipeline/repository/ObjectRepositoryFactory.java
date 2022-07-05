@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;

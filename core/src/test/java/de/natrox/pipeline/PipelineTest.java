@@ -22,6 +22,9 @@ import de.natrox.pipeline.mongo.MongoProvider;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
+import de.natrox.pipeline.repository.DocumentRepository;
+import de.natrox.pipeline.repository.ObjectRepository;
+import de.natrox.pipeline.repository.Pipeline;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;

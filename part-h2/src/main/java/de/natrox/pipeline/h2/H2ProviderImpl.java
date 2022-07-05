@@ -19,7 +19,7 @@ package de.natrox.pipeline.h2;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.h2.Driver;

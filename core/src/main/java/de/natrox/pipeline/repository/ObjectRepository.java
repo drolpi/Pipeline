@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.pipeline.object.InstanceCreator;

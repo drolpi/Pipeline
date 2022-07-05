@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface

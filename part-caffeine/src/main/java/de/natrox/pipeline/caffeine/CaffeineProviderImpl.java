@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.caffeine;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;

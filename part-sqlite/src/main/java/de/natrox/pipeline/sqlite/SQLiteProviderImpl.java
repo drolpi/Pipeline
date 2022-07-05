@@ -19,7 +19,7 @@ package de.natrox.pipeline.sqlite;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.io.FileUtil;
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.sql.SqlStore;

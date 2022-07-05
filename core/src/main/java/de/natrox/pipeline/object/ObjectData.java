@@ -17,7 +17,7 @@
 package de.natrox.pipeline.object;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import org.jetbrains.annotations.NotNull;

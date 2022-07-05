@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;

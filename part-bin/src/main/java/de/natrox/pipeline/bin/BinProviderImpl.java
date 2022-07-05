@@ -16,7 +16,7 @@
 
 package de.natrox.pipeline.bin;
 
-import de.natrox.pipeline.Pipeline;
+import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;
