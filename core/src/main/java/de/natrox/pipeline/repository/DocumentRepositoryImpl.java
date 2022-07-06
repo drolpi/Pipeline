@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 final class DocumentRepositoryImpl implements DocumentRepository {
 
-    private final PipelineImpl pipeline;
     private final String repositoryName;
     private final DocumentMapper documentMapper;
     private final RepositoryOptions.DocumentOptions options;
@@ -51,7 +50,6 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     DocumentRepositoryImpl(String repositoryName, PipelineImpl pipeline, PipelineStore pipelineStore, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
         this.repositoryName = repositoryName;
-        this.pipeline = pipeline;
         this.pipelineStore = pipelineStore;
         this.pipelineMap = pipelineMap;
         this.documentMapper = pipeline.documentMapper();
@@ -194,13 +192,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isDropped() {
-        try {
-            this.writeLock.lock();
-            this.checkOpened();
-            return !this.pipelineStore.hasMap(this.repositoryName);
-        } finally {
-            this.writeLock.unlock();
-        }
+        return !this.pipelineStore.hasMap(this.repositoryName);
     }
 
     @Override
@@ -223,7 +215,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     public boolean isOpen() {
         try {
             this.readLock.lock();
-            return this.pipeline != null && !this.pipeline.isClosed() && !this.isDropped();
+            return this.pipelineStore != null && !this.pipelineStore.isClosed() && !this.isDropped();
         } finally {
             this.readLock.unlock();
         }
