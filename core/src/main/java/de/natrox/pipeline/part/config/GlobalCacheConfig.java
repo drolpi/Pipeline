@@ -24,6 +24,10 @@ public sealed interface GlobalCacheConfig extends PartConfig.Cache permits PartC
         return new PartBuilderImpl.GlobalCacheBuilder();
     }
 
+    static @NotNull GlobalCacheConfig defaults() {
+        return PartConfigImpl.GlobalCacheConfigImpl.DEFAULT;
+    }
+
     interface Builder extends PartConfig.CacheBuilder<GlobalCacheConfig, Builder> {
 
     }

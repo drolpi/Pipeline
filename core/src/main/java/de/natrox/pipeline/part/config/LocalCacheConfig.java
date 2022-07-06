@@ -24,6 +24,10 @@ public sealed interface LocalCacheConfig extends PartConfig.Cache permits PartCo
         return new PartBuilderImpl.LocalCacheBuilder();
     }
 
+    static @NotNull LocalCacheConfig defaults() {
+        return PartConfigImpl.LocalCacheConfigImpl.DEFAULT;
+    }
+
     interface Builder extends PartConfig.CacheBuilder<LocalCacheConfig, Builder> {
 
     }

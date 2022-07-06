@@ -24,6 +24,10 @@ public sealed interface GlobalStorageConfig extends PartConfig.Storage permits P
         return new PartBuilderImpl.GlobalStorageBuilder();
     }
 
+    static @NotNull GlobalStorageConfig defaults() {
+        return PartConfigImpl.GlobalStorageConfigImpl.DEFAULT;
+    }
+
     interface Builder extends PartConfig.StorageBuilder<GlobalStorageConfig, Builder> {
 
     }

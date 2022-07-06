@@ -49,13 +49,19 @@ final class PartConfigImpl {
 
     final static class GlobalStorageConfigImpl extends AbstractStorageConfig implements GlobalStorageConfig {
 
+        final static GlobalStorageConfig DEFAULT = GlobalStorageConfig.builder().build();
+
     }
 
     final static class LocalStorageConfigImpl extends AbstractStorageConfig implements LocalStorageConfig {
 
+        final static LocalStorageConfig DEFAULT = LocalStorageConfig.builder().build();
+
     }
 
     final static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
+
+        final static GlobalCacheConfig DEFAULT = GlobalCacheConfig.builder().build();
 
         GlobalCacheConfigImpl(long expireAfterWriteNanos, long expireAfterAccessNanos) {
             super(expireAfterWriteNanos, expireAfterAccessNanos);
@@ -63,6 +69,8 @@ final class PartConfigImpl {
     }
 
     final static class LocalCacheConfigImpl extends AbstractCacheConfig implements LocalCacheConfig {
+
+        final static LocalCacheConfig DEFAULT = LocalCacheConfig.builder().build();
 
         LocalCacheConfigImpl(long expireAfterWriteNanos, long expireAfterAccessNanos) {
             super(expireAfterWriteNanos, expireAfterAccessNanos);

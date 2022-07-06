@@ -51,7 +51,7 @@ class PipelineTest {
         CaffeineProvider caffeineProvider = CaffeineProvider.create();
 
         Pipeline pipeline = Pipeline
-            .create(mongoProvider, builder -> builder)
+            .create(mongoProvider)
             .globalCache(redisProvider, builder -> builder.expireAfterWrite(5, TimeUnit.SECONDS))
             .localCache(caffeineProvider, redisProvider, builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
             .build();

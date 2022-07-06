@@ -52,6 +52,11 @@ public sealed interface Pipeline permits PipelineImpl {
         return create(provider, function.apply(GlobalStorageConfig.builder()));
     }
 
+    static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider) {
+        Check.notNull(provider, "provider");
+        return create(provider, GlobalStorageConfig.defaults());
+    }
+
     static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig config) {
         Check.notNull(provider, "provider");
         Check.notNull(config, "config");
@@ -68,6 +73,11 @@ public sealed interface Pipeline permits PipelineImpl {
         Check.notNull(provider, "provider");
         Check.notNull(function, "function");
         return create(provider, function.apply(LocalStorageConfig.builder()).build());
+    }
+
+    static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider) {
+        Check.notNull(provider, "provider");
+        return create(provider, LocalStorageConfig.defaults());
     }
 
     @NotNull DocumentRepository repository(@NotNull String name);
@@ -110,6 +120,11 @@ public sealed interface Pipeline permits PipelineImpl {
             return this.globalCache(provider, function.apply(GlobalCacheConfig.builder()).build());
         }
 
+        default @NotNull R globalCache(@NotNull GlobalCacheProvider provider) {
+            Check.notNull(provider, "provider");
+            return this.globalCache(provider, GlobalCacheConfig.defaults());
+        }
+
     }
 
     interface GlobalBuilder extends Builder<GlobalBuilder> {
@@ -141,6 +156,15 @@ public sealed interface Pipeline permits PipelineImpl {
             Check.notNull(function, "function");
             return this.localCache(localCacheProvider, updaterProvider, function.apply(LocalCacheConfig.builder()).build());
         }
+
+        default @NotNull Pipeline.GlobalBuilder localCache(
+            @NotNull LocalCacheProvider localCacheProvider,
+            @NotNull UpdaterProvider updaterProvider
+        ) {
+            Check.notNull(localCacheProvider, "localCacheProvider");
+            Check.notNull(updaterProvider, "updaterProvider");
+            return this.localCache(localCacheProvider, updaterProvider, LocalCacheConfig.defaults());
+        }
     }
 
     interface LocalBuilder extends Builder<LocalBuilder> {
@@ -157,6 +181,11 @@ public sealed interface Pipeline permits PipelineImpl {
             Check.notNull(provider, "provider");
             Check.notNull(function, "function");
             return this.localCache(provider, function.apply(LocalCacheConfig.builder()).build());
+        }
+
+        default @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider) {
+            Check.notNull(provider, "provider");
+            return this.localCache(provider, LocalCacheConfig.defaults());
         }
     }
 }

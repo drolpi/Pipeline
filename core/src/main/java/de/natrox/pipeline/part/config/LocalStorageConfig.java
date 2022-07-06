@@ -24,6 +24,10 @@ public sealed interface LocalStorageConfig extends PartConfig.Storage permits Pa
         return new PartBuilderImpl.LocalStorageBuilder();
     }
 
+    static @NotNull LocalStorageConfig defaults() {
+        return PartConfigImpl.LocalStorageConfigImpl.DEFAULT;
+    }
+
     interface Builder extends PartConfig.StorageBuilder<LocalStorageConfig, Builder> {
 
     }
