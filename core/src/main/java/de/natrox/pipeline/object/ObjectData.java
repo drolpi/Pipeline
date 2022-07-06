@@ -16,20 +16,12 @@
 
 package de.natrox.pipeline.object;
 
-import de.natrox.common.validate.Check;
-import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.object.annotation.AnnotationResolver;
+import de.natrox.pipeline.repository.Pipeline;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public abstract class ObjectData {
 
@@ -42,59 +34,6 @@ public abstract class ObjectData {
 
     public @NotNull UUID uniqueId() {
         return this.uniqueId;
-    }
-
-    public @NotNull DocumentData serialize() {
-        DocumentData documentData = DocumentData.create();
-        for (Field field : this.persistentFields()) {
-            try {
-                String key = AnnotationResolver.fieldName(field);
-                field.setAccessible(true);
-                Object value = field.get(this);
-
-                if (value == null)
-                    continue;
-
-                documentData.append(key, value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return documentData;
-    }
-
-    public void deserialize(@NotNull DocumentData document) {
-        Check.notNull(document, "document");
-        for (Field field : this.persistentFields()) {
-            try {
-                String key = AnnotationResolver.fieldName(field);
-                Object value = document.get(key, field.getType());
-
-                if (value == null)
-                    continue;
-
-                field.setAccessible(true);
-                field.set(this, value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private Set<Field> persistentFields() {
-        Set<Field> fields = new HashSet<>();
-        Class<?> type = getClass();
-
-        while (type != null) {
-            fields.addAll(Arrays.asList(type.getDeclaredFields()));
-            type = type.getSuperclass();
-        }
-
-        return fields
-            .stream()
-            .filter(field -> !Modifier.isTransient(field.getModifiers()))
-            .collect(Collectors.toSet());
     }
 
     /**

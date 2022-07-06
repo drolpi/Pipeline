@@ -74,7 +74,7 @@ final class ObjectCache<T extends ObjectData> {
     }
 
     private void updateData(T data, DocumentData update) {
-        DocumentData before = data.serialize();
+        DocumentData before = this.repository.convertToDocument(data);
         this.repository.convertToData(data, update);
 
         data.handleUpdate(before);
@@ -102,7 +102,7 @@ final class ObjectCache<T extends ObjectData> {
 
         DocumentData documentData = DocumentData.create();
         documentData.append("uniqueId", uniqueId);
-        instance.deserialize(documentData);
+        this.repository.convertToData(instance, documentData);
 
         return instance;
     }

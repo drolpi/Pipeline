@@ -20,14 +20,17 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.stream.Collectors;
 
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
@@ -137,18 +140,61 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         return this.documentRepository.size();
     }
 
-    public T convertToData(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
+    T convertToData(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
         T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
         return this.convertToData(data, document);
     }
 
-    public T convertToData(T data, DocumentData document) {
-        data.deserialize(document);
+    T convertToData(T data, DocumentData document) {
+        for (Field field : this.persistentFields(data.getClass())) {
+            try {
+                String key = AnnotationResolver.fieldName(field);
+                Object value = document.get(key, field.getType());
+
+                if (value == null)
+                    continue;
+
+                field.setAccessible(true);
+                field.set(data, value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         return data;
     }
 
-    private DocumentData convertToDocument(T data) {
-        return data.serialize();
+    DocumentData convertToDocument(T data) {
+        DocumentData documentData = DocumentData.create();
+        for (Field field : this.persistentFields(data.getClass())) {
+            try {
+                String key = AnnotationResolver.fieldName(field);
+                field.setAccessible(true);
+                Object value = field.get(data);
+
+                if (value == null)
+                    continue;
+
+                documentData.append(key, value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return documentData;
+    }
+
+    private Set<Field> persistentFields(Class<?> type) {
+        Set<Field> fields = new HashSet<>();
+
+        while (type != null) {
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+            type = type.getSuperclass();
+        }
+
+        return fields
+            .stream()
+            .filter(field -> !Modifier.isTransient(field.getModifiers()))
+            .collect(Collectors.toSet());
     }
 
     final static class BuilderImpl<T extends ObjectData> extends AbstractRepositoryBuilder<ObjectRepository<T>, ObjectRepository.Builder<T>> implements ObjectRepository.Builder<T> {
