@@ -47,7 +47,7 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     public @NotNull DocumentData append(@NotNull String field, @NotNull Object value) {
         Check.argCondition(Strings.isNullOrEmpty(field), "field is empty or null key");
 
-        if (isEmbedded(field)) {
+        if (this.isEmbedded(field)) {
             String regex = MessageFormat.format("\\{0}", FIELD_SEPARATOR);
             String[] splits = field.split(regex);
             this.deepPut(splits, value);

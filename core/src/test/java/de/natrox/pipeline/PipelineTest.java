@@ -17,18 +17,16 @@
 package de.natrox.pipeline;
 
 import de.natrox.pipeline.caffeine.CaffeineProvider;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
+import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
-import de.natrox.pipeline.repository.DocumentRepository;
+import de.natrox.pipeline.repository.ObjectRepository;
 import de.natrox.pipeline.repository.Pipeline;
-import de.natrox.pipeline.repository.QueryStrategy;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -52,25 +50,45 @@ class PipelineTest {
 
         Pipeline pipeline = Pipeline
             .create(mongoProvider)
-            .globalCache(redisProvider, builder -> builder.expireAfterWrite(5, TimeUnit.SECONDS))
+            .globalCache(redisProvider, builder -> builder.expireAfterWrite(20, TimeUnit.SECONDS))
             .localCache(caffeineProvider, redisProvider, builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
             .build();
 
         {
-            DocumentRepository repository = pipeline
-                .buildRepository("OnlineTime")
+            ObjectRepository<PipeData> repository = pipeline
+                .buildRepository(PipeData.class)
                 .useGlobalCache(true)
                 .useLocalCache(true)
                 .build();
 
             UUID uuid = UUID.randomUUID();
-            Instant start = Instant.now();
-            repository.insert(uuid, DocumentData.create("test", "test"));
-            System.out.println(Duration.between(start, Instant.now()).toMillis());
+            {
+                PipeData data = repository.loadOrCreate(uuid);
 
-            Instant middle = Instant.now();
-            repository.get(uuid);
-            System.out.println(Duration.between(middle, Instant.now()).toMillis());
+                data.setAge(10);
+                repository.save(data);
+            }
+
+            PipeData data = repository.load(uuid).get();
+            System.out.println(data.age);
+        }
+    }
+
+    @Properties(identifier = "PipeData")
+    static class PipeData extends ObjectData {
+
+        private Integer age;
+
+        public PipeData(Pipeline pipeline) {
+            super(pipeline);
+        }
+
+        public int age() {
+            return this.age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
         }
     }
 }
