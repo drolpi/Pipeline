@@ -179,6 +179,10 @@ final class PipelineMap implements StoreMap {
         return this.storageMap.size();
     }
 
+    public void close() {
+        this.dataSynchronizer.close();
+    }
+
     private void registerListeners() {
         if (this.localCacheMap == null || this.updater == null)
             return;

@@ -183,6 +183,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.writeLock.lock();
             this.pipelineStore.closeMap(this.repositoryName);
+            this.pipelineMap.close();
 
             this.pipelineStore = null;
             this.pipelineMap = null;
