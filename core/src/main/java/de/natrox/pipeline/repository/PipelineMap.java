@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-final class PipelineMap {
+final class PipelineMap implements StoreMap {
 
     private final String mapName;
     private final StoreMap storageMap;
@@ -50,6 +50,7 @@ final class PipelineMap {
         this.registerListeners();
     }
 
+    @Override
     public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
 
@@ -77,6 +78,7 @@ final class PipelineMap {
         return data;
     }
 
+    @Override
     public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
@@ -94,45 +96,49 @@ final class PipelineMap {
         this.storageMap.put(uniqueId, data);
     }
 
-
+    @Override
     public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         if ((strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.localCacheMap != null) {
-            boolean localExists = this.localCacheMap.contains(uniqueId);
+            boolean localExists = this.localCacheMap.contains(uniqueId, strategies);
             if (localExists)
                 return true;
         }
 
         if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.globalCacheMap != null) {
-            boolean globalExists = this.globalCacheMap.contains(uniqueId);
+            boolean globalExists = this.globalCacheMap.contains(uniqueId, strategies);
             if (globalExists)
                 return true;
         }
 
         if (strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
-            return this.storageMap.contains(uniqueId);
+            return this.storageMap.contains(uniqueId, strategies);
         }
 
         return false;
     }
 
+    @Override
     public @NotNull Collection<UUID> keys() {
         return this.storageMap.keys();
     }
 
+    @Override
     public @NotNull Collection<byte[]> values() {
         return this.storageMap.values();
     }
 
+    @Override
     public @NotNull Map<UUID, byte[]> entries() {
         return this.storageMap.entries();
     }
 
+    @Override
     public void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         if (strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) {
             if (this.localCacheMap != null) {
-                this.localCacheMap.remove(uniqueId);
+                this.localCacheMap.remove(uniqueId, strategies);
             }
             if (this.updater != null) {
                 this.updater.pushRemoval(this.mapName, uniqueId, () -> {
@@ -142,14 +148,15 @@ final class PipelineMap {
         }
 
         if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.globalCacheMap != null) {
-            this.globalCacheMap.remove(uniqueId);
+            this.globalCacheMap.remove(uniqueId, strategies);
         }
 
         if (strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
-            this.storageMap.remove(uniqueId);
+            this.storageMap.remove(uniqueId, strategies);
         }
     }
 
+    @Override
     public void clear() {
         if (this.localCacheMap != null) {
             this.localCacheMap.clear();
@@ -165,6 +172,7 @@ final class PipelineMap {
         this.storageMap.clear();
     }
 
+    @Override
     public long size() {
         return this.storageMap.size();
     }
@@ -187,7 +195,7 @@ final class PipelineMap {
             EventListener
                 .builder(ByteDocumentUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(event -> this.localCacheMap.remove(event.documentId()))
+                .handler(event -> this.localCacheMap.remove(event.documentId(), Set.of(QueryStrategy.LOCAL_CACHE)))
                 .build()
         );
 

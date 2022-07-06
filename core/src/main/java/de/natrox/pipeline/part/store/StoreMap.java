@@ -16,12 +16,15 @@
 
 package de.natrox.pipeline.part.store;
 
+import de.natrox.common.validate.Check;
+import de.natrox.pipeline.repository.QueryStrategy;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @ApiStatus.Internal
@@ -31,7 +34,14 @@ public interface StoreMap {
 
     void put(@NotNull UUID uniqueId, byte @NotNull [] data);
 
-    boolean contains(@NotNull UUID uniqueId);
+    default boolean contains(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(strategies, "strategies");
+        Check.argCondition(strategies.length <= 0, "strategies");
+        return this.contains(uniqueId, Set.of(strategies));
+    }
+
+    boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
 
     @NotNull Collection<UUID> keys();
 
@@ -39,7 +49,14 @@ public interface StoreMap {
 
     @NotNull Map<UUID, byte[]> entries();
 
-    void remove(@NotNull UUID uniqueId);
+    default void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(strategies, "strategies");
+        Check.argCondition(strategies.length <= 0, "strategies");
+        this.remove(uniqueId, Set.of(strategies));
+    }
+
+    void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
 
     void clear();
 

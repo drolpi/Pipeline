@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.repository;
+package de.natrox.pipeline.stream;
 
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.ApiStatus;

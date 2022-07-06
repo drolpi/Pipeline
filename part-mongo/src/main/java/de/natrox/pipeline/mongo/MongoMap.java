@@ -22,6 +22,7 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.QueryStrategy;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -73,7 +75,7 @@ final class MongoMap implements StoreMap {
     }
 
     @Override
-    public boolean contains(@NotNull UUID uniqueId) {
+    public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Document document = this.collection
             .find(Filters.eq("key", uniqueId))
@@ -122,7 +124,7 @@ final class MongoMap implements StoreMap {
     }
 
     @Override
-    public void remove(@NotNull UUID uniqueId) {
+    public void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         this.collection.deleteOne(Filters.eq("key", uniqueId));
     }

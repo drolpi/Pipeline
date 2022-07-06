@@ -20,6 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,13 +28,13 @@ import java.util.Iterator;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-final class ObjectCursor<T extends ObjectData> implements Cursor<T> {
+public final class ObjectStream<T extends ObjectData> implements Cursor<T> {
 
     private final ObjectRepositoryImpl<T> repository;
     private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
     private final InstanceCreator<T> instanceCreator;
 
-    public ObjectCursor(ObjectRepositoryImpl<T> repository, InstanceCreator<T> instanceCreator, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
+    public ObjectStream(ObjectRepositoryImpl<T> repository, InstanceCreator<T> instanceCreator, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
         this.repository = repository;
         this.pipeStream = pipeStream;
         this.instanceCreator = instanceCreator;

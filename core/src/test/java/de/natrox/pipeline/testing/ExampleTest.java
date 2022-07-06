@@ -29,7 +29,7 @@ import de.natrox.pipeline.repository.ObjectRepository;
 import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
-import de.natrox.pipeline.repository.Cursor;
+import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.sort.Sorts;
 import org.junit.jupiter.api.Test;
 

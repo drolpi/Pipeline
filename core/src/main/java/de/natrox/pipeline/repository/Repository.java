@@ -20,6 +20,7 @@ import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.find.FindOptions;
+import de.natrox.pipeline.stream.Cursor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

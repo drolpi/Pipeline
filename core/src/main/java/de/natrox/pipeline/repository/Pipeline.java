@@ -42,7 +42,7 @@ public sealed interface Pipeline permits PipelineImpl {
     static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull GlobalStorageConfig config) {
         Check.notNull(provider, "provider");
         Check.notNull(config, "config");
-        return new PipelineBuilderImpl.GlobalBuilderImpl(provider, config);
+        return new PipelineImpl.GlobalBuilderImpl(provider, config);
     }
 
     static @NotNull Pipeline.GlobalBuilder create(@NotNull GlobalStorageProvider provider, @NotNull GlobalStorageConfig.Builder builder) {
@@ -60,7 +60,7 @@ public sealed interface Pipeline permits PipelineImpl {
     static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig config) {
         Check.notNull(provider, "provider");
         Check.notNull(config, "config");
-        return new PipelineBuilderImpl.LocalBuilderImpl(provider, config);
+        return new PipelineImpl.LocalBuilderImpl(provider, config);
     }
 
     static @NotNull Pipeline.LocalBuilder create(@NotNull LocalStorageProvider provider, @NotNull LocalStorageConfig.Builder builder) {

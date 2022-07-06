@@ -22,23 +22,28 @@ import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
+import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     private final Class<T> type;
-    private final DocumentRepository documentRepository;
+    private final DocumentRepositoryImpl documentRepository;
     private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(PipelineImpl pipeline, Class<T> type, DocumentRepository documentRepository, RepositoryOptions.ObjectOptions<T> options) {
+    ObjectRepositoryImpl(PipelineImpl pipeline, Class<T> type, DocumentRepositoryImpl documentRepository, RepositoryOptions.ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
@@ -71,8 +76,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(findOptions, "findOptions");
-        Cursor<DocumentData> documentCursor = this.documentRepository.find(findOptions);
-        return new ObjectCursor<>(this, instanceCreator, ((DocumentStream) documentCursor).asPairStream());
+        DocumentStream documentCursor = this.documentRepository.find(findOptions);
+        return new ObjectStream<>(this, instanceCreator, documentCursor.asPairStream());
     }
 
     @Override

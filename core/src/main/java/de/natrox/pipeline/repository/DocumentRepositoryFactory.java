@@ -17,11 +17,7 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.concurrent.LockService;
-import de.natrox.pipeline.part.store.Store;
-import de.natrox.pipeline.part.store.StoreMap;
-import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,27 +27,21 @@ import java.util.concurrent.locks.Lock;
 final class DocumentRepositoryFactory {
 
     private final PipelineImpl pipeline;
-    private final Store storage;
-    private final @Nullable Store globalCache;
-    private final @Nullable Store localCache;
-    private final @Nullable Updater updater;
+    private final PipelineStore pipelineStore;
 
     private final LockService lockService;
-    private final Map<String, DocumentRepository> repositoryMap;
+    private final Map<String, DocumentRepositoryImpl> repositoryMap;
     private final Lock writeLock;
 
-    DocumentRepositoryFactory(PipelineImpl pipeline, LockService lockService) {
+    DocumentRepositoryFactory(PipelineImpl pipeline, PipelineStore pipelineStore, LockService lockService) {
         this.pipeline = pipeline;
-        this.storage = pipeline.storage();
-        this.globalCache = pipeline.globalCache();
-        this.localCache = pipeline.localCache();
-        this.updater = pipeline.updater();
+        this.pipelineStore = pipelineStore;
         this.lockService = lockService;
         this.writeLock = lockService.getWriteLock(this.getClass());
         this.repositoryMap = new HashMap<>();
     }
 
-    public DocumentRepository repository(String name) {
+    public DocumentRepositoryImpl repository(String name) {
         try {
             this.writeLock.lock();
             if (this.repositoryMap.containsKey(name)) {
@@ -69,29 +59,16 @@ final class DocumentRepositoryFactory {
         throw new IllegalStateException();
     }
 
-    public DocumentRepository createRepository(String name, RepositoryOptions.DocumentOptions options) {
+    public DocumentRepositoryImpl createRepository(String name, RepositoryOptions.DocumentOptions options) {
         try {
             this.writeLock.lock();
             if (this.repositoryMap.containsKey(name)) {
-                DocumentRepository repository = this.repository(name);
+                DocumentRepositoryImpl repository = this.repository(name);
                 repository.close();
             }
 
-            StoreMap localCacheMap = null;
-            Updater updater = null;
-            if (options.useLocalCache() && this.localCache != null) {
-                localCacheMap = this.localCache.openMap(name, options);
-                updater = this.updater;
-            }
-
-            StoreMap globalCacheMap = null;
-            if (options.useGlobalCache() && this.globalCache != null) {
-                globalCacheMap = this.globalCache.openMap(name, options);
-            }
-
-            final StoreMap storageMap = this.storage.openMap(name, options);
-            final PipelineMap pipelineMap = new PipelineMap(name, storageMap, globalCacheMap, localCacheMap, updater);
-            DocumentRepository repository = new DocumentRepositoryImpl(name, this.pipeline, pipelineMap, this.lockService, options);
+            final PipelineMap pipelineMap = this.pipelineStore.openMap(name, options);
+            DocumentRepositoryImpl repository = new DocumentRepositoryImpl(name, this.pipeline, this.pipelineStore, pipelineMap, this.lockService, options);
             this.repositoryMap.put(name, repository);
 
             return repository;

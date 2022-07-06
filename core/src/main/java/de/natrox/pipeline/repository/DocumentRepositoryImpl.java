@@ -26,7 +26,11 @@ import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
-import de.natrox.pipeline.stream.*;
+import de.natrox.pipeline.stream.BoundedStream;
+import de.natrox.pipeline.stream.ConditionalStream;
+import de.natrox.pipeline.stream.DocumentStream;
+import de.natrox.pipeline.stream.PipeStream;
+import de.natrox.pipeline.stream.SortedDocumentStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -38,6 +42,7 @@ import java.util.stream.Collectors;
 
 final class DocumentRepositoryImpl implements DocumentRepository {
 
+    private final PipelineImpl pipeline;
     private final String repositoryName;
     private final DocumentMapper documentMapper;
     private final RepositoryOptions.DocumentOptions options;
@@ -45,12 +50,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private final Lock writeLock;
     private final Lock readLock;
 
-    private PipelineImpl pipeline;
+    private PipelineStore pipelineStore;
     private PipelineMap pipelineMap;
 
-    DocumentRepositoryImpl(String repositoryName, PipelineImpl pipeline, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, PipelineImpl pipeline, PipelineStore pipelineStore, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.pipeline = pipeline;
+        this.pipelineStore = pipelineStore;
         this.pipelineMap = pipelineMap;
         this.documentMapper = pipeline.documentMapper();
         this.options = options;
@@ -75,7 +81,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public @NotNull Cursor<DocumentData> find(@NotNull FindOptions findOptions) {
+    public @NotNull DocumentStream find(@NotNull FindOptions findOptions) {
         Check.notNull(findOptions, "findOptions");
 
         try {
@@ -140,7 +146,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.readLock.lock();
             this.checkOpened();
-            return this.pipelineMap.contains(uniqueId, Set.of(strategies));
+            return this.pipelineMap.contains(uniqueId, strategies);
         } finally {
             this.readLock.unlock();
         }
@@ -180,9 +186,9 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     public void close() {
         try {
             this.writeLock.lock();
-            this.pipeline.closeMap(this.repositoryName);
+            this.pipelineStore.closeMap(this.repositoryName);
 
-            this.pipeline = null;
+            this.pipelineStore = null;
             this.pipelineMap = null;
         } finally {
             this.writeLock.unlock();
@@ -191,7 +197,13 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isDropped() {
-        return !this.pipeline.hasRepository(this.repositoryName);
+        try {
+            this.writeLock.lock();
+            this.checkOpened();
+            return !this.pipelineStore.hasMap(this.repositoryName);
+        } finally {
+            this.writeLock.unlock();
+        }
     }
 
     @Override
@@ -200,10 +212,10 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.writeLock.lock();
             this.checkOpened();
 
-            this.pipeline.removeMap(this.repositoryName);
-            this.pipeline.closeMap(this.repositoryName);
+            this.pipelineStore.removeMap(this.repositoryName);
+            this.pipelineStore.closeMap(this.repositoryName);
 
-            this.pipeline = null;
+            this.pipelineStore = null;
             this.pipelineMap = null;
         } finally {
             this.writeLock.unlock();

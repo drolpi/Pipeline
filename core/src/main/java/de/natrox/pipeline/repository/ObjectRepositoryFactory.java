@@ -67,11 +67,11 @@ final class ObjectRepositoryFactory {
         if (this.repositoryMap.containsKey(name)) {
             ObjectRepository<T> repository = this.repository(type);
             repository.close();
-            DocumentRepository documentRepository = this.documentRepositoryFactory.repository(name);
+            DocumentRepositoryImpl documentRepository = this.documentRepositoryFactory.repository(name);
             documentRepository.close();
         }
 
-        DocumentRepository documentRepository = this.documentRepositoryFactory.createRepository(name, options);
+        DocumentRepositoryImpl documentRepository = this.documentRepositoryFactory.createRepository(name, options);
         ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 

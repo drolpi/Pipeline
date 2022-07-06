@@ -122,5 +122,4 @@ final class DataSynchronizer {
         GLOBAL_CACHE,
         STORAGE
     }
-
 }

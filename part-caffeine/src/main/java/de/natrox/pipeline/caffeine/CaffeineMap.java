@@ -22,11 +22,13 @@ import com.github.benmanes.caffeine.cache.Scheduler;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.QueryStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +55,6 @@ final class CaffeineMap implements StoreMap {
     @Override
     public byte @Nullable [] get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        System.out.println(this.contains(uniqueId));
         return this.cache.getIfPresent(uniqueId);
     }
 
@@ -65,7 +66,7 @@ final class CaffeineMap implements StoreMap {
     }
 
     @Override
-    public boolean contains(@NotNull UUID uniqueId) {
+    public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         return this.cache.asMap().containsKey(uniqueId);
     }
@@ -86,7 +87,7 @@ final class CaffeineMap implements StoreMap {
     }
 
     @Override
-    public void remove(@NotNull UUID uniqueId) {
+    public void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         this.cache.invalidate(uniqueId);
     }
