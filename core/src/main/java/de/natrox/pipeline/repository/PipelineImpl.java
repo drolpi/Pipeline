@@ -47,8 +47,8 @@ final class PipelineImpl implements Pipeline {
     PipelineImpl(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         Check.notNull(storage, "storage");
         this.updater = updater;
-        this.pipelineStore = new PipelineStore(this, storage, globalCache, localCache, updater);
         this.documentMapper = DocumentMapper.create();
+        this.pipelineStore = new PipelineStore(this, storage, globalCache, localCache, updater);
 
         LockService lockService = new LockService();
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.pipelineStore, lockService);
