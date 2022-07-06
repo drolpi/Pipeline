@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-public final class ConnectingMap implements StoreMap {
+final class ConnectingMap implements StoreMap {
 
     private final String mapName;
     private final StoreMap storageMap;
@@ -39,7 +39,7 @@ public final class ConnectingMap implements StoreMap {
 
     private final DataSynchronizer dataSynchronizer;
 
-    public ConnectingMap(String mapName, StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
+    ConnectingMap(String mapName, StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
         this.mapName = mapName;
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;

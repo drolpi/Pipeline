@@ -29,14 +29,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public final class DataSynchronizer {
+final class DataSynchronizer {
 
     private final StoreMap storage;
     private final @Nullable StoreMap globalCache;
     private final @Nullable StoreMap localCache;
     private final ExecutorService executorService;
 
-    public DataSynchronizer(ConnectingMap connectingMap) {
+    DataSynchronizer(ConnectingMap connectingMap) {
         this.storage = connectingMap.storageMap();
         this.globalCache = connectingMap.globalCacheMap();
         this.localCache = connectingMap.localCacheMap();
