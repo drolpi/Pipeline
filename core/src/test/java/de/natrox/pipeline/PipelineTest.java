@@ -52,7 +52,7 @@ class PipelineTest {
 
         Pipeline pipeline = Pipeline
             .create(mongoProvider, builder -> builder)
-            .globalCache(redisProvider, builder -> builder)
+            .globalCache(redisProvider, builder -> builder.expireAfterWrite(5, TimeUnit.SECONDS))
             .localCache(caffeineProvider, redisProvider, builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
             .build();
 
@@ -71,8 +71,6 @@ class PipelineTest {
             Instant middle = Instant.now();
             repository.get(uuid);
             System.out.println(Duration.between(middle, Instant.now()).toMillis());
-
-            repository.remove(uuid, QueryStrategy.LOCAL_CACHE, QueryStrategy.GLOBAL_CACHE);
         }
     }
 }

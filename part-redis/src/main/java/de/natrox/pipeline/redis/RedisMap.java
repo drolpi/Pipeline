@@ -17,6 +17,7 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,8 @@ import org.redisson.api.RBinaryStream;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,11 +35,13 @@ final class RedisMap implements StoreMap {
     private final RedisStore redisStore;
     private final RedissonClient redissonClient;
     private final String mapName;
+    private final GlobalCacheConfig config;
 
-    RedisMap(RedisStore redisStore, String mapName) {
+    RedisMap(RedisStore redisStore, String mapName, GlobalCacheConfig config) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
+        this.config = config;
     }
 
     @Override
@@ -46,6 +51,7 @@ final class RedisMap implements StoreMap {
         if (!stream.isExists())
             return null;
 
+        this.updateExpireTime(stream, this.config.expireAfterAccessNanos());
         return stream.get();
     }
 
@@ -56,17 +62,20 @@ final class RedisMap implements StoreMap {
 
         RBinaryStream stream = this.stream(uniqueId);
         stream.set(data);
+        this.updateExpireTime(stream, this.config.expireAfterWriteNanos());
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         RBinaryStream stream = this.stream(uniqueId);
+        this.updateExpireTime(stream, this.config.expireAfterAccessNanos());
         return stream.isExists();
     }
 
     @Override
     public @NotNull Collection<UUID> keys() {
+        //TODO: Update expire
         return this.redisStore.keys(this.mapName)
             .stream()
             .map(s -> UUID.fromString(s.split(":")[2]))
@@ -75,6 +84,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull Collection<byte[]> values() {
+        //TODO: Update expire
         Set<String> keys = this.redisStore.keys(this.mapName);
 
         List<byte[]> documents = new ArrayList<>();
@@ -95,6 +105,7 @@ final class RedisMap implements StoreMap {
 
     @Override
     public @NotNull Map<UUID, byte[]> entries() {
+        //TODO: Update expire
         Collection<UUID> keys = this.keys();
         Map<UUID, byte[]> entries = new HashMap<>();
 
@@ -134,5 +145,14 @@ final class RedisMap implements StoreMap {
 
     private RBinaryStream stream(UUID uniqueId) {
         return this.redissonClient.getBinaryStream("Cache:" + this.mapName + ":" + uniqueId.toString());
+    }
+
+    private void updateExpireTime(RBinaryStream stream, long nanos) {
+        Check.notNull(stream, "stream");
+        Check.notNull(nanos, "nanos");
+        if(nanos < 0)
+            return;
+
+        stream.expireAsync(Duration.of(nanos, ChronoUnit.NANOS));
     }
 }
