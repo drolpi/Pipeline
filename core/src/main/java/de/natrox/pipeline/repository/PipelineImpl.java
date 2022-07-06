@@ -17,33 +17,46 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
+import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
+import de.natrox.pipeline.part.store.Store;
+import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
 final class PipelineImpl implements Pipeline {
 
-    private final ConnectingStore connectingStore;
-    private final DocumentMapper documentMapper;
+    private final Store storage;
+    private final @Nullable Store globalCache;
+    private final @Nullable Store localCache;
+    private final @Nullable Updater updater;
 
+    private final DocumentMapper documentMapper;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
-    PipelineImpl(@NotNull PipelineBuilderImpl.AbstractBuilder<?> builder) {
-        Check.notNull(builder, "builder");
+    PipelineImpl(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
+        Check.notNull(storage, "storage");
+        this.storage = storage;
+        this.globalCache = globalCache;
+        this.localCache = localCache;
+        this.updater = updater;
 
         this.documentMapper = DocumentMapper.create();
-        LockService lockService = new LockService();
-        this.connectingStore = builder.createConnectingStore(this);
 
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.connectingStore, lockService);
-        this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.connectingStore, this.documentRepositoryFactory);
+        LockService lockService = new LockService();
+        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, lockService);
+        this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.documentRepositoryFactory);
+
+        this.registerListeners();
     }
 
     @Override
@@ -78,34 +91,62 @@ final class PipelineImpl implements Pipeline {
     public boolean hasRepository(@NotNull String name) {
         Check.notNull(name, "name");
         this.checkOpened();
-        return this.repositories().contains(name);
+        //TODO: Maybe check other parts too
+        return this.storage.hasMap(name);
     }
 
     @Override
     public <T> boolean hasRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
         this.checkOpened();
-        return this.repositories().contains(AnnotationResolver.identifier(type));
+        //TODO: Maybe check other parts too
+        return this.storage.hasMap(AnnotationResolver.identifier(type));
     }
 
     @Override
     public void destroyRepository(@NotNull String name) {
         Check.notNull(name, "name");
         this.checkOpened();
-        this.connectingStore.removeMap(name);
+        this.removeMap(name);
     }
 
     @Override
     public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
         Check.notNull(type, "type");
         this.checkOpened();
-        this.connectingStore.removeMap(AnnotationResolver.identifier(type));
+        this.removeMap(AnnotationResolver.identifier(type));
+    }
+
+    public void closeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
+        if (this.localCache != null) {
+            this.localCache.closeMap(mapName);
+        }
+
+        if (this.globalCache != null) {
+            this.globalCache.closeMap(mapName);
+        }
+
+        this.storage.closeMap(mapName);
+    }
+
+    public void removeMap(@NotNull String mapName) {
+        Check.notNull(mapName, "mapName");
+        if (this.localCache != null) {
+            this.localCache.removeMap(mapName);
+        }
+
+        if (this.globalCache != null) {
+            this.globalCache.removeMap(mapName);
+        }
+
+        this.storage.removeMap(mapName);
     }
 
     @Override
     public @NotNull Set<String> repositories() {
         this.checkOpened();
-        return this.connectingStore.maps();
+        return this.storage.maps();
     }
 
     @Override
@@ -115,19 +156,58 @@ final class PipelineImpl implements Pipeline {
 
     @Override
     public boolean isClosed() {
-        return this.connectingStore == null || this.connectingStore.isClosed();
+        return this.storage.isClosed()
+            || (this.globalCache != null && this.globalCache.isClosed())
+            || (this.localCache != null && this.localCache.isClosed());
     }
 
     @Override
     public void close() {
-        this.connectingStore.close();
+        if (this.localCache != null) {
+            this.localCache.close();
+        }
+        if (this.globalCache != null) {
+            this.globalCache.close();
+        }
+        this.storage.close();
         this.documentRepositoryFactory.clear();
         this.objectRepositoryFactory.clear();
     }
 
-    public void checkOpened() {
+    private void checkOpened() {
         if (!this.isClosed())
             return;
         throw new PipelineException("Pipeline is closed");
+    }
+
+    private void registerListeners() {
+        if (this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+
+        eventBus.register(ByteDocumentUpdateEvent.class, event -> eventBus.call(new DocumentUpdateEvent(
+                event.senderId(),
+                event.repositoryName(),
+                event.documentId(),
+                this.documentMapper.read(event.documentData())
+            ))
+        );
+    }
+
+    public @NotNull Store storage() {
+        return this.storage;
+    }
+
+    public @Nullable Store globalCache() {
+        return this.globalCache;
+    }
+
+    public @Nullable Store localCache() {
+        return this.localCache;
+    }
+
+    public @Nullable Updater updater() {
+        return this.updater;
     }
 }

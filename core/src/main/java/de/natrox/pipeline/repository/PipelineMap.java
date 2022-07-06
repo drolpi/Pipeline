@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.connecting;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
@@ -27,9 +27,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-final class ConnectingMap implements StoreMap {
+final class PipelineMap {
 
     private final String mapName;
     private final StoreMap storageMap;
@@ -39,14 +40,133 @@ final class ConnectingMap implements StoreMap {
 
     private final DataSynchronizer dataSynchronizer;
 
-    ConnectingMap(String mapName, StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
+    PipelineMap(String mapName, StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap, @Nullable Updater updater) {
         this.mapName = mapName;
         this.storageMap = storageMap;
         this.globalCacheMap = globalCacheMap;
         this.localCacheMap = localCacheMap;
         this.updater = updater;
-        this.dataSynchronizer = new DataSynchronizer(this);
+        this.dataSynchronizer = new DataSynchronizer(storageMap, globalCacheMap, localCacheMap);
         this.registerListeners();
+    }
+
+    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+        Check.notNull(uniqueId, "uniqueId");
+
+        if (this.localCacheMap != null) {
+            byte[] documentData = this.fromPart(uniqueId, this.localCacheMap);
+            if (documentData != null) {
+                return documentData;
+            }
+        }
+
+        if (this.globalCacheMap != null) {
+            byte[] documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            if (documentData != null) {
+                return documentData;
+            }
+        }
+
+        return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
+    }
+
+    private byte[] fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
+        byte[] data = storeMap.get(uniqueId);
+        if (data != null)
+            this.dataSynchronizer.synchronizeTo(uniqueId, data, destinations);
+        return data;
+    }
+
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(data, "data");
+        if (this.localCacheMap != null) {
+            this.localCacheMap.put(uniqueId, data);
+        }
+        if (this.updater != null) {
+            this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
+
+            });
+        }
+        if (this.globalCacheMap != null) {
+            this.globalCacheMap.put(uniqueId, data);
+        }
+        this.storageMap.put(uniqueId, data);
+    }
+
+
+    public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
+        Check.notNull(uniqueId, "uniqueId");
+        if ((strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.localCacheMap != null) {
+            boolean localExists = this.localCacheMap.contains(uniqueId);
+            if (localExists)
+                return true;
+        }
+
+        if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.globalCacheMap != null) {
+            boolean globalExists = this.globalCacheMap.contains(uniqueId);
+            if (globalExists)
+                return true;
+        }
+
+        if (strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
+            return this.storageMap.contains(uniqueId);
+        }
+
+        return false;
+    }
+
+    public @NotNull Collection<UUID> keys() {
+        return this.storageMap.keys();
+    }
+
+    public @NotNull Collection<byte[]> values() {
+        return this.storageMap.values();
+    }
+
+    public @NotNull Map<UUID, byte[]> entries() {
+        return this.storageMap.entries();
+    }
+
+    public void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
+        Check.notNull(uniqueId, "uniqueId");
+        if (strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) {
+            if (this.localCacheMap != null) {
+                this.localCacheMap.remove(uniqueId);
+            }
+            if (this.updater != null) {
+                this.updater.pushRemoval(this.mapName, uniqueId, () -> {
+
+                });
+            }
+        }
+
+        if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.globalCacheMap != null) {
+            this.globalCacheMap.remove(uniqueId);
+        }
+
+        if (strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
+            this.storageMap.remove(uniqueId);
+        }
+    }
+
+    public void clear() {
+        if (this.localCacheMap != null) {
+            this.localCacheMap.clear();
+        }
+        if (this.updater != null) {
+            this.updater.pushClear(this.mapName, () -> {
+
+            });
+        }
+        if (this.globalCacheMap != null) {
+            this.globalCacheMap.clear();
+        }
+        this.storageMap.clear();
+    }
+
+    public long size() {
+        return this.storageMap.size();
     }
 
     private void registerListeners() {
@@ -78,134 +198,5 @@ final class ConnectingMap implements StoreMap {
                 .handler(event -> this.localCacheMap.clear())
                 .build()
         );
-    }
-
-    @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
-        Check.notNull(uniqueId, "uniqueId");
-
-        if (this.localCacheMap != null) {
-            byte[] documentData = this.fromPart(uniqueId, this.localCacheMap);
-            if (documentData != null) {
-                return documentData;
-            }
-        }
-
-        if (this.globalCacheMap != null) {
-            byte[] documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
-            if (documentData != null) {
-                return documentData;
-            }
-        }
-
-        return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
-    }
-
-    private byte[] fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
-        byte[] data = storeMap.get(uniqueId);
-        if (data != null)
-            this.dataSynchronizer.synchronizeTo(uniqueId, data, destinations);
-        return data;
-    }
-
-    @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
-        Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(data, "data");
-        if (this.localCacheMap != null) {
-            this.localCacheMap.put(uniqueId, data);
-        }
-        if (this.updater != null) {
-            this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
-
-            });
-        }
-        if (this.globalCacheMap != null) {
-            this.globalCacheMap.put(uniqueId, data);
-        }
-        this.storageMap.put(uniqueId, data);
-    }
-
-    @Override
-    public boolean contains(@NotNull UUID uniqueId) {
-        Check.notNull(uniqueId, "uniqueId");
-        if (this.localCacheMap != null) {
-            boolean localExists = this.localCacheMap.contains(uniqueId);
-            if (localExists)
-                return true;
-        }
-
-        if (this.globalCacheMap != null) {
-            boolean globalExists = this.globalCacheMap.contains(uniqueId);
-            if (globalExists)
-                return true;
-        }
-
-        return this.storageMap.contains(uniqueId);
-    }
-
-    @Override
-    public @NotNull Collection<UUID> keys() {
-        return this.storageMap.keys();
-    }
-
-    @Override
-    public @NotNull Collection<byte[]> values() {
-        return this.storageMap.values();
-    }
-
-    @Override
-    public @NotNull Map<UUID, byte[]> entries() {
-        return this.storageMap.entries();
-    }
-
-    @Override
-    public void remove(@NotNull UUID uniqueId) {
-        Check.notNull(uniqueId, "uniqueId");
-        if (this.localCacheMap != null) {
-            this.localCacheMap.remove(uniqueId);
-        }
-        if (this.updater != null) {
-            this.updater.pushRemoval(this.mapName, uniqueId, () -> {
-
-            });
-        }
-        if (this.globalCacheMap != null) {
-            this.globalCacheMap.remove(uniqueId);
-        }
-        this.storageMap.remove(uniqueId);
-    }
-
-    @Override
-    public void clear() {
-        if (this.localCacheMap != null) {
-            this.localCacheMap.clear();
-        }
-        if (this.updater != null) {
-            this.updater.pushClear(this.mapName, () -> {
-
-            });
-        }
-        if (this.globalCacheMap != null) {
-            this.globalCacheMap.clear();
-        }
-        this.storageMap.clear();
-    }
-
-    @Override
-    public long size() {
-        return this.storageMap.size();
-    }
-
-    public StoreMap storageMap() {
-        return this.storageMap;
-    }
-
-    public StoreMap globalCacheMap() {
-        return this.globalCacheMap;
-    }
-
-    public StoreMap localCacheMap() {
-        return this.localCacheMap;
     }
 }

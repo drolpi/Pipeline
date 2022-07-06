@@ -18,7 +18,6 @@ package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -27,17 +26,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @ApiStatus.Internal
-public final class ObjectRepositoryFactory {
+final class ObjectRepositoryFactory {
 
-    private final Pipeline pipeline;
-    private final ConnectingStore store;
+    private final PipelineImpl pipeline;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final Map<String, ObjectRepository<? extends ObjectData>> repositoryMap;
     private final Lock lock;
 
-    public ObjectRepositoryFactory(Pipeline pipeline, ConnectingStore store, DocumentRepositoryFactory documentRepositoryFactory) {
+    ObjectRepositoryFactory(PipelineImpl pipeline, DocumentRepositoryFactory documentRepositoryFactory) {
         this.pipeline = pipeline;
-        this.store = store;
         this.documentRepositoryFactory = documentRepositoryFactory;
         this.repositoryMap = new HashMap<>();
         this.lock = new ReentrantLock();
@@ -75,7 +72,7 @@ public final class ObjectRepositoryFactory {
         }
 
         DocumentRepository documentRepository = this.documentRepositoryFactory.createRepository(name, options);
-        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, this.store, type, documentRepository, options);
+        ObjectRepository<T> repository = new ObjectRepositoryImpl<>(this.pipeline, type, documentRepository, options);
         this.repositoryMap.put(name, repository);
 
         return repository;

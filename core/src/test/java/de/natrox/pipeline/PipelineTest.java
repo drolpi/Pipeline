@@ -24,6 +24,7 @@ import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
 import de.natrox.pipeline.repository.DocumentRepository;
 import de.natrox.pipeline.repository.Pipeline;
+import de.natrox.pipeline.repository.QueryStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -70,6 +71,8 @@ class PipelineTest {
             Instant middle = Instant.now();
             repository.get(uuid);
             System.out.println(Duration.between(middle, Instant.now()).toMillis());
+
+            repository.remove(uuid, QueryStrategy.LOCAL_CACHE, QueryStrategy.GLOBAL_CACHE);
         }
     }
 }

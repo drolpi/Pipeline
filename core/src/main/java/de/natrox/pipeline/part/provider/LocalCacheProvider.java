@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.part.provider;
 
-import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.ApiStatus;
@@ -25,6 +24,6 @@ import org.jetbrains.annotations.NotNull;
 public non-sealed interface LocalCacheProvider extends PartProvider {
 
     @ApiStatus.Internal
-    @NotNull Store createLocalCache(@NotNull Pipeline pipeline, @NotNull LocalCacheConfig config);
+    @NotNull Store createLocalCache(@NotNull LocalCacheConfig config);
 
 }

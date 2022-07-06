@@ -22,22 +22,16 @@ import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.document.DocumentDataImpl;
-import de.natrox.pipeline.mapper.DocumentMapper;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.part.store.Store;
-import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.find.FindOptions;
+import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
-import de.natrox.pipeline.stream.BoundedStream;
-import de.natrox.pipeline.stream.ConditionalStream;
-import de.natrox.pipeline.stream.DocumentStream;
-import de.natrox.pipeline.stream.PipeStream;
-import de.natrox.pipeline.stream.SortedDocumentStream;
+import de.natrox.pipeline.stream.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
@@ -51,15 +45,15 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private final Lock writeLock;
     private final Lock readLock;
 
-    private Store store;
-    private StoreMap storeMap;
+    private PipelineImpl pipeline;
+    private PipelineMap pipelineMap;
 
-    DocumentRepositoryImpl(String repositoryName, Pipeline pipeline, LockService lockService, ConnectingStore store, StoreMap storeMap, RepositoryOptions.DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, PipelineImpl pipeline, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
         this.repositoryName = repositoryName;
+        this.pipeline = pipeline;
+        this.pipelineMap = pipelineMap;
         this.documentMapper = pipeline.documentMapper();
         this.options = options;
-        this.store = store;
-        this.storeMap = storeMap;
         this.readLock = lockService.getReadLock(repositoryName);
         this.writeLock = lockService.getWriteLock(repositoryName);
     }
@@ -71,7 +65,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.readLock.lock();
             this.checkOpened();
-            byte[] data = this.storeMap.get(uniqueId);
+            byte[] data = this.pipelineMap.get(uniqueId);
             if (data == null)
                 return Optional.empty();
             return Optional.of(this.documentMapper.read(data));
@@ -88,7 +82,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.readLock.lock();
             this.checkOpened();
             PipeStream<Pair<UUID, DocumentData>> stream = PipeStream.fromIterable(
-                this.storeMap
+                this.pipelineMap
                     .entries()
                     .entrySet()
                     .stream()
@@ -132,31 +126,35 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             DocumentData newDoc = document.clone();
             newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
 
-            this.storeMap.put(uniqueId, this.documentMapper.write(newDoc));
+            this.pipelineMap.put(uniqueId, this.documentMapper.write(newDoc));
         } finally {
             this.writeLock.unlock();
         }
     }
 
     @Override
-    public boolean exists(@NotNull UUID uniqueId) {
+    public boolean exists(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(strategies, "strategies");
+        Check.argCondition(strategies.length <= 0, "strategies");
         try {
             this.readLock.lock();
             this.checkOpened();
-            return this.storeMap.contains(uniqueId);
+            return this.pipelineMap.contains(uniqueId, Set.of(strategies));
         } finally {
             this.readLock.unlock();
         }
     }
 
     @Override
-    public void remove(@NotNull UUID uniqueId) {
+    public void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(strategies, "strategies");
+        Check.argCondition(strategies.length <= 0, "strategies");
         try {
             this.writeLock.lock();
             this.checkOpened();
-            this.storeMap.remove(uniqueId);
+            this.pipelineMap.remove(uniqueId, Set.of(strategies));
         } finally {
             this.writeLock.unlock();
         }
@@ -172,7 +170,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.writeLock.lock();
             this.checkOpened();
-            this.storeMap.clear();
+            this.pipelineMap.clear();
         } finally {
             this.writeLock.unlock();
         }
@@ -182,10 +180,10 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     public void close() {
         try {
             this.writeLock.lock();
-            this.store.closeMap(this.repositoryName);
+            this.pipeline.closeMap(this.repositoryName);
 
-            this.store = null;
-            this.storeMap = null;
+            this.pipeline = null;
+            this.pipelineMap = null;
         } finally {
             this.writeLock.unlock();
         }
@@ -193,7 +191,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public boolean isDropped() {
-        return !this.store.hasMap(this.repositoryName);
+        return !this.pipeline.hasRepository(this.repositoryName);
     }
 
     @Override
@@ -202,11 +200,11 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.writeLock.lock();
             this.checkOpened();
 
-            this.store.removeMap(this.repositoryName);
-            this.store.closeMap(this.repositoryName);
+            this.pipeline.removeMap(this.repositoryName);
+            this.pipeline.closeMap(this.repositoryName);
 
-            this.store = null;
-            this.storeMap = null;
+            this.pipeline = null;
+            this.pipelineMap = null;
         } finally {
             this.writeLock.unlock();
         }
@@ -216,7 +214,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     public boolean isOpen() {
         try {
             this.readLock.lock();
-            return this.store != null && !this.store.isClosed() && !this.isDropped();
+            return this.pipeline != null && !this.pipeline.isClosed() && !this.isDropped();
         } finally {
             this.readLock.unlock();
         }
@@ -227,7 +225,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.readLock.lock();
             this.checkOpened();
-            return this.storeMap.size();
+            return this.pipelineMap.size();
         } finally {
             this.readLock.unlock();
         }

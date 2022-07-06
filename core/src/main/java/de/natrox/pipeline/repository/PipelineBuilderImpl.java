@@ -21,7 +21,6 @@ import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
@@ -45,8 +44,6 @@ final class PipelineBuilderImpl {
 
         }
 
-        abstract ConnectingStore createConnectingStore(@NotNull Pipeline pipeline);
-
         @Override
         public @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull GlobalCacheConfig config) {
             Check.notNull(provider, "provider");
@@ -69,18 +66,6 @@ final class PipelineBuilderImpl {
         }
 
         @Override
-        ConnectingStore createConnectingStore(@NotNull Pipeline pipeline) {
-            final Store storage = this.globalStorageProvider.createGlobalStorage(pipeline, this.globalStorageConfig);
-            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(pipeline, this.globalCacheConfig) : null;
-
-            final boolean local = this.updaterProvider != null && this.localCacheProvider != null;
-            final Store localCache = local ? this.localCacheProvider.createLocalCache(pipeline, this.localCacheConfig) : null;
-            final Updater updater = local ? this.updaterProvider.createDataUpdater(pipeline) : null;
-
-            return new ConnectingStore(pipeline, storage, globalCache, localCache, updater);
-        }
-
-        @Override
         public @NotNull Pipeline.GlobalBuilder localCache(
             @NotNull LocalCacheProvider localCacheProvider,
             @NotNull UpdaterProvider updaterProvider,
@@ -97,7 +82,14 @@ final class PipelineBuilderImpl {
 
         @Override
         public Pipeline build() {
-            return new PipelineImpl(this);
+            final Store storage = this.globalStorageProvider.createGlobalStorage(this.globalStorageConfig);
+            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(this.globalCacheConfig) : null;
+
+            final boolean local = this.updaterProvider != null && this.localCacheProvider != null;
+            final Store localCache = local ? this.localCacheProvider.createLocalCache(this.localCacheConfig) : null;
+            final Updater updater = local ? this.updaterProvider.createDataUpdater() : null;
+
+            return new PipelineImpl(storage, globalCache, localCache, updater);
         }
     }
 
@@ -112,15 +104,6 @@ final class PipelineBuilderImpl {
         }
 
         @Override
-        ConnectingStore createConnectingStore(@NotNull Pipeline pipeline) {
-            final Store storage = this.localStorageProvider.createLocalStorage(pipeline, this.localStorageConfig);
-            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(pipeline, this.globalCacheConfig) : null;
-            final Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache(pipeline, this.localCacheConfig) : null;
-
-            return new ConnectingStore(pipeline, storage, globalCache, localCache, null);
-        }
-
-        @Override
         public @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull LocalCacheConfig config) {
             Check.notNull(provider, "provider");
             Check.notNull(config, "config");
@@ -131,7 +114,11 @@ final class PipelineBuilderImpl {
 
         @Override
         public Pipeline build() {
-            return new PipelineImpl(this);
+            final Store storage = this.localStorageProvider.createLocalStorage(this.localStorageConfig);
+            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(this.globalCacheConfig) : null;
+            final Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache(this.localCacheConfig) : null;
+
+            return new PipelineImpl(storage, globalCache, localCache, null);
         }
     }
 }

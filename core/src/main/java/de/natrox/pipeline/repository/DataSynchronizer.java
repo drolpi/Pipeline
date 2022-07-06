@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.connecting;
+package de.natrox.pipeline.repository;
 
 import de.natrox.common.runnable.CatchingRunnable;
 import de.natrox.common.validate.Check;
@@ -36,10 +36,10 @@ final class DataSynchronizer {
     private final @Nullable StoreMap localCache;
     private final ExecutorService executorService;
 
-    DataSynchronizer(ConnectingMap connectingMap) {
-        this.storage = connectingMap.storageMap();
-        this.globalCache = connectingMap.globalCacheMap();
-        this.localCache = connectingMap.localCacheMap();
+    DataSynchronizer(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap) {
+        this.storage = storageMap;
+        this.globalCache = globalCacheMap;
+        this.localCache = localCacheMap;
         this.executorService = Executors.newCachedThreadPool();
     }
 
@@ -53,7 +53,7 @@ final class DataSynchronizer {
         return future;
     }
 
-    public boolean to(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
+    private boolean to(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");

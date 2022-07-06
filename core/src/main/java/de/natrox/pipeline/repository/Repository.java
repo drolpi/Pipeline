@@ -39,9 +39,9 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
         return this.find(FindOptions.defaults());
     }
 
-    boolean exists(@NotNull UUID uniqueId);
+    boolean exists(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies);
 
-    void remove(@NotNull UUID uniqueId);
+    void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies);
 
     void clear();
 

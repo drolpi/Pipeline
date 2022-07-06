@@ -18,11 +18,10 @@ package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.part.connecting.ConnectingStore;
-import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,11 +38,11 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(Pipeline pipeline, ConnectingStore store, Class<T> type, DocumentRepository documentRepository, RepositoryOptions.ObjectOptions<T> options) {
+    ObjectRepositoryImpl(PipelineImpl pipeline, Class<T> type, DocumentRepository documentRepository, RepositoryOptions.ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
-        this.objectCache = new ObjectCache<>(pipeline, store, this, options);
+        this.objectCache = new ObjectCache<>(pipeline, this, options);
     }
 
     @Override
@@ -83,17 +82,18 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
-    public boolean exists(@NotNull UUID uniqueId) {
+    public boolean exists(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        return this.documentRepository.exists(uniqueId);
+        return this.documentRepository.exists(uniqueId, strategies);
     }
 
     @Override
-    public void remove(@NotNull UUID uniqueId) {
+    public void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
+        //TODO: Only delete if strategies contains LOCAL_CACHE
         Optional<T> optional = this.objectCache.get(uniqueId);
         optional.ifPresent(ObjectData::handleDelete);
-        this.documentRepository.remove(uniqueId);
+        this.documentRepository.remove(uniqueId, strategies);
     }
 
     @Override

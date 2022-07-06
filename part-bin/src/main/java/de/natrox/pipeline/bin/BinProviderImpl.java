@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.bin;
 
-import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +37,7 @@ final class BinProviderImpl implements BinProvider {
     }
 
     @Override
-    public @NotNull Store createLocalStorage(@NotNull Pipeline pipeline, @NotNull LocalStorageConfig config) {
+    public @NotNull Store createLocalStorage(@NotNull LocalStorageConfig config) {
         return new BinStore(this.directory);
     }
 }
