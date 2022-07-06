@@ -36,17 +36,22 @@ final class DataSynchronizer {
     private final @Nullable StoreMap localCache;
     private final ExecutorService executorService;
 
+    private volatile boolean closed;
+
     DataSynchronizer(StoreMap storageMap, @Nullable StoreMap globalCacheMap, @Nullable StoreMap localCacheMap) {
         this.storage = storageMap;
         this.globalCache = globalCacheMap;
         this.localCache = localCacheMap;
         this.executorService = Executors.newCachedThreadPool();
+        this.closed = false;
     }
 
     public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
+        if (this.isOpen())
+            return CompletableFuture.completedFuture(false);
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.to(uniqueId, data, destinations))));
@@ -57,6 +62,8 @@ final class DataSynchronizer {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
+        if (this.isOpen())
+            return false;
 
         List<DataSourceType> destinationList = Arrays.asList(destinations);
         if (this.localCache != null && destinationList.contains(DataSourceType.LOCAL_CACHE)) {
@@ -74,6 +81,8 @@ final class DataSynchronizer {
     public CompletableFuture<byte[]> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
+        if (this.isOpen())
+            return CompletableFuture.completedFuture(null);
 
         CompletableFuture<byte[]> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
@@ -83,6 +92,8 @@ final class DataSynchronizer {
     public byte[] from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
+        if (this.isOpen())
+            return null;
 
         if (this.localCache != null && source.equals(DataSourceType.LOCAL_CACHE)) {
             return this.localCache.get(uniqueId);
@@ -98,6 +109,8 @@ final class DataSynchronizer {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
+        if (this.isOpen())
+            return CompletableFuture.completedFuture(false);
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.fromTo(uniqueId, source, destinations))));
@@ -108,6 +121,8 @@ final class DataSynchronizer {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         Check.notNull(destinations, "destinations");
+        if (this.isOpen())
+            return false;
 
         byte[] documentData = from(uniqueId, source);
         // Error while loading from local cache
@@ -115,6 +130,15 @@ final class DataSynchronizer {
             return false;
         to(uniqueId, documentData, destinations);
         return true;
+    }
+
+    public boolean isOpen() {
+        return !this.closed;
+    }
+
+    public void close() {
+        this.closed = true;
+        this.executorService.shutdown();
     }
 
     public enum DataSourceType {
