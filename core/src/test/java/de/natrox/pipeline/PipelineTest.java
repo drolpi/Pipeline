@@ -72,5 +72,4 @@ class PipelineTest {
             System.out.println(Duration.between(middle, Instant.now()).toMillis());
         }
     }
-
 }
