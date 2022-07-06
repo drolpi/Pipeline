@@ -22,6 +22,8 @@ import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
+import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
+import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -193,7 +195,7 @@ final class PipelineMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(ByteDocumentUpdateEvent.class)
+                .builder(DocumentRemoveEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
                 .handler(event -> this.localCacheMap.remove(event.documentId(), Set.of(QueryStrategy.LOCAL_CACHE)))
                 .build()
@@ -201,7 +203,7 @@ final class PipelineMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(ByteDocumentUpdateEvent.class)
+                .builder(MapClearEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
                 .handler(event -> this.localCacheMap.clear())
                 .build()
