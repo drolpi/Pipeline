@@ -16,8 +16,8 @@
 
 package de.natrox.pipeline.object.type;
 
-import de.natrox.pipeline.repository.Pipeline;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.repository.Pipeline;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;

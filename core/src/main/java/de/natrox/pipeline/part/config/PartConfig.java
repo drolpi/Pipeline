@@ -19,9 +19,7 @@ package de.natrox.pipeline.part.config;
 import de.natrox.common.builder.IBuilder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @ApiStatus.Experimental

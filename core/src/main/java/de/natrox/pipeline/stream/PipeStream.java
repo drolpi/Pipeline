@@ -22,11 +22,7 @@ import de.natrox.pipeline.util.Iterables;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @ApiStatus.Experimental
 public interface PipeStream<T> extends Iterable<T> {

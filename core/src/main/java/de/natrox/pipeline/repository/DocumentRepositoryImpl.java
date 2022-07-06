@@ -26,11 +26,7 @@ import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
-import de.natrox.pipeline.stream.BoundedStream;
-import de.natrox.pipeline.stream.ConditionalStream;
-import de.natrox.pipeline.stream.DocumentStream;
-import de.natrox.pipeline.stream.PipeStream;
-import de.natrox.pipeline.stream.SortedDocumentStream;
+import de.natrox.pipeline.stream.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

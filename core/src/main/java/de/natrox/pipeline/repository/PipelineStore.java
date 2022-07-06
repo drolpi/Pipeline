@@ -48,25 +48,6 @@ final class PipelineStore implements Store {
         this.registerListeners();
     }
 
-    private void registerListeners() {
-        if (this.updater == null)
-            return;
-
-        EventBus eventBus = this.updater.eventBus();
-
-        eventBus.register(
-            EventListener
-                .builder(ByteDocumentUpdateEvent.class)
-                .handler(event -> eventBus.call(new DocumentUpdateEvent(
-                    event.senderId(),
-                    event.repositoryName(),
-                    event.documentId(),
-                    this.documentMapper.read(event.documentData())
-                )))
-                .build()
-        );
-    }
-
     @Override
     public @NotNull PipelineMap openMap(@NotNull String mapName, @NotNull RepositoryOptions repositoryOptions) {
         Check.notNull(mapName, "mapName");
@@ -143,5 +124,24 @@ final class PipelineStore implements Store {
             this.globalCache.close();
         }
         this.storage.close();
+    }
+
+    private void registerListeners() {
+        if (this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+
+        eventBus.register(
+            EventListener
+                .builder(ByteDocumentUpdateEvent.class)
+                .handler(event -> eventBus.call(new DocumentUpdateEvent(
+                    event.senderId(),
+                    event.repositoryName(),
+                    event.documentId(),
+                    this.documentMapper.read(event.documentData())
+                )))
+                .build()
+        );
     }
 }

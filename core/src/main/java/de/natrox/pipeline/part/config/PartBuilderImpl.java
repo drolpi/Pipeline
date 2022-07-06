@@ -19,7 +19,6 @@ package de.natrox.pipeline.part.config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unchecked")

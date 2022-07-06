@@ -16,10 +16,6 @@
 
 package de.natrox.pipeline.part.config;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
-
 final class PartConfigImpl {
 
     abstract static sealed class AbstractPartConfig implements PartConfig {

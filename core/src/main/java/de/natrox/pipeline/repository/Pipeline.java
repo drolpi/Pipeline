@@ -25,16 +25,11 @@ import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.config.LocalStorageConfig;
-import de.natrox.pipeline.part.provider.GlobalCacheProvider;
-import de.natrox.pipeline.part.provider.GlobalStorageProvider;
-import de.natrox.pipeline.part.provider.LocalCacheProvider;
-import de.natrox.pipeline.part.provider.LocalStorageProvider;
-import de.natrox.pipeline.part.provider.UpdaterProvider;
+import de.natrox.pipeline.part.provider.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
-import java.util.function.Function;
 
 @ApiStatus.Experimental
 public sealed interface Pipeline permits PipelineImpl {

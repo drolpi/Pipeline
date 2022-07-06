@@ -61,7 +61,7 @@ final class ObjectRepositoryFactory {
         throw new IllegalStateException();
     }
 
-    public  <T extends ObjectData> ObjectRepository<T> createRepository(Class<T> type, RepositoryOptions.ObjectOptions<T> options) {
+    public <T extends ObjectData> ObjectRepository<T> createRepository(Class<T> type, RepositoryOptions.ObjectOptions<T> options) {
         String name = AnnotationResolver.identifier(type);
 
         if (this.repositoryMap.containsKey(name)) {

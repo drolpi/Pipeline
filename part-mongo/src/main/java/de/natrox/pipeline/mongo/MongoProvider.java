@@ -23,8 +23,6 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.UnsupportedEncodingException;
-
 public sealed interface MongoProvider extends GlobalStorageProvider permits MongoProviderImpl {
 
     static @NotNull MongoProvider of(@NotNull MongoClient mongoClient, @NotNull MongoDatabase mongoDatabase) {
