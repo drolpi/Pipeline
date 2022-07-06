@@ -124,7 +124,6 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.writeLock.lock();
             this.checkOpened();
             DocumentData newDoc = document.clone();
-            newDoc.append(DocumentDataImpl.DOC_ID, uniqueId);
 
             this.pipelineMap.put(uniqueId, this.documentMapper.write(newDoc));
         } finally {

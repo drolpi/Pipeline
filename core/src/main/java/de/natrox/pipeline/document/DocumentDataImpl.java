@@ -33,7 +33,6 @@ import java.util.*;
 
 public final class DocumentDataImpl extends HashMap<String, Object> implements DocumentData {
 
-    public final static String DOC_ID = "_id";
     private final static String FIELD_SEPARATOR = ".";
 
     DocumentDataImpl() {
@@ -70,18 +69,6 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     public <T> @Nullable T get(@NotNull String field, @NotNull Class<T> type) {
         Check.notNull(type, "type");
         return type.cast(this.get(field));
-    }
-
-    @Override
-    public @NotNull UUID uniqueId() {
-        try {
-            if (!this.containsKey(DOC_ID)) {
-                this.append(DOC_ID, UUID.randomUUID());
-            }
-            return Objects.requireNonNull(this.get(DOC_ID, UUID.class));
-        } catch (ClassCastException cce) {
-            throw new RuntimeException("invalid _id found " + this.get(DOC_ID));
-        }
     }
 
     @Override
