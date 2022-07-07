@@ -47,7 +47,6 @@ final class RedisStore extends AbstractStore {
         return this.redissonClient
             .getKeys()
             .getKeysStream()
-            .filter(this::filterKey)
             .map(s -> s.split(":")[1])
             .collect(Collectors.toSet());
     }
@@ -69,12 +68,12 @@ final class RedisStore extends AbstractStore {
         return this.redissonClient
             .getKeys()
             .getKeysStream()
-            .filter(this::filterKey)
+            .filter(key -> this.filterKey(key, mapName))
             .collect(Collectors.toSet());
     }
 
-    private boolean filterKey(String mapName) {
-        String[] split = mapName.split(":");
+    private boolean filterKey(String key, String mapName) {
+        String[] split = key.split(":");
         if (split.length != 3)
             return false;
 
