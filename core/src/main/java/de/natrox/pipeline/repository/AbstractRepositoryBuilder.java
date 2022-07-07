@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unchecked")
 abstract non-sealed class AbstractRepositoryBuilder<T extends Repository<?>, R extends Repository.Builder<T, R>> implements Repository.Builder<T, R> {
 
-    protected boolean useGlobalCache;
-    protected boolean useLocalCache;
+    protected boolean useGlobalCache = true;
+    protected boolean useLocalCache = true;
 
     @Override
     public @NotNull R useGlobalCache(boolean use) {
