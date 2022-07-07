@@ -35,7 +35,7 @@ final class DocumentMapperImpl implements DocumentMapper {
 
     private final Kryo kryo = new Kryo();
 
-    public DocumentMapperImpl() {
+    DocumentMapperImpl() {
         this.kryo.setRegistrationRequired(false);
         this.kryo.register(DocumentData.class, new DocumentSerializer());
         this.kryo.register(UUID.class, new UUIDSerializer());
