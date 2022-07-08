@@ -18,17 +18,19 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface GlobalStorageConfig extends PartConfig.Storage permits PartConfigImpl.GlobalStorageConfigImpl {
+import java.util.concurrent.TimeUnit;
 
-    static @NotNull GlobalStorageConfig.Builder builder() {
-        return new PartBuilderImpl.GlobalStorageBuilder();
-    }
+public sealed interface CacheConfig extends StoreMapConfig permits GlobalCacheConfig, LocalCacheConfig, StoreMapConfigImpl.AbstractCacheConfig {
 
-    static @NotNull GlobalStorageConfig defaults() {
-        return PartConfigImpl.GlobalStorageConfigImpl.DEFAULT;
-    }
+    long expireAfterWriteNanos();
 
-    interface Builder extends PartConfig.StorageBuilder<GlobalStorageConfig, Builder> {
+    long expireAfterAccessNanos();
+
+    interface Builder<T extends CacheConfig, R extends StoreMapConfig.Builder<T, R>> extends StoreMapConfig.Builder<T, R> {
+
+        @NotNull R expireAfterWrite(long time, @NotNull TimeUnit unit);
+
+        @NotNull R expireAfterAccess(long time, @NotNull TimeUnit unit);
 
     }
 }

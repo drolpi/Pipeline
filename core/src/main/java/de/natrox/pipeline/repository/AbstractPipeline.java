@@ -22,11 +22,9 @@ import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.mapper.DocumentMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.pipeline.part.config.GlobalCacheConfig;
-import de.natrox.pipeline.part.config.GlobalStorageConfig;
-import de.natrox.pipeline.part.config.LocalCacheConfig;
-import de.natrox.pipeline.part.config.LocalStorageConfig;
-import de.natrox.pipeline.part.provider.*;
+import de.natrox.pipeline.part.config.StorageConfig;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-final class PipelineImpl implements Pipeline {
+sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipeline, LocalPipeline {
 
     private final @Nullable Updater updater;
 
@@ -44,7 +42,7 @@ final class PipelineImpl implements Pipeline {
 
     private PipelineStore pipelineStore;
 
-    PipelineImpl(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
+    AbstractPipeline(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         Check.notNull(storage, "storage");
         this.updater = updater;
         this.documentMapper = DocumentMapper.create();
@@ -63,10 +61,11 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public @NotNull DocumentRepository.Builder buildRepository(@NotNull String name) {
+    public @NotNull DocumentRepository.Builder buildRepository(@NotNull String name, @NotNull StorageConfig config) {
         Check.notNull(name, "name");
+        Check.notNull(config, "config");
         this.checkOpened();
-        return new DocumentRepositoryImpl.BuilderImpl(this.documentRepositoryFactory, name);
+        return new DocumentRepositoryImpl.BuilderImpl(this.documentRepositoryFactory, name, config);
     }
 
     @Override
@@ -77,10 +76,11 @@ final class PipelineImpl implements Pipeline {
     }
 
     @Override
-    public <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type) {
+    public <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type, @NotNull StorageConfig config) {
         Check.notNull(type, "type");
+        Check.notNull(config, "config");
         this.checkOpened();
-        return new ObjectRepositoryImpl.BuilderImpl<>(this.objectRepositoryFactory, type);
+        return new ObjectRepositoryImpl.BuilderImpl<>(this.objectRepositoryFactory, type, config);
     }
 
     @Override
@@ -147,92 +147,21 @@ final class PipelineImpl implements Pipeline {
     }
 
     @SuppressWarnings("unchecked")
-    abstract static class AbstractBuilder<R extends Pipeline.Builder<R>> implements Pipeline.Builder<R> {
+    static abstract class Builder<R extends Pipeline.Builder<R>> implements Pipeline.Builder<R> {
 
         protected GlobalCacheProvider globalCacheProvider;
-        protected GlobalCacheConfig globalCacheConfig;
         protected LocalCacheProvider localCacheProvider;
-        protected LocalCacheConfig localCacheConfig;
 
-        protected AbstractBuilder() {
+        protected Builder() {
 
         }
 
         @Override
-        public @NotNull R globalCache(@NotNull GlobalCacheProvider provider, @NotNull GlobalCacheConfig config) {
+        public @NotNull R globalCache(@NotNull GlobalCacheProvider provider) {
             Check.notNull(provider, "provider");
-            Check.notNull(config, "config");
             this.globalCacheProvider = provider;
-            this.globalCacheConfig = config;
             return (R) this;
         }
     }
 
-    final static class GlobalBuilderImpl extends AbstractBuilder<GlobalBuilder> implements Pipeline.GlobalBuilder {
-
-        private final GlobalStorageProvider globalStorageProvider;
-        private final GlobalStorageConfig globalStorageConfig;
-        private UpdaterProvider updaterProvider;
-
-        GlobalBuilderImpl(GlobalStorageProvider globalStorageProvider, GlobalStorageConfig globalStorageConfig) {
-            this.globalStorageProvider = globalStorageProvider;
-            this.globalStorageConfig = globalStorageConfig;
-        }
-
-        @Override
-        public @NotNull Pipeline.GlobalBuilder localCache(
-            @NotNull LocalCacheProvider localCacheProvider,
-            @NotNull UpdaterProvider updaterProvider,
-            @NotNull LocalCacheConfig config
-        ) {
-            Check.notNull(localCacheProvider, "localCacheProvider");
-            Check.notNull(updaterProvider, "updaterProvider");
-            Check.notNull(config, "config");
-            this.localCacheProvider = localCacheProvider;
-            this.localCacheConfig = config;
-            this.updaterProvider = updaterProvider;
-            return this;
-        }
-
-        @Override
-        public Pipeline build() {
-            final Store storage = this.globalStorageProvider.createGlobalStorage(this.globalStorageConfig);
-            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(this.globalCacheConfig) : null;
-
-            final boolean local = this.updaterProvider != null && this.localCacheProvider != null;
-            final Store localCache = local ? this.localCacheProvider.createLocalCache(this.localCacheConfig) : null;
-            final Updater updater = local ? this.updaterProvider.createDataUpdater() : null;
-
-            return new PipelineImpl(storage, globalCache, localCache, updater);
-        }
-    }
-
-    final static class LocalBuilderImpl extends AbstractBuilder<LocalBuilder> implements Pipeline.LocalBuilder {
-
-        private final LocalStorageProvider localStorageProvider;
-        private final LocalStorageConfig localStorageConfig;
-
-        LocalBuilderImpl(LocalStorageProvider localStorageProvider, LocalStorageConfig localStorageConfig) {
-            this.localStorageProvider = localStorageProvider;
-            this.localStorageConfig = localStorageConfig;
-        }
-
-        @Override
-        public @NotNull Pipeline.LocalBuilder localCache(@NotNull LocalCacheProvider provider, @NotNull LocalCacheConfig config) {
-            Check.notNull(provider, "provider");
-            Check.notNull(config, "config");
-            this.localCacheProvider = provider;
-            this.localCacheConfig = config;
-            return this;
-        }
-
-        @Override
-        public Pipeline build() {
-            final Store storage = this.localStorageProvider.createLocalStorage(this.localStorageConfig);
-            final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache(this.globalCacheConfig) : null;
-            final Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache(this.localCacheConfig) : null;
-
-            return new PipelineImpl(storage, globalCache, localCache, null);
-        }
-    }
 }

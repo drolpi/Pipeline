@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.part.provider;
+package de.natrox.pipeline.part.config;
 
-import de.natrox.pipeline.part.store.Store;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-public non-sealed interface LocalCacheProvider extends PartProvider {
+public sealed interface StorageConfig extends StoreMapConfig permits StoreMapConfigImpl.StorageConfigImpl {
 
-    @ApiStatus.Internal
-    @NotNull Store createLocalCache();
+    static @NotNull StorageConfig.Builder builder() {
+        return new StoreMapConfigBuilderImpl.StorageBuilder();
+    }
 
+    static @NotNull StorageConfig defaults() {
+        return StoreMapConfigImpl.StorageConfigImpl.DEFAULT;
+    }
+
+    interface Builder extends StoreMapConfig.Builder<StorageConfig, StorageConfig.Builder> {
+
+    }
 }

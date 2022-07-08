@@ -18,17 +18,17 @@ package de.natrox.pipeline.part.config;
 
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface LocalCacheConfig extends PartConfig.Cache permits PartConfigImpl.LocalCacheConfigImpl {
+public sealed interface LocalCacheConfig extends CacheConfig permits StoreMapConfigImpl.LocalCacheConfigImpl {
 
     static @NotNull LocalCacheConfig.Builder builder() {
-        return new PartBuilderImpl.LocalCacheBuilder();
+        return new StoreMapConfigBuilderImpl.LocalCacheBuilder();
     }
 
     static @NotNull LocalCacheConfig defaults() {
-        return PartConfigImpl.LocalCacheConfigImpl.DEFAULT;
+        return StoreMapConfigImpl.LocalCacheConfigImpl.DEFAULT;
     }
 
-    interface Builder extends PartConfig.CacheBuilder<LocalCacheConfig, Builder> {
+    interface Builder extends CacheConfig.Builder<LocalCacheConfig, Builder> {
 
     }
 }

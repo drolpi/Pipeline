@@ -21,6 +21,7 @@ import com.mongodb.client.MongoDatabase;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +37,7 @@ final class MongoStore extends AbstractStore {
     }
 
     @Override
-    protected StoreMap createMap(@NotNull String mapName) {
+    protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
         return new MongoMap(this.collection(mapName));
     }

@@ -16,17 +16,19 @@
 
 package de.natrox.pipeline.part.config;
 
-final class PartConfigImpl {
+final class StoreMapConfigImpl {
 
-    abstract static sealed class AbstractPartConfig implements PartConfig {
-
-    }
-
-    abstract static sealed class AbstractStorageConfig extends AbstractPartConfig implements PartConfig.Storage {
+    static abstract sealed class AbstractStoreMapConfig implements StoreMapConfig {
 
     }
 
-    abstract static sealed class AbstractCacheConfig extends AbstractPartConfig implements PartConfig.Cache {
+    final static class StorageConfigImpl extends AbstractStoreMapConfig implements StorageConfig {
+
+        final static StorageConfig DEFAULT = StorageConfig.builder().build();
+
+    }
+
+    static abstract sealed class AbstractCacheConfig extends AbstractStoreMapConfig implements CacheConfig {
 
         private final long expireAfterWriteNanos;
         private final long expireAfterAccessNanos;
@@ -47,18 +49,6 @@ final class PartConfigImpl {
         }
     }
 
-    final static class GlobalStorageConfigImpl extends AbstractStorageConfig implements GlobalStorageConfig {
-
-        final static GlobalStorageConfig DEFAULT = GlobalStorageConfig.builder().build();
-
-    }
-
-    final static class LocalStorageConfigImpl extends AbstractStorageConfig implements LocalStorageConfig {
-
-        final static LocalStorageConfig DEFAULT = LocalStorageConfig.builder().build();
-
-    }
-
     final static class GlobalCacheConfigImpl extends AbstractCacheConfig implements GlobalCacheConfig {
 
         final static GlobalCacheConfig DEFAULT = GlobalCacheConfig.builder().build();
@@ -76,5 +66,4 @@ final class PartConfigImpl {
             super(expireAfterWriteNanos, expireAfterAccessNanos);
         }
     }
-
 }

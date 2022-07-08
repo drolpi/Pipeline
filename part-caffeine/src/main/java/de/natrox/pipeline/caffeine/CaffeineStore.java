@@ -20,22 +20,21 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 final class CaffeineStore extends AbstractStore {
 
-    private final LocalCacheConfig config;
+    CaffeineStore() {
 
-    CaffeineStore(LocalCacheConfig config) {
-        this.config = config;
     }
 
     @Override
-    protected StoreMap createMap(@NotNull String mapName) {
+    protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
-        return new CaffeineMap(this.config);
+        return new CaffeineMap(options);
     }
 
     @Override

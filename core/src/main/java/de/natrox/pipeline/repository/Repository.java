@@ -20,6 +20,8 @@ import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.find.FindOptions;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
+import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.stream.Cursor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -58,9 +60,37 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
 
     sealed interface Builder<T extends Repository<?>, R extends Builder<T, R>> extends IBuilder<T> permits AbstractRepositoryBuilder, DocumentRepository.Builder, ObjectRepository.Builder {
 
-        @NotNull R useGlobalCache(boolean use);
+        @NotNull R useGlobalCache(@NotNull GlobalCacheConfig config);
 
-        @NotNull R useLocalCache(boolean use);
+        default @NotNull R useGlobalCache(@NotNull GlobalCacheConfig.Builder builder) {
+            Check.notNull(builder, "builder");
+            return this.useGlobalCache(builder.build());
+        }
+
+        default @NotNull R useGlobalCache(@NotNull SingleTypeFunction<GlobalCacheConfig.Builder> function) {
+            Check.notNull(function, "function");
+            return this.useGlobalCache(function.apply(GlobalCacheConfig.builder()));
+        }
+
+        default @NotNull R useGlobalCache() {
+            return this.useGlobalCache(GlobalCacheConfig.defaults());
+        }
+
+        @NotNull R useLocalCache(@NotNull LocalCacheConfig config);
+
+        default @NotNull R useLocalCache(@NotNull LocalCacheConfig.Builder builder) {
+            Check.notNull(builder, "builder");
+            return this.useLocalCache(builder.build());
+        }
+
+        default @NotNull R useLocalCache(@NotNull SingleTypeFunction<LocalCacheConfig.Builder> function) {
+            Check.notNull(function, "function");
+            return this.useLocalCache(function.apply(LocalCacheConfig.builder()));
+        }
+
+        default @NotNull R useLocalCache() {
+            return this.useLocalCache(LocalCacheConfig.defaults());
+        }
 
     }
 }

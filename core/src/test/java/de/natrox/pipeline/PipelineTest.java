@@ -50,15 +50,15 @@ class PipelineTest {
 
         Pipeline pipeline = Pipeline
             .create(mongoProvider)
-            .globalCache(redisProvider, builder -> builder.expireAfterWrite(20, TimeUnit.SECONDS))
-            .localCache(caffeineProvider, redisProvider, builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
+            .globalCache(redisProvider)
+            .localCache(caffeineProvider, redisProvider)
             .build();
 
         {
             ObjectRepository<PipeData> repository = pipeline
-                .buildRepository(PipeData.class)
-                .useGlobalCache(true)
-                .useLocalCache(true)
+                .buildRepository(PipeData.class, builder -> builder)
+                .useGlobalCache(builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
+                .useLocalCache(builder -> builder.expireAfterAccess(5, TimeUnit.HOURS))
                 .build();
 
             UUID uuid = UUID.randomUUID();

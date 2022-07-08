@@ -18,7 +18,6 @@ package de.natrox.pipeline.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import de.natrox.pipeline.part.config.GlobalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +38,7 @@ final class MongoProviderImpl implements MongoProvider {
     }
 
     @Override
-    public @NotNull Store createGlobalStorage(@NotNull GlobalStorageConfig config) {
+    public @NotNull Store createGlobalStorage() {
         return new MongoStore(this.mongoDatabase);
     }
 }

@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.part.provider;
 
-import de.natrox.pipeline.part.config.LocalStorageConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +23,6 @@ import org.jetbrains.annotations.NotNull;
 public non-sealed interface LocalStorageProvider extends PartProvider {
 
     @ApiStatus.Internal
-    @NotNull Store createLocalStorage(@NotNull LocalStorageConfig config);
+    @NotNull Store createLocalStorage();
 
 }

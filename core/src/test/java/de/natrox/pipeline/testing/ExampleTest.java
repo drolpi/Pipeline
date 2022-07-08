@@ -55,9 +55,9 @@ public class ExampleTest {
         CaffeineProvider caffeineProvider = CaffeineProvider.create();
 
         Pipeline pipeline = Pipeline
-            .create(mongoProvider, config -> config)
-            .globalCache(redisProvider, config -> config)
-            .localCache(caffeineProvider, redisProvider, config -> config)
+            .create(mongoProvider)
+            .globalCache(redisProvider)
+            .localCache(caffeineProvider, redisProvider)
             .build();
 
         // Document repository

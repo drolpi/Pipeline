@@ -23,6 +23,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +37,8 @@ final class CaffeineMap implements StoreMap {
 
     private final Cache<UUID, byte[]> cache;
 
-    CaffeineMap(LocalCacheConfig config) {
+    CaffeineMap(RepositoryOptions options) {
+        LocalCacheConfig config = options.localCacheConfig();
         Caffeine<Object, Object> builder = Caffeine
             .newBuilder()
             .scheduler(Scheduler.systemScheduler());

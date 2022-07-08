@@ -21,6 +21,7 @@ import de.natrox.common.consumer.ThrowableConsumer;
 import de.natrox.common.function.ThrowableFunction;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +43,7 @@ public class SqlStore extends AbstractStore {
     }
 
     @Override
-    protected StoreMap createMap(@NotNull String mapName) {
+    protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         return new SqlMap(this, mapName);
     }
 

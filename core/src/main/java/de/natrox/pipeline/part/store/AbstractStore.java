@@ -28,15 +28,15 @@ public abstract class AbstractStore implements Store {
     protected final Map<String, StoreMap> storeMapRegistry = new ConcurrentHashMap<>();
     protected volatile boolean closed;
 
-    protected abstract StoreMap createMap(@NotNull String mapName);
+    protected abstract StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options);
 
     @Override
-    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull RepositoryOptions repositoryOptions) {
+    public @NotNull StoreMap openMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
         if (this.storeMapRegistry.containsKey(mapName)) {
             return this.storeMapRegistry.get(mapName);
         }
-        StoreMap storeMap = this.createMap(mapName);
+        StoreMap storeMap = this.createMap(mapName, options);
         this.storeMapRegistry.put(mapName, storeMap);
 
         return storeMap;

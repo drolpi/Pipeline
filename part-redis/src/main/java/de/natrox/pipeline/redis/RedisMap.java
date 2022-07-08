@@ -20,6 +20,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RBinaryStream;
 import org.redisson.api.RKeys;
@@ -37,11 +38,11 @@ final class RedisMap implements StoreMap {
     private final String mapName;
     private final GlobalCacheConfig config;
 
-    RedisMap(RedisStore redisStore, String mapName, GlobalCacheConfig config) {
+    RedisMap(RedisStore redisStore, String mapName, RepositoryOptions options) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.config = config;
+        this.config = options.globalCacheConfig();
     }
 
     @Override

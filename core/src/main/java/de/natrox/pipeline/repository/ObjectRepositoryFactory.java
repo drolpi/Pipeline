@@ -28,12 +28,12 @@ import java.util.concurrent.locks.ReentrantLock;
 @ApiStatus.Internal
 final class ObjectRepositoryFactory {
 
-    private final PipelineImpl pipeline;
+    private final AbstractPipeline pipeline;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final Map<String, ObjectRepository<? extends ObjectData>> repositoryMap;
     private final Lock lock;
 
-    ObjectRepositoryFactory(PipelineImpl pipeline, DocumentRepositoryFactory documentRepositoryFactory) {
+    ObjectRepositoryFactory(AbstractPipeline pipeline, DocumentRepositoryFactory documentRepositoryFactory) {
         this.pipeline = pipeline;
         this.documentRepositoryFactory = documentRepositoryFactory;
         this.repositoryMap = new HashMap<>();

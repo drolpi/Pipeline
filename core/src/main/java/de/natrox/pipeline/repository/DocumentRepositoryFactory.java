@@ -26,14 +26,14 @@ import java.util.concurrent.locks.Lock;
 @ApiStatus.Internal
 final class DocumentRepositoryFactory {
 
-    private final PipelineImpl pipeline;
+    private final AbstractPipeline pipeline;
     private final PipelineStore pipelineStore;
 
     private final LockService lockService;
     private final Map<String, DocumentRepositoryImpl> repositoryMap;
     private final Lock writeLock;
 
-    DocumentRepositoryFactory(PipelineImpl pipeline, PipelineStore pipelineStore, LockService lockService) {
+    DocumentRepositoryFactory(AbstractPipeline pipeline, PipelineStore pipelineStore, LockService lockService) {
         this.pipeline = pipeline;
         this.pipelineStore = pipelineStore;
         this.lockService = lockService;

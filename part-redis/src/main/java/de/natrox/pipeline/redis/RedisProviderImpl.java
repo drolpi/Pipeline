@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +43,7 @@ final class RedisProviderImpl implements RedisProvider {
     }
 
     @Override
-    public @NotNull Store createGlobalCache(@NotNull GlobalCacheConfig config) {
-        return new RedisStore(this.redissonClient, config);
+    public @NotNull Store createGlobalCache() {
+        return new RedisStore(this.redissonClient);
     }
 }

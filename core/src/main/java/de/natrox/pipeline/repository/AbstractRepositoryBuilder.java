@@ -16,23 +16,38 @@
 
 package de.natrox.pipeline.repository;
 
+import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
+import de.natrox.pipeline.part.config.LocalCacheConfig;
+import de.natrox.pipeline.part.config.StorageConfig;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unchecked")
 abstract non-sealed class AbstractRepositoryBuilder<T extends Repository<?>, R extends Repository.Builder<T, R>> implements Repository.Builder<T, R> {
 
-    protected boolean useGlobalCache = true;
-    protected boolean useLocalCache = true;
+    protected final StorageConfig storageConfig;
+    protected boolean useGlobalCache = false;
+    protected GlobalCacheConfig globalCacheConfig = GlobalCacheConfig.defaults();
+    protected boolean useLocalCache = false;
+    protected LocalCacheConfig localCacheConfig = LocalCacheConfig.defaults();
+
+    AbstractRepositoryBuilder(StorageConfig storageConfig) {
+        this.storageConfig = storageConfig;
+    }
 
     @Override
-    public @NotNull R useGlobalCache(boolean use) {
-        this.useGlobalCache = use;
+    public @NotNull R useGlobalCache(@NotNull GlobalCacheConfig config) {
+        Check.notNull(config, "config");
+        this.globalCacheConfig = config;
+        this.useGlobalCache = true;
         return (R) this;
     }
 
     @Override
-    public @NotNull R useLocalCache(boolean use) {
-        this.useLocalCache = use;
+    public @NotNull R useLocalCache(@NotNull LocalCacheConfig config) {
+        Check.notNull(config, "config");
+        this.localCacheConfig = config;
+        this.useLocalCache = true;
         return (R) this;
     }
 }

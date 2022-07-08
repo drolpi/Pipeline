@@ -21,12 +21,16 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
-import de.natrox.pipeline.document.DocumentDataImpl;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
-import de.natrox.pipeline.stream.*;
+import de.natrox.pipeline.stream.BoundedStream;
+import de.natrox.pipeline.stream.ConditionalStream;
+import de.natrox.pipeline.stream.DocumentStream;
+import de.natrox.pipeline.stream.PipeStream;
+import de.natrox.pipeline.stream.SortedDocumentStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -48,7 +52,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     private PipelineStore pipelineStore;
     private PipelineMap pipelineMap;
 
-    DocumentRepositoryImpl(String repositoryName, PipelineImpl pipeline, PipelineStore pipelineStore, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
+    DocumentRepositoryImpl(String repositoryName, AbstractPipeline pipeline, PipelineStore pipelineStore, PipelineMap pipelineMap, LockService lockService, RepositoryOptions.DocumentOptions options) {
         this.repositoryName = repositoryName;
         this.pipelineStore = pipelineStore;
         this.pipelineMap = pipelineMap;
@@ -242,14 +246,17 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         private final DocumentRepositoryFactory factory;
         private final String name;
 
-        BuilderImpl(DocumentRepositoryFactory factory, String name) {
+        BuilderImpl(DocumentRepositoryFactory factory, String name, StorageConfig config) {
+            super(config);
             this.factory = factory;
             this.name = name;
         }
 
         @Override
         public DocumentRepository build() {
-            return this.factory.createRepository(this.name, new RepositoryOptions.DocumentOptions(this.useGlobalCache, this.useLocalCache));
+            return this.factory.createRepository(this.name, new RepositoryOptions.DocumentOptions(
+                this.storageConfig, this.useGlobalCache, this.globalCacheConfig, this.useLocalCache, this.localCacheConfig
+            ));
         }
     }
 }

@@ -43,7 +43,7 @@ final class ObjectCache<T extends ObjectData> {
     private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(PipelineImpl pipeline, ObjectRepositoryImpl<T> repository, RepositoryOptions.ObjectOptions<T> options) {
+    ObjectCache(AbstractPipeline pipeline, ObjectRepositoryImpl<T> repository, RepositoryOptions.ObjectOptions<T> options) {
         this.pipeline = pipeline;
         this.updater = pipeline.updater();
         this.repository = repository;

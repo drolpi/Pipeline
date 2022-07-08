@@ -20,6 +20,7 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
+import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RedissonClient;
 
@@ -29,17 +30,15 @@ import java.util.stream.Collectors;
 final class RedisStore extends AbstractStore {
 
     private final RedissonClient redissonClient;
-    private final GlobalCacheConfig config;
 
-    RedisStore(RedissonClient redissonClient, GlobalCacheConfig config) {
+    RedisStore(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
-        this.config = config;
     }
 
     @Override
-    protected StoreMap createMap(@NotNull String mapName) {
+    protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
-        return new RedisMap(this, mapName, this.config);
+        return new RedisMap(this, mapName, options);
     }
 
     @Override

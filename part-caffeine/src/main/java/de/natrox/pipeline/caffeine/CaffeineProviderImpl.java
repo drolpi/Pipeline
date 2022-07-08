@@ -16,15 +16,14 @@
 
 package de.natrox.pipeline.caffeine;
 
-import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.Store;
 import org.jetbrains.annotations.NotNull;
 
 final class CaffeineProviderImpl implements CaffeineProvider {
 
     @Override
-    public @NotNull Store createLocalCache(@NotNull LocalCacheConfig config) {
-        return new CaffeineStore(config);
+    public @NotNull Store createLocalCache() {
+        return new CaffeineStore();
     }
 
     @Override

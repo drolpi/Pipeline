@@ -18,29 +18,63 @@ package de.natrox.pipeline.repository;
 
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.part.config.GlobalCacheConfig;
+import de.natrox.pipeline.part.config.LocalCacheConfig;
+import de.natrox.pipeline.part.config.StorageConfig;
+import org.jetbrains.annotations.NotNull;
 
 public sealed abstract class RepositoryOptions {
 
+    private final StorageConfig storageConfig;
     private final boolean useGlobalCache;
+    private final GlobalCacheConfig globalCacheConfig;
     private final boolean useLocalCache;
+    private final LocalCacheConfig localCacheConfig;
 
-    RepositoryOptions(boolean useGlobalCache, boolean useLocalCache) {
+    RepositoryOptions(
+        StorageConfig storageConfig,
+        boolean useGlobalCache,
+        GlobalCacheConfig globalCacheConfig,
+        boolean useLocalCache,
+        LocalCacheConfig localCacheConfig
+    ) {
+        this.storageConfig = storageConfig;
         this.useGlobalCache = useGlobalCache;
+        this.globalCacheConfig = globalCacheConfig;
         this.useLocalCache = useLocalCache;
+        this.localCacheConfig = localCacheConfig;
+    }
+
+    public @NotNull StorageConfig storageConfig() {
+        return this.storageConfig;
     }
 
     public boolean useGlobalCache() {
         return this.useGlobalCache;
     }
 
+    public @NotNull GlobalCacheConfig globalCacheConfig() {
+        return this.globalCacheConfig;
+    }
+
     public boolean useLocalCache() {
         return this.useLocalCache;
     }
 
+    public @NotNull LocalCacheConfig localCacheConfig() {
+        return this.localCacheConfig;
+    }
+
     static non-sealed class DocumentOptions extends RepositoryOptions {
 
-        DocumentOptions(boolean useGlobalCache, boolean useLocalCache) {
-            super(useGlobalCache, useLocalCache);
+        DocumentOptions(
+            StorageConfig storageConfig,
+            boolean useGlobalCache,
+            GlobalCacheConfig globalCacheConfig,
+            boolean useLocalCache,
+            LocalCacheConfig localCacheConfig
+        ) {
+            super(storageConfig, useGlobalCache, globalCacheConfig, useLocalCache, localCacheConfig);
         }
     }
 
@@ -48,8 +82,15 @@ public sealed abstract class RepositoryOptions {
 
         private final InstanceCreator<T> instanceCreator;
 
-        ObjectOptions(boolean useGlobalCache, boolean useLocalCache, InstanceCreator<T> instanceCreator) {
-            super(useGlobalCache, useLocalCache);
+        ObjectOptions(
+            StorageConfig storageConfig,
+            boolean useGlobalCache,
+            GlobalCacheConfig globalCacheConfig,
+            boolean useLocalCache,
+            LocalCacheConfig localCacheConfig,
+            InstanceCreator<T> instanceCreator
+        ) {
+            super(storageConfig, useGlobalCache, globalCacheConfig, useLocalCache, localCacheConfig);
             this.instanceCreator = instanceCreator;
         }
 

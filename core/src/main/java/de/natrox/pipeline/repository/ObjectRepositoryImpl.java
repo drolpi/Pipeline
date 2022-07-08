@@ -22,6 +22,7 @@ import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
+import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     private final String mapName;
     private final ObjectCache<T> objectCache;
 
-    ObjectRepositoryImpl(PipelineImpl pipeline, Class<T> type, DocumentRepositoryImpl documentRepository, RepositoryOptions.ObjectOptions<T> options) {
+    ObjectRepositoryImpl(AbstractPipeline pipeline, Class<T> type, DocumentRepositoryImpl documentRepository, RepositoryOptions.ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
@@ -204,7 +205,8 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         private final Class<T> type;
         private InstanceCreator<T> instanceCreator;
 
-        BuilderImpl(ObjectRepositoryFactory factory, Class<T> type) {
+        BuilderImpl(ObjectRepositoryFactory factory, Class<T> type, StorageConfig config) {
+            super(config);
             this.factory = factory;
             this.type = type;
         }
@@ -218,7 +220,9 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
         @Override
         public ObjectRepository<T> build() {
-            return this.factory.createRepository(this.type, new RepositoryOptions.ObjectOptions<>(this.useGlobalCache, this.useLocalCache, this.instanceCreator));
+            return this.factory.createRepository(this.type, new RepositoryOptions.ObjectOptions<>(
+                this.storageConfig, this.useGlobalCache, this.globalCacheConfig, this.useLocalCache, this.localCacheConfig, this.instanceCreator
+            ));
         }
     }
 }

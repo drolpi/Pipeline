@@ -16,19 +16,13 @@
 
 package de.natrox.pipeline.part.config;
 
-import org.jetbrains.annotations.NotNull;
+import de.natrox.common.builder.IBuilder;
+import org.jetbrains.annotations.ApiStatus;
 
-public sealed interface LocalStorageConfig extends PartConfig.Storage permits PartConfigImpl.LocalStorageConfigImpl {
+@ApiStatus.Experimental
+public sealed interface StoreMapConfig permits CacheConfig, StorageConfig, StoreMapConfigImpl.AbstractStoreMapConfig {
 
-    static @NotNull LocalStorageConfig.Builder builder() {
-        return new PartBuilderImpl.LocalStorageBuilder();
-    }
-
-    static @NotNull LocalStorageConfig defaults() {
-        return PartConfigImpl.LocalStorageConfigImpl.DEFAULT;
-    }
-
-    interface Builder extends PartConfig.StorageBuilder<LocalStorageConfig, Builder> {
+    interface Builder<T extends StoreMapConfig, R extends Builder<T, R>> extends IBuilder<T> {
 
     }
 }
