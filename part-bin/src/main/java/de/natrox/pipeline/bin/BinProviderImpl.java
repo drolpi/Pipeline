@@ -32,7 +32,7 @@ final class BinProviderImpl implements BinProvider {
 
     @Override
     public void close() {
-
+        // Nothing to do
     }
 
     @Override

@@ -17,25 +17,24 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import de.natrox.pipeline.part.store.Store;
-import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 final class LocalPipeline extends AbstractPipeline {
 
-    private LocalPipeline(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
-        super(storage, globalCache, localCache, updater);
+    private LocalPipeline(AbstractPipeline.@NotNull PartBundle<?> partBundle) {
+        super(partBundle);
     }
 
     final static class Builder extends AbstractPipeline.Builder<LocalBuilder> implements Pipeline.LocalBuilder {
 
-        private final LocalStorageProvider localStorageProvider;
+        private final LocalStorageProvider storageProvider;
 
-        Builder(LocalStorageProvider localStorageProvider) {
-            this.localStorageProvider = localStorageProvider;
+        Builder(LocalStorageProvider storageProvider) {
+            this.storageProvider = storageProvider;
         }
 
         @Override
@@ -47,11 +46,30 @@ final class LocalPipeline extends AbstractPipeline {
 
         @Override
         public Pipeline build() {
-            final Store storage = this.localStorageProvider.createLocalStorage();
+            return new LocalPipeline(new PartBundle(this.storageProvider, this.globalCacheProvider, this.localCacheProvider));
+        }
+    }
+
+    final static class PartBundle extends AbstractPipeline.PartBundle<LocalStorageProvider> {
+
+        PartBundle(LocalStorageProvider storageProvider, GlobalCacheProvider globalCacheProvider, LocalCacheProvider localCacheProvider) {
+            super(storageProvider, globalCacheProvider, localCacheProvider);
+        }
+
+        @Override
+        public PipelineStore createStore(@NotNull AbstractPipeline pipeline) {
+            final Store storage = this.storageProvider.createLocalStorage();
             final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache() : null;
             final Store localCache = this.localCacheProvider != null ? this.localCacheProvider.createLocalCache() : null;
 
-            return new LocalPipeline(storage, globalCache, localCache, null);
+            return new PipelineStore(pipeline, storage, globalCache, localCache, null);
+        }
+
+        @Override
+        public void close() {
+            this.storageProvider.close();
+            this.globalCacheProvider.close();
+            this.localCacheProvider.close();
         }
     }
 }

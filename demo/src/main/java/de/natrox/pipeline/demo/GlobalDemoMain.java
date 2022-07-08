@@ -54,10 +54,10 @@ public final class GlobalDemoMain {
         UUID uuid = UUID.fromString("DemoPlayer");
 
         onlineTimeManager.handleJoin(uuid);
-
         Thread.sleep(10000);
-
         onlineTimeManager.handleQuit(uuid);
+
+        pipeline.closeProviders();
     }
 
 }

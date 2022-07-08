@@ -17,27 +17,27 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 final class GlobalPipeline extends AbstractPipeline {
 
-    private GlobalPipeline(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
-        super(storage, globalCache, localCache, updater);
+    private GlobalPipeline(PartBundle partBundle) {
+        super(partBundle);
     }
 
     final static class Builder extends AbstractPipeline.Builder<GlobalBuilder> implements Pipeline.GlobalBuilder {
 
-        private final GlobalStorageProvider globalStorageProvider;
+        private final GlobalStorageProvider storageProvider;
         private UpdaterProvider updaterProvider;
 
-        Builder(GlobalStorageProvider globalStorageProvider) {
-            this.globalStorageProvider = globalStorageProvider;
+        Builder(GlobalStorageProvider storageProvider) {
+            this.storageProvider = storageProvider;
         }
 
         @Override
@@ -54,14 +54,39 @@ final class GlobalPipeline extends AbstractPipeline {
 
         @Override
         public Pipeline build() {
-            final Store storage = this.globalStorageProvider.createGlobalStorage();
+            PartBundle partBundle = new PartBundle(this.storageProvider, this.globalCacheProvider, this.localCacheProvider, this.updaterProvider);
+
+            return new GlobalPipeline(partBundle);
+        }
+    }
+
+    final static class PartBundle extends AbstractPipeline.PartBundle<GlobalStorageProvider> {
+
+        private final UpdaterProvider updaterProvider;
+
+        PartBundle(GlobalStorageProvider storageProvider, GlobalCacheProvider globalCacheProvider, LocalCacheProvider localCacheProvider, UpdaterProvider updaterProvider) {
+            super(storageProvider, globalCacheProvider, localCacheProvider);
+            this.updaterProvider = updaterProvider;
+        }
+
+        @Override
+        public PipelineStore createStore(@NotNull AbstractPipeline pipeline) {
+            final Store storage = this.storageProvider.createGlobalStorage();
             final Store globalCache = this.globalCacheProvider != null ? this.globalCacheProvider.createGlobalCache() : null;
 
             final boolean local = this.updaterProvider != null && this.localCacheProvider != null;
             final Store localCache = local ? this.localCacheProvider.createLocalCache() : null;
             final Updater updater = local ? this.updaterProvider.createDataUpdater() : null;
 
-            return new GlobalPipeline(storage, globalCache, localCache, updater);
+            return new PipelineStore(pipeline, storage, globalCache, localCache, updater);
+        }
+
+        @Override
+        public void close() {
+            this.storageProvider.close();
+            this.globalCacheProvider.close();
+            this.localCacheProvider.close();
+            this.updaterProvider.close();
         }
     }
 }

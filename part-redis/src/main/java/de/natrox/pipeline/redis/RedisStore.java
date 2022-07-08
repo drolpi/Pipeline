@@ -17,7 +17,6 @@
 package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.RepositoryOptions;

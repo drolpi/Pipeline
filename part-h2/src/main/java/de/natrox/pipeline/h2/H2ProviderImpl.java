@@ -57,9 +57,7 @@ final class H2ProviderImpl implements H2Provider {
 
     @Override
     public void close() {
-        if (this.hikariDataSource != null) {
-            this.hikariDataSource.close();
-        }
+        this.hikariDataSource.close();
     }
 
     @Override

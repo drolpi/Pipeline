@@ -22,12 +22,12 @@ import org.jetbrains.annotations.NotNull;
 final class CaffeineProviderImpl implements CaffeineProvider {
 
     @Override
-    public @NotNull Store createLocalCache() {
-        return new CaffeineStore();
+    public void close() {
+        // Noting to do
     }
 
     @Override
-    public void close() {
-
+    public @NotNull Store createLocalCache() {
+        return new CaffeineStore();
     }
 }

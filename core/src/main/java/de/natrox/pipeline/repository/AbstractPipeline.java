@@ -25,6 +25,8 @@ import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.PartProvider;
+import de.natrox.pipeline.part.provider.UpdaterProvider;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,7 @@ import java.util.Set;
 
 sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipeline, LocalPipeline {
 
+    private final PartBundle<?> partBundle;
     private final @Nullable Updater updater;
 
     private final DocumentMapper documentMapper;
@@ -42,11 +45,12 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
 
     private PipelineStore pipelineStore;
 
-    AbstractPipeline(@NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
-        Check.notNull(storage, "storage");
-        this.updater = updater;
+    AbstractPipeline(@NotNull PartBundle<?> partBundle) {
+        Check.notNull(partBundle, "partBundle");
+        this.partBundle = partBundle;
         this.documentMapper = DocumentMapper.create();
-        this.pipelineStore = new PipelineStore(this, storage, globalCache, localCache, updater);
+        this.pipelineStore = partBundle.createStore(this);
+        this.updater = this.pipelineStore.updater();
 
         LockService lockService = new LockService();
         this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.pipelineStore, lockService);
@@ -136,6 +140,12 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
         this.pipelineStore = null;
     }
 
+    @Override
+    public void closeProviders() {
+        this.partBundle.close();
+        this.close();
+    }
+
     private void checkOpened() {
         if (!this.isClosed())
             return;
@@ -161,6 +171,35 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
             Check.notNull(provider, "provider");
             this.globalCacheProvider = provider;
             return (R) this;
+        }
+    }
+
+    static abstract class PartBundle<T extends PartProvider> {
+
+        protected final T storageProvider;
+        protected final GlobalCacheProvider globalCacheProvider;
+        protected final LocalCacheProvider localCacheProvider;
+
+        public PartBundle(T storageProvider, GlobalCacheProvider globalCacheProvider, LocalCacheProvider localCacheProvider) {
+            this.storageProvider = storageProvider;
+            this.globalCacheProvider = globalCacheProvider;
+            this.localCacheProvider = localCacheProvider;
+        }
+
+        public abstract PipelineStore createStore(@NotNull AbstractPipeline pipeline);
+
+        public abstract void close();
+
+        public @NotNull T storageProvider() {
+            return this.storageProvider;
+        }
+
+        public @Nullable GlobalCacheProvider globalCacheProvider() {
+            return this.globalCacheProvider;
+        }
+
+        public @Nullable LocalCacheProvider localCacheProvider() {
+            return this.localCacheProvider;
         }
     }
 

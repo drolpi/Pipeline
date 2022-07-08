@@ -54,9 +54,7 @@ final class SQLiteProviderImpl implements SQLiteProvider {
 
     @Override
     public void close() {
-        if (this.hikariDataSource != null) {
-            this.hikariDataSource.close();
-        }
+        this.hikariDataSource.close();
     }
 
     @Override

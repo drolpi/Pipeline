@@ -126,6 +126,10 @@ final class PipelineStore implements Store {
         this.storage.close();
     }
 
+    public @Nullable Updater updater() {
+        return this.updater;
+    }
+
     private void registerListeners() {
         if (this.updater == null)
             return;

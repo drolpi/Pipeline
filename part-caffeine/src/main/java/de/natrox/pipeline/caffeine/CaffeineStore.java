@@ -17,7 +17,6 @@
 package de.natrox.pipeline.caffeine;
 
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.RepositoryOptions;
@@ -63,4 +62,5 @@ final class CaffeineStore extends AbstractStore {
             this.storeMapRegistry.remove(mapName);
         }
     }
+
 }

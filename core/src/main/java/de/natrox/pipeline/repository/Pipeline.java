@@ -99,6 +99,8 @@ public sealed interface Pipeline permits AbstractPipeline {
 
     void close();
 
+    void closeProviders();
+
     interface Builder<R extends Builder<R>> extends IBuilder<Pipeline> {
 
         @NotNull R globalCache(@NotNull GlobalCacheProvider provider);
