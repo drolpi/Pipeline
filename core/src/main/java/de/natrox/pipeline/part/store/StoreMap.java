@@ -22,26 +22,39 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @ApiStatus.Internal
 public interface StoreMap {
 
     byte @Nullable [] get(@NotNull UUID uniqueId);
 
-    void put(@NotNull UUID uniqueId, byte @NotNull [] data);
+    void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies);
+
+    default void put(@NotNull UUID uniqueId, byte @NotNull [] data, QueryStrategy @NotNull ... strategies) {
+        Check.notNull(uniqueId, "uniqueId");
+        Check.notNull(data, "data");
+        Check.notNull(strategies, "strategies");
+        Set<QueryStrategy> strategySet = new HashSet<>(Set.of(strategies));
+        if(strategySet.size() <= 0) {
+            strategySet.add(QueryStrategy.ALL);
+        }
+
+        this.put(uniqueId, data, strategySet);
+    }
+
+    boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
 
     default boolean contains(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(strategies, "strategies");
-        Check.argCondition(strategies.length <= 0, "strategies");
-        return this.contains(uniqueId, Set.of(strategies));
-    }
+        Set<QueryStrategy> strategySet = new HashSet<>(Set.of(strategies));
+        if(strategySet.size() <= 0) {
+            strategySet.add(QueryStrategy.ALL);
+        }
 
-    boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
+        return this.contains(uniqueId, strategySet);
+    }
 
     @NotNull Collection<UUID> keys();
 
@@ -49,14 +62,17 @@ public interface StoreMap {
 
     @NotNull Map<UUID, byte[]> entries();
 
+    void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
+
     default void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(strategies, "strategies");
-        Check.argCondition(strategies.length <= 0, "strategies");
-        this.remove(uniqueId, Set.of(strategies));
+        Set<QueryStrategy> strategySet = new HashSet<>(Set.of(strategies));
+        if(strategySet.size() <= 0) {
+            strategySet.add(QueryStrategy.ALL);
+        }
+        this.remove(uniqueId, strategySet);
     }
-
-    void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
 
     void clear();
 

@@ -81,9 +81,9 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     }
 
     @Override
-    public void save(@NotNull T objectData) {
+    public void save(@NotNull T objectData, QueryStrategy @NotNull ... strategies) {
         Check.notNull(objectData, "objectData");
-        this.documentRepository.insert(objectData.uniqueId(), this.objectMapper.save(objectData));
+        this.documentRepository.insert(objectData.uniqueId(), this.objectMapper.save(objectData), strategies);
     }
 
     @Override

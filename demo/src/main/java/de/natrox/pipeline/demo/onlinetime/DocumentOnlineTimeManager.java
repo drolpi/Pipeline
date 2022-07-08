@@ -56,7 +56,7 @@ public final class DocumentOnlineTimeManager implements OnlineTimeManager {
 
             onlineTime += System.currentTimeMillis() - lastJoin;
             documentData.append("onlineTime", onlineTime);
-            this.repository.insert(uuid, documentData);
+            this.repository.insert(uuid, documentData, QueryStrategy.GLOBAL_STORAGE);
             this.repository.remove(uuid, QueryStrategy.LOCAL_CACHE, QueryStrategy.GLOBAL_CACHE);
         });
     }

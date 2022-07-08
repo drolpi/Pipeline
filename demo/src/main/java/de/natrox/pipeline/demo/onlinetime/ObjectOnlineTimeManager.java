@@ -52,7 +52,7 @@ public final class ObjectOnlineTimeManager implements OnlineTimeManager {
 
             onlineTime += System.currentTimeMillis() - lastJoin;
             onlineTimeData.setOnlineTime(onlineTime);
-            this.repository.save(onlineTimeData);
+            this.repository.save(onlineTimeData, QueryStrategy.GLOBAL_STORAGE);
             this.repository.remove(uuid, QueryStrategy.LOCAL_CACHE, QueryStrategy.GLOBAL_CACHE);
         });
     }

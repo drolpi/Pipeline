@@ -120,7 +120,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
     }
 
     @Override
-    public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document) {
+    public void insert(@NotNull UUID uniqueId, @NotNull DocumentData document, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(document, "document");
 
@@ -129,7 +129,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.checkOpened();
             DocumentData newDoc = document.clone();
 
-            this.pipelineMap.put(uniqueId, this.documentSerializer.write(newDoc));
+            this.pipelineMap.put(uniqueId, this.documentSerializer.write(newDoc), strategies);
         } finally {
             this.writeLock.unlock();
         }

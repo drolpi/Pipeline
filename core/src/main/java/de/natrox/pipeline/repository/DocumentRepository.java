@@ -26,7 +26,7 @@ import java.util.UUID;
 @ApiStatus.Experimental
 public sealed interface DocumentRepository extends Repository<DocumentData> permits DocumentRepositoryImpl {
 
-    void insert(@NotNull UUID uniqueId, @NotNull DocumentData document);
+    void insert(@NotNull UUID uniqueId, @NotNull DocumentData document, QueryStrategy @NotNull ... strategies);
 
     @NotNull Optional<DocumentData> get(@NotNull UUID uniqueId);
 

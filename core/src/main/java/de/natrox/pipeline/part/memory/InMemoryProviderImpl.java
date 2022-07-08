@@ -27,7 +27,7 @@ final class InMemoryProviderImpl implements InMemoryProvider {
 
     @Override
     public void close() {
-
+        // Nothing to do
     }
 
     @Override

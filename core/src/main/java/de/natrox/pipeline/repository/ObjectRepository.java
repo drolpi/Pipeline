@@ -58,7 +58,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
         return this.find(FindOptions.defaults(), instanceCreator);
     }
 
-    void save(@NotNull T objectData);
+    void save(@NotNull T objectData, QueryStrategy @NotNull ... strategies);
 
     @NotNull Class<T> type();
 

@@ -81,21 +81,26 @@ final class PipelineMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
-        if (this.localCacheMap != null) {
-            this.localCacheMap.put(uniqueId, data);
-        }
-        if (this.updater != null) {
-            this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
+        if (strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) {
+            if (this.localCacheMap != null) {
+                this.localCacheMap.put(uniqueId, data);
+            }
+            if (this.updater != null) {
+                this.updater.pushUpdate(this.mapName, uniqueId, data, () -> {
 
-            });
+                });
+            }
         }
-        if (this.globalCacheMap != null) {
+        if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) &&  this.globalCacheMap != null) {
             this.globalCacheMap.put(uniqueId, data);
         }
-        this.storageMap.put(uniqueId, data);
+
+        if(strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
+            this.storageMap.put(uniqueId, data);
+        }
     }
 
     @Override
@@ -117,7 +122,8 @@ final class PipelineMap implements StoreMap {
             return this.storageMap.contains(uniqueId, strategies);
         }
 
-        return false;
+        //TODO: message/reason
+        throw new UnsupportedOperationException();
     }
 
     @Override
