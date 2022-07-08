@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline;
+package de.natrox.pipeline.demo;
 
 import de.natrox.pipeline.caffeine.CaffeineProvider;
+import de.natrox.pipeline.demo.onlinetime.ObjectOnlineTimeManager;
+import de.natrox.pipeline.demo.onlinetime.OnlineTimeManager;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
-import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.object.annotation.Properties;
 import de.natrox.pipeline.redis.RedisConfig;
 import de.natrox.pipeline.redis.RedisProvider;
-import de.natrox.pipeline.repository.ObjectRepository;
 import de.natrox.pipeline.repository.Pipeline;
-import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-class PipelineTest {
+public final class GlobalDemoMain {
 
-    @Test
-    void test() {
+    public static void main(String[] args) throws InterruptedException {
         MongoConfig mongoConfig = MongoConfig
             .create()
             .setHost("127.0.0.1")
             .setPort(27017)
-            .setDatabase("local");
+            .setDatabase("demo");
         MongoProvider mongoProvider = MongoProvider.of(mongoConfig);
 
         RedisConfig redisConfig = RedisConfig
@@ -54,41 +50,14 @@ class PipelineTest {
             .localCache(caffeineProvider, redisProvider)
             .build();
 
-        {
-            ObjectRepository<PipeData> repository = pipeline
-                .buildRepository(PipeData.class, builder -> builder)
-                .useGlobalCache(builder -> builder.expireAfterWrite(10, TimeUnit.SECONDS))
-                .useLocalCache(builder -> builder.expireAfterAccess(5, TimeUnit.HOURS))
-                .build();
+        OnlineTimeManager onlineTimeManager = new ObjectOnlineTimeManager(pipeline);
+        UUID uuid = UUID.fromString("DemoPlayer");
 
-            UUID uuid = UUID.randomUUID();
-            {
-                PipeData data = repository.loadOrCreate(uuid);
+        onlineTimeManager.handleJoin(uuid);
 
-                data.setAge(10);
-                repository.save(data);
-            }
+        Thread.sleep(10000);
 
-            PipeData data = repository.load(uuid).get();
-            System.out.println(data.age);
-        }
+        onlineTimeManager.handleQuit(uuid);
     }
 
-    @Properties(identifier = "PipeData")
-    static class PipeData extends ObjectData {
-
-        private Integer age;
-
-        public PipeData(Pipeline pipeline) {
-            super(pipeline);
-        }
-
-        public int age() {
-            return this.age;
-        }
-
-        public void setAge(int age) {
-            this.age = age;
-        }
-    }
 }

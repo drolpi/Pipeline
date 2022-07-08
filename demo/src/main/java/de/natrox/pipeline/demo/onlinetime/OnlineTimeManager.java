@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
+package de.natrox.pipeline.demo.onlinetime;
 
-include(
-    ":config",
-    ":core",
-    ":creator-guice",
-    ":demo",
-    ":part-bin",
-    ":part-caffeine",
-    ":part-h2",
-    ":part-mongo",
-    ":part-redis",
-    ":part-mysql",
-    ":part-sql",
-    ":part-sqlite"
-)
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
+public interface OnlineTimeManager {
+
+    void handleJoin(@NotNull UUID uuid);
+
+    void handleQuit(@NotNull UUID uuid);
+
+}

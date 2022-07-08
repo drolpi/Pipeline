@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-rootProject.name = "Pipeline"
-
-include(
-    ":config",
-    ":core",
-    ":creator-guice",
-    ":demo",
-    ":part-bin",
-    ":part-caffeine",
-    ":part-h2",
-    ":part-mongo",
-    ":part-redis",
-    ":part-mysql",
-    ":part-sql",
-    ":part-sqlite"
-)
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":config"))
+    implementation(project(":part-bin"))
+    implementation(project(":part-mongo"))
+    implementation(project(":part-redis"))
+    implementation(project(":part-caffeine"))
+}
