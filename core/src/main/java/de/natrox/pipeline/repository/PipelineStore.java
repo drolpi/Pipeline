@@ -19,7 +19,7 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.serialize.DocumentSerializer;
+import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;

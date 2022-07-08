@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.serialize;
+package de.natrox.pipeline.document.serialize;
 
 import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;

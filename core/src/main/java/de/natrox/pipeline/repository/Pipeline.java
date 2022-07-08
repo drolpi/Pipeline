@@ -19,7 +19,7 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.serialize.DocumentSerializer;
+import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.part.provider.*;

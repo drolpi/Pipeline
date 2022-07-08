@@ -22,7 +22,7 @@ import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.find.FindOptions;
-import de.natrox.pipeline.serialize.DocumentSerializer;
+import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;

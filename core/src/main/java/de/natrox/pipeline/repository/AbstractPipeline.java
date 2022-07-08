@@ -19,7 +19,7 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.exception.PipelineException;
-import de.natrox.pipeline.serialize.DocumentSerializer;
+import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.config.StorageConfig;
