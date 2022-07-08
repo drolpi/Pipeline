@@ -18,12 +18,12 @@ package de.natrox.pipeline.sqlite;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import de.natrox.common.io.FileUtil;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.sql.SqlStore;
 import org.jetbrains.annotations.NotNull;
 import org.sqlite.SQLiteDataSource;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -36,7 +36,11 @@ final class SQLiteProviderImpl implements SQLiteProvider {
         Path parent = path.getParent();
 
         if (parent != null && !Files.exists(parent)) {
-            FileUtil.createDirectory(parent);
+            try {
+                Files.createDirectories(parent);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         HikariConfig hikariConfig = new HikariConfig();
 
