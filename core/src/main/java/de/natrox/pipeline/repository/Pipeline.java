@@ -19,7 +19,7 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.builder.IBuilder;
 import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.serialize.DocumentSerializer;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.part.provider.*;
@@ -93,7 +93,7 @@ public sealed interface Pipeline permits AbstractPipeline {
 
     @NotNull Set<String> repositories();
 
-    @NotNull DocumentMapper documentMapper();
+    @NotNull DocumentSerializer documentMapper();
 
     boolean isClosed();
 

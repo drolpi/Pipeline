@@ -22,7 +22,7 @@ import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.condition.Condition;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.find.FindOptions;
-import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.serialize.DocumentSerializer;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.sort.SortEntry;
 import de.natrox.pipeline.sort.SortOrder;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final String repositoryName;
-    private final DocumentMapper documentMapper;
+    private final DocumentSerializer documentSerializer;
     private final RepositoryOptions.DocumentOptions options;
 
     private final Lock writeLock;
@@ -56,7 +56,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         this.repositoryName = repositoryName;
         this.pipelineStore = pipelineStore;
         this.pipelineMap = pipelineMap;
-        this.documentMapper = pipeline.documentMapper();
+        this.documentSerializer = pipeline.documentMapper();
         this.options = options;
         this.readLock = lockService.getReadLock(repositoryName);
         this.writeLock = lockService.getWriteLock(repositoryName);
@@ -72,7 +72,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             byte[] data = this.pipelineMap.get(uniqueId);
             if (data == null)
                 return Optional.empty();
-            return Optional.of(this.documentMapper.read(data));
+            return Optional.of(this.documentSerializer.read(data));
         } finally {
             this.readLock.unlock();
         }
@@ -90,7 +90,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
                     .entries()
                     .entrySet()
                     .stream()
-                    .map(entry -> Pair.of(entry.getKey(), this.documentMapper.read(entry.getValue())))
+                    .map(entry -> Pair.of(entry.getKey(), this.documentSerializer.read(entry.getValue())))
                     .collect(Collectors.toList())
             );
 
@@ -129,7 +129,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
             this.checkOpened();
             DocumentData newDoc = document.clone();
 
-            this.pipelineMap.put(uniqueId, this.documentMapper.write(newDoc));
+            this.pipelineMap.put(uniqueId, this.documentSerializer.write(newDoc));
         } finally {
             this.writeLock.unlock();
         }

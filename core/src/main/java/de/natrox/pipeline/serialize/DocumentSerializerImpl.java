@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.mapper;
+package de.natrox.pipeline.serialize;
 
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.Serializer;
@@ -31,11 +31,11 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.UUID;
 
-final class DocumentMapperImpl implements DocumentMapper {
+final class DocumentSerializerImpl implements DocumentSerializer {
 
     private final Kryo kryo = new Kryo();
 
-    DocumentMapperImpl() {
+    DocumentSerializerImpl() {
         this.kryo.setRegistrationRequired(false);
         this.kryo.register(DocumentData.class, new DocumentSerializer());
         this.kryo.register(UUID.class, new UUIDSerializer());

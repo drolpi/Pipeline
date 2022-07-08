@@ -19,15 +19,13 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.exception.PipelineException;
-import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.serialize.DocumentSerializer;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.PartProvider;
-import de.natrox.pipeline.part.provider.UpdaterProvider;
-import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.updater.Updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +37,7 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     private final PartBundle<?> partBundle;
     private final @Nullable Updater updater;
 
-    private final DocumentMapper documentMapper;
+    private final DocumentSerializer documentSerializer;
     private final DocumentRepositoryFactory documentRepositoryFactory;
     private final ObjectRepositoryFactory objectRepositoryFactory;
 
@@ -48,7 +46,7 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     AbstractPipeline(@NotNull PartBundle<?> partBundle) {
         Check.notNull(partBundle, "partBundle");
         this.partBundle = partBundle;
-        this.documentMapper = DocumentMapper.create();
+        this.documentSerializer = DocumentSerializer.create();
         this.pipelineStore = partBundle.createStore(this);
         this.updater = this.pipelineStore.updater();
 
@@ -122,8 +120,8 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     }
 
     @Override
-    public @NotNull DocumentMapper documentMapper() {
-        return this.documentMapper;
+    public @NotNull DocumentSerializer documentMapper() {
+        return this.documentSerializer;
     }
 
     @Override

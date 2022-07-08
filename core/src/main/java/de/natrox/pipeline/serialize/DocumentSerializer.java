@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.natrox.pipeline.mapper;
+package de.natrox.pipeline.serialize;
 
 import de.natrox.pipeline.document.DocumentData;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public sealed interface DocumentMapper permits DocumentMapperImpl {
+public sealed interface DocumentSerializer permits DocumentSerializerImpl {
 
-    static @NotNull DocumentMapper create() {
-        return new DocumentMapperImpl();
+    static @NotNull DocumentSerializer create() {
+        return new DocumentSerializerImpl();
     }
 
     void write(@NotNull OutputStream outputStream, @NotNull DocumentData data);

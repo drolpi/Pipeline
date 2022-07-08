@@ -19,7 +19,7 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.mapper.DocumentMapper;
+import de.natrox.pipeline.serialize.DocumentSerializer;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
@@ -37,14 +37,14 @@ final class PipelineStore implements Store {
     private final @Nullable Store localCache;
     private final @Nullable Updater updater;
 
-    private final DocumentMapper documentMapper;
+    private final DocumentSerializer documentSerializer;
 
     public PipelineStore(@NotNull Pipeline pipeline, @NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.localCache = localCache;
         this.updater = updater;
-        this.documentMapper = pipeline.documentMapper();
+        this.documentSerializer = pipeline.documentMapper();
         this.registerListeners();
     }
 
@@ -143,7 +143,7 @@ final class PipelineStore implements Store {
                     event.senderId(),
                     event.repositoryName(),
                     event.documentId(),
-                    this.documentMapper.read(event.documentData())
+                    this.documentSerializer.read(event.documentData())
                 )))
                 .build()
         );
