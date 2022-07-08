@@ -21,6 +21,7 @@ import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.mapping.ObjectMapper;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
@@ -37,15 +38,17 @@ final class ObjectCache<T extends ObjectData> {
     private final Pipeline pipeline;
     private final Updater updater;
 
+    private final ObjectMapper<T> objectMapper;
     private final ObjectRepositoryImpl<T> repository;
     private final Class<T> type;
     private final String mapName;
     private final InstanceCreator<T> instanceCreator;
     private final Map<UUID, T> cache;
 
-    ObjectCache(AbstractPipeline pipeline, ObjectRepositoryImpl<T> repository, RepositoryOptions.ObjectOptions<T> options) {
+    ObjectCache(AbstractPipeline pipeline, ObjectRepositoryImpl<T> repository, ObjectMapper<T> objectMapper, RepositoryOptions.ObjectOptions<T> options) {
         this.pipeline = pipeline;
         this.updater = pipeline.updater();
+        this.objectMapper = objectMapper;
         this.repository = repository;
         this.type = repository.type();
         this.mapName = repository.mapName();
@@ -73,8 +76,8 @@ final class ObjectCache<T extends ObjectData> {
     }
 
     private void updateData(T data, DocumentData update) {
-        DocumentData before = this.repository.convertToDocument(data);
-        this.repository.convertToData(data, update);
+        DocumentData before = this.objectMapper.save(data);
+        this.objectMapper.load(data, update);
 
         data.handleUpdate(before);
     }
@@ -101,7 +104,7 @@ final class ObjectCache<T extends ObjectData> {
 
         DocumentData documentData = DocumentData.create();
         documentData.append("uniqueId", uniqueId);
-        this.repository.convertToData(instance, documentData);
+        this.objectMapper.load(instance, documentData);
 
         return instance;
     }

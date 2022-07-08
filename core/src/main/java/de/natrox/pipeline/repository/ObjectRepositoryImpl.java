@@ -21,30 +21,30 @@ import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.object.annotation.AnnotationResolver;
+import de.natrox.pipeline.object.mapping.ObjectMapper;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
 
     private final Class<T> type;
     private final DocumentRepositoryImpl documentRepository;
     private final String mapName;
+    private final ObjectMapper<T> objectMapper;
     private final ObjectCache<T> objectCache;
 
     ObjectRepositoryImpl(AbstractPipeline pipeline, Class<T> type, DocumentRepositoryImpl documentRepository, RepositoryOptions.ObjectOptions<T> options) {
         this.type = type;
         this.documentRepository = documentRepository;
         this.mapName = documentRepository.name();
-        this.objectCache = new ObjectCache<>(pipeline, this, options);
+        this.objectMapper = ObjectMapper.create(type);
+        this.objectCache = new ObjectCache<>(pipeline, this, this.objectMapper, options);
     }
 
     @Override
@@ -52,7 +52,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         Check.notNull(uniqueId, "uniqueId");
         // Instantiate T as fast as possible so that the Updater can still apply updates while loading a record
         T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
-        return this.documentRepository.get(uniqueId).map(document -> this.convertToData(data, document));
+        return this.documentRepository.get(uniqueId).map(document -> {
+            this.objectMapper.load(data, document);
+            return data;
+        });
     }
 
     @Override
@@ -65,7 +68,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         Check.notNull(uniqueId, "uniqueId");
         T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
         data.handleCreate();
-        DocumentData documentData = this.convertToDocument(data);
+        DocumentData documentData = this.objectMapper.save(data);
         this.documentRepository.insert(uniqueId, documentData);
         return data;
     }
@@ -80,7 +83,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public void save(@NotNull T objectData) {
         Check.notNull(objectData, "objectData");
-        this.documentRepository.insert(objectData.uniqueId(), this.convertToDocument(objectData));
+        this.documentRepository.insert(objectData.uniqueId(), this.objectMapper.save(objectData));
     }
 
     @Override
@@ -142,61 +145,10 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
         return this.documentRepository.size();
     }
 
-    T convertToData(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
+    T instantiate(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
         T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
-        return this.convertToData(data, document);
-    }
-
-    T convertToData(T data, DocumentData document) {
-        for (Field field : this.persistentFields(data.getClass())) {
-            try {
-                String key = AnnotationResolver.fieldName(field);
-                Object value = document.get(key, field.getType());
-
-                if (value == null)
-                    continue;
-
-                field.setAccessible(true);
-                field.set(data, value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        this.objectMapper.load(data, document);
         return data;
-    }
-
-    DocumentData convertToDocument(T data) {
-        DocumentData documentData = DocumentData.create();
-        for (Field field : this.persistentFields(data.getClass())) {
-            try {
-                String key = AnnotationResolver.fieldName(field);
-                field.setAccessible(true);
-                Object value = field.get(data);
-
-                if (value == null)
-                    continue;
-
-                documentData.append(key, value);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return documentData;
-    }
-
-    private Set<Field> persistentFields(Class<?> type) {
-        Set<Field> fields = new HashSet<>();
-
-        while (type != null) {
-            fields.addAll(Arrays.asList(type.getDeclaredFields()));
-            type = type.getSuperclass();
-        }
-
-        return fields
-            .stream()
-            .filter(field -> !Modifier.isTransient(field.getModifiers()))
-            .collect(Collectors.toSet());
     }
 
     final static class BuilderImpl<T extends ObjectData> extends AbstractRepositoryBuilder<ObjectRepository<T>, ObjectRepository.Builder<T>> implements ObjectRepository.Builder<T> {

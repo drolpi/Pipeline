@@ -66,7 +66,7 @@ public final class ObjectStream<T extends ObjectData> implements Cursor<T> {
         @Override
         public T next() {
             Pair<UUID, DocumentData> next = this.documentIterator.next();
-            return repository.convertToData(next.first(), next.second(), instanceCreator);
+            return repository.instantiate(next.first(), next.second(), instanceCreator);
         }
 
         @Override
