@@ -44,6 +44,11 @@ final class RedisProviderImpl implements RedisProvider {
 
     @Override
     public @NotNull Store createGlobalCache() {
-        return new RedisStore(this.redissonClient);
+        return new RedisStore(this.redissonClient, false);
+    }
+
+    @Override
+    public @NotNull Store createGlobalStorage() {
+        return new RedisStore(this.redissonClient, true);
     }
 }

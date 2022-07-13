@@ -29,15 +29,17 @@ import java.util.stream.Collectors;
 final class RedisStore extends AbstractStore {
 
     private final RedissonClient redissonClient;
+    private final boolean storageMode;
 
-    RedisStore(RedissonClient redissonClient) {
+    RedisStore(RedissonClient redissonClient, boolean storageMode) {
         this.redissonClient = redissonClient;
+        this.storageMode = storageMode;
     }
 
     @Override
     protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
-        return new RedisMap(this, mapName, options);
+        return new RedisMap(this, mapName, this.storageMode, options);
     }
 
     @Override

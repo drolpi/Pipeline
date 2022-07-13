@@ -36,13 +36,25 @@ final class RedisMap implements StoreMap {
     private final RedisStore redisStore;
     private final RedissonClient redissonClient;
     private final String mapName;
-    private final GlobalCacheConfig config;
+    private final boolean storageMode;
+    private final long expireAfterAccessNanos;
+    private final long expireAfterWriteNanos;
 
-    RedisMap(RedisStore redisStore, String mapName, RepositoryOptions options) {
+    RedisMap(RedisStore redisStore, String mapName, boolean storageMode, RepositoryOptions options) {
         this.redisStore = redisStore;
         this.redissonClient = redisStore.redissonClient();
         this.mapName = mapName;
-        this.config = options.globalCacheConfig();
+        this.storageMode = storageMode;
+
+        if (!options.useGlobalCache()) {
+            this.expireAfterAccessNanos = -1;
+            this.expireAfterWriteNanos = -1;
+            return;
+        }
+
+        GlobalCacheConfig config = options.globalCacheConfig();
+        this.expireAfterAccessNanos = config.expireAfterAccessNanos();
+        this.expireAfterWriteNanos = config.expireAfterWriteNanos();
     }
 
     @Override
@@ -52,7 +64,7 @@ final class RedisMap implements StoreMap {
         if (!stream.isExists())
             return null;
 
-        this.updateExpireTime(stream, this.config.expireAfterAccessNanos());
+        this.updateExpireTime(stream, this.expireAfterAccessNanos);
         return stream.get();
     }
 
@@ -63,14 +75,14 @@ final class RedisMap implements StoreMap {
 
         RBinaryStream stream = this.stream(uniqueId);
         stream.set(data);
-        this.updateExpireTime(stream, this.config.expireAfterWriteNanos());
+        this.updateExpireTime(stream, this.expireAfterWriteNanos);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         RBinaryStream stream = this.stream(uniqueId);
-        this.updateExpireTime(stream, this.config.expireAfterAccessNanos());
+        this.updateExpireTime(stream, this.expireAfterAccessNanos);
         return stream.isExists();
     }
 
@@ -151,7 +163,7 @@ final class RedisMap implements StoreMap {
     private void updateExpireTime(RBinaryStream stream, long nanos) {
         Check.notNull(stream, "stream");
         Check.notNull(nanos, "nanos");
-        if(nanos < 0)
+        if (this.storageMode || nanos < 0)
             return;
 
         stream.expireAsync(Duration.of(nanos, ChronoUnit.NANOS));

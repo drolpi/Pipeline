@@ -18,6 +18,7 @@ package de.natrox.pipeline.redis;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.GlobalStorageProvider;
 import de.natrox.pipeline.part.provider.UpdaterProvider;
 import de.natrox.pipeline.util.Strings;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ import org.redisson.misc.RedisURI;
 
 import java.util.List;
 
-public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvider permits RedisProviderImpl {
+public sealed interface RedisProvider extends UpdaterProvider, GlobalCacheProvider, GlobalStorageProvider permits RedisProviderImpl {
 
     static @NotNull RedisProvider of(@NotNull RedissonClient redissonClient) {
         Check.notNull(redissonClient, "redissonClient");
