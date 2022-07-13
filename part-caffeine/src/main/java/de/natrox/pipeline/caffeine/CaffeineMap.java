@@ -61,10 +61,10 @@ final class CaffeineMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
-        this.cache.put(uniqueId, documentData);
+        Check.notNull(data, "data");
+        this.cache.put(uniqueId, data);
     }
 
     @Override

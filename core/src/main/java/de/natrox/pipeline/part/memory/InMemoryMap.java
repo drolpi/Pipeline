@@ -43,10 +43,10 @@ final class InMemoryMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] documentData) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        Check.notNull(documentData, "documentData");
-        this.map.put(uniqueId, documentData);
+        Check.notNull(data, "documentData");
+        this.map.put(uniqueId, data);
     }
 
     @Override

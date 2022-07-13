@@ -49,7 +49,7 @@ final class SqlMap implements StoreMap {
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data) {
+    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
 

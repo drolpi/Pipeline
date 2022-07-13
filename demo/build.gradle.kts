@@ -21,4 +21,7 @@ dependencies {
     implementation(project(":part-mongo"))
     implementation(project(":part-redis"))
     implementation(project(":part-caffeine"))
+
+    //FIX
+    implementation("org.redisson:redisson-all:3.17.4")
 }
