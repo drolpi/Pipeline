@@ -23,11 +23,16 @@ import jodd.io.FileNameUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 final class BinMap implements StoreMap {
@@ -152,8 +157,7 @@ final class BinMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
 
         Path path = this.savedFile(uniqueId);
-        File file = new File(path.toUri());
-        if (!file.exists())
+        if (Files.notExists(path))
             return null;
         return Files.readAllBytes(path);
     }
@@ -163,10 +167,13 @@ final class BinMap implements StoreMap {
         Check.notNull(data, "data");
 
         Path path = this.savedFile(objectUUID);
-        File file = new File(path.toUri());
-        if (!file.exists()) {
-            if (!file.getParentFile().mkdirs() || !file.createNewFile())
-                throw new RuntimeException("Could not create files for BinMap in " + path);
+        if (Files.notExists(path)) {
+            Path parent = path.getParent();
+            if (Files.notExists(parent)) {
+                Files.createDirectories(parent);
+            }
+
+            Files.createFile(path);
         }
 
         Files.write(path, data);

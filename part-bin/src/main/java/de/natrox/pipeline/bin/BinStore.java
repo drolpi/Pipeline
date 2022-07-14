@@ -40,7 +40,12 @@ final class BinStore extends AbstractStore {
     @Override
     protected StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options) {
         Check.notNull(mapName, "mapName");
-        return new BinMap(mapName, this.directory);
+        try {
+            Files.createDirectories(this.directory.resolve(mapName));
+            return new BinMap(mapName, this.directory);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
