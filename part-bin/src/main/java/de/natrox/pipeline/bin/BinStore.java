@@ -17,6 +17,7 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.RepositoryOptions;
@@ -71,9 +72,9 @@ final class BinStore extends AbstractStore {
         Check.notNull(mapName, "mapName");
         try {
             Files.delete(this.directory.resolve(mapName));
+            this.storeMapRegistry.remove(mapName);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PartException(e);
         }
-        this.storeMapRegistry.remove(mapName);
     }
 }

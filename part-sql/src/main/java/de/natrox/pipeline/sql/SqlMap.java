@@ -43,7 +43,6 @@ final class SqlMap implements StoreMap {
         return this.sqlStore.executeQuery(
             "SELECT `data` FROM `" + this.mapName + "` WHERE `key` = ?",
             resultSet -> resultSet.next() ? resultSet.getBytes("data") : null,
-            null,
             uniqueId.toString()
         );
     }
@@ -72,7 +71,6 @@ final class SqlMap implements StoreMap {
         return this.sqlStore.executeQuery(
             "SELECT `key` FROM `" + this.mapName + "` WHERE `key` = ?",
             ResultSet::next,
-            false,
             uniqueId.toString()
         );
     }
@@ -92,7 +90,7 @@ final class SqlMap implements StoreMap {
                     documents.add(resultSet.getBytes("data"));
 
                 return documents;
-            }, Set.of());
+            });
     }
 
     @Override
@@ -107,7 +105,7 @@ final class SqlMap implements StoreMap {
                         resultSet.getBytes("data")
                     );
                 return map;
-            }, Map.of());
+            });
     }
 
     @Override
@@ -138,6 +136,6 @@ final class SqlMap implements StoreMap {
                     keys.add(resultSet.getString("key"));
 
                 return keys;
-            }, List.of());
+            });
     }
 }

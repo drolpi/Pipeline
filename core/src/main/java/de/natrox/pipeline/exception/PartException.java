@@ -25,4 +25,8 @@ public class PartException extends PipelineException {
     public PartException(String errorMessage, Throwable cause) {
         super(errorMessage, cause);
     }
+
+    public PartException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -17,6 +17,8 @@
 package de.natrox.pipeline.bin;
 
 import de.natrox.common.validate.Check;
+import de.natrox.pipeline.exception.PartException;
+import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
 import jodd.io.FileNameUtil;
@@ -48,9 +50,8 @@ final class BinMap implements StoreMap {
         Check.notNull(uniqueId, "uniqueId");
         try {
             return this.loadFromFile(uniqueId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            throw new PartException(e);
         }
     }
 
@@ -62,7 +63,7 @@ final class BinMap implements StoreMap {
         try {
             this.saveToFile(uniqueId, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PartException(e);
         }
     }
 
@@ -84,11 +85,9 @@ final class BinMap implements StoreMap {
                 .map(path -> FileNameUtil.getBaseName(path.toString()))
                 .map(UUID::fromString)
                 .toList();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new PartException(e);
         }
-
-        return Set.of();
     }
 
     @Override
@@ -103,11 +102,9 @@ final class BinMap implements StoreMap {
             }
 
             return documents;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new PartException(e);
         }
-
-        return Set.of();
     }
 
     @Override
@@ -122,11 +119,9 @@ final class BinMap implements StoreMap {
             }
 
             return entries;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new PartException(e);
         }
-
-        return Map.of();
     }
 
     @Override
@@ -137,7 +132,7 @@ final class BinMap implements StoreMap {
         try {
             Files.delete(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PartException(e);
         }
     }
 

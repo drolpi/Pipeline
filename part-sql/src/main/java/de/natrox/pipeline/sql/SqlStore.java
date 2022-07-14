@@ -19,6 +19,7 @@ package de.natrox.pipeline.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import de.natrox.common.consumer.ThrowableConsumer;
 import de.natrox.common.function.ThrowableFunction;
+import de.natrox.pipeline.exception.PartException;
 import de.natrox.pipeline.part.store.AbstractStore;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.RepositoryOptions;
@@ -59,10 +60,8 @@ public class SqlStore extends AbstractStore {
             }
             return names;
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            throw new PartException(exception);
         }
-
-        return Set.of();
     }
 
     @Override
@@ -99,9 +98,7 @@ public class SqlStore extends AbstractStore {
             // execute the statement
             return statement.executeUpdate();
         } catch (SQLException exception) {
-            //LOGGER.error("Exception while executing database update");
-            exception.printStackTrace();
-            return -1;
+            throw new PartException(exception);
         }
     }
 
@@ -113,7 +110,7 @@ public class SqlStore extends AbstractStore {
         });
     }
 
-    public <T> T executeQuery(@NotNull String query, @NotNull ThrowableFunction<ResultSet, T, SQLException> callback, @Nullable T def, @NotNull Object... objects) {
+    public <T> T executeQuery(@NotNull String query, @NotNull ThrowableFunction<ResultSet, T, SQLException> callback, @NotNull Object... objects) {
         try (var con = this.connection(); PreparedStatement statement = con.prepareStatement(query)) {
             // write all parameters
             for (int i = 0; i < objects.length; i++) {
@@ -124,11 +121,9 @@ public class SqlStore extends AbstractStore {
             try (var resultSet = statement.executeQuery()) {
                 return callback.apply(resultSet);
             }
-        } catch (Throwable throwable) {
-            //LOGGER.error("Exception while executing database query");
-            throwable.printStackTrace();
+        } catch (SQLException exception) {
+            throw new PartException(exception);
         }
 
-        return def;
     }
 }

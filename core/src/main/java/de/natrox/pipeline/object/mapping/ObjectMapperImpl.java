@@ -17,6 +17,7 @@
 package de.natrox.pipeline.object.mapping;
 
 import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.exception.PipelineException;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
@@ -52,7 +53,7 @@ final class ObjectMapperImpl<T extends ObjectData> implements ObjectMapper<T> {
                 field.setAccessible(true);
                 field.set(objectData, value);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new PipelineException(e);
             }
         }
     }
@@ -77,7 +78,7 @@ final class ObjectMapperImpl<T extends ObjectData> implements ObjectMapper<T> {
 
             documentData.append(key, value);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new PipelineException(e);
         }
     }
 
