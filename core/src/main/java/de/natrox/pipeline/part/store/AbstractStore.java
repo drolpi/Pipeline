@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractStore implements Store {
 
     protected final Map<String, StoreMap> storeMapRegistry = new ConcurrentHashMap<>();
-    protected volatile boolean closed;
+    protected volatile boolean closed = false;
 
     protected abstract StoreMap createMap(@NotNull String mapName, @NotNull RepositoryOptions options);
 
