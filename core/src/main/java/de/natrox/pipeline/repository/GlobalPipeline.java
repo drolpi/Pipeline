@@ -41,10 +41,7 @@ final class GlobalPipeline extends AbstractPipeline {
         }
 
         @Override
-        public @NotNull Pipeline.GlobalBuilder localCache(
-            @NotNull LocalCacheProvider localCacheProvider,
-            @NotNull UpdaterProvider updaterProvider
-        ) {
+        public @NotNull Pipeline.GlobalBuilder localCache(@NotNull LocalCacheProvider localCacheProvider, @NotNull UpdaterProvider updaterProvider) {
             Check.notNull(localCacheProvider, "localCacheProvider");
             Check.notNull(updaterProvider, "updaterProvider");
             this.localCacheProvider = localCacheProvider;
@@ -84,9 +81,18 @@ final class GlobalPipeline extends AbstractPipeline {
         @Override
         public void close() {
             this.storageProvider.close();
-            this.globalCacheProvider.close();
-            this.localCacheProvider.close();
-            this.updaterProvider.close();
+
+            if (this.globalCacheProvider != null) {
+                this.globalCacheProvider.close();
+            }
+
+            if (this.localCacheProvider != null) {
+                this.localCacheProvider.close();
+            }
+
+            if (this.updaterProvider != null) {
+                this.updaterProvider.close();
+            }
         }
     }
 }

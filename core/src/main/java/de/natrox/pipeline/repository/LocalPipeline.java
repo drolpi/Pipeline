@@ -68,8 +68,14 @@ final class LocalPipeline extends AbstractPipeline {
         @Override
         public void close() {
             this.storageProvider.close();
-            this.globalCacheProvider.close();
-            this.localCacheProvider.close();
+
+            if (this.globalCacheProvider != null) {
+                this.globalCacheProvider.close();
+            }
+
+            if (this.localCacheProvider != null) {
+                this.localCacheProvider.close();
+            }
         }
     }
 }
