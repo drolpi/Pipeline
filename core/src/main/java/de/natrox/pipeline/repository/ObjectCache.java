@@ -57,31 +57,6 @@ final class ObjectCache<T extends ObjectData> {
         this.registerListeners();
     }
 
-    private void registerListeners() {
-        if (this.updater == null)
-            return;
-
-        EventBus eventBus = this.updater.eventBus();
-        eventBus.register(
-            EventListener
-                .builder(DocumentUpdateEvent.class)
-                .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(this::updateData)
-                .build()
-        );
-    }
-
-    private void updateData(DocumentUpdateEvent event) {
-        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
-    }
-
-    private void updateData(T data, DocumentData update) {
-        DocumentData before = this.objectMapper.save(data);
-        this.objectMapper.load(data, update);
-
-        data.handleUpdate(before);
-    }
-
     @NotNull Optional<T> get(@NotNull UUID uniqueId) {
         return Optional.ofNullable(this.cache.get(uniqueId));
     }
@@ -91,6 +66,14 @@ final class ObjectCache<T extends ObjectData> {
             this.cache.put(uniqueId, this.create(uniqueId, instanceCreator));
         }
         return this.cache.get(uniqueId);
+    }
+
+    void remove(@NotNull UUID uniqueId) {
+        this.cache.remove(uniqueId);
+    }
+
+    void clear() {
+        this.cache.clear();
     }
 
     private @NotNull T create(@NotNull UUID uniqueId, @Nullable InstanceCreator<T> instanceCreator) {
@@ -107,6 +90,31 @@ final class ObjectCache<T extends ObjectData> {
         this.objectMapper.load(instance, documentData);
 
         return instance;
+    }
+
+    private void updateData(DocumentUpdateEvent event) {
+        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
+    }
+
+    private void updateData(T data, DocumentData update) {
+        DocumentData before = this.objectMapper.save(data);
+        this.objectMapper.load(data, update);
+
+        data.handleUpdate(before);
+    }
+
+    private void registerListeners() {
+        if (this.updater == null)
+            return;
+
+        EventBus eventBus = this.updater.eventBus();
+        eventBus.register(
+            EventListener
+                .builder(DocumentUpdateEvent.class)
+                .condition(event -> event.repositoryName().equals(this.mapName))
+                .handler(this::updateData)
+                .build()
+        );
     }
 
 }

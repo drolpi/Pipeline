@@ -157,7 +157,7 @@ final class DocumentRepositoryImpl implements DocumentRepository {
         try {
             this.writeLock.lock();
             this.checkOpened();
-            this.pipelineMap.remove(uniqueId, Set.of(strategies));
+            this.pipelineMap.remove(uniqueId, strategies);
         } finally {
             this.writeLock.unlock();
         }

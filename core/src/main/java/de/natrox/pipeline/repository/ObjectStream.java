@@ -20,6 +20,7 @@ import de.natrox.common.container.Pair;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
+import de.natrox.pipeline.object.mapping.ObjectMapper;
 import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -30,12 +31,14 @@ import java.util.UUID;
 @SuppressWarnings("ClassCanBeRecord")
 public final class ObjectStream<T extends ObjectData> implements Cursor<T> {
 
-    private final ObjectRepositoryImpl<T> repository;
+    private final ObjectCache<T> objectCache;
+    private final ObjectMapper<T> objectMapper;
     private final PipeStream<Pair<UUID, DocumentData>> pipeStream;
     private final InstanceCreator<T> instanceCreator;
 
-    public ObjectStream(ObjectRepositoryImpl<T> repository, InstanceCreator<T> instanceCreator, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
-        this.repository = repository;
+    public ObjectStream(ObjectCache<T> objectCache, ObjectMapper<T> objectMapper, InstanceCreator<T> instanceCreator, PipeStream<Pair<UUID, DocumentData>> pipeStream) {
+        this.objectCache = objectCache;
+        this.objectMapper = objectMapper;
         this.pipeStream = pipeStream;
         this.instanceCreator = instanceCreator;
     }
@@ -66,7 +69,9 @@ public final class ObjectStream<T extends ObjectData> implements Cursor<T> {
         @Override
         public T next() {
             Pair<UUID, DocumentData> next = this.documentIterator.next();
-            return repository.instantiate(next.first(), next.second(), instanceCreator);
+            T data = ObjectStream.this.objectCache.getOrCreate(next.first(), ObjectStream.this.instanceCreator);
+            ObjectStream.this.objectMapper.load(data, next.second());
+            return data;
         }
 
         @Override

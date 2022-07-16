@@ -28,7 +28,9 @@ import de.natrox.pipeline.stream.DocumentStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectRepository<T> {
@@ -77,7 +79,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     public @NotNull Cursor<T> find(@NotNull FindOptions findOptions, @Nullable InstanceCreator<T> instanceCreator) {
         Check.notNull(findOptions, "findOptions");
         DocumentStream documentCursor = this.documentRepository.find(findOptions);
-        return new ObjectStream<>(this, instanceCreator, documentCursor.asPairStream());
+        return new ObjectStream<>(this.objectCache, this.objectMapper, instanceCreator, documentCursor.asPairStream());
     }
 
     @Override
@@ -95,10 +97,22 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        //TODO: Only delete if strategies contains LOCAL_CACHE
+        Check.notNull(strategies, "strategies");
+        Set<QueryStrategy> strategySet = new HashSet<>(Set.of(strategies));
+        if (strategySet.size() <= 0) {
+            strategySet.add(QueryStrategy.ALL);
+        }
+
+        this.documentRepository.remove(uniqueId, strategies);
+
+        //TODO: When should we call ObjectData#handleDelete?
+        if (!strategySet.contains(QueryStrategy.LOCAL_CACHE) && !strategySet.contains(QueryStrategy.ALL)) {
+            return;
+        }
+
         Optional<T> optional = this.objectCache.get(uniqueId);
         optional.ifPresent(ObjectData::handleDelete);
-        this.documentRepository.remove(uniqueId, strategies);
+        this.objectCache.remove(uniqueId);
     }
 
     @Override
@@ -117,6 +131,7 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
 
     @Override
     public void clear() {
+        this.objectCache.clear();
         this.documentRepository.clear();
     }
 
@@ -143,12 +158,6 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public long size() {
         return this.documentRepository.size();
-    }
-
-    T instantiate(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
-        T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
-        this.objectMapper.load(data, document);
-        return data;
     }
 
     final static class BuilderImpl<T extends ObjectData> extends AbstractRepositoryBuilder<ObjectRepository<T>, ObjectRepository.Builder<T>> implements ObjectRepository.Builder<T> {
