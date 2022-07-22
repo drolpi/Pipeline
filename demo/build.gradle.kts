@@ -23,5 +23,5 @@ dependencies {
     implementation(project(":part-caffeine"))
 
     //FIX
-    implementation("org.redisson:redisson-all:3.17.4")
+    implementation("org.redisson:redisson-all:3.17.5")
 }
