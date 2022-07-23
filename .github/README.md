@@ -9,28 +9,24 @@ supports all types of databases and caches and already has many implemented. It 
 
 # Table of contents
 - [Usage](#usage)
-- [Why is Pipeline not usable yet?](#why-is-pipeline-not-usable-yet)
-- [Why Pipeline?](#why-pipeline)
+- [Why not usable yet?](#why-not-usable-yet)
 - [Advantages & Disadvantages](#advantages-and-disadvantages)
 - [API](#api)
 - [Contributing](#contributing)
 - [License](#license)
 
 # Usage
-An example of how to use the Pipeline library is available [here](/demo).
+An example of how to use this library is available [here](/demo).
 
-# Why is Pipeline not usable yet?
-The Pipeline is already very far but not done yet. 
+# Why not usable yet?
+This library is already very far but not done yet. 
 
 Those things are missing to make it usable:
 * Improvements
 * JUnit Tests
 
-# Why Pipeline?
-Coming soon
-
 # Advantages and Disadvantages
-The Pipeline library isn't perfect, our choices make it much better for some cases, worse for some others.
+This library isn't perfect, our choices make it much better for some cases, worse for some others.
 
 ## Advantages
 * Coming soon
@@ -41,43 +37,30 @@ The Pipeline library isn't perfect, our choices make it much better for some cas
 * Coming soon
 
 # API
-Adding the Pipeline library to your project is really simple, you only need to add a few repositories. The Pipeline library needs Java 17 or newer. If you are using Gradle, you must use version 7.2 or higher.
-
-## Gradle
-
-#### Repository
+Gradle:
 ```java
 repositories {
-    mavenCentral()
-    maven("https://repo.natrox.de")
+    maven("https://repo.natrox.de/repository/maven-public/")
 }
-```
 
-#### Dependency
-```java
 dependencies {
-    implementation("de.natrox:pipeline-core:LATEST")
+    implementation("de.natrox:pipeline:VERSION")
 }
 ```
-## Maven
-
-#### Repository
+Maven:
 ```xml
 <repositories>
     <repository>
         <id>natrox</id>
-        <url>https://repo.natrox.de</url>
+        <url>https://repo.natrox.de/repository/maven-public/</url>
     </repository>
 </repositories>
-```
 
-#### Dependency
-```xml
 <dependencies>
     <dependency>
         <groupId>de.natrox</groupId>
-        <artifactId>pipeline-core</artifactId>
-        <version>LATEST</version>
+        <artifactId>pipeline</artifactId>
+        <version>VERSION</version>
     </dependency>
 </dependencies>
 ```
