@@ -18,13 +18,12 @@ package de.natrox.pipeline.document;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
+import de.natrox.conversionbus.ConversionBus;
+import de.natrox.conversionbus.convert.Converter;
+import de.natrox.conversionbus.exception.SerializeException;
 import de.natrox.pipeline.util.Iterables;
 import de.natrox.pipeline.util.ObjectUtil;
 import de.natrox.pipeline.util.Strings;
-import de.natrox.serialize.Deserializer;
-import de.natrox.serialize.SerializerCollection;
-import de.natrox.serialize.exception.CoercionFailedException;
-import de.natrox.serialize.exception.SerializeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -72,11 +72,6 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
     @Override
     public <T> @Nullable T get(@NotNull String field, @NotNull Class<T> type) {
         Check.notNull(type, "type");
-        Deserializer<T> serial = SerializerCollection.defaults().get(type);
-        if(serial == null) {
-            //TODO: message/reason
-            throw new RuntimeException();
-        }
 
         Object value = this.get(field);
 
@@ -84,8 +79,10 @@ public final class DocumentDataImpl extends HashMap<String, Object> implements D
             return null;
         }
 
+        Converter<Object, T> converter = ConversionBus.defaults().get(value.getClass(), (Type) type);
+
         try {
-            return serial.deserialize(value, type);
+            return converter.read(value);
         } catch (SerializeException e) {
             throw new RuntimeException(e);
         }

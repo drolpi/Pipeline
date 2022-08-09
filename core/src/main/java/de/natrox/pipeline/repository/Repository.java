@@ -17,7 +17,6 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.builder.IBuilder;
-import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
@@ -27,13 +26,14 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 @ApiStatus.Experimental
 public sealed interface Repository<T> permits DocumentRepository, ObjectRepository {
 
     @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
 
-    default @NotNull Cursor<T> find(@NotNull SingleTypeFunction<FindOptions.@NotNull Builder> function) {
+    default @NotNull Cursor<T> find(@NotNull UnaryOperator<FindOptions.@NotNull Builder> function) {
         Check.notNull(function, "function");
         return this.find(function.apply(FindOptions.builder()).build());
     }
@@ -67,7 +67,7 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
             return this.useGlobalCache(builder.build());
         }
 
-        default @NotNull R useGlobalCache(@NotNull SingleTypeFunction<GlobalCacheConfig.Builder> function) {
+        default @NotNull R useGlobalCache(@NotNull UnaryOperator<GlobalCacheConfig.Builder> function) {
             Check.notNull(function, "function");
             return this.useGlobalCache(function.apply(GlobalCacheConfig.builder()));
         }
@@ -83,7 +83,7 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
             return this.useLocalCache(builder.build());
         }
 
-        default @NotNull R useLocalCache(@NotNull SingleTypeFunction<LocalCacheConfig.Builder> function) {
+        default @NotNull R useLocalCache(@NotNull UnaryOperator<LocalCacheConfig.Builder> function) {
             Check.notNull(function, "function");
             return this.useLocalCache(function.apply(LocalCacheConfig.builder()));
         }

@@ -17,6 +17,8 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
+import de.natrox.conversionbus.exception.SerializeException;
+import de.natrox.conversionbus.objectmapping.ObjectMapper;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
@@ -24,8 +26,6 @@ import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.DocumentStream;
-import de.natrox.serialize.exception.SerializeException;
-import de.natrox.serialize.objectmapping.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,16 +171,6 @@ final class ObjectRepositoryImpl<T extends ObjectData> implements ObjectReposito
     @Override
     public long size() {
         return this.documentRepository.size();
-    }
-
-    T instantiate(UUID uniqueId, DocumentData document, @Nullable InstanceCreator<T> instanceCreator) {
-        try {
-            T data = this.objectCache.getOrCreate(uniqueId, instanceCreator);
-            this.objectMapper.load(data, document.asMap());
-            return data;
-        } catch (SerializeException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     final static class BuilderImpl<T extends ObjectData> extends AbstractRepositoryBuilder<ObjectRepository<T>, ObjectRepository.Builder<T>> implements ObjectRepository.Builder<T> {

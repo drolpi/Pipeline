@@ -17,10 +17,11 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.container.Pair;
+import de.natrox.conversionbus.exception.SerializeException;
+import de.natrox.conversionbus.objectmapping.ObjectMapper;
 import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.object.mapping.ObjectMapper;
 import de.natrox.pipeline.stream.Cursor;
 import de.natrox.pipeline.stream.PipeStream;
 import org.jetbrains.annotations.NotNull;
@@ -68,10 +69,15 @@ public final class ObjectStream<T extends ObjectData> implements Cursor<T> {
 
         @Override
         public T next() {
-            Pair<UUID, DocumentData> next = this.documentIterator.next();
-            T data = ObjectStream.this.objectCache.getOrCreate(next.first(), ObjectStream.this.instanceCreator);
-            ObjectStream.this.objectMapper.load(data, next.second());
-            return data;
+            try {
+                Pair<UUID, DocumentData> next = this.documentIterator.next();
+                T data = ObjectStream.this.objectCache.getOrCreate(next.first(), ObjectStream.this.instanceCreator);
+                ObjectStream.this.objectMapper.load(data, next.second().asMap());
+
+                return data;
+            } catch (SerializeException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override

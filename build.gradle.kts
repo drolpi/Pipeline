@@ -29,6 +29,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven("https://jitpack.io")
     }
 }
 
@@ -38,9 +39,8 @@ subprojects {
     apply(plugin = "com.github.johnrengelman.shadow")
 
     dependencies {
-        //TEMP
-        compileOnly(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
-        compileOnly(files("D:\\workspace\\NatroxMC\\Eventbus\\build\\libs\\eventbus.jar"))
+        compileOnly("com.github.NatroxMC:common:7c25cf3135")
+        compileOnly("com.github.NatroxMC:eventbus:8cd653bd63")
 
         compileOnly("org.jetbrains:annotations:23.0.0")
         compileOnly("org.reflections:reflections:0.10.2")

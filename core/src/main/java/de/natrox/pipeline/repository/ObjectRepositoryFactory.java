@@ -16,10 +16,10 @@
 
 package de.natrox.pipeline.repository;
 
+import de.natrox.conversionbus.exception.SerializeException;
+import de.natrox.conversionbus.objectmapping.ObjectMapper;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.annotation.AnnotationResolver;
-import de.natrox.serialize.exception.SerializeException;
-import de.natrox.serialize.objectmapping.ObjectMapper;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;

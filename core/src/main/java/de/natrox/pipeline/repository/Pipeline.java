@@ -17,16 +17,20 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.builder.IBuilder;
-import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.config.StorageConfig;
-import de.natrox.pipeline.part.provider.*;
+import de.natrox.pipeline.part.provider.GlobalCacheProvider;
+import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalCacheProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
+import de.natrox.pipeline.part.provider.UpdaterProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 @ApiStatus.Experimental
 public sealed interface Pipeline permits AbstractPipeline {
@@ -51,7 +55,7 @@ public sealed interface Pipeline permits AbstractPipeline {
         return this.buildRepository(name, builder.build());
     }
 
-    default @NotNull DocumentRepository.Builder buildRepository(@NotNull String name, @NotNull SingleTypeFunction<StorageConfig.Builder> function) {
+    default @NotNull DocumentRepository.Builder buildRepository(@NotNull String name, @NotNull UnaryOperator<StorageConfig.Builder> function) {
         Check.notNull(name, "name");
         Check.notNull(function, "function");
         return this.buildRepository(name, function.apply(StorageConfig.builder()));
@@ -72,7 +76,7 @@ public sealed interface Pipeline permits AbstractPipeline {
         return this.buildRepository(type, builder.build());
     }
 
-    default <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type, @NotNull SingleTypeFunction<StorageConfig.Builder> function) {
+    default <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type, @NotNull UnaryOperator<StorageConfig.Builder> function) {
         Check.notNull(type, "type");
         Check.notNull(function, "function");
         return this.buildRepository(type, function.apply(StorageConfig.builder()));

@@ -16,6 +16,8 @@
 
 package de.natrox.pipeline.repository;
 
+import de.natrox.conversionbus.exception.SerializeException;
+import de.natrox.conversionbus.objectmapping.ObjectMapper;
 import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.document.DocumentData;
@@ -24,8 +26,6 @@ import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.object.type.TypeInstanceCreator;
 import de.natrox.pipeline.part.updater.Updater;
 import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
-import de.natrox.serialize.exception.SerializeException;
-import de.natrox.serialize.objectmapping.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,34 +54,6 @@ final class ObjectCache<T extends ObjectData> {
         this.cache = new ConcurrentHashMap<>();
         this.instanceCreator = options.instanceCreator() != null ? options.instanceCreator() : TypeInstanceCreator.create(this.type);
         this.registerListeners();
-    }
-
-    private void registerListeners() {
-        if (this.updater == null)
-            return;
-
-        EventBus eventBus = this.updater.eventBus();
-        eventBus.register(
-            EventListener
-                .builder(DocumentUpdateEvent.class)
-                .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(this::updateData)
-                .build()
-        );
-    }
-
-    private void updateData(DocumentUpdateEvent event) {
-        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
-    }
-
-    private void updateData(T data, DocumentData update) {
-        try {
-            DocumentData before = DocumentData.create(this.objectMapper.save(data));
-            this.objectMapper.load(data, update.asMap());
-            data.handleUpdate(before);
-        } catch (SerializeException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @NotNull Optional<T> get(@NotNull UUID uniqueId) {
@@ -123,15 +95,18 @@ final class ObjectCache<T extends ObjectData> {
         }
     }
 
-    private void updateData(DocumentUpdateEvent event) {
-        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
+    private void updateData(T data, DocumentData update) {
+        try {
+            DocumentData before = DocumentData.create(this.objectMapper.save(data));
+            this.objectMapper.load(data, update.asMap());
+            data.handleUpdate(before);
+        } catch (SerializeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void updateData(T data, DocumentData update) {
-        DocumentData before = this.objectMapper.save(data);
-        this.objectMapper.load(data, update);
-
-        data.handleUpdate(before);
+    private void updateData(DocumentUpdateEvent event) {
+        this.get(event.documentId()).ifPresent(data -> this.updateData(data, event.documentData()));
     }
 
     private void registerListeners() {

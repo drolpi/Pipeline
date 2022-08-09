@@ -16,7 +16,6 @@
 
 package de.natrox.pipeline.repository;
 
-import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.object.InstanceCreator;
 import de.natrox.pipeline.object.ObjectData;
@@ -27,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 @ApiStatus.Experimental
 public sealed interface ObjectRepository<T extends ObjectData> extends Repository<T> permits ObjectRepositoryImpl {
@@ -50,7 +50,7 @@ public sealed interface ObjectRepository<T extends ObjectData> extends Repositor
         return this.find(findOptions, null);
     }
 
-    default @NotNull Cursor<T> find(@NotNull SingleTypeFunction<FindOptions.Builder> function, @Nullable InstanceCreator<T> instanceCreator) {
+    default @NotNull Cursor<T> find(@NotNull UnaryOperator<FindOptions.Builder> function, @Nullable InstanceCreator<T> instanceCreator) {
         return this.find(function.apply(FindOptions.builder()).build(), instanceCreator);
     }
 
