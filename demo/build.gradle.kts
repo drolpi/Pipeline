@@ -25,5 +25,5 @@ dependencies {
     implementation(project(":serializer-gson"))
 
     //FIX
-    implementation("org.redisson:redisson-all:3.17.5")
+    implementation("org.redisson:redisson-all:3.17.6")
 }
