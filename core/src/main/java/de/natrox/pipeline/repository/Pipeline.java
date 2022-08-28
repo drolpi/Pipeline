@@ -70,7 +70,7 @@ public sealed interface Pipeline permits AbstractPipeline {
 
     void close();
 
-    void closeProviders();
+    void closeAll();
 
     interface Builder<R extends Builder<R>> extends IBuilder<Pipeline> {
 

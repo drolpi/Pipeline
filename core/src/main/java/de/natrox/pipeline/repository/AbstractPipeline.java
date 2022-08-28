@@ -98,7 +98,7 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     }
 
     @Override
-    public void closeProviders() {
+    public void closeAll() {
         this.partBundle.close();
         this.close();
     }
