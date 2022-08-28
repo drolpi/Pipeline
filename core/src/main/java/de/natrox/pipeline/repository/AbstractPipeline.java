@@ -19,14 +19,12 @@ package de.natrox.pipeline.repository;
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.concurrent.LockService;
 import de.natrox.pipeline.exception.PipelineException;
-import de.natrox.pipeline.document.serialize.DocumentSerializer;
-import de.natrox.pipeline.object.ObjectData;
-import de.natrox.pipeline.object.annotation.AnnotationResolver;
 import de.natrox.pipeline.part.config.StorageConfig;
 import de.natrox.pipeline.part.provider.GlobalCacheProvider;
 import de.natrox.pipeline.part.provider.LocalCacheProvider;
 import de.natrox.pipeline.part.provider.PartProvider;
 import de.natrox.pipeline.part.updater.Updater;
+import de.natrox.pipeline.serializer.NodeSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,53 +34,34 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
 
     private final PartBundle<?> partBundle;
     private final @Nullable Updater updater;
-
-    private final DocumentSerializer documentSerializer;
-    private final DocumentRepositoryFactory documentRepositoryFactory;
-    private final ObjectRepositoryFactory objectRepositoryFactory;
+    private final RepositoryFactory repositoryFactory;
 
     private PipelineStore pipelineStore;
 
     AbstractPipeline(@NotNull PartBundle<?> partBundle) {
         Check.notNull(partBundle, "partBundle");
         this.partBundle = partBundle;
-        this.documentSerializer = DocumentSerializer.create();
+
         this.pipelineStore = partBundle.createStore(this);
         this.updater = this.pipelineStore.updater();
 
         LockService lockService = new LockService();
-        this.documentRepositoryFactory = new DocumentRepositoryFactory(this, this.pipelineStore, lockService);
-        this.objectRepositoryFactory = new ObjectRepositoryFactory(this, this.documentRepositoryFactory);
+        this.repositoryFactory = new RepositoryFactory(this.pipelineStore, lockService);
     }
 
     @Override
-    public @NotNull DocumentRepository repository(@NotNull String name) {
+    public @NotNull Repository repository(@NotNull String name) {
         Check.notNull(name, "name");
         this.checkOpened();
-        return this.documentRepositoryFactory.repository(name);
+        return this.repositoryFactory.repository(name);
     }
 
     @Override
-    public @NotNull DocumentRepository.Builder buildRepository(@NotNull String name, @NotNull StorageConfig config) {
+    public @NotNull Repository.Builder buildRepository(@NotNull String name, @NotNull StorageConfig config) {
         Check.notNull(name, "name");
         Check.notNull(config, "config");
         this.checkOpened();
-        return new DocumentRepositoryImpl.BuilderImpl(this.documentRepositoryFactory, name, config);
-    }
-
-    @Override
-    public @NotNull <T extends ObjectData> ObjectRepository<T> repository(@NotNull Class<T> type) {
-        Check.notNull(type, "type");
-        this.checkOpened();
-        return this.objectRepositoryFactory.repository(type);
-    }
-
-    @Override
-    public <T extends ObjectData> ObjectRepository.@NotNull Builder<T> buildRepository(@NotNull Class<T> type, @NotNull StorageConfig config) {
-        Check.notNull(type, "type");
-        Check.notNull(config, "config");
-        this.checkOpened();
-        return new ObjectRepositoryImpl.BuilderImpl<>(this.objectRepositoryFactory, type, config);
+        return new RepositoryBuilder(this.repositoryFactory, name, config);
     }
 
     @Override
@@ -93,24 +72,10 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     }
 
     @Override
-    public <T> boolean hasRepository(@NotNull Class<T> type) {
-        Check.notNull(type, "type");
-        this.checkOpened();
-        return this.pipelineStore.hasMap(AnnotationResolver.identifier(type));
-    }
-
-    @Override
     public void destroyRepository(@NotNull String name) {
         Check.notNull(name, "name");
         this.checkOpened();
         this.pipelineStore.removeMap(name);
-    }
-
-    @Override
-    public <T extends ObjectData> void destroyRepository(@NotNull Class<T> type) {
-        Check.notNull(type, "type");
-        this.checkOpened();
-        this.pipelineStore.removeMap(AnnotationResolver.identifier(type));
     }
 
     @Override
@@ -120,20 +85,14 @@ sealed abstract class AbstractPipeline implements Pipeline permits GlobalPipelin
     }
 
     @Override
-    public @NotNull DocumentSerializer documentMapper() {
-        return this.documentSerializer;
-    }
-
-    @Override
     public boolean isClosed() {
-        return this.pipelineStore == null || pipelineStore.isClosed();
+        return this.pipelineStore == null || this.pipelineStore.isClosed();
     }
 
     @Override
     public void close() {
         this.pipelineStore.close();
-        this.documentRepositoryFactory.clear();
-        this.objectRepositoryFactory.clear();
+        this.repositoryFactory.clear();
 
         this.pipelineStore = null;
     }

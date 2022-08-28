@@ -17,21 +17,23 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.node.DataNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public final class EqualsCondition extends FieldCondition {
+final class EqualsCondition extends DataNodeCondition {
 
-    EqualsCondition(String field, Object value) {
-        super(field, value);
+    EqualsCondition(Object value, Object[] path) {
+        super(value, path);
     }
 
     @Override
-    public boolean apply(Pair<UUID, DocumentData> element) {
-        DocumentData documentData = element.second();
-        Object fieldValue = documentData.get(field());
-        return Objects.deepEquals(fieldValue, value());
+    public boolean apply(@NotNull Pair<UUID, DataNode> element) {
+        DataNode node = element.second();
+        DataNode subNode = super.findNode(node);
+        Object nodeValue = subNode.getAs();
+        return Objects.deepEquals(nodeValue, super.value());
     }
 }

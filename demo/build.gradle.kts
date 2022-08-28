@@ -17,10 +17,12 @@
 dependencies {
     implementation(project(":core"))
     implementation(project(":config"))
-    implementation(project(":part-bin"))
+    implementation(project(":part-sqlite"))
     implementation(project(":part-mongo"))
     implementation(project(":part-redis"))
     implementation(project(":part-caffeine"))
+    implementation(project(":serializer-kryo"))
+    implementation(project(":serializer-gson"))
 
     //FIX
     implementation("org.redisson:redisson-all:3.17.5")

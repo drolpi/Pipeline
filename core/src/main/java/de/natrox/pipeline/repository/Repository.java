@@ -21,30 +21,41 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.find.FindOptions;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
+import de.natrox.pipeline.serializer.NodeSerializer;
 import de.natrox.pipeline.stream.Cursor;
+import de.natrox.pipeline.node.DataNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 @ApiStatus.Experimental
-public sealed interface Repository<T> permits DocumentRepository, ObjectRepository {
+public interface Repository {
 
-    @NotNull Cursor<T> find(@NotNull FindOptions findOptions);
+    @NotNull Optional<DataNode> load(@NotNull UUID uniqueId);
 
-    default @NotNull Cursor<T> find(@NotNull UnaryOperator<FindOptions.@NotNull Builder> function) {
+    @NotNull DataNode loadOrCreate(@NotNull UUID uniqueId);
+
+    @NotNull Cursor<DataNode> find(@NotNull FindOptions findOptions);
+
+    default @NotNull Cursor<DataNode> find(@NotNull UnaryOperator<FindOptions.@NotNull Builder> function) {
         Check.notNull(function, "function");
         return this.find(function.apply(FindOptions.builder()).build());
     }
 
-    default Cursor<T> find() {
+    default Cursor<DataNode> find() {
         return this.find(FindOptions.defaults());
     }
 
     boolean exists(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies);
 
     void remove(@NotNull UUID uniqueId, QueryStrategy @NotNull ... strategies);
+
+    void save(@NotNull UUID uniqueId, @NotNull DataNode objectData, QueryStrategy @NotNull ... strategies);
+
+    @NotNull String name();
 
     void clear();
 
@@ -58,39 +69,41 @@ public sealed interface Repository<T> permits DocumentRepository, ObjectReposito
 
     long size();
 
-    sealed interface Builder<T extends Repository<?>, R extends Builder<T, R>> extends IBuilder<T> permits AbstractRepositoryBuilder, DocumentRepository.Builder, ObjectRepository.Builder {
+    sealed interface Builder extends IBuilder<Repository> permits RepositoryBuilder {
 
-        @NotNull R useGlobalCache(@NotNull GlobalCacheConfig config);
+        @NotNull Builder withGlobalCache(@NotNull GlobalCacheConfig config);
 
-        default @NotNull R useGlobalCache(@NotNull GlobalCacheConfig.Builder builder) {
+        default @NotNull Builder withGlobalCache(@NotNull GlobalCacheConfig.Builder builder) {
             Check.notNull(builder, "builder");
-            return this.useGlobalCache(builder.build());
+            return this.withGlobalCache(builder.build());
         }
 
-        default @NotNull R useGlobalCache(@NotNull UnaryOperator<GlobalCacheConfig.Builder> function) {
+        default @NotNull Builder withGlobalCache(@NotNull UnaryOperator<GlobalCacheConfig.Builder> function) {
             Check.notNull(function, "function");
-            return this.useGlobalCache(function.apply(GlobalCacheConfig.builder()));
+            return this.withGlobalCache(function.apply(GlobalCacheConfig.builder()));
         }
 
-        default @NotNull R useGlobalCache() {
-            return this.useGlobalCache(GlobalCacheConfig.defaults());
+        default @NotNull Builder withGlobalCache() {
+            return this.withGlobalCache(GlobalCacheConfig.defaults());
         }
 
-        @NotNull R useLocalCache(@NotNull LocalCacheConfig config);
+        @NotNull Builder withLocalCache(@NotNull LocalCacheConfig config);
 
-        default @NotNull R useLocalCache(@NotNull LocalCacheConfig.Builder builder) {
+        default @NotNull Builder withLocalCache(@NotNull LocalCacheConfig.Builder builder) {
             Check.notNull(builder, "builder");
-            return this.useLocalCache(builder.build());
+            return this.withLocalCache(builder.build());
         }
 
-        default @NotNull R useLocalCache(@NotNull UnaryOperator<LocalCacheConfig.Builder> function) {
+        default @NotNull Builder withLocalCache(@NotNull UnaryOperator<LocalCacheConfig.Builder> function) {
             Check.notNull(function, "function");
-            return this.useLocalCache(function.apply(LocalCacheConfig.builder()));
+            return this.withLocalCache(function.apply(LocalCacheConfig.builder()));
         }
 
-        default @NotNull R useLocalCache() {
-            return this.useLocalCache(LocalCacheConfig.defaults());
+        default @NotNull Builder withLocalCache() {
+            return this.withLocalCache(LocalCacheConfig.defaults());
         }
+
+        @NotNull Builder serializer(@NotNull NodeSerializer nodeSerializer);
 
     }
 }

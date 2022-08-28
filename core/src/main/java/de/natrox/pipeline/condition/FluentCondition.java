@@ -24,45 +24,39 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("ClassCanBeRecord")
 public final class FluentCondition {
 
-    private final String field;
+    private final Object[] path;
 
-    private FluentCondition(String field) {
-        this.field = field;
+    FluentCondition(Object[] path) {
+        this.path = path;
     }
 
-    public static FluentCondition where(@NotNull String field) {
-        Check.notNull(field, "field");
-        return new FluentCondition(field);
-    }
-
-    public Condition eq(@NotNull Object value) {
+    public @NotNull Condition eq(@NotNull Object value) {
         Check.notNull(value, "value");
-        return new EqualsCondition(field, value);
+        return new EqualsCondition(value, path);
     }
 
-    public Condition notEq(@NotNull Object value) {
+    public @NotNull Condition notEq(@NotNull Object value) {
         Check.notNull(value, "value");
-        return new NotEqualsCondition(field, value);
+        return new NotEqualsCondition(value, path);
     }
 
-    public Condition gt(@NotNull Comparable<?> value) {
+    public @NotNull Condition gt(@NotNull Comparable<?> value) {
         Check.notNull(value, "value");
-        return new GreaterThanCondition(field, value);
+        return new GreaterThanCondition(value, path);
     }
 
-    public Condition gte(@NotNull Comparable<?> value) {
+    public @NotNull Condition gte(@NotNull Comparable<?> value) {
         Check.notNull(value, "value");
-        return new GreaterEqualCondition(field, value);
+        return new GreaterEqualCondition(value, path);
     }
 
-    public Condition lt(@NotNull Comparable<?> value) {
+    public @NotNull Condition lt(@NotNull Comparable<?> value) {
         Check.notNull(value, "value");
-        return new LesserThanCondition(field, value);
+        return new LesserThanCondition(value, path);
     }
 
-    public Condition lte(@NotNull Comparable<?> value) {
+    public @NotNull Condition lte(@NotNull Comparable<?> value) {
         Check.notNull(value, "value");
-        return new LesserEqualCondition(field, value);
+        return new LesserEqualCondition(value, path);
     }
-
 }

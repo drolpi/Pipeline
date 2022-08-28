@@ -27,11 +27,11 @@ import java.util.*;
 @ApiStatus.Internal
 public interface StoreMap {
 
-    byte @Nullable [] get(@NotNull UUID uniqueId);
+    @Nullable Object get(@NotNull UUID uniqueId);
 
-    void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies);
+    void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies);
 
-    default void put(@NotNull UUID uniqueId, byte @NotNull [] data, QueryStrategy @NotNull ... strategies) {
+    default void put(@NotNull UUID uniqueId, @NotNull Object data, QueryStrategy @NotNull ... strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(strategies, "strategies");
@@ -58,9 +58,9 @@ public interface StoreMap {
 
     @NotNull Collection<UUID> keys();
 
-    @NotNull Collection<byte[]> values();
+    @NotNull Collection<Object> values();
 
-    @NotNull Map<UUID, byte[]> entries();
+    @NotNull Map<UUID, Object> entries();
 
     void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies);
 

@@ -17,34 +17,37 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
 import de.natrox.pipeline.exception.ConditionException;
+import de.natrox.pipeline.node.DataNode;
 import de.natrox.pipeline.util.Numbers;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 final class LesserEqualCondition extends ComparableCondition {
 
-    LesserEqualCondition(String field, Comparable<?> value) {
-        super(field, value);
+    LesserEqualCondition(Comparable<?> value, Object[] path) {
+        super(value, path);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public boolean apply(Pair<UUID, DocumentData> element) {
-        Comparable comparable = comparable();
-        DocumentData documentData = element.second();
-        Object fieldValue = documentData.get(field());
-        if (fieldValue != null) {
-            if (fieldValue instanceof Number && comparable instanceof Number) {
-                return Numbers.compare((Number) fieldValue, (Number) comparable) <= 0;
-            } else if (fieldValue instanceof Comparable arg) {
-                return arg.compareTo(comparable) <= 0;
-            } else {
-                throw new ConditionException(fieldValue + " is not comparable");
-            }
+    public boolean apply(@NotNull Pair<UUID, DataNode> element) {
+        Comparable comparable = super.comparable();
+        DataNode node = element.second();
+        DataNode subNode = super.findNode(node);
+
+        Object nodeValue = subNode.getAs();
+        if (nodeValue == null) {
+            return false;
         }
 
-        return false;
+        if (nodeValue instanceof Number numberValue && comparable instanceof Number numberComparable) {
+            return Numbers.compare(numberValue, numberComparable) <= 0;
+        } else if (nodeValue instanceof Comparable numberValue) {
+            return numberValue.compareTo(comparable) <= 0;
+        }
+
+        throw new ConditionException(nodeValue + " is not comparable");
     }
 }

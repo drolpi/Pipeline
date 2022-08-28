@@ -17,12 +17,12 @@
 package de.natrox.pipeline.demo;
 
 import de.natrox.common.util.UuidUtil;
-import de.natrox.pipeline.bin.BinConfig;
-import de.natrox.pipeline.bin.BinProvider;
 import de.natrox.pipeline.caffeine.CaffeineProvider;
-import de.natrox.pipeline.demo.onlinetime.DocumentOnlineTimeManager;
+import de.natrox.pipeline.demo.onlinetime.NodeOnlineTimeManager;
 import de.natrox.pipeline.demo.onlinetime.OnlineTimeManager;
 import de.natrox.pipeline.repository.Pipeline;
+import de.natrox.pipeline.sqlite.SQLiteConfig;
+import de.natrox.pipeline.sqlite.SQLiteProvider;
 
 import java.nio.file.Path;
 import java.util.UUID;
@@ -30,19 +30,19 @@ import java.util.UUID;
 public final class LocalDemoMain {
 
     public static void main(String[] args) throws InterruptedException {
-        BinConfig binConfig = BinConfig
+        SQLiteConfig sqLiteConfig = SQLiteConfig
             .create()
-            .setPath(Path.of("storage"));
-        BinProvider binProvider = BinProvider.of(binConfig);
+            .setPath(Path.of("storage.sqlite"));
+        SQLiteProvider sqLiteProvider = SQLiteProvider.of(sqLiteConfig);
 
         CaffeineProvider caffeineProvider = CaffeineProvider.create();
 
         Pipeline pipeline = Pipeline
-            .create(binProvider)
+            .builder(sqLiteProvider)
             .localCache(caffeineProvider)
             .build();
 
-        OnlineTimeManager onlineTimeManager = new DocumentOnlineTimeManager(pipeline);
+        OnlineTimeManager onlineTimeManager = new NodeOnlineTimeManager(pipeline);
         UUID uuid = UuidUtil.fromName("DemoPlayer");
 
         onlineTimeManager.handleJoin(uuid);

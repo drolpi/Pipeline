@@ -34,7 +34,7 @@ public final class SQLiteConfig {
         return new SQLiteConfig();
     }
 
-    public @NotNull SQLiteConfig path(@NotNull Path path) {
+    public @NotNull SQLiteConfig setPath(@NotNull Path path) {
         Check.notNull(path, "path");
         this.directory = path.toFile().getAbsolutePath();
         return this;

@@ -46,7 +46,7 @@ final class DataSynchronizer {
         this.closed = false;
     }
 
-    public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
+    public CompletableFuture<Boolean> synchronizeTo(@NotNull UUID uniqueId, @NotNull Object data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
@@ -58,7 +58,7 @@ final class DataSynchronizer {
         return future;
     }
 
-    private boolean to(@NotNull UUID uniqueId, byte @NotNull [] data, DataSourceType @NotNull ... destinations) {
+    private boolean to(@NotNull UUID uniqueId, @NotNull Object data, DataSourceType @NotNull ... destinations) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         Check.notNull(destinations, "destinations");
@@ -78,18 +78,18 @@ final class DataSynchronizer {
         return true;
     }
 
-    public CompletableFuture<byte[]> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+    public CompletableFuture<Object> synchronizeFom(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         if (this.isOpen())
             return CompletableFuture.completedFuture(null);
 
-        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        CompletableFuture<Object> future = new CompletableFuture<>();
         this.executorService.submit(new CatchingRunnable(() -> future.complete(this.from(uniqueId, source))));
         return future;
     }
 
-    public byte[] from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
+    public Object from(@NotNull UUID uniqueId, @NotNull DataSourceType source) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(source, "source");
         if (this.isOpen())
@@ -124,11 +124,11 @@ final class DataSynchronizer {
         if (this.isOpen())
             return false;
 
-        byte[] documentData = from(uniqueId, source);
+        Object documentData = this.from(uniqueId, source);
         // Error while loading from local cache
         if (documentData == null)
             return false;
-        to(uniqueId, documentData, destinations);
+        this.to(uniqueId, documentData, destinations);
         return true;
     }
 

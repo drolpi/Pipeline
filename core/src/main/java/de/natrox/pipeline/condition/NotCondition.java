@@ -17,7 +17,8 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.node.DataNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ final class NotCondition implements Condition {
     }
 
     @Override
-    public boolean apply(Pair<UUID, DocumentData> element) {
+    public boolean apply(@NotNull Pair<UUID, DataNode> element) {
         return !this.condition.apply(element);
     }
 }

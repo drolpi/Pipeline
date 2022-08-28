@@ -55,5 +55,4 @@ public sealed interface FindOptions permits FindOptionsImpl {
         @NotNull Builder sort(@NotNull SortEntry sortableFields);
 
     }
-
 }

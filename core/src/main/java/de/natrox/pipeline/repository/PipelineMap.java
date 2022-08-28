@@ -21,8 +21,8 @@ import de.natrox.eventbus.EventBus;
 import de.natrox.eventbus.EventListener;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
-import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
-import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
+import de.natrox.pipeline.part.updater.event.EntryRemoveEvent;
+import de.natrox.pipeline.part.updater.event.EntryUpdateEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,35 +53,35 @@ final class PipelineMap implements StoreMap {
     }
 
     @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
 
         if (this.localCacheMap != null) {
-            byte[] documentData = this.fromPart(uniqueId, this.localCacheMap);
-            if (documentData != null) {
-                return documentData;
+            Object data = this.fromPart(uniqueId, this.localCacheMap);
+            if (data != null) {
+                return data;
             }
         }
 
         if (this.globalCacheMap != null) {
-            byte[] documentData = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
-            if (documentData != null) {
-                return documentData;
+            Object data = this.fromPart(uniqueId, this.globalCacheMap, DataSynchronizer.DataSourceType.LOCAL_CACHE);
+            if (data != null) {
+                return data;
             }
         }
 
         return this.fromPart(uniqueId, this.storageMap, DataSynchronizer.DataSourceType.LOCAL_CACHE, DataSynchronizer.DataSourceType.GLOBAL_CACHE);
     }
 
-    private byte[] fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
-        byte[] data = storeMap.get(uniqueId);
+    private Object fromPart(UUID uniqueId, StoreMap storeMap, DataSynchronizer.DataSourceType... destinations) {
+        Object data = storeMap.get(uniqueId);
         if (data != null)
             this.dataSynchronizer.synchronizeTo(uniqueId, data, destinations);
         return data;
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         if (strategies.contains(QueryStrategy.LOCAL_CACHE) || strategies.contains(QueryStrategy.ALL)) {
@@ -94,11 +94,11 @@ final class PipelineMap implements StoreMap {
                 });
             }
         }
-        if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) &&  this.globalCacheMap != null) {
+        if ((strategies.contains(QueryStrategy.GLOBAL_CACHE) || strategies.contains(QueryStrategy.ALL)) && this.globalCacheMap != null) {
             this.globalCacheMap.put(uniqueId, data);
         }
 
-        if(strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
+        if (strategies.contains(QueryStrategy.GLOBAL_STORAGE) || strategies.contains(QueryStrategy.ALL)) {
             this.storageMap.put(uniqueId, data);
         }
     }
@@ -132,12 +132,12 @@ final class PipelineMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
+    public @NotNull Collection<Object> values() {
         return this.storageMap.values();
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
+    public @NotNull Map<UUID, Object> entries() {
         return this.storageMap.entries();
     }
 
@@ -197,17 +197,17 @@ final class PipelineMap implements StoreMap {
 
         eventBus.register(
             EventListener
-                .builder(ByteDocumentUpdateEvent.class)
+                .builder(EntryUpdateEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(event -> this.localCacheMap.put(event.documentId(), event.documentData()))
+                .handler(event -> this.localCacheMap.put(event.dataKey(), event.data()))
                 .build()
         );
 
         eventBus.register(
             EventListener
-                .builder(DocumentRemoveEvent.class)
+                .builder(EntryRemoveEvent.class)
                 .condition(event -> event.repositoryName().equals(this.mapName))
-                .handler(event -> this.localCacheMap.remove(event.documentId(), Set.of(QueryStrategy.LOCAL_CACHE)))
+                .handler(event -> this.localCacheMap.remove(event.dataKey(), Set.of(QueryStrategy.LOCAL_CACHE)))
                 .build()
         );
 

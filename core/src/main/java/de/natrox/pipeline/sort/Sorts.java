@@ -37,14 +37,14 @@ public final class Sorts {
         return new SortEntryImpl(Arrays.stream(sortEntries).flatMap(sortEntry -> sortEntry.sortingOrders().stream()).collect(Collectors.toList()));
     }
 
-    public static SortEntry ascending(@NotNull String field) {
-        Check.notNull(field, "field");
-        return new SortEntryImpl(Pair.of(field, SortOrder.Ascending));
+    public static SortEntry ascending(@NotNull Object... path) {
+        Check.notNull(path, "path");
+        return new SortEntryImpl(Pair.of(path, SortOrder.Ascending));
     }
 
-    public static SortEntry descending(@NotNull String field) {
-        Check.notNull(field, "field");
-        return new SortEntryImpl(Pair.of(field, SortOrder.Descending));
+    public static SortEntry descending(@NotNull Object... path) {
+        Check.notNull(path, "field");
+        return new SortEntryImpl(Pair.of(path, SortOrder.Descending));
     }
 
 }

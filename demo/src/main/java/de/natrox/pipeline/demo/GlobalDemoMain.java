@@ -18,7 +18,7 @@ package de.natrox.pipeline.demo;
 
 import de.natrox.common.util.UuidUtil;
 import de.natrox.pipeline.caffeine.CaffeineProvider;
-import de.natrox.pipeline.demo.onlinetime.ObjectOnlineTimeManager;
+import de.natrox.pipeline.demo.onlinetime.NodeOnlineTimeManager;
 import de.natrox.pipeline.demo.onlinetime.OnlineTimeManager;
 import de.natrox.pipeline.mongo.MongoConfig;
 import de.natrox.pipeline.mongo.MongoProvider;
@@ -46,12 +46,12 @@ public final class GlobalDemoMain {
         CaffeineProvider caffeineProvider = CaffeineProvider.create();
 
         Pipeline pipeline = Pipeline
-            .create(mongoProvider)
+            .builder(mongoProvider)
             .globalCache(redisProvider)
             .localCache(caffeineProvider, redisProvider)
             .build();
 
-        OnlineTimeManager onlineTimeManager = new ObjectOnlineTimeManager(pipeline);
+        OnlineTimeManager onlineTimeManager = new NodeOnlineTimeManager(pipeline);
         UUID uuid = UuidUtil.fromName("DemoPlayer");
 
         onlineTimeManager.handleJoin(uuid);

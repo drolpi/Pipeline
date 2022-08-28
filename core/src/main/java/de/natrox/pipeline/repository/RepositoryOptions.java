@@ -16,86 +16,13 @@
 
 package de.natrox.pipeline.repository;
 
-import de.natrox.pipeline.object.InstanceCreator;
-import de.natrox.pipeline.object.ObjectData;
 import de.natrox.pipeline.part.config.GlobalCacheConfig;
 import de.natrox.pipeline.part.config.LocalCacheConfig;
 import de.natrox.pipeline.part.config.StorageConfig;
-import org.jetbrains.annotations.NotNull;
+import de.natrox.pipeline.serializer.NodeSerializer;
 
-public sealed abstract class RepositoryOptions {
+public record RepositoryOptions(StorageConfig storageConfig, boolean useGlobalCache,
+                                GlobalCacheConfig globalCacheConfig, boolean useLocalCache,
+                                LocalCacheConfig localCacheConfig, NodeSerializer nodeSerializer) {
 
-    private final StorageConfig storageConfig;
-    private final boolean useGlobalCache;
-    private final GlobalCacheConfig globalCacheConfig;
-    private final boolean useLocalCache;
-    private final LocalCacheConfig localCacheConfig;
-
-    RepositoryOptions(
-        StorageConfig storageConfig,
-        boolean useGlobalCache,
-        GlobalCacheConfig globalCacheConfig,
-        boolean useLocalCache,
-        LocalCacheConfig localCacheConfig
-    ) {
-        this.storageConfig = storageConfig;
-        this.useGlobalCache = useGlobalCache;
-        this.globalCacheConfig = globalCacheConfig;
-        this.useLocalCache = useLocalCache;
-        this.localCacheConfig = localCacheConfig;
-    }
-
-    public @NotNull StorageConfig storageConfig() {
-        return this.storageConfig;
-    }
-
-    public boolean useGlobalCache() {
-        return this.useGlobalCache;
-    }
-
-    public @NotNull GlobalCacheConfig globalCacheConfig() {
-        return this.globalCacheConfig;
-    }
-
-    public boolean useLocalCache() {
-        return this.useLocalCache;
-    }
-
-    public @NotNull LocalCacheConfig localCacheConfig() {
-        return this.localCacheConfig;
-    }
-
-    static non-sealed class DocumentOptions extends RepositoryOptions {
-
-        DocumentOptions(
-            StorageConfig storageConfig,
-            boolean useGlobalCache,
-            GlobalCacheConfig globalCacheConfig,
-            boolean useLocalCache,
-            LocalCacheConfig localCacheConfig
-        ) {
-            super(storageConfig, useGlobalCache, globalCacheConfig, useLocalCache, localCacheConfig);
-        }
-    }
-
-    static final class ObjectOptions<T extends ObjectData> extends DocumentOptions {
-
-        private final InstanceCreator<T> instanceCreator;
-
-        ObjectOptions(
-            StorageConfig storageConfig,
-            boolean useGlobalCache,
-            GlobalCacheConfig globalCacheConfig,
-            boolean useLocalCache,
-            LocalCacheConfig localCacheConfig,
-            InstanceCreator<T> instanceCreator
-        ) {
-            super(storageConfig, useGlobalCache, globalCacheConfig, useLocalCache, localCacheConfig);
-            this.instanceCreator = instanceCreator;
-        }
-
-        public InstanceCreator<T> instanceCreator() {
-            return this.instanceCreator;
-        }
-    }
 }

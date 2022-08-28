@@ -62,7 +62,7 @@ final class SQLiteProviderImpl implements SQLiteProvider {
     }
 
     @Override
-    public @NotNull Store createGlobalStorage() {
+    public @NotNull Store createLocalStorage() {
         return new SqlStore(this.hikariDataSource);
     }
 }

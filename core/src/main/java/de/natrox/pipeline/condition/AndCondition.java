@@ -17,20 +17,21 @@
 package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.node.DataNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public final class AndCondition extends RedirectCondition {
+final class AndCondition extends RedirectCondition {
 
     AndCondition(Condition... conditions) {
         super(conditions);
     }
 
     @Override
-    public boolean apply(Pair<UUID, DocumentData> element) {
+    public boolean apply(@NotNull Pair<UUID, DataNode> element) {
         boolean result = true;
-        for (Condition condition : conditions()) {
+        for (Condition condition : super.conditions()) {
             result = result && condition.apply(element);
         }
         return result;

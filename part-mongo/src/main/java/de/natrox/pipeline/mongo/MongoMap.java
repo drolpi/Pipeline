@@ -24,7 +24,6 @@ import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
 import org.bson.Document;
-import org.bson.types.Binary;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +41,7 @@ final class MongoMap implements StoreMap {
     }
 
     @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         Document document = this.collection
             .find(Filters.eq("key", uniqueId))
@@ -50,11 +49,11 @@ final class MongoMap implements StoreMap {
         if (document == null)
             return null;
 
-        return document.get("data", Binary.class).getData();
+        return document.get("data");
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
 
@@ -62,7 +61,7 @@ final class MongoMap implements StoreMap {
             Filters.eq("key", uniqueId),
             Updates.combine(
                 Updates.setOnInsert(new Document("key", uniqueId)),
-                Updates.set("data", new Binary(data))
+                Updates.set("data", data)
             ),
             INSERT_OR_REPLACE_OPTIONS
         );
@@ -90,28 +89,28 @@ final class MongoMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
-        Collection<byte[]> documents = new ArrayList<>();
+    public @NotNull Collection<Object> values() {
+        Collection<Object> documents = new ArrayList<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                byte[] bytes = document.get("data", Binary.class).getData();
-                documents.add(bytes);
+                Object data = document.get("data");
+                documents.add(data);
             }
         }
         return documents;
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
-        Map<UUID, byte[]> entries = new HashMap<>();
+    public @NotNull Map<UUID, Object> entries() {
+        Map<UUID, Object> entries = new HashMap<>();
         try (var cursor = this.collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 UUID key = document.get("key", UUID.class);
-                byte[] bytes = document.get("data", Binary.class).getData();
+                Object data = document.get("data");
 
-                entries.put(key, bytes);
+                entries.put(key, data);
             }
         }
         return entries;

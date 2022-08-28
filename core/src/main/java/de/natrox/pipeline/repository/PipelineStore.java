@@ -17,14 +17,9 @@
 package de.natrox.pipeline.repository;
 
 import de.natrox.common.validate.Check;
-import de.natrox.eventbus.EventBus;
-import de.natrox.eventbus.EventListener;
-import de.natrox.pipeline.document.serialize.DocumentSerializer;
 import de.natrox.pipeline.part.store.Store;
 import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.part.updater.Updater;
-import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
-import de.natrox.pipeline.part.updater.event.DocumentUpdateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,15 +32,11 @@ final class PipelineStore implements Store {
     private final @Nullable Store localCache;
     private final @Nullable Updater updater;
 
-    private final DocumentSerializer documentSerializer;
-
     public PipelineStore(@NotNull Pipeline pipeline, @NotNull Store storage, @Nullable Store globalCache, @Nullable Store localCache, @Nullable Updater updater) {
         this.storage = storage;
         this.globalCache = globalCache;
         this.localCache = localCache;
         this.updater = updater;
-        this.documentSerializer = pipeline.documentMapper();
-        this.registerListeners();
     }
 
     @Override
@@ -128,24 +119,5 @@ final class PipelineStore implements Store {
 
     public @Nullable Updater updater() {
         return this.updater;
-    }
-
-    private void registerListeners() {
-        if (this.updater == null)
-            return;
-
-        EventBus eventBus = this.updater.eventBus();
-
-        eventBus.register(
-            EventListener
-                .builder(ByteDocumentUpdateEvent.class)
-                .handler(event -> eventBus.call(new DocumentUpdateEvent(
-                    event.senderId(),
-                    event.repositoryName(),
-                    event.documentId(),
-                    this.documentSerializer.read(event.documentData())
-                )))
-                .build()
-        );
     }
 }

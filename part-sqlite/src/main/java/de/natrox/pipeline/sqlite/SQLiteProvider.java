@@ -18,9 +18,10 @@ package de.natrox.pipeline.sqlite;
 
 import de.natrox.common.validate.Check;
 import de.natrox.pipeline.part.provider.GlobalStorageProvider;
+import de.natrox.pipeline.part.provider.LocalStorageProvider;
 import org.jetbrains.annotations.NotNull;
 
-public sealed interface SQLiteProvider extends GlobalStorageProvider permits SQLiteProviderImpl {
+public sealed interface SQLiteProvider extends LocalStorageProvider permits SQLiteProviderImpl {
 
     static @NotNull SQLiteProvider of(@NotNull SQLiteConfig config) {
         Check.notNull(config, "config");

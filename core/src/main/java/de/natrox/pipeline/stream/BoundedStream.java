@@ -24,24 +24,24 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public final class BoundedStream<T, U> implements PipeStream<Pair<T, U>> {
+public final class BoundedStream<T, U> implements DataStream<Pair<T, U>> {
 
-    private final PipeStream<Pair<T, U>> pipeStream;
+    private final DataStream<Pair<T, U>> dataStream;
     private final long skip;
     private final long limit;
 
-    public BoundedStream(Long skip, Long limit, PipeStream<Pair<T, U>> pipeStream) {
+    public BoundedStream(Long skip, Long limit, DataStream<Pair<T, U>> dataStream) {
         Check.argCondition(skip < 0, "skip can not be negative");
         Check.argCondition(limit < 0, "limit can not be negative");
 
         this.skip = skip;
         this.limit = limit;
-        this.pipeStream = pipeStream;
+        this.dataStream = dataStream;
     }
 
     @Override
     public @NotNull Iterator<Pair<T, U>> iterator() {
-        return new BoundedIterator<>(this.pipeStream == null ? Collections.emptyIterator() : this.pipeStream.iterator(), this.skip, this.limit);
+        return new BoundedIterator<>(this.dataStream == null ? Collections.emptyIterator() : this.dataStream.iterator(), this.skip, this.limit);
     }
 
     private final static class BoundedIterator<T> implements Iterator<T> {

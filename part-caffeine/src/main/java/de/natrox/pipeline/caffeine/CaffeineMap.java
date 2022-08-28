@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 final class CaffeineMap implements StoreMap {
 
-    private final Cache<UUID, byte[]> cache;
+    private final Cache<UUID, Object> cache;
 
     CaffeineMap(RepositoryOptions options) {
         LocalCacheConfig config = options.localCacheConfig();
@@ -55,13 +55,13 @@ final class CaffeineMap implements StoreMap {
     }
 
     @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.cache.getIfPresent(uniqueId);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
         this.cache.put(uniqueId, data);
@@ -79,12 +79,12 @@ final class CaffeineMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
+    public @NotNull Collection<Object> values() {
         return this.cache.asMap().values();
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
+    public @NotNull Map<UUID, Object> entries() {
         return this.cache.asMap();
     }
 

@@ -18,7 +18,7 @@ package de.natrox.pipeline.condition;
 
 import de.natrox.common.container.Pair;
 import de.natrox.common.validate.Check;
-import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.node.DataNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +28,7 @@ import java.util.UUID;
 @FunctionalInterface
 public interface Condition {
 
-    boolean apply(Pair<UUID, DocumentData> element);
+    boolean apply(@NotNull Pair<UUID, DataNode> element);
 
     default @NotNull Condition and(@NotNull Condition condition) {
         Check.notNull(condition, "condition");
@@ -43,5 +43,4 @@ public interface Condition {
     default @NotNull Condition not() {
         return new NotCondition(this);
     }
-
 }

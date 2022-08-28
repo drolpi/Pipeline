@@ -28,6 +28,12 @@ public final class Conditions {
         throw new UnsupportedOperationException();
     }
 
+    public static @NotNull FluentCondition where(Object @NotNull ... path) {
+        Check.notNull(path, "path");
+        Check.argCondition(path.length <= 0, "path");
+        return new FluentCondition(path);
+    }
+
     public static @NotNull Condition and(Condition @NotNull ... conditions) {
         Check.notNull(conditions, "conditions");
         if (conditions.length < 2) {
@@ -44,45 +50,8 @@ public final class Conditions {
         return new OrCondition(conditions);
     }
 
-    public static @NotNull Condition eq(@NotNull String field, @NotNull Object value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new EqualsCondition(field, value);
-    }
-
-    public static @NotNull Condition notEq(@NotNull String field, @NotNull Object value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new NotEqualsCondition(field, value);
-    }
-
-    public static @NotNull Condition gt(@NotNull String field, Comparable<?> value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new GreaterThanCondition(field, value);
-    }
-
-    public static @NotNull Condition gte(@NotNull String field, @NotNull Comparable<?> value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new GreaterEqualCondition(field, value);
-    }
-
-    public static @NotNull Condition lt(@NotNull String field, @NotNull Comparable<?> value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new LesserThanCondition(field, value);
-    }
-
-    public static @NotNull Condition lte(@NotNull String field, @NotNull Comparable<?> value) {
-        Check.notNull(field, "field");
-        Check.notNull(value, "value");
-        return new LesserEqualCondition(field, value);
-    }
-
     public static @NotNull Condition not(@NotNull Condition condition) {
         Check.notNull(condition, "condition");
         return new NotCondition(condition);
     }
-
 }

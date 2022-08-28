@@ -31,7 +31,7 @@ final class GlobalPipeline extends AbstractPipeline {
         super(partBundle);
     }
 
-    final static class Builder extends AbstractPipeline.Builder<GlobalBuilder> implements Pipeline.GlobalBuilder {
+    final static class Builder extends AbstractPipeline.Builder<Pipeline.GlobalBuilder> implements Pipeline.GlobalBuilder {
 
         private final GlobalStorageProvider storageProvider;
         private UpdaterProvider updaterProvider;

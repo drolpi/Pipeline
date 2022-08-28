@@ -24,10 +24,8 @@ import java.util.List;
 
 @ApiStatus.Experimental
 @ApiStatus.Internal
-public sealed interface SortEntry extends Comparable<SortEntry>, Serializable permits SortEntryImpl {
+public sealed interface SortEntry extends Serializable permits SortEntryImpl {
 
-    List<String> fieldNames();
-
-    List<Pair<String, SortOrder>> sortingOrders();
+    List<Pair<Object[], SortOrder>> sortingOrders();
 
 }

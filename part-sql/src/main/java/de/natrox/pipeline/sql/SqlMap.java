@@ -38,29 +38,29 @@ final class SqlMap implements StoreMap {
     }
 
     @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.sqlStore.executeQuery(
             "SELECT `data` FROM `" + this.mapName + "` WHERE `key` = ?",
-            resultSet -> resultSet.next() ? resultSet.getBytes("data") : null,
+            resultSet -> resultSet.next() ? resultSet.getObject("data") : null,
             uniqueId.toString()
         );
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
 
         if (!this.contains(uniqueId)) {
             this.sqlStore.executeUpdate("INSERT INTO " + this.mapName + " (`key`, `data`) VALUES (?, ?)", statement -> {
                 statement.setString(1, uniqueId.toString());
-                statement.setBytes(2, data);
+                statement.setObject(2, data);
             });
         } else {
             this.sqlStore.executeUpdate("UPDATE " + this.mapName + " SET `data` = ? WHERE `key` = ?", statement -> {
                 statement.setString(1, uniqueId.toString());
-                statement.setBytes(2, data);
+                statement.setObject(2, data);
             });
         }
     }
@@ -81,28 +81,28 @@ final class SqlMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
+    public @NotNull Collection<Object> values() {
         return this.sqlStore.executeQuery(
             "SELECT `data` FROM " + this.mapName,
             resultSet -> {
-                List<byte[]> documents = new ArrayList<>();
+                List<Object> documents = new ArrayList<>();
                 while (resultSet.next())
-                    documents.add(resultSet.getBytes("data"));
+                    documents.add(resultSet.getObject("data"));
 
                 return documents;
             });
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
+    public @NotNull Map<UUID, Object> entries() {
         return this.sqlStore.executeQuery(
             "SELECT * FROM " + this.mapName,
             resultSet -> {
-                Map<UUID, byte[]> map = new HashMap<>();
+                Map<UUID, Object> map = new HashMap<>();
                 while (resultSet.next())
                     map.put(
                         UUID.fromString(resultSet.getString("key")),
-                        resultSet.getBytes("data")
+                        resultSet.getObject("data")
                     );
                 return map;
             });

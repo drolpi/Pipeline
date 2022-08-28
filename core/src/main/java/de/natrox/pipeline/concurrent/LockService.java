@@ -38,6 +38,7 @@ public final class LockService {
             ReentrantReadWriteLock rwLock = this.lockRegistry.get(name);
             return rwLock.readLock();
         }
+
         ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
         this.lockRegistry.put(name, rwLock);
         return rwLock.readLock();
@@ -54,6 +55,7 @@ public final class LockService {
             ReentrantReadWriteLock rwLock = this.lockRegistry.get(name);
             return rwLock.writeLock();
         }
+
         ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
         this.lockRegistry.put(name, rwLock);
         return rwLock.writeLock();

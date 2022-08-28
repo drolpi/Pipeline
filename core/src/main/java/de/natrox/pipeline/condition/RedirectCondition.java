@@ -19,11 +19,11 @@ package de.natrox.pipeline.condition;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class RedirectCondition implements Condition {
+abstract class RedirectCondition implements Condition {
 
     private final List<Condition> conditions;
 
-    public RedirectCondition(Condition... conditions) {
+    protected RedirectCondition(Condition... conditions) {
         this.conditions = Arrays.asList(conditions);
     }
 

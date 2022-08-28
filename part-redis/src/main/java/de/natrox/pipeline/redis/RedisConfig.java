@@ -16,13 +16,13 @@
 
 package de.natrox.pipeline.redis;
 
-import de.natrox.common.function.SingleTypeFunction;
 import de.natrox.common.validate.Check;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 public final class RedisConfig {
 
@@ -58,7 +58,7 @@ public final class RedisConfig {
         return this;
     }
 
-    public @NotNull RedisConfig addEndpoint(@NotNull SingleTypeFunction<RedisEndpoint> function) {
+    public @NotNull RedisConfig addEndpoint(@NotNull UnaryOperator<RedisEndpoint> function) {
         Check.notNull(function, "function");
         return this.addEndpoints(function.apply(RedisEndpoint.create()));
     }

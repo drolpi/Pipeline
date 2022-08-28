@@ -17,33 +17,33 @@
 package de.natrox.pipeline.sort;
 
 import de.natrox.common.container.Pair;
-import de.natrox.pipeline.document.DocumentData;
+import de.natrox.pipeline.node.DataNode;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("ClassCanBeRecord")
-public final class DocumentSorter implements Comparator<Pair<UUID, DocumentData>> {
+public final class DocumentSorter implements Comparator<Pair<UUID, DataNode>> {
 
-    private final List<Pair<String, SortOrder>> sortOrder;
+    private final List<Pair<Object[], SortOrder>> sortOrder;
 
-    public DocumentSorter(List<Pair<String, SortOrder>> sortOrder) {
+    public DocumentSorter(List<Pair<Object[], SortOrder>> sortOrder) {
         this.sortOrder = sortOrder;
     }
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public int compare(Pair<UUID, DocumentData> pair1, Pair<UUID, DocumentData> pair2) {
+    public int compare(Pair<UUID, DataNode> pair1, Pair<UUID, DataNode> pair2) {
         if (this.sortOrder == null || this.sortOrder.isEmpty())
             return 0;
 
-        for (Pair<String, SortOrder> pair : this.sortOrder) {
-            DocumentData doc1 = pair1.second();
-            DocumentData doc2 = pair2.second();
+        for (Pair<Object[], SortOrder> pair : this.sortOrder) {
+            DataNode doc1 = pair1.second();
+            DataNode doc2 = pair2.second();
 
-            Object value1 = doc1.get(pair.first());
-            Object value2 = doc2.get(pair.first());
+            Object value1 = doc1.node(pair.first()).getAs();
+            Object value2 = doc2.node(pair.first()).getAs();
 
             int result;
             if (value1 == null && value2 != null) {
@@ -74,6 +74,7 @@ public final class DocumentSorter implements Comparator<Pair<UUID, DocumentData>
                 return result;
             }
         }
+
         return 0;
     }
 }

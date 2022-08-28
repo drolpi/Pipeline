@@ -30,20 +30,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 final class InMemoryMap implements StoreMap {
 
-    private final Map<UUID, byte[]> map;
+    private final Map<UUID, Object> map;
 
     InMemoryMap() {
         this.map = new ConcurrentHashMap<>();
     }
 
     @Override
-    public byte @Nullable [] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
         return this.map.get(uniqueId);
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "documentData");
         this.map.put(uniqueId, data);
@@ -61,12 +61,12 @@ final class InMemoryMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
+    public @NotNull Collection<Object> values() {
         return this.map.values();
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
+    public @NotNull Map<UUID, Object> entries() {
         return this.map;
     }
 

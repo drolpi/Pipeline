@@ -22,7 +22,9 @@ import de.natrox.pipeline.part.store.StoreMap;
 import de.natrox.pipeline.repository.QueryStrategy;
 import de.natrox.pipeline.repository.RepositoryOptions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.redisson.api.RBinaryStream;
+import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
 
@@ -58,32 +60,32 @@ final class RedisMap implements StoreMap {
     }
 
     @Override
-    public byte[] get(@NotNull UUID uniqueId) {
+    public @Nullable Object get(@NotNull UUID uniqueId) {
         Check.notNull(uniqueId, "uniqueId");
-        RBinaryStream stream = this.stream(uniqueId);
-        if (!stream.isExists())
+        RBucket<Object> bucket = this.bucket(uniqueId);
+        if (!bucket.isExists())
             return null;
 
-        this.updateExpireTime(stream, this.expireAfterAccessNanos);
-        return stream.get();
+        this.updateExpireTime(bucket, this.expireAfterAccessNanos);
+        return bucket.get();
     }
 
     @Override
-    public void put(@NotNull UUID uniqueId, byte @NotNull [] data, @NotNull Set<QueryStrategy> strategies) {
+    public void put(@NotNull UUID uniqueId, @NotNull Object data, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
 
-        RBinaryStream stream = this.stream(uniqueId);
-        stream.set(data);
-        this.updateExpireTime(stream, this.expireAfterWriteNanos);
+        RBucket<Object> bucket = this.bucket(uniqueId);
+        bucket.set(data);
+        this.updateExpireTime(bucket, this.expireAfterWriteNanos);
     }
 
     @Override
     public boolean contains(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        RBinaryStream stream = this.stream(uniqueId);
-        this.updateExpireTime(stream, this.expireAfterAccessNanos);
-        return stream.isExists();
+        RBucket<Object> bucket = this.bucket(uniqueId);
+        this.updateExpireTime(bucket, this.expireAfterAccessNanos);
+        return bucket.isExists();
     }
 
     @Override
@@ -96,43 +98,43 @@ final class RedisMap implements StoreMap {
     }
 
     @Override
-    public @NotNull Collection<byte[]> values() {
+    public @NotNull Collection<Object> values() {
         //TODO: Update expire
         Set<String> keys = this.redisStore.keys(this.mapName);
 
-        List<byte[]> documents = new ArrayList<>();
+        List<Object> documents = new ArrayList<>();
         for (var key : keys) {
-            RBinaryStream stream = this.redissonClient.getBinaryStream(key);
+            RBucket<Object> bucket = this.redissonClient.getBucket(key);
 
-            if (!stream.isExists())
+            if (!bucket.isExists())
                 continue;
 
-            byte[] bytes = stream.get();
-            if (bytes == null)
+            Object data = bucket.get();
+            if (data == null)
                 continue;
 
-            documents.add(bytes);
+            documents.add(data);
         }
         return documents;
     }
 
     @Override
-    public @NotNull Map<UUID, byte[]> entries() {
+    public @NotNull Map<UUID, Object> entries() {
         //TODO: Update expire
         Collection<UUID> keys = this.keys();
-        Map<UUID, byte[]> entries = new HashMap<>();
+        Map<UUID, Object> entries = new HashMap<>();
 
         for (var key : keys) {
-            RBinaryStream stream = this.stream(key);
+            RBucket<Object> bucket = this.bucket(key);
 
-            if (!stream.isExists())
+            if (!bucket.isExists())
                 continue;
 
-            byte[] bytes = stream.get();
-            if (bytes == null)
+            Object data = bucket.get();
+            if (data == null)
                 continue;
 
-            entries.put(key, bytes);
+            entries.put(key, data);
         }
         return entries;
     }
@@ -140,8 +142,8 @@ final class RedisMap implements StoreMap {
     @Override
     public void remove(@NotNull UUID uniqueId, @NotNull Set<QueryStrategy> strategies) {
         Check.notNull(uniqueId, "uniqueId");
-        RBinaryStream stream = this.stream(uniqueId);
-        stream.delete();
+        RBucket<Object> bucket = this.bucket(uniqueId);
+        bucket.delete();
     }
 
     @Override
@@ -156,16 +158,16 @@ final class RedisMap implements StoreMap {
         return this.redisStore.keys(this.mapName).size();
     }
 
-    private RBinaryStream stream(UUID uniqueId) {
-        return this.redissonClient.getBinaryStream("Cache:" + this.mapName + ":" + uniqueId.toString());
+    private RBucket<Object> bucket(UUID uniqueId) {
+        return this.redissonClient.getBucket("Cache:" + this.mapName + ":" + uniqueId.toString());
     }
 
-    private void updateExpireTime(RBinaryStream stream, long nanos) {
-        Check.notNull(stream, "stream");
+    private void updateExpireTime(RBucket<Object> bucket, long nanos) {
+        Check.notNull(bucket, "bucket");
         Check.notNull(nanos, "nanos");
         if (this.storageMode || nanos < 0)
             return;
 
-        stream.expireAsync(Duration.of(nanos, ChronoUnit.NANOS));
+        bucket.expireAsync(Duration.of(nanos, ChronoUnit.NANOS));
     }
 }

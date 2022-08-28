@@ -19,15 +19,15 @@ package de.natrox.pipeline.condition;
 import de.natrox.pipeline.exception.ConditionException;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ComparableCondition extends FieldCondition {
+abstract class ComparableCondition extends DataNodeCondition {
 
-    public ComparableCondition(String field, Object value) {
-        super(field, value);
+    protected ComparableCondition(Object value, Object[] path) {
+        super(value, path);
     }
 
     @SuppressWarnings("rawtypes")
     public @NotNull Comparable comparable() {
-        Object value = value();
+        Object value = super.value();
 
         if (!(value instanceof Comparable comparable))
             throw new ConditionException("value parameter must not be null");

@@ -21,12 +21,14 @@ include(
     ":core",
     ":creator-guice",
     ":demo",
-    ":part-bin",
     ":part-caffeine",
     ":part-h2",
     ":part-mongo",
     ":part-redis",
     ":part-mysql",
     ":part-sql",
-    ":part-sqlite"
+    ":part-sqlite",
+    ":serializer-gson",
+    ":serializer-jackson",
+    ":serializer-kryo"
 )

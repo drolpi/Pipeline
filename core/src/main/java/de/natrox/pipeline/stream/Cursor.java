@@ -19,5 +19,5 @@ package de.natrox.pipeline.stream;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
-public interface Cursor<T> extends PipeStream<T> {
+public interface Cursor<T> extends DataStream<T> {
 }

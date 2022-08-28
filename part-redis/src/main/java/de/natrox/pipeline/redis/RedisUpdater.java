@@ -19,8 +19,8 @@ package de.natrox.pipeline.redis;
 import de.natrox.common.validate.Check;
 import de.natrox.eventbus.EventBus;
 import de.natrox.pipeline.part.updater.Updater;
-import de.natrox.pipeline.part.updater.event.ByteDocumentUpdateEvent;
-import de.natrox.pipeline.part.updater.event.DocumentRemoveEvent;
+import de.natrox.pipeline.part.updater.event.EntryUpdateEvent;
+import de.natrox.pipeline.part.updater.event.EntryRemoveEvent;
 import de.natrox.pipeline.part.updater.event.MapClearEvent;
 import de.natrox.pipeline.part.updater.event.UpdaterEvent;
 import org.jetbrains.annotations.NotNull;
@@ -57,10 +57,10 @@ final class RedisUpdater implements Updater {
     }
 
     @Override
-    public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, byte @NotNull [] data, @Nullable Runnable callback) {
+    public void pushUpdate(@NotNull String repositoryName, @NotNull UUID uniqueId, @NotNull Object data, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
         Check.notNull(data, "data");
-        this.dataTopic.publish(new ByteDocumentUpdateEvent(this.senderId, repositoryName, uniqueId, data));
+        this.dataTopic.publish(new EntryUpdateEvent(this.senderId, repositoryName, uniqueId, data));
         if (callback != null)
             callback.run();
     }
@@ -68,7 +68,7 @@ final class RedisUpdater implements Updater {
     @Override
     public void pushRemoval(@NotNull String repositoryName, @NotNull UUID uniqueId, @Nullable Runnable callback) {
         Check.notNull(uniqueId, "uniqueId");
-        this.dataTopic.publish(new DocumentRemoveEvent(this.senderId, repositoryName, uniqueId));
+        this.dataTopic.publish(new EntryRemoveEvent(this.senderId, repositoryName, uniqueId));
         if (callback != null)
             callback.run();
     }
