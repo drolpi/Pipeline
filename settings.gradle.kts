@@ -17,10 +17,7 @@
 rootProject.name = "Pipeline"
 
 include(
-    ":config",
     ":core",
-    ":creator-guice",
-    ":demo",
     ":part-caffeine",
     ":part-h2",
     ":part-mongo",
