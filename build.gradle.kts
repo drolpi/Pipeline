@@ -42,7 +42,7 @@ subprojects {
         compileOnly(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
         compileOnly(files("D:\\workspace\\NatroxMC\\Eventbus\\build\\libs\\eventbus.jar"))
 
-        compileOnly("org.jetbrains:annotations:23.0.0")
+        compileOnly("org.jetbrains:annotations:23.1.0")
         compileOnly("org.reflections:reflections:0.10.2")
         compileOnly("org.jodd:jodd-core:5.3.0")
     }
