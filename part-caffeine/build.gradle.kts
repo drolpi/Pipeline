@@ -16,5 +16,5 @@
 
 dependencies {
     compileOnly(project(":core"))
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 }
