@@ -18,7 +18,7 @@ dependencies {
     implementation(files("D:\\workspace\\NatroxMC\\Common\\build\\libs\\common.jar"))
     implementation(files("D:\\workspace\\NatroxMC\\Eventbus\\build\\libs\\eventbus.jar"))
 
-    implementation("org.jetbrains:annotations:23.0.0")
+    implementation("org.jetbrains:annotations:24.1.0")
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.esotericsoftware.kryo:kryo5:5.3.0")
 
