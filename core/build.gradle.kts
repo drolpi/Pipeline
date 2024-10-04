@@ -22,11 +22,11 @@ dependencies {
     implementation("org.jodd:jodd-core:5.3.0")
     implementation("com.esotericsoftware.kryo:kryo5:5.3.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.9.1")
-    testImplementation("org.junit.platform:junit-platform-suite-api:1.9.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-suite-engine:1.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-params:5.11.2")
+    testImplementation("org.junit.platform:junit-platform-suite-api:1.11.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-suite-engine:1.11.2")
     testImplementation("org.mockito:mockito-core:4.8.0")
 }
 
