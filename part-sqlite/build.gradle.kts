@@ -19,5 +19,5 @@ dependencies {
     implementation(project(":part-sql"))
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.xerial:sqlite-jdbc:3.39.2.1")
+    implementation("org.xerial:sqlite-jdbc:3.47.0.0")
 }
